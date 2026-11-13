@@ -1,0 +1,100 @@
+/* ===== Сцена: монетка, интервалы, чеки ===== */
+.scene .d52-sc { position: relative; flex: 1; align-self: stretch; min-width: 0; min-height: 0; }
+.scene .d52-scv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+@container (max-width: 1100px) { .scene .sc-info { display: none; } }
+@container (max-width: 560px) { .sc-stage { height: 470px; } .hb small { margin-left: 4px; } }
+.scene .sc-leg span { white-space: nowrap; }
+
+/* ===== Текст статьи ===== */
+@media (max-width: 640px) { .formula .f { white-space: normal; } }
+.d52-t td, .d52-t th { font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) {
+  .d52-t thead { display: none; }
+  .d52-t table, .d52-t tbody { display: block; }
+  .d52-t tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px 14px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .d52-t td { border: 0; padding: 0; font-size: 14px; }
+  .d52-t td:first-child { grid-column: 1 / -1; white-space: normal; }
+  .d52-t td::before { content: attr(data-l); display: block; font: 500 10px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .d52-t td:first-child::before { display: none; }
+}
+
+/* ===== Интерактив «Зоопарк распределений» ===== */
+.d52-do { padding: 10px 16px 0; margin: 0 !important; }
+.d52-top { padding: 10px 16px 0; }
+.d52-tabs { border-bottom: 0; padding-bottom: 6px; }
+.d52-tabs button:disabled { opacity: .38; cursor: not-allowed; }
+.d52-stage { border-top: 1px solid var(--line); }
+.d52-main { min-width: 0; display: flex; flex-direction: column; }
+.d52-ctl { display: flex; flex-wrap: wrap; gap: 8px 22px; padding: 12px 16px 4px; }
+.d52-sl { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.d52-lb { font: 500 12px/1.2 var(--mono); color: var(--muted); }
+.d52-sl input { width: 170px; max-width: 46vw; accent-color: var(--accent); }
+.d52-sl b { font: 600 13.5px/1 var(--mono); min-width: 52px; color: var(--ink); }
+.d52-plot, .d52-tail { min-width: 0; padding: 0 6px; }
+.d52-plot svg, .d52-tail svg { display: block; max-width: 100%; height: auto; }
+.d52-tail { border-top: 1px dashed var(--line); padding-top: 4px; }
+.d52-act { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 6px 16px 14px; }
+.d52-sv { font: 500 12px/1 var(--mono); color: var(--muted); }
+.d52-side { gap: 10px; }
+.article .block .d52-ex { font: 14px/1.45 var(--ui); color: var(--ink-2); }
+.d52-ex b { color: var(--ink); }
+.d52-f { font: italic 15px/1.45 var(--read); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; overflow-wrap: anywhere; }
+.d52-f span { display: block; font: 500 10.5px/1.3 var(--mono); font-style: normal; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.d52-ro { margin-bottom: 4px; }
+.d52-ro .big { font-size: 24px; }
+.d52-ro .big.d52-good { color: var(--good); }
+.d52-rtab { width: 100%; border-collapse: collapse; font: 13px/1.3 var(--mono); font-variant-numeric: tabular-nums; }
+.d52-rtab th { font: 500 10.5px/1.3 var(--mono); color: var(--muted); text-align: right; padding: 0 0 6px 6px; border-bottom: 1px solid var(--line-2); letter-spacing: .04em; }
+.d52-rtab td { text-align: right; padding: 6px 0 6px 6px; border-bottom: 1px solid var(--line); color: var(--ink); white-space: nowrap; }
+.d52-rtab td:first-child, .d52-rtab th:first-child { text-align: left; padding-left: 0; color: var(--ink-2); font-family: var(--ui); white-space: normal; }
+.article .block .d52-tasks { margin: 2px 0 0; padding: 0; list-style: none; }
+.article .block .d52-tasks li { position: relative; margin: 0; padding-left: 23px; font: 13px/1.4 var(--ui); color: var(--ink-2); }
+.d52-tasks li::before { content: ""; position: absolute; left: 0; top: 1px; width: 15px; height: 15px; box-sizing: border-box; border: 1.5px solid var(--line-2); border-radius: 4px; }
+.article .block .d52-tasks li.d52-ok { color: var(--ink); }
+.d52-tasks li.d52-ok::before { content: "✓"; border-color: var(--good); background: var(--good-soft); color: var(--good); font: 700 11px/12px var(--ui); text-align: center; }
+.article .block .d52-verdict { margin: 0; padding: 10px 16px; border-top: 1px solid var(--line); font: 14px/1.5 var(--ui); color: var(--ink-2); min-height: 3.2em; }
+
+/* графики интерактива: только токены, чтобы держалась тёмная тема */
+.d52-svg text { font-family: var(--mono); }
+.d52-gl { stroke: var(--line); stroke-width: 1; }
+.d52-base { stroke: var(--line-2); stroke-width: 1; }
+.d52-tk { font-size: 10.5px; fill: var(--muted); }
+.d52-ax { font-size: 11px; fill: var(--ink-2); }
+.d52-sb { fill: var(--c8); opacity: .38; }
+.d52-db { fill: var(--c2); opacity: .55; }
+.d52-mb { fill: var(--accent); opacity: .85; }
+.d52-st { stroke: var(--accent); stroke-width: 1.6; }
+.d52-pd { fill: var(--accent); }
+.d52-cv { fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linejoin: round; }
+.d52-mn { stroke: var(--c4); stroke-width: 1.8; }
+.d52-md { stroke: var(--c1); stroke-width: 1.8; stroke-dasharray: 5 4; }
+.d52-ml { font-size: 11px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.d52-mnt { fill: var(--c4); }
+.d52-mdt { fill: var(--c1); }
+.d52-note { font-size: 11px; fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.d52-note.d52-bad { fill: var(--bad); }
+.d52-dbt { fill: var(--c2); font-weight: 600; }
+.d52-cvt { fill: var(--accent); font-weight: 600; }
+@media (max-width: 420px) {
+  .d52-ctl { gap: 8px 12px; padding: 10px 12px 4px; }
+  .d52-sl { width: 100%; }
+  .d52-sl input { flex: 1; width: auto; max-width: none; }
+  .d52-lb { min-width: 0; }
+  .d52-do, .d52-top { padding-left: 12px; padding-right: 12px; }
+  .d52-act { padding: 6px 12px 12px; }
+}
+
+/* ===== Q–Q-график ===== */
+.d52-fig { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; margin: 18px auto 24px; padding: 12px 14px 10px; }
+.d52-fig figcaption { font: 650 15px/1.35 var(--ui); color: var(--ink); margin: 0 0 6px; }
+.d52-qq { display: block; width: 100%; max-width: 620px; height: auto; margin: 0 auto; }
+.d52-hl { fill: none; stroke: var(--c2); stroke-width: 2; }
+.d52-gr { stroke: var(--line); stroke-width: 1; }
+.d52-qq .d52-tk { font-size: 11px; }
+.d52-qq .d52-ax { font-size: 12px; }
+.d52-diag { stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 6 5; }
+.d52-pts { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; opacity: .75; }
+.d52-an { font-size: 12px; font-weight: 600; fill: var(--c2); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.d52-an2 { fill: var(--accent); }
+.article .d52-figsub { font: 12.5px/1.45 var(--ui); color: var(--muted); margin: 4px 0 0; }
+@media (max-width: 640px) { .d52-qq .d52-tk { font-size: 14.5px; } .d52-qq .d52-ax { font-size: 15px; } .d52-an { font-size: 15px; } .d52-fig { padding: 10px 8px 8px; } }

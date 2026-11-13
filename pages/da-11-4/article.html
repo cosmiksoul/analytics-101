@@ -1,0 +1,168 @@
+      <p class="eyebrow">Дата аналитика · Тема 11 · <b>A/B-тестирование</b></p>
+      <h1>Ловушки: подглядывание, множественные метрики, новизна</h1>
+      <p class="lead">Тест можно честно спроектировать и&nbsp;честно посчитать&nbsp;— и&nbsp;всё равно обмануть себя. После этой страницы вы узнаете ловушки, которые делают из&nbsp;теста без&nbsp;эффекта «победу» или&nbsp;раздувают настоящий эффект, посчитаете их цену и&nbsp;поправите отчёт.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;10&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">4&nbsp;блока кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: не&nbsp;давать случаю лишних попыток</h2>
+        <p>Порог p &lt; 0,05&nbsp;обещает не&nbsp;больше 5% ложных побед, только если тест один раз дошёл до&nbsp;заранее назначенного дня и&nbsp;проверил одну заранее названную метрику. <span class="term" tabindex="0" data-g="peeking">Подглядывание</span>&nbsp;— остановка в&nbsp;первый день, когда p опустилось ниже 0,05,&nbsp;— и&nbsp;перебор метрик и&nbsp;сегментов дают случаю много попыток, и&nbsp;тест без&nbsp;эффекта «побеждает» в&nbsp;разы чаще обещанного. Даже доведённый до&nbsp;конца тест может измерить <span class="term" tabindex="0" data-g="novelty">эффект новизны</span>, который тает за&nbsp;неделю, или&nbsp;сравнить группы, неравно разделённые по&nbsp;дням. Защита одна: метрику, срок и&nbsp;правило остановки записывают до&nbsp;запуска, а&nbsp;итог читают по&nbsp;всему сроку и&nbsp;по&nbsp;дням с&nbsp;первого показа.</p>
+        <div class="scene" id="scene" aria-label="Анимация: p-value A/A-теста блуждает по дням выше порога 0,05, на 8-й день опускается до 0,049, аналитик останавливает тест и объявляет победу; без остановки к 28-му дню p = 0,87. Из ста таких тестов при ежедневных взглядах 30 хотя бы раз опускаются ниже порога"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже&nbsp;— та же&nbsp;мысль подробно.</p>
+
+        <h3 class="sub-h">Подглядывание раздувает α</h3>
+        <p>В&nbsp;сцене&nbsp;— <span class="term" tabindex="0" data-g="aa">A/A-тест</span>: обе группы видят одно и&nbsp;то&nbsp;же, эффекта нет по&nbsp;построению. В&nbsp;заранее выбранный день p такого теста ниже 0,05&nbsp;в&nbsp;5% случаев&nbsp;— это и&nbsp;есть уровень значимости α. Но&nbsp;каждый вечер в&nbsp;группы приходит ещё по&nbsp;тысяче человек, z-статистика делает случайный шаг, и&nbsp;p блуждает. Каждый взгляд с&nbsp;правом остановиться&nbsp;— ещё одна попытка пересечь порог. Соседние дни похожи, поэтому 28&nbsp;взглядов дают меньше 28&nbsp;× 5%, но&nbsp;в&nbsp;разы больше пяти.</p>
+        <div class="tbl pk-tbl"><table>
+          <thead><tr><th>взглядов за&nbsp;28&nbsp;дней</th><th>когда</th><th>ложных побед</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>в&nbsp;конце</td><td>5,1%</td></tr>
+            <tr><td>2</td><td>14-й и&nbsp;28-й день</td><td>8,8%</td></tr>
+            <tr><td>4</td><td>раз в&nbsp;неделю</td><td>13,0%</td></tr>
+            <tr><td>14</td><td>через день</td><td>22,6%</td></tr>
+            <tr><td>28</td><td>каждый вечер</td><td>28,0%</td></tr>
+          </tbody>
+        </table></div>
+        <p>Это 20&nbsp;000&nbsp;симулированных A/A-тестов размера checkout_v2: по&nbsp;1&nbsp;000&nbsp;человек в&nbsp;группу в&nbsp;день, конверсия 14%. У&nbsp;правила «смотреть каждый вечер и&nbsp;остановиться при&nbsp;p &lt; 0,05» настоящий уровень значимости&nbsp;— 0,28. Это <span class="term" tabindex="0" data-g="alphainfl">раздувание α</span>. При&nbsp;неограниченном подглядывании ложная победа почти гарантирована<a class="ref" href="#src-1" data-ref="src-1">1</a>; у&nbsp;Эвана Миллера проверка после каждого из&nbsp;150&nbsp;наблюдений дала 26,1% ложных побед<a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+
+        <h3 class="sub-h">Много метрик и&nbsp;сегментов</h3>
+        <p>Попытки умножаются и&nbsp;в&nbsp;ширину: метрики, срезы по&nbsp;платформам и&nbsp;странам. При&nbsp;m независимых проверках на&nbsp;уровне 0,05&nbsp;хотя бы&nbsp;одна ложная находка случается с&nbsp;вероятностью 1 − 0,95&nbsp;в&nbsp;степени m: 40% при&nbsp;десяти метриках, 64% при&nbsp;двадцати сегментах. Это <span class="term" tabindex="0" data-g="multiple">множественные сравнения</span>.</p>
+        <p>Защит три. Главная&nbsp;— одна <span class="term" tabindex="0" data-g="primary">целевая метрика</span>, названная до&nbsp;запуска: решают по&nbsp;ней, остальное&nbsp;— подсказки. Вторая&nbsp;— <span class="term" tabindex="0" data-g="bonf">поправка Бонферрони</span>: каждую проверку сравнивают с&nbsp;α / m. Она держит <span class="term" tabindex="0" data-g="fwer">FWER</span>, вероятность хотя бы&nbsp;одной ложной находки среди всех проверок, не&nbsp;выше α, но&nbsp;дорого платит мощностью. Третья&nbsp;— <span class="term" tabindex="0" data-g="bh">процедура Беньямини&nbsp;— Хохберга</span>: она держит <span class="term" tabindex="0" data-g="fdr">FDR</span>, ожидаемую долю ложных среди объявленных находок<a class="ref" href="#src-3" data-ref="src-3">3</a>. В&nbsp;statsmodels обе делает <code>multipletests</code><a class="ref" href="#src-4" data-ref="src-4">4</a>.</p>
+        <div class="formula"><span class="f"><b>Бонферрони:</b> p ≤ α / m</span><br><span class="f"><b>Беньямини&nbsp;— Хохберг:</b></span><br><span class="f">p(k) ≤ k · q / m</span><small>m&nbsp;— число проверок. У&nbsp;Бонферрони находка&nbsp;— каждая проверка с&nbsp;p ≤ α / m. У&nbsp;Беньямини&nbsp;— Хохберга p сортируют от&nbsp;меньшего, p(k)&nbsp;— k-е из&nbsp;них, находки&nbsp;— первые k, где k&nbsp;— наибольший номер, для&nbsp;которого неравенство выполняется; q&nbsp;— допустимая доля ложных находок, обычно 0,05</small></div>
+        <p>В&nbsp;A/A-тесте aa_check из&nbsp;12&nbsp;сегментов «платформа · страна» один оказался «значимым»: на&nbsp;сайте в&nbsp;Казахстане B хуже на&nbsp;3,0&nbsp;п.&nbsp;п., p = 0,029. После любой поправки p = 0,35. В&nbsp;отчёте по&nbsp;checkout_v2 16&nbsp;гипотез: четыре метрики и&nbsp;конверсия в&nbsp;12&nbsp;сегментах. Без&nbsp;поправки значимы пять, после Бонферрони&nbsp;— две, конверсия и&nbsp;заказы, после Беньямини&nbsp;— Хохберга&nbsp;— три: добавляется сайт в&nbsp;России.</p>
+
+        <h3 class="sub-h">Новизна и&nbsp;привыкание</h3>
+        <p>Новизна: люди пробуют новое, потому что оно новое, и&nbsp;прирост первых дней тает. Обратный случай&nbsp;— <span class="term" tabindex="0" data-g="primacy">эффект привыкания</span>: люди привыкли к&nbsp;старому, первые дни путаются в&nbsp;новом, и&nbsp;эффект растёт со&nbsp;временем. В&nbsp;обоих случаях первые дни не&nbsp;говорят, что останется навсегда<a class="ref" href="#src-5" data-ref="src-5">5</a>. В&nbsp;checkout_v2&nbsp;генератор заложил +4% к&nbsp;конверсии сессии навсегда и&nbsp;ещё +20%, которые у&nbsp;каждого человека угасают за&nbsp;несколько дней.</p>
+        <div class="tbl pk-tbl"><table>
+          <thead><tr><th>полных суток с&nbsp;первого показа</th><th>0–2</th><th>3–6</th><th>7–13</th><th>14–27</th></tr></thead>
+          <tbody>
+            <tr><td>эффект B к&nbsp;A</td><td>+21,8%</td><td>+8,9%</td><td>+11,0%</td><td>−0,3%</td></tr>
+            <tr><td>95-% интервал</td><td>14,1…30,1</td><td>−1,2…20,0</td><td>2,3…20,5</td><td>−7,3…7,3</td></tr>
+          </tbody>
+        </table></div>
+        <p>По&nbsp;календарным неделям картина другая: +21,1, +6,7, +6,7&nbsp;и&nbsp;+8,0%. В&nbsp;тест каждый день приходят новые люди со&nbsp;свежей новизной, и&nbsp;после первой недели эффект выглядит устойчивым. Оценка за&nbsp;28&nbsp;дней, +10,4% [5,5; 15,5], смешивает новизну с&nbsp;долгосрочным эффектом и&nbsp;завышает его. Новизну выдаёт эффект по&nbsp;дням с&nbsp;показа; проверяют её на&nbsp;новых пользователях, не&nbsp;видевших старой версии, и&nbsp;продлением теста.</p>
+
+        <h3 class="sub-h">Сетевые эффекты и&nbsp;утечка между группами</h3>
+        <p>Сравнение групп честно, пока группа одного человека не&nbsp;влияет на&nbsp;исход другого. <span class="term" tabindex="0" data-g="network">Сетевой эффект</span> нарушает это условие: человек из&nbsp;B зовёт друзей из&nbsp;A, скидка в&nbsp;B раскупает товар, которого потом нет у&nbsp;A, рекламный бюджет B кончается раньше и&nbsp;урезает показы A. Это <span class="term" tabindex="0" data-g="leakage">утечка между группами</span>: если B отнимает у&nbsp;A, разница завышена, если помогает&nbsp;— занижена<a class="ref" href="#src-5" data-ref="src-5">5</a>. Ни&nbsp;A/A-тест, ни&nbsp;проверка долей утечку не&nbsp;находят: её ищут в&nbsp;устройстве продукта до&nbsp;запуска.</p>
+
+        <h3 class="sub-h">Неравное разбиение: SRM и&nbsp;парадокс Симпсона</h3>
+        <p>Рандомизация обещает доли групп по&nbsp;плану, проверяют их хи-квадратом. Сильный перекос называют <span class="term" tabindex="0" data-g="srm">дисбалансом групп</span> (sample ratio mismatch, SRM). В&nbsp;reco_block 24&nbsp;440&nbsp;человек в&nbsp;A и&nbsp;23&nbsp;746&nbsp;в&nbsp;B, p = 0,0016. Перекос сидит в&nbsp;одном сегменте: на&nbsp;Android 3.1.4&nbsp;в&nbsp;A 2&nbsp;782&nbsp;человека, в&nbsp;B 1&nbsp;971. Баг теряет в&nbsp;B показы без&nbsp;покупки, и&nbsp;B выглядит лучше на&nbsp;0,40&nbsp;п.&nbsp;п. без&nbsp;всякого эффекта. При&nbsp;SRM эффект не&nbsp;читают, а&nbsp;ищут причину<a class="ref" href="#src-6" data-ref="src-6">6</a>.</p>
+        <p>Доли могут меняться и&nbsp;по&nbsp;плану. <span class="term" tabindex="0" data-g="rampup">Рамп-ап</span>&nbsp;— постепенное наращивание доли трафика: новую версию сначала показывают 5–10% людей и, если ничего не&nbsp;сломалось, доводят до&nbsp;50%<a class="ref" href="#src-5" data-ref="src-5">5</a>. Модель на&nbsp;checkout_v2: первые три дня B получает десятую часть участников, потом половину.</p>
+        <div class="tbl pk-tbl pk-wide"><!--tbl:ramp--><table><thead><tr><th>период</th><th>A: конверсия · людей</th><th>B: конверсия · людей</th><th>B к&nbsp;A</th></tr></thead><tbody><tr><td>дни 1–3, доля B 10%</td><td>21,6% · 9&nbsp;219</td><td>24,9% · 1&nbsp;007</td><td>+15,2%</td></tr><tr><td>дни 4–28, 50/50</td><td>10,5% · 19&nbsp;220</td><td>11,6% · 19&nbsp;191</td><td>+11,0%</td></tr><tr><td>весь тест вместе</td><td>14,1% · 28&nbsp;439</td><td>12,3% · 20&nbsp;198</td><td>−12,8%</td></tr></tbody></table><!--/tbl:ramp--></div>
+        <p>В&nbsp;каждом периоде B лучше&nbsp;— на&nbsp;15&nbsp;и&nbsp;11%, а&nbsp;вместе хуже на&nbsp;13%. Это <span class="term" tabindex="0" data-g="simpson">парадокс Симпсона</span> из&nbsp;6.5: пришедшие в&nbsp;первые дни заходят чаще и&nbsp;дольше пробыли в&nbsp;тесте, их конверсия вдвое выше, а&nbsp;в&nbsp;B их почти нет. Лечат сравнением внутри периодов с&nbsp;постоянной долей&nbsp;— взвешенная разница +1,6&nbsp;п.&nbsp;п. в&nbsp;пользу B&nbsp;— или&nbsp;анализом дней после рамп-апа.</p>
+
+        <h3 class="sub-h">Пережившие победители и&nbsp;проклятие победителя</h3>
+        <p>Значимым тест становится, когда случай добавил к&nbsp;эффекту плюс, поэтому у&nbsp;значимых тестов эффект завышен. Это <span class="term" tabindex="0" data-g="curse">проклятие победителя</span>. Симуляция&nbsp;— по&nbsp;20&nbsp;000&nbsp;тестов размера checkout_v2&nbsp;с&nbsp;одним взглядом в&nbsp;конце для&nbsp;трёх истинных эффектов:</p>
+        <div class="tbl pk-tbl"><table>
+          <thead><tr><th>истинный эффект</th><th>мощность</th><th>средний эффект значимых</th><th>завышение</th></tr></thead>
+          <tbody>
+            <tr><td>+2%</td><td>16%</td><td>+5,3%</td><td>в&nbsp;2,7&nbsp;раза</td></tr>
+            <tr><td>+4%</td><td>48%</td><td>+5,8%</td><td>в&nbsp;1,5&nbsp;раза</td></tr>
+            <tr><td>+8%</td><td>96%</td><td>+8,2%</td><td>почти нет</td></tr>
+          </tbody>
+        </table></div>
+        <p>Чем меньше мощность, тем сильнее завышение. Отсюда <span class="term" tabindex="0" data-g="survivor">ошибка выжившего</span> в&nbsp;масштабе команды: в&nbsp;отчёт за&nbsp;квартал попадают только раскатанные победители, и&nbsp;сумма их эффектов больше роста, который потом видно в&nbsp;метрике. Ли&nbsp;и&nbsp;Шэнь из&nbsp;Airbnb оценивают это смещение и&nbsp;поправляют суммарный эффект<a class="ref" href="#src-7" data-ref="src-7">7</a>.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: три способа обмануть себя честным тестом</h2>
+        <p>Знать три способа обмануть себя честным тестом&nbsp;— остановиться в&nbsp;удачный день, перебрать метрики и&nbsp;сегменты, принять новизну за&nbsp;эффект&nbsp;— и&nbsp;не&nbsp;делать этого. Материал&nbsp;— учебные тесты магазина aa_check, checkout_v2&nbsp;и&nbsp;reco_block: найти в&nbsp;них ловушки, посчитать их цену и&nbsp;записать правила, которые не&nbsp;дадут в&nbsp;них попасть.</p>
+      </section>
+
+      <section data-sec="method" data-title="Подглядывай сколько хочешь">
+        <h2 id="method"><span class="sn">03</span>Подглядывай сколько хочешь</h2>
+        <p>В&nbsp;интерактиве&nbsp;— сто A/A-тестов из&nbsp;сцены, у&nbsp;каждого 10&nbsp;независимых метрик, устроенных как конверсия. Ползунки задают, сколько раз за&nbsp;28&nbsp;дней аналитик смотрит на&nbsp;p, готовый остановиться, и&nbsp;сколько метрик проверяет. Доли на&nbsp;20&nbsp;000&nbsp;прогонов посчитаны в&nbsp;Python. Сто траекторий&nbsp;— блок из&nbsp;ста прогонов подряд, выбранный из&nbsp;двухсот так, чтобы его доли были ближе всего к&nbsp;общим; тест сцены взят из&nbsp;этого блока за&nbsp;наглядный путь p.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="peek"></div>
+        <p>Оба ползунка дают случаю больше попыток: один взгляд и&nbsp;одна метрика&nbsp;— 5,1% ложных побед, ежедневный взгляд&nbsp;— 28,0%, десять метрик в&nbsp;конце&nbsp;— 39,7%, всё вместе&nbsp;— 96,0%. У&nbsp;настоящих, связанных между собой метрик раздувание меньше, но&nbsp;не&nbsp;исчезает. Отсюда правила чтения отчёта.</p>
+        <div class="tbl pk-tbl pk-wide"><table>
+          <thead><tr><th>ловушка</th><th>признак в&nbsp;отчёте</th><th>что делать</th></tr></thead>
+          <tbody>
+            <tr><td>подглядывание</td><td>тест остановили раньше срока или&nbsp;продлили «до&nbsp;значимости»</td><td>срок и&nbsp;выборка&nbsp;— до&nbsp;запуска; смотреть по&nbsp;ходу&nbsp;— только <span class="term" tabindex="0" data-g="sequential">последовательным тестом</span> (11.5)</td></tr>
+            <tr><td>метрики и&nbsp;сегменты</td><td>значима одна метрика из&nbsp;многих или&nbsp;один сегмент</td><td>одна целевая метрика, для&nbsp;остальных поправка; сегменты&nbsp;— гипотезы для&nbsp;нового теста</td></tr>
+            <tr><td>новизна, привыкание</td><td>эффект меняется по&nbsp;дням с&nbsp;показа</td><td>читать поздние дни и&nbsp;новых пользователей</td></tr>
+            <tr><td>утечка</td><td>группы делят друзей, товар или&nbsp;бюджет</td><td>другой дизайн (раздел 05)</td></tr>
+            <tr><td>SRM</td><td>доли групп не&nbsp;по&nbsp;плану</td><td>эффект не&nbsp;читать, искать поломку</td></tr>
+            <tr><td>рамп-ап</td><td>доля B менялась по&nbsp;дням</td><td>сравнивать внутри периодов</td></tr>
+            <tr><td>проклятие победителя</td><td>значимый тест с&nbsp;малой мощностью</td><td>ждать меньшего эффекта после раскатки</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: на&nbsp;что смотреть по&nbsp;ходу теста</h2>
+        <div class="callout"><p><b>На&nbsp;защитные метрики смотреть можно и&nbsp;нужно.</b> <span class="term" tabindex="0" data-g="guardrail">Защитные метрики</span>&nbsp;— ошибки оплаты, падения приложения, скорость страниц&nbsp;— смотрят каждый день: если новая версия ломает оплату, ждать 28&nbsp;дней нельзя. Ложная тревога здесь может стоить хорошей идеи, но&nbsp;победы не&nbsp;объявит. Вопрос в&nbsp;том, по&nbsp;чему останавливать. Ради вреда&nbsp;— по&nbsp;правилу из&nbsp;дизайна теста: какая метрика и&nbsp;какой порог. Ради победы по&nbsp;целевой метрике&nbsp;— только в&nbsp;назначенный день.</p></div>
+        <div class="callout"><p><b>Дашборд теста с&nbsp;живым p-value&nbsp;— ловушка по&nbsp;дизайну.</b> Так выглядел бы&nbsp;дашборд checkout_v2, который каждый вечер пересчитывает конверсию пришедших к&nbsp;этому дню людей и&nbsp;p-value:</p></div>
+        <div class="tbl pk-tbl pk-wide"><!--tbl:live--><table><thead><tr><th>день</th><th>конверсия A → B</th><th>эффект</th><th>p-value</th><th>дашборд</th></tr></thead><tbody><tr><td>1</td><td>4,8 → 5,1%</td><td>+7,2%</td><td>0,48</td><td>серый: «ждём»</td></tr><tr><td>2</td><td>5,2 → 5,9%</td><td>+13,3%</td><td>0,076</td><td>серый: «ждём»</td></tr><tr><td>3</td><td>5,4 → 6,5%</td><td>+18,8%</td><td>0,003</td><td>зелёный: «B выигрывает»</td></tr><tr><td>6</td><td>6,8 → 8,3%</td><td>+22,3%</td><td>&lt; 0,0001</td><td>зелёный: «B выигрывает»</td></tr><tr><td>14</td><td>10,2 → 11,4%</td><td>+11,0%</td><td>0,0002</td><td>зелёный: «B выигрывает»</td></tr><tr><td>28</td><td>14,1 → 15,3%</td><td>+8,3%</td><td>&lt; 0,0001</td><td>зелёный: «B выигрывает»</td></tr></tbody></table><!--/tbl:live--></div>
+        <p>Эффект здесь настоящий, и&nbsp;ошибка в&nbsp;размере: остановив тест на&nbsp;третий день, менеджер записал бы&nbsp;+19% вместо +8%. Дашборд, который каждый вечер красит p, сам приглашает остановиться; Миллер советует не&nbsp;показывать значимость до&nbsp;конца теста<a class="ref" href="#src-2" data-ref="src-2">2</a>. Полезнее показывать дни до&nbsp;конца, выборку против плана, проверку SRM и&nbsp;защитные метрики.</p>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: дизайны для&nbsp;сетевых эффектов&nbsp;— только ссылки</h2>
+        <p>Страница учит замечать утечку, но&nbsp;не&nbsp;разбирает дизайны, которые её обходят.</p>
+        <div class="tbl pk-tbl pk-wide"><table>
+          <thead><tr><th>дизайн</th><th>идея</th><th>куда идти</th></tr></thead>
+          <tbody>
+            <tr><td><span class="term" tabindex="0" data-g="cluster">Кластерная рандомизация</span></td><td>в&nbsp;группы делят не&nbsp;людей, а&nbsp;связанные кластеры: города, сообщества, части социального графа</td><td>Угандер и&nbsp;соавторы<a class="ref" href="#src-8" data-ref="src-8">8</a>; глава об&nbsp;утечке у&nbsp;Кохави<a class="ref" href="#src-5" data-ref="src-5">5</a></td></tr>
+            <tr><td><span class="term" tabindex="0" data-g="switchback">Переключаемые периоды</span> (switchback)</td><td>весь рынок или&nbsp;город по&nbsp;очереди живёт то&nbsp;в&nbsp;A, то&nbsp;в&nbsp;B, интервалами по&nbsp;времени</td><td>Божинов, Симчи-Леви и&nbsp;Чжао<a class="ref" href="#src-9" data-ref="src-9">9</a></td></tr>
+          </tbody>
+        </table></div>
+        <p>Как смотреть на&nbsp;тест по&nbsp;ходу и&nbsp;не&nbsp;раздувать α, разбирает 11.5: последовательные тесты и&nbsp;p-value, верные при&nbsp;любой остановке<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: симуляция, поправки, SRM, новизна</h2>
+        <p>Первый блок&nbsp;— симуляция подглядывания: те же&nbsp;20&nbsp;000 A/A-тестов, что за&nbsp;интерактивом, и&nbsp;те же&nbsp;доли.</p>
+        <div class="block wide" data-code="peek"></div>
+        <p>Второй&nbsp;— поправки на&nbsp;множественность в&nbsp;statsmodels: сегменты aa_check и&nbsp;отчёт из&nbsp;16&nbsp;гипотез по&nbsp;checkout_v2.</p>
+        <div class="block wide" data-code="multi"></div>
+        <p>Третий&nbsp;— проверка SRM хи-квадратом: три теста и&nbsp;сегменты reco_block.</p>
+        <div class="block wide" data-code="srm"></div>
+        <p>Четвёртый&nbsp;— эффект по&nbsp;дням с&nbsp;первого показа в&nbsp;checkout_v2&nbsp;с&nbsp;интервалами по&nbsp;дельта-методу и&nbsp;график по&nbsp;правилам 8.4.</p>
+        <div class="block wide" data-code="novelty"></div>
+        <figure class="pk-fig"><div class="pk-fsc"><!--fig:novelty--><img src="data:image/svg+xml,<svg width='504pt' height='259.2pt' viewBox='0 0 504 259.2' xmlns='http://www.w3.org/2000/svg'><defs><style type='text/css'>*{stroke-linejoin:round;stroke-linecap:butt}text{font-family:DejaVu Sans, Arial, Helvetica, sans-serif}.s0{stroke:%23000000;stroke-width:0.8}.s1{font-size:10px;text-anchor:middle}.s2{font-size:10px;text-anchor:end}.s3{fill:%230d7468;fill-opacity:0.1}.s4{fill:none;stroke:%230d7468;stroke-width:2.6;stroke-linecap:square}.s5{font-weight:700;font-size:10px;text-anchor:middle;fill:%230d7468}.s6{fill:%23ffffff}.s7{fill:none;stroke:%23000000;stroke-width:0.8;stroke-linejoin:miter;stroke-linecap:square}.s8{font-size:8.5px;fill:%23737c8f}</style></defs><path d='M 0 259 L 504 259 L 504 0 L 0 0 z ' class='s6'/><path d='M 41 227 L 495 227 L 495 33 L 41 33 z ' class='s6'/><defs><path id='i0' d='M 41 -203 L 41 -138 L 89 -138 L 89 -203 L 89 -203 L 41 -203 z ' class='s3'/></defs><g clip-path='url(%23i6)'><use href='%23i0' x='0' y='259'/></g><defs><path id='i1' d='M 89 -162 L 89 -76 L 154 -76 L 154 -162 L 154 -162 L 89 -162 z ' class='s3'/></defs><g clip-path='url(%23i6)'><use href='%23i1' x='0' y='259'/></g><defs><path id='i2' d='M 154 -164 L 154 -90 L 268 -90 L 268 -164 L 268 -164 L 154 -164 z ' class='s3'/></defs><g clip-path='url(%23i6)'><use href='%23i2' x='0' y='259'/></g><defs><path id='i3' d='M 268 -110 L 268 -51 L 495 -51 L 495 -110 L 495 -110 L 268 -110 z ' class='s3'/></defs><g clip-path='url(%23i6)'><use href='%23i3' x='0' y='259'/></g><defs><path id='i4' d='M 0 0 L 0 4 ' class='s0'/></defs><use href='%23i4' x='41' y='227'/><text class='s1' x='41' y='242'>0</text><use href='%23i4' x='89' y='227'/><text class='s1' x='89' y='242'>3</text><use href='%23i4' x='154' y='227'/><text class='s1' x='154' y='242'>7</text><use href='%23i4' x='268' y='227'/><text class='s1' x='268' y='242'>14</text><use href='%23i4' x='381' y='227'/><text class='s1' x='381' y='242'>21</text><use href='%23i4' x='495' y='227'/><text class='s1' x='495' y='242'>28</text><text style='font-size: 8px; text-anchor: start; fill: %239aa3b2' x='41' y='254'>дней с первого показа · учебные данные checkout_v2, 7 сентября — 4 октября 2026</text><defs><path id='i5' d='M 0 0 L -4 0 ' class='s0'/></defs><use href='%23i5' x='41' y='219'/><text class='s2' x='34' y='223'>−10%25</text><use href='%23i5' x='41' y='179'/><text class='s2' x='34' y='183'>0</text><use href='%23i5' x='41' y='138'/><text class='s2' x='34' y='142'>+10%25</text><use href='%23i5' x='41' y='98'/><text class='s2' x='34' y='101'>+20%25</text><use href='%23i5' x='41' y='57'/><text class='s2' x='34' y='61'>+30%25</text><path d='M 41 90 L 89 90 ' clip-path='url(%23i6)' class='s4'/><path d='M 89 143 L 154 143 ' clip-path='url(%23i6)' class='s4'/><path d='M 154 134 L 268 134 ' clip-path='url(%23i6)' class='s4'/><path d='M 268 180 L 495 180 ' clip-path='url(%23i6)' class='s4'/><path d='M 41 81 L 45 86 L 50 90 L 54 94 L 59 98 L 63 101 L 68 105 L 75 109 L 82 114 L 89 118 L 95 121 L 102 125 L 109 128 L 116 130 L 123 133 L 130 135 L 136 138 L 146 140 L 155 143 L 164 145 L 173 147 L 182 148 L 193 150 L 205 152 L 216 153 L 230 155 L 244 156 L 260 157 L 278 158 L 296 159 L 317 160 L 342 160 L 371 161 L 406 162 L 449 162 L 495 162 L 495 162 ' clip-path='url(%23i6)' style='fill: none; stroke-dasharray: 5.2,2.2; stroke-dashoffset: 0; stroke: %239aa3b2; stroke-width: 1.4'/><path d='M 41 137 L 495 137 ' clip-path='url(%23i6)' style='fill: none; stroke-dasharray: 1,1.6; stroke-dashoffset: 0; stroke: %23737c8f'/><path d='M 41 179 L 495 179 ' clip-path='url(%23i6)' style='fill: none; stroke: %23454f62; stroke-width: 0.8; stroke-linecap: square'/><path d='M 41 227 L 41 33 ' class='s7'/><path d='M 41 227 L 495 227 ' class='s7'/><text class='s5' x='65' y='84'>+21,8%25</text><text class='s5' x='122' y='137'>+8,9%25</text><text class='s5' x='211' y='128'>+11,0%25</text><text class='s5' x='381' y='174'>−0,3%25</text><path d='M 194 74 Q 138 93 81 112 ' style='fill: none; stroke: %239aa3b2; stroke-width: 0.8; stroke-linecap: round'/><text class='s8' transform='translate(164 60)'>так данные сгенерированы:</text><text class='s8' transform='translate(164 69)'>+4%25 навсегда плюс новизна</text><text style='font-size: 8.5px; text-anchor: end; fill: %23737c8f' x='491' y='133'>оценка за 28 дней +10,4%25</text><text style='font-size: 8.5px; text-anchor: start; fill: %23737c8f' x='41' y='27'>Конверсия сессии B к A по дням с первого показа, 95-%25 интервалы</text><text style='font-weight: 700; font-size: 11.5px; text-anchor: start' x='5' y='12'>Прирост конверсии от нового оформления тает за неделю после показа</text><defs><clipPath id='i6'><rect x='41' y='33' width='454' height='194.8'/></clipPath></defs></svg>" alt="Эффект нового оформления на конверсию сессии по дням с первого показа, ступеньками с 95-процентными интервалами: дни 0–2 +21,8%, дни 3–6 +8,9%, дни 7–13 +11,0%, дни 14–27 −0,3%. Пунктиром — как данные сгенерированы: +4% навсегда плюс угасающая новизна; точечная линия — оценка за 28 дней +10,4%."><!--/fig:novelty--></div><figcaption>Вывод кода выше: эффект нового оформления по&nbsp;дням с&nbsp;первого показа</figcaption></figure>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «A/B-тестирование» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Johari R., Koomen P., Pekelis L., Walsh D. <a href="https://doi.org/10.1145/3097983.3097992" target="_blank" rel="noopener">Peeking at A/B Tests: Why It Matters, and What to Do About It</a>. KDD, 2017. Почему подглядывание раздувает ошибку первого рода и&nbsp;как разрешить смотреть по&nbsp;ходу.</li>
+          <li id="src-2">Miller E. <a href="https://www.evanmiller.org/how-not-to-run-an-ab-test.html" target="_blank" rel="noopener">How Not to Run an A/B Test</a>. 2010. Пример с&nbsp;26,1% ложных побед и&nbsp;совет про&nbsp;дашборды.</li>
+          <li id="src-3">Benjamini Y., Hochberg Y. <a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" target="_blank" rel="noopener">Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing</a>. Journal of the Royal Statistical Society, Series B, 1995, 57 (1): 289–300. Первоисточник FDR и&nbsp;процедуры.</li>
+          <li id="src-4">statsmodels. <a href="https://www.statsmodels.org/stable/generated/statsmodels.stats.multitest.multipletests.html" target="_blank" rel="noopener">statsmodels.stats.multitest.multipletests</a>. Документация функции поправок из&nbsp;кода.</li>
+          <li id="src-5">Kohavi R., Tang D., Xu Y. <a href="https://doi.org/10.1017/9781108653985" target="_blank" rel="noopener">Trustworthy Online Controlled Experiments: A Practical Guide to A/B Testing</a>. Cambridge University Press, 2020. Главы о&nbsp;долгосрочных эффектах, утечке между вариантами, рамп-апе и&nbsp;SRM.</li>
+          <li id="src-6">Fabijan A. et al. <a href="https://doi.org/10.1145/3292500.3330722" target="_blank" rel="noopener">Diagnosing Sample Ratio Mismatch in Online Controlled Experiments: A Taxonomy and Rules of Thumb for Practitioners</a>. KDD, 2019. Откуда берётся SRM и&nbsp;что с&nbsp;ним делать.</li>
+          <li id="src-7">Lee M. R., Shen M. <a href="https://doi.org/10.1145/3219819.3219905" target="_blank" rel="noopener">Winner’s Curse: Bias Estimation for Total Effects of Features in Online Controlled Experiments</a>. KDD, 2018. Смещение суммарного эффекта раскатанных победителей.</li>
+          <li id="src-8">Ugander J. et al. <a href="https://doi.org/10.1145/2487575.2487695" target="_blank" rel="noopener">Graph Cluster Randomization: Network Exposure to Multiple Universes</a>. KDD, 2013. Рандомизация по&nbsp;кластерам социального графа.</li>
+          <li id="src-9">Bojinov I., Simchi-Levi D., Zhao J. <a href="https://doi.org/10.1287/mnsc.2022.4583" target="_blank" rel="noopener">Design and Analysis of Switchback Experiments</a>. Management Science, 2023, 69 (7): 3759–3777. Дизайн и&nbsp;анализ переключаемых периодов.</li>
+        </ol>
+      </section>

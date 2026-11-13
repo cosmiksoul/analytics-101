@@ -1,0 +1,162 @@
+
+      <p class="eyebrow">Дата аналитика · Тема 11 · <b>A/B-тестирование</b></p>
+      <h1>Анализ: тесты, интервалы, ratio-метрики</h1>
+      <p class="lead">Результат A/B-теста&nbsp;— не&nbsp;слово «значимо», а&nbsp;эффект с&nbsp;<span class="term" tabindex="0" data-g="ci">доверительным интервалом</span>, посчитанный в&nbsp;правильной единице. После страницы вы&nbsp;пройдёте анализ целиком: свернёте лог сессий до&nbsp;строки на&nbsp;пользователя, проверите баланс групп, посчитаете эффект для долей, средних и&nbsp;<span class="term" tabindex="0" data-g="ratio">ratio-метрик</span> и&nbsp;соберёте отчёт на&nbsp;одну страницу.</p>
+      <div class="meta-row"><span class="pill">≈ 30 минут</span><span class="pill">анимация из&nbsp;11 шагов</span><span class="pill">1 интерактив</span><span class="pill">4 блока кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: считать тем, что делили</h2>
+        <p>Эксперимент анализируют в&nbsp;той единице, которую делили на&nbsp;группы: <span class="term" tabindex="0" data-g="unit">единица анализа</span> равна <span class="term" tabindex="0" data-g="randunit">единице рандомизации</span>. Если делили людей, лог сессий сворачивают до&nbsp;строки на&nbsp;человека, иначе сессии одного человека посчитаются независимыми и&nbsp;интервал выйдет обманчиво узким. Метрики-отношения вроде конверсии сессий тоже считают через людей&nbsp;— <span class="term" tabindex="0" data-g="delta">дельта-методом</span> или <span class="term" tabindex="0" data-g="bootu">бутстрэпом по&nbsp;пользователям</span>. Главный результат&nbsp;— разница групп с&nbsp;доверительным интервалом, а&nbsp;перед ней&nbsp;— проверка, что группы вышли задуманного размера: <span class="term" tabindex="0" data-g="srm">дисбаланс групп</span> означает поломку, а&nbsp;не&nbsp;эффект.</p>
+        <div class="scene" id="scene" aria-label="Анимация: лог сессий теста сворачивается до строки на пользователя, затем до двух долей с интервалами и одной разницы с интервалом, который не задевает ноль; рядом конверсия сессий, где наивный интервал в 1,27 раза уже честного"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже&nbsp;— та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Единица анализа равна единице рандомизации</h3>
+        <p>В&nbsp;checkout_v2 группу выдаёт хеш от&nbsp;user_id (11.1): человек попадает в&nbsp;A или B целиком, со&nbsp;всеми сессиями. Независимы между собой люди, а&nbsp;сессии одного человека&nbsp;— нет: привычки, кошелёк и&nbsp;устройство у&nbsp;них общие. z- и&nbsp;t-тесты требуют независимых наблюдений, значит, наблюдение&nbsp;— человек, даже если метрика живёт на&nbsp;сессиях, заказах или просмотрах<a class="ref" href="#src-1" data-ref="src-1">1</a><a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+
+        <h3 class="sub-h">Метрики-отношения</h3>
+        <p>Конверсия сессий&nbsp;— покупки, делённые на&nbsp;сессии; средний чек&nbsp;— выручка на&nbsp;заказ. Числитель и&nbsp;знаменатель&nbsp;— суммы по&nbsp;людям, у&nbsp;человека их&nbsp;много. Наивный z-тест берёт за&nbsp;наблюдение сессию и&nbsp;занижает ошибку; честную дают дельта-метод&nbsp;— формула дисперсии отношения двух средних&nbsp;— или бутстрэп, который перевыбирает людей целиком<a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+
+        <h3 class="sub-h">Эффект с&nbsp;интервалом&nbsp;— главный результат</h3>
+        <p>«Значимо» отвечает на&nbsp;один вопрос: правдоподобен&nbsp;ли ноль. Интервал отвечает и&nbsp;на&nbsp;второй&nbsp;— каким эффект может быть. В&nbsp;checkout_v2 доля покупателей выросла на&nbsp;1,17 п.&nbsp;п., 95-процентный интервал&nbsp;— от&nbsp;0,59 до&nbsp;1,75. Выручка на&nbsp;человека&nbsp;— на&nbsp;78&nbsp;₽, интервал от&nbsp;−37 до&nbsp;+193&nbsp;₽. «Незначимо» не&nbsp;значит «эффекта нет»: тест совместим и&nbsp;с&nbsp;потерей 4%, и&nbsp;с&nbsp;ростом на&nbsp;20%&nbsp;— он&nbsp;мал для такой шумной метрики (11.2).</p>
+
+        <h3 class="sub-h">Абсолютный и&nbsp;относительный эффект</h3>
+        <p><span class="term" tabindex="0" data-g="abs">Абсолютный эффект</span>&nbsp;— разница в&nbsp;единицах метрики: +1,17 <span class="term" tabindex="0" data-g="pp">процентного пункта</span>. <span class="term" tabindex="0" data-g="rel">Относительный</span>&nbsp;— она&nbsp;же, делённая на&nbsp;значение в&nbsp;A: +8,3%. В&nbsp;отчёте дают оба, главным&nbsp;— тот, в&nbsp;котором записан MDE (11.2). Интервал относительного эффекта&nbsp;— не&nbsp;концы абсолютного, делённые на&nbsp;14,08%: база тоже оценка со&nbsp;своим шумом, поэтому нужен дельта-метод<a class="ref" href="#src-2" data-ref="src-2">2</a>:</p>
+        <div class="formula"><span class="f">Δ% = x̄<sub>B</sub> / x̄<sub>A</sub> − 1</span><span class="f">SE(Δ%) ≈ (x̄<sub>B</sub> / x̄<sub>A</sub>) ·<br>√(s<sub>A</sub>² / (n<sub>A</sub>x̄<sub>A</sub>²) + s<sub>B</sub>² / (n<sub>B</sub>x̄<sub>B</sub>²))</span><small>x̄&nbsp;— среднее группы (у&nbsp;доли&nbsp;— сама доля), s²&nbsp;— дисперсия по&nbsp;людям, n&nbsp;— людей в&nbsp;группе. В&nbsp;checkout_v2: +8,3% [4,0; 12,6].</small></div>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: «очень значимо», но&nbsp;что именно?</h2>
+        <p>Продакт-менеджер присылает дашборд checkout_v2: конверсия сессий 3,73% → 4,12%, z&nbsp;=&nbsp;5,4, «очень значимо». Выручка «не&nbsp;прокрасилась»&nbsp;— «значит, денег не&nbsp;принесло?» Дашборд считает 299&nbsp;924 сессии вместе с&nbsp;ботами и&nbsp;берёт группу из&nbsp;сессий.</p>
+        <p>Задача&nbsp;— пересчитать результат правильной единицей и&nbsp;правильным тестом: проверить баланс групп и&nbsp;чистоту данных, дать каждой метрике эффект с&nbsp;интервалом вместо «значимо или нет» и&nbsp;собрать <span class="term" tabindex="0" data-g="report">отчёт об&nbsp;эксперименте</span> на&nbsp;одну страницу.</p>
+      </section>
+
+      <section data-sec="method" data-title="От лога до отчёта">
+        <h2 id="method"><span class="sn">03</span>Метод: от&nbsp;лога до&nbsp;отчёта</h2>
+        <h3 class="sub-h">1. Лог → строка на&nbsp;пользователя</h3>
+        <p>Правила свёртки записывают до&nbsp;анализа. Группа&nbsp;— из&nbsp;таблицы <span class="term" tabindex="0" data-g="exposure">показов</span>, по&nbsp;хешу, а&nbsp;не&nbsp;из&nbsp;столбца group в&nbsp;сессии. В&nbsp;тест входят все сессии человека с&nbsp;первого показа. Бот&nbsp;— больше 200 сессий без единого заказа: у&nbsp;живых людей максимум&nbsp;85. Строка&nbsp;— человек: сессии, купил&nbsp;ли хоть раз, заказы, выручка; всего 56&nbsp;797.</p>
+
+        <h3 class="sub-h">2. Баланс групп до&nbsp;метрик</h3>
+        <p>Первая проверка&nbsp;— sample ratio mismatch (SRM): совпали&nbsp;ли доли групп с&nbsp;задуманными. <span class="term" tabindex="0" data-g="chi2">Хи-квадрат</span> по&nbsp;числу показов против 50/50: 28&nbsp;440 и&nbsp;28&nbsp;360, p&nbsp;=&nbsp;0,74. Порог строгий, здесь p&nbsp;&lt;&nbsp;0,001: проверку прогоняют на&nbsp;каждом тесте, и&nbsp;при 0,05 тревожным был&nbsp;бы каждый двадцатый исправный. Провал SRM&nbsp;— симптом поломки, и&nbsp;результат не&nbsp;читают, пока причина не&nbsp;найдена<a class="ref" href="#src-1" data-ref="src-1">1</a><a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+
+        <h3 class="sub-h">3. Доли, средние и&nbsp;тяжёлый хвост</h3>
+        <p>Долю покупателей проверяет <span class="term" tabindex="0" data-g="ztest">z-тест для долей</span> (6.4): z&nbsp;=&nbsp;3,95, разница +1,17 п.&nbsp;п. [0,59; 1,75]. Среднюю выручку на&nbsp;человека проверяет <span class="term" tabindex="0" data-g="welch">t-тест Уэлча</span>: +77,9&nbsp;₽ [−37,1; 192,8], p&nbsp;=&nbsp;0,18<a class="ref" href="#src-4" data-ref="src-4">4</a><a class="ref" href="#src-5" data-ref="src-5">5</a>.</p>
+        <p>У&nbsp;выручки <span class="term" tabindex="0" data-g="heavytail">тяжёлый хвост</span>: 85% людей ничего не&nbsp;купили, стандартное отклонение в&nbsp;6,9 раза больше среднего, 1% людей дают 39% выручки. Но&nbsp;при таких n центральная предельная теорема работает: бутстрэп по&nbsp;людям даёт почти тот&nbsp;же интервал, [−36; 196]&nbsp;₽.</p>
+        <p>Интервал сужает <span class="term" tabindex="0" data-g="winsor">винзоризация</span>&nbsp;— обрезка хвоста: всё выше порога заменяют порогом. С&nbsp;порогом на&nbsp;99-м процентиле, 14&nbsp;950&nbsp;₽, эффект&nbsp;— +69,1&nbsp;₽ [29,3; 108,8]: интервал почти втрое уже, ноль вне его. Цена&nbsp;— другая метрика: 567&nbsp;человек с&nbsp;39% выручки весят в&nbsp;ней как покупатели на&nbsp;14&nbsp;950&nbsp;₽, и, если новое оформление сильнее подействовало на&nbsp;крупных, обрезка этого не&nbsp;увидит. Порог объявляют до&nbsp;теста, один для обеих групп, а&nbsp;в&nbsp;отчёте пишут, что выручка обрезана<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+
+        <h3 class="sub-h">4. Ratio-метрики: дельта-метод и&nbsp;бутстрэп по&nbsp;пользователям</h3>
+        <div class="formula"><span class="f">r = ΣX<sub>i</sub> / ΣY<sub>i</sub></span><span class="f">Var(r) ≈ (s<sub>X</sub>² − 2r·s<sub>XY</sub> + r²·s<sub>Y</sub>²) /<br>(n · Ȳ²)</span><small>X<sub>i</sub>, Y<sub>i</sub>&nbsp;— покупки и&nbsp;сессии человека i; s² и&nbsp;s<sub>XY</sub>&nbsp;— дисперсии и&nbsp;ковариация по&nbsp;людям; n&nbsp;— людей в&nbsp;группе. Если строка&nbsp;— сессия, Y&nbsp;=&nbsp;1, и&nbsp;формула становится наивной p(1&nbsp;−&nbsp;p)/n.</small></div>
+        <p>Дельта-метод выражает дисперсию отношения через дисперсии и&nbsp;ковариацию числителя и&nbsp;знаменателя по&nbsp;людям<a class="ref" href="#src-2" data-ref="src-2">2</a>. Бутстрэп по&nbsp;пользователям делает то&nbsp;же без формулы: 2&nbsp;000 раз выбирает людей с&nbsp;возвращением, со&nbsp;всеми сессиями, и&nbsp;пересчитывает отношение. Ошибка разницы у&nbsp;обоих&nbsp;— 0,00090–0,00091, у&nbsp;наивного z-теста&nbsp;— 0,00071.</p>
+        <div class="tbl an-tbl"><table>
+          <thead><tr><th>метрика</th><th>A → B</th><th>ошибка: сессия</th><th>человек</th><th>шире в</th></tr></thead>
+          <tbody>
+            <tr><td>конверсия сессий</td><td>3,73 → 4,12%</td><td>0,071 п.&nbsp;п.</td><td>0,090 п.&nbsp;п.</td><td>1,27</td></tr>
+            <tr><td>средний чек</td><td>4&nbsp;795 → 4&nbsp;741&nbsp;₽</td><td>152&nbsp;₽</td><td>227&nbsp;₽</td><td>1,49</td></tr>
+          </tbody>
+        </table></div>
+        <p>У&nbsp;среднего чека разрыв больше: оптовики делают много крупных заказов. Сам разрыв зависит от&nbsp;числа сессий у&nbsp;человека и&nbsp;от&nbsp;того, насколько люди разные. Если склонность покупать у&nbsp;всех одна, формулы совпадают; если разная, каждая новая сессия того&nbsp;же человека несёт всё меньше новой информации:</p>
+        <div class="formula"><span class="f">ошибка по&nbsp;людям / наивная ≈ √(1 + ρ · (k* − 1))</span><small>ρ&nbsp;— <span class="term" tabindex="0" data-g="icc">внутриклассовая корреляция</span>, здесь 0,058 по&nbsp;<span class="term" tabindex="0" data-g="betabin">бета-биномиальной модели</span>. k* = Σk²/Σk&nbsp;— сессий у&nbsp;владельца средней сессии: 11,7 при среднем 5,3, сессии сосредоточены у&nbsp;активных. √(1 + 0,058 · 10,7) = 1,27, как у&nbsp;дельта-метода.</small></div>
+        <p>Двукратный разрыв получился&nbsp;бы при k*&nbsp;≈&nbsp;52.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="sessions"></div>
+        <p>При людях как в&nbsp;checkout_v2 и&nbsp;12 сессиях наивный подход «находит» эффект в&nbsp;13% <span class="term" tabindex="0" data-g="aa">A/A-тестов</span>, при 50&nbsp;— в&nbsp;32%; интервал по&nbsp;людям держит 5%. На&nbsp;настоящих людях то&nbsp;же: группу A checkout_v2 2&nbsp;000 раз делили пополам, и&nbsp;наивный z-тест нашёл разницу в&nbsp;12,5% случаев, дельта-метод&nbsp;— в&nbsp;5,1%. Симуляции посчитаны в&nbsp;Python.</p>
+
+        <h3 class="sub-h">5. Сегменты после факта&nbsp;— только гипотезы</h3>
+        <p>Результат хочется разрезать по&nbsp;платформам. Можно, но&nbsp;<span class="term" tabindex="0" data-g="posthoc">сегмент после факта</span>&nbsp;— гипотеза для следующего теста, а&nbsp;не&nbsp;вывод:</p>
+        <div class="tbl an-tbl"><table>
+          <thead><tr><th>платформа</th><th>людей</th><th>разница B − A</th><th>95% интервал</th></tr></thead>
+          <tbody>
+            <tr><td>Android</td><td>25&nbsp;604</td><td>+0,64 п.&nbsp;п.</td><td>[−0,23; 1,51]</td></tr>
+            <tr><td>iOS</td><td>14&nbsp;396</td><td>+1,68 п.&nbsp;п.</td><td>[0,55; 2,81]</td></tr>
+            <tr><td>сайт</td><td>16&nbsp;797</td><td>+1,55 п.&nbsp;п.</td><td>[0,46; 2,63]</td></tr>
+          </tbody>
+        </table></div>
+        <p>Соблазн&nbsp;— «на&nbsp;Android не&nbsp;работает». Но&nbsp;разница между сегментами незначима: проверка однородности даёт p&nbsp;=&nbsp;0,26, а&nbsp;в&nbsp;генераторе учебных данных эффект на&nbsp;всех платформах одинаков. Три платформы и&nbsp;четыре страны&nbsp;— семь шансов на&nbsp;случайный «провал»; что с&nbsp;этим делать, разбирает 11.4.</p>
+
+        <h3 class="sub-h">6. Отчёт на&nbsp;одну страницу</h3>
+        <p>Отчёт читают те, кто не&nbsp;будет пересчитывать. Он&nbsp;помещается на&nbsp;экран и&nbsp;отвечает по&nbsp;порядку: что меняли и&nbsp;на&nbsp;ком, можно&nbsp;ли верить данным, какой эффект с&nbsp;каким интервалом, что предлагается и&nbsp;какие оговорки<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <div class="an-rep wide"><p class="an-rep-hd">Отчёт об&nbsp;эксперименте · checkout_v2</p><dl>
+          <dt>Что меняли</dt><dd>Новое оформление заказа, 7&nbsp;сентября&nbsp;— 4&nbsp;октября 2026.</dd>
+          <dt>Единица и&nbsp;метрики</dt><dd>Пользователь. Целевая&nbsp;— доля покупателей, вторичная&nbsp;— выручка на&nbsp;человека.</dd>
+          <dt>Качество данных</dt><dd>Баланс 28&nbsp;440 / 28&nbsp;360, p&nbsp;=&nbsp;0,74. Убраны 3 бота; 376&nbsp;человек с&nbsp;сессиями в&nbsp;чужой группе&nbsp;— по&nbsp;группе показа.</dd>
+          <dt>Результат</dt><dd>Доля покупателей 14,08 → 15,25%: <b>+1,17 п.&nbsp;п. [0,59; 1,75]</b>, +8,3% [4,0; 12,6]. Выручка на&nbsp;человека 999 → 1&nbsp;077&nbsp;₽: +78&nbsp;₽ [−37; 193], не&nbsp;различима. Конверсия сессий: +0,39 п.&nbsp;п. [0,21; 0,56], ошибка по&nbsp;людям.</dd>
+          <dt>Рекомендация</dt><dd>Эффект на&nbsp;покупателей есть. Прежде чем считать деньги&nbsp;— оценить его без новизны, выручку проверить чувствительнее (11.5).</dd>
+          <dt>Оговорки</dt><dd>Новизна: в&nbsp;первые три дня после показа конверсия сессий в&nbsp;B выше на&nbsp;22%, через две недели&nbsp;— около нуля; долгосрочный эффект меньше (11.4).</dd>
+        </dl></div>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: двойники, боты, дисбаланс</h2>
+        <div class="callout"><p><b>Пользователи в&nbsp;обеих группах.</b> У&nbsp;376 человек есть сессии, записанные с&nbsp;чужой группой (857 сессий): до&nbsp;входа в&nbsp;аккаунт устройство попало в&nbsp;другую ветку. У&nbsp;331 из&nbsp;них встречаются обе группы, у&nbsp;45 все сессии записаны с&nbsp;чужой. Группу берут из&nbsp;показа и&nbsp;человека не&nbsp;выбрасывают: это <span class="term" tabindex="0" data-g="itt">анализ по&nbsp;назначенной группе</span>. По&nbsp;столбцу group сессий 331 человек попадёт в&nbsp;обе группы&nbsp;— 57&nbsp;128 строк на&nbsp;56&nbsp;797 людей,&nbsp;— и&nbsp;эффект размоется: +1,15 п.&nbsp;п. вместо +1,17. Выбросить их&nbsp;рискованно: у&nbsp;них 7,7 сессии против 5,3 и&nbsp;18,7% покупателей против 14,7%&nbsp;— это не&nbsp;случайные люди. Здесь их&nbsp;почти поровну, 172 и&nbsp;159, и&nbsp;удаление ничего не&nbsp;меняет, но&nbsp;при перекосе оно создаёт смещение. Их&nbsp;число и&nbsp;баланс пишут в&nbsp;отчёт.</p></div>
+        <div class="callout"><p><b>Боты и&nbsp;выбросы.</b> Три бота&nbsp;— 3 человека из&nbsp;56&nbsp;800, но&nbsp;0,4% сессий: у&nbsp;каждого столько сессий, сколько у&nbsp;80 обычных людей. На&nbsp;доле покупателей их&nbsp;не&nbsp;видно, а&nbsp;конверсию сессий B они снижают с&nbsp;4,12 до&nbsp;4,09% и&nbsp;раздувают разрыв ошибок с&nbsp;1,27 до&nbsp;1,30. Ботов отсекают правилом, записанным до&nbsp;анализа. Оптовики&nbsp;— не&nbsp;ошибка данных: с&nbsp;их&nbsp;хвостом работают бутстрэпом или объявленной заранее обрезкой, а&nbsp;не&nbsp;удалением.</p></div>
+        <div class="callout"><p><b>Дисбаланс групп&nbsp;— сигнал поломки.</b> В&nbsp;тесте reco_block 24&nbsp;440 и&nbsp;23&nbsp;746 человек&nbsp;— 50,72 и&nbsp;49,28%, p&nbsp;=&nbsp;0,0016. Отклонение от&nbsp;50%&nbsp;— 0,72 п.&nbsp;п., а&nbsp;шум при 48&nbsp;186 людях&nbsp;— ±0,45 п.&nbsp;п. Что-то теряет людей в&nbsp;одной группе, и&nbsp;выпадают не&nbsp;случайные люди<a class="ref" href="#src-3" data-ref="src-3">3</a>. Причину ищут по&nbsp;сегментам.</p></div>
+        <div class="tbl an-tbl"><table>
+          <thead><tr><th>сегмент reco_block</th><th>A</th><th>B</th><th>доля B</th><th>p</th></tr></thead>
+          <tbody>
+            <tr><td>Android 3.1.4</td><td>2&nbsp;782</td><td>1&nbsp;971</td><td>41,5%</td><td>&lt;&nbsp;0,0001</td></tr>
+            <tr><td>Android 3.3.0</td><td>8&nbsp;383</td><td>8&nbsp;250</td><td>49,6%</td><td>0,30</td></tr>
+            <tr><td>iOS</td><td>6&nbsp;097</td><td>6&nbsp;120</td><td>50,1%</td><td>0,84</td></tr>
+            <tr><td>сайт</td><td>7&nbsp;178</td><td>7&nbsp;405</td><td>50,8%</td><td>0,06</td></tr>
+          </tbody>
+        </table></div>
+        <p>Дисбаланс сидит в&nbsp;старой версии Android: в&nbsp;группе B там не&nbsp;логируется показ, если человек ушёл без покупки. Выпадают некупившие, и&nbsp;доля покупателей B в&nbsp;этом сегменте&nbsp;— 14,2% против 10,6% в&nbsp;A. Весь тест показывает +0,40 п.&nbsp;п. в&nbsp;пользу B, без сломанного сегмента&nbsp;— +0,12 п.&nbsp;п. [−0,45; 0,69] при балансе p&nbsp;=&nbsp;0,57. Исключить сегмент&nbsp;— временная мера: логирование чинят и&nbsp;тест перезапускают.</p>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: две группы без&nbsp;ковариат</h2>
+        <p>Страница сравнивает средние двух групп и&nbsp;ничего не&nbsp;знает о&nbsp;людях, кроме группы. Регрессия умеет больше. Если регрессировать покупку в&nbsp;сессии на&nbsp;признак группы, коэффициент&nbsp;— та&nbsp;же разница 0,39 п.&nbsp;п., а&nbsp;<span class="term" tabindex="0" data-g="clust">кластеризованная по&nbsp;пользователю ошибка</span>&nbsp;— 0,00090, как у&nbsp;дельта-метода; обычная ошибка регрессии&nbsp;— наивные 0,00071. Если добавить в&nbsp;регрессию поведение человека до&nbsp;теста, дисперсия падает и&nbsp;интервал сужается: это <span class="term" tabindex="0" data-g="cuped">CUPED</span> и&nbsp;регрессия с&nbsp;ковариатами, страница 11.5.</p>
+        <p>Ещё два допущения&nbsp;— тест досмотрели до&nbsp;срока, не&nbsp;подглядывая, и&nbsp;эффект за&nbsp;четыре недели постоянен&nbsp;— разбирает 11.4.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: от&nbsp;лога до&nbsp;отчёта</h2>
+        <p>Первый блок сворачивает лог до&nbsp;строки на&nbsp;пользователя в&nbsp;PostgreSQL и&nbsp;сводит по&nbsp;группам. Группа берётся из&nbsp;показа, ботов отсекает то&nbsp;же правило, что в&nbsp;разделе&nbsp;03.</p>
+        <div class="block wide" data-code="sql"></div>
+        <p>Второй делает то&nbsp;же в&nbsp;pandas и&nbsp;доводит анализ до&nbsp;отчёта: баланс, z-тест для доли, Уэлч для выручки, абсолютный и&nbsp;относительный эффект с&nbsp;интервалами.</p>
+        <div class="block wide" data-code="full"></div>
+        <p>Третий считает ratio-метрики дельта-методом одной функцией для двух единиц: строка-сессия даёт наивную ошибку, строка-человек&nbsp;— честную.</p>
+        <div class="block wide" data-code="delta"></div>
+        <p>Четвёртый проверяет то&nbsp;же бутстрэпом по&nbsp;людям и&nbsp;по&nbsp;сессиям, строит интервал выручки и&nbsp;показывает цену обрезки хвоста.</p>
+        <div class="block wide" data-code="boot"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «A/B-тестирование» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Kohavi R., Tang D., Xu Y. <a href="https://doi.org/10.1017/9781108653985" target="_blank" rel="noopener">Trustworthy Online Controlled Experiments: A Practical Guide to A/B Testing</a>. Cambridge University Press, 2020. Настольная книга темы: статистика и дисперсия метрик (гл. 17–18), дисбаланс групп (гл. 21).</li>
+          <li id="src-2">Deng A., Knoblich U., Lu J. <a href="https://doi.org/10.1145/3219819.3219919" target="_blank" rel="noopener">Applying the Delta Method in Metric Analytics: A Practical Guide with Novel Ideas</a>. KDD 2018, с.&nbsp;233–242 (<a href="https://arxiv.org/abs/1803.06336" target="_blank" rel="noopener">arXiv:1803.06336</a>). Дельта-метод для ratio-метрик и&nbsp;относительного эффекта; почему наивная дисперсия занижена.</li>
+          <li id="src-3">Fabijan A., Gupchup J., Gupta S., Omhover J., Qin W., Vermeer L., Dmitriev P. <a href="https://doi.org/10.1145/3292500.3330722" target="_blank" rel="noopener">Diagnosing Sample Ratio Mismatch in Online Controlled Experiments: A Taxonomy and Rules of Thumb for Practitioners</a>. KDD 2019, с.&nbsp;2156–2164. Дисбаланс групп как симптом проблем с&nbsp;данными и&nbsp;как искать причину.</li>
+          <li id="src-4">statsmodels. <a href="https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html" target="_blank" rel="noopener">proportions_ztest</a> и&nbsp;<a href="https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.confint_proportions_2indep.html" target="_blank" rel="noopener">confint_proportions_2indep</a>. z-тест и&nbsp;интервал разницы долей.</li>
+          <li id="src-5">SciPy. <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chisquare.html" target="_blank" rel="noopener">scipy.stats.chisquare</a> и&nbsp;<a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html" target="_blank" rel="noopener">scipy.stats.ttest_ind</a>. Проверка баланса и&nbsp;t-тест Уэлча (<code>equal_var=False</code>).</li>
+        </ol>
+      </section>

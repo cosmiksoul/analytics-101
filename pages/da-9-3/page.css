@@ -1,0 +1,51 @@
+/* ---------- Сцена: когорты из точек → таблица → кривые (SVG в пикселях контейнера) ---------- */
+.scene .rc-sv { display: block; width: 100%; height: 100%; overflow: visible; }
+.scene .rc-sv text { font-family: var(--ui); font-variant-numeric: tabular-nums; }
+@container (max-width: 860px) { .scene .sc-stage { height: 470px; } }
+@container (max-width: 560px) { .scene .sc-html { padding-top: 66px; } }
+
+/* ---------- Интерактив «Треугольник когорт» ---------- */
+.rc-do { padding: 10px 16px 0; margin: 0 !important; }
+.rc-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 300px; }
+.rc-main { padding: 10px 14px 12px; min-width: 0; }
+.rc-heat { min-width: 0; border-radius: 8px; outline: none; }
+.rc-heat:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+.rc-heat svg { display: block; }
+.rc-heat .rc-row { cursor: pointer; }
+.rc-heat .rc-row:hover .rc-lb { fill: var(--ink); }
+.rc-read { font: 13px/1.45 var(--ui); color: var(--ink-2); min-height: 38px; margin-top: 8px; }
+.rc-read b { color: var(--ink); }
+.rc-side { border-left: 1px solid var(--line); padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rc-side .cap { margin-top: 6px !important; }
+.rc-sub { font: 12px/1.4 var(--ui) !important; color: var(--muted); margin: 0 0 4px !important; }
+.rc-bud { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 16px; border-top: 1px solid var(--line); font: 13px/1.4 var(--ui); color: var(--ink-2); }
+.rc-bud b { font: 600 13px/1 var(--mono); color: var(--accent); }
+.rc-bud input { flex: 1 1 220px; min-width: 160px; accent-color: var(--accent); }
+.rc-heat text, .rc-side text { font-family: var(--ui); }
+.rc-ax { font: 10px var(--mono) !important; fill: var(--muted); }
+.rc-lb { font-size: 11px; fill: var(--ink-2); }
+.rc-lb.on { fill: var(--accent); font-weight: 700; }
+.rc-sz { font: 10px var(--mono) !important; fill: var(--muted); }
+.rc-sz.camp { fill: var(--c4); font-weight: 600; }
+.rc-sz.add { fill: var(--accent); font-weight: 600; }
+.rc-selbox { stroke: var(--ink); stroke-width: 1.5; }
+.rc-rel { stroke: var(--warn); stroke-width: 1.2; stroke-dasharray: 4 3; }
+.rc-dl { font-size: 11px; font-weight: 600; }
+@media (max-width: 760px) {
+  .rc-wrap { grid-template-columns: 1fr; }
+  .rc-side { border-left: 0; border-top: 1px solid var(--line); }
+  .rc-main { padding: 10px 10px 10px; }
+}
+
+/* ---------- Таблица примера и рисунки из кода ---------- */
+.rc-tbl table { font-size: 14px; }
+.rc-tbl th, .rc-tbl td { text-align: center; padding-left: 4px; padding-right: 4px; }
+.rc-tbl th:first-child, .rc-tbl td:first-child { text-align: left; }
+.article [data-code] .out pre { white-space: pre; overflow-x: auto; max-height: 640px; }
+.rc-fig { margin: 4px auto 26px; }
+.rc-fsc { overflow-x: auto; }
+.rc-fig img { display: block; width: 100%; max-width: 700px; height: auto; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 6px; }
+.rc-fig figcaption { font: 13px/1.45 var(--ui); color: var(--muted); margin-top: 6px; text-align: center; }
+@media (max-width: 640px) { .rc-fig img { min-width: 460px; } .rc-fig figcaption { text-align: left; } .rc-tbl table { font-size: 13px; } }
+/* табло шага в правом углу дублирует заголовок и наезжает на счётчики — прячем */
+@container (max-width: 1200px) { .scene .sc-info { display: none; } }

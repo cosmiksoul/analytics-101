@@ -1,0 +1,133 @@
+      <p class="eyebrow">Дата аналитика · Тема 04 · <b>Математика для&nbsp;данных</b></p>
+      <h1>Матричные операции как&nbsp;преобразования</h1>
+      <p class="lead">После этой страницы умножение матриц будет для&nbsp;вас движением плоскости: растяжением, поворотом, сплющиванием. На&nbsp;этом языке вы&nbsp;прочитаете <span class="term" tabindex="0" data-g="det">определитель</span>, <span class="term" tabindex="0" data-g="rank">ранг</span> и <span class="term" tabindex="0" data-g="eigvec">собственные векторы</span>, а&nbsp;затем PCA и&nbsp;линейную регрессию на&nbsp;учебных клиентах интернет-магазина.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;12&nbsp;шагов</span><span class="pill">1 интерактив</span><span class="pill">6 блоков кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: матрица двигает плоскость</h2>
+        <p>Матрица 2&nbsp;×&nbsp;2 — правило, по&nbsp;которому сдвигается каждая точка плоскости: её&nbsp;столбцы показывают, куда уходят две <span class="term" tabindex="0" data-g="basis">единичные стрелки</span>, а&nbsp;вся сетка следует за&nbsp;ними. Определитель говорит, во&nbsp;сколько раз при&nbsp;этом меняется площадь; при&nbsp;нуле плоскость сплющивается в&nbsp;прямую, разные точки сливаются, и&nbsp;обратного пути нет. У&nbsp;многих матриц есть особые направления — собственные векторы: стрелку вдоль них матрица не&nbsp;поворачивает, а&nbsp;только растягивает в&nbsp;λ раз. На&nbsp;этом языке <span class="term" tabindex="0" data-g="pca">PCA</span> — поиск собственных векторов <span class="term" tabindex="0" data-g="cov">ковариационной матрицы</span>, а <span class="term" tabindex="0" data-g="linreg">линейная регрессия</span> — решение <span class="term" tabindex="0" data-g="system">системы уравнений</span>.</p>
+        <div class="scene" id="scene" aria-label="Анимация: матрицы 2 × 2 растягивают, сдвигают, поворачивают и сплющивают сетку с облаком из 30 клиентов; две стрелки не меняют направления — собственные векторы"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Матрица на&nbsp;вектор — сумма столбцов</h3>
+        <p>Точки сцены — 30 учебных клиентов из <code>clients.csv</code>: доход и&nbsp;траты за&nbsp;квартал. Зерно&nbsp;58 подобрано: с&nbsp;ним все 30&nbsp;точек лежат в&nbsp;пределах двух стандартных отклонений и&nbsp;помещаются в&nbsp;кадр. Оба признака <span class="term" tabindex="0" data-g="standardize">стандартизованы</span>, как&nbsp;в&nbsp;4.1: из&nbsp;значения вычли среднее и&nbsp;поделили на&nbsp;стандартное отклонение. Точка (x, y) — это&nbsp;x шагов вдоль î = (1, 0) и&nbsp;y шагов вдоль ĵ = (0, 1). Матрица переносит î в&nbsp;свой первый столбец, ĵ — во&nbsp;второй, и&nbsp;точка едет следом с&nbsp;теми&nbsp;же x и&nbsp;y<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <div class="formula"><span class="f">A · (x, y) = x · (a, c) + y · (b, d) = (a·x + b·y, c·x + d·y)</span><small>A — матрица 2&nbsp;×&nbsp;2 со&nbsp;строками (a, b) и&nbsp;(c, d); её&nbsp;столбцы (a, c) и&nbsp;(b, d) — новые места î и&nbsp;ĵ; x, y — координаты точки. Справа то&nbsp;же построчно: «строка на&nbsp;столбец».</small></div>
+        <p>Прямые при&nbsp;таком правиле остаются прямыми, а&nbsp;начало координат — на&nbsp;месте. Это <span class="term" tabindex="0" data-g="lintrans">линейное преобразование</span>, и&nbsp;любая матрица — его запись.</p>
+
+        <h3 class="sub-h">Матрица на&nbsp;матрицу — два преобразования подряд</h3>
+        <p>Произведение A·B — одно преобразование, равное двум подряд: сначала B, потом A, справа налево, как&nbsp;в&nbsp;записи A·(B·x). Поэтому порядок важен: в&nbsp;сцене поворот, а&nbsp;затем растяжение дают другую клетку, чем&nbsp;растяжение, а&nbsp;затем поворот. Формы согласуются так&nbsp;же, как&nbsp;у <code>X @ w</code> в&nbsp;4.1<a class="ref" href="#src-4" data-ref="src-4">4</a>,<a class="ref" href="#src-6" data-ref="src-6">6</a>.</p>
+        <div class="formula"><span class="f">(n, k) @ (k, m) → (n, m)</span><small>Число столбцов левой матрицы равно числу строк правой: каждая клетка результата — скалярное произведение строки длины k на&nbsp;столбец длины k. Таблица (1000, 3) на&nbsp;веса (3,) даёт вектор (1000,), по&nbsp;прогнозу на&nbsp;клиента.</small></div>
+        <p><span class="term" tabindex="0" data-g="transpose">Транспонирование</span> меняет строки и&nbsp;столбцы местами: форма (n, k) становится (k, n), в&nbsp;NumPy это <code>X.T</code>. Чаще всего оно нужно, чтобы согласовать формы. Таблица X формы (1000, 4) сама на&nbsp;себя не&nbsp;умножается, а <code>X.T @ X</code> даёт (4, 4): по&nbsp;клетке на&nbsp;каждую пару признаков.</p>
+
+        <h3 class="sub-h">Единичная и&nbsp;обратная матрицы</h3>
+        <p><span class="term" tabindex="0" data-g="identity">Единичная матрица</span> I — единицы на&nbsp;диагонали, нули вне её&nbsp;— оставляет каждую точку на&nbsp;месте; с&nbsp;неё начинается каждый шаг сцены. <span class="term" tabindex="0" data-g="inverse">Обратная матрица</span> A⁻¹ отменяет действие A: A⁻¹·A = I. Растяжение вдвое отменяет сжатие вдвое, поворот — поворот назад. Обратной нет, когда A склеивает разные точки в&nbsp;одну: по&nbsp;результату уже не&nbsp;понять, откуда точка пришла.</p>
+
+        <h3 class="sub-h">Определитель — множитель площади</h3>
+        <div class="formula"><span class="f">det A = a · d − b · c</span><small>a, b, c, d — элементы матрицы. |det A| — во&nbsp;сколько раз меняется площадь любой фигуры, например клетки 1&nbsp;×&nbsp;1; минус означает, что&nbsp;плоскость перевернулась, как&nbsp;в&nbsp;зеркале.</small></div>
+        <p>Растяжение по&nbsp;горизонтали вдвое даёт определитель 2, сдвиг и&nbsp;поворот — 1: клетка перекосилась или&nbsp;повернулась, а&nbsp;площадь та&nbsp;же. Определитель произведения равен произведению определителей, поэтому у&nbsp;S·R и&nbsp;R·S он&nbsp;одинаков, хотя клетки разные<a class="ref" href="#src-1" data-ref="src-1">1</a>. При&nbsp;det A = 0 площадь исчезает, а&nbsp;с&nbsp;ней и&nbsp;обратная матрица<a class="ref" href="#src-2" data-ref="src-2">2</a>. Такую матрицу называют <span class="term" tabindex="0" data-g="singular">вырожденной</span>.</p>
+
+        <h3 class="sub-h">Ранг и&nbsp;коллинеарные признаки</h3>
+        <p>Ранг — сколько измерений остаётся после преобразования: 2, если плоскость осталась плоскостью, 1 — если легла на&nbsp;прямую, 0 — если всё сжалось в&nbsp;точку. Столько&nbsp;же у&nbsp;матрицы независимых столбцов: у&nbsp;вырожденной матрицы из&nbsp;сцены второй столбец (2, 1) ровно вдвое больше первого (1; 0,5)<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+        <p>В&nbsp;таблице признаков то&nbsp;же самое называют <span class="term" tabindex="0" data-g="collinear">коллинеарностью</span>: один столбец выражается через другие. Доход в&nbsp;рублях и&nbsp;он&nbsp;же в&nbsp;тысячах, траты по&nbsp;категориям и&nbsp;их&nbsp;сумма — ранг таблицы меньше числа столбцов, и&nbsp;регрессия не&nbsp;может разделить вклад между ними.</p>
+
+        <h3 class="sub-h">Собственные векторы и&nbsp;значения</h3>
+        <div class="formula"><span class="f">A · v = λ · v</span><small>v — собственный вектор: ненулевая стрелка, которую A не&nbsp;поворачивает; λ — собственное значение, во&nbsp;сколько раз она стала длиннее. При&nbsp;λ &lt; 0 стрелка разворачивается на&nbsp;своей прямой, при&nbsp;λ = 0 сжимается в&nbsp;точку.</small></div>
+        <p>У&nbsp;матрицы A из&nbsp;четвёртой части сцены <span class="term" tabindex="0" data-g="eigval">собственные значения</span> 2 и&nbsp;0,5, их&nbsp;векторы идут вдоль (2, 1) и&nbsp;(1, −1). Вдоль первого всё растянуто вдвое, вдоль второго сжато вдвое, и&nbsp;площадь не&nbsp;меняется: определитель равен произведению собственных значений, 2 · 0,5 = 1<a class="ref" href="#src-2" data-ref="src-2">2</a>. У&nbsp;поворота таких стрелок нет: уравнение даёт <span class="term" tabindex="0" data-g="complex">комплексные</span> λ, а&nbsp;на&nbsp;плоскости им не&nbsp;соответствует ни&nbsp;одна стрелка. У <span class="term" tabindex="0" data-g="symmetric">симметричной матрицы</span>, где&nbsp;b = c, — например, у&nbsp;ковариационной — собственные значения всегда вещественные, а&nbsp;собственные векторы можно выбрать перпендикулярными<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+
+        <h3 class="sub-h">Система уравнений и&nbsp;нормальное уравнение</h3>
+        <p>Система A·x = b спрашивает в&nbsp;обратную сторону: какую точку x матрица A переносит в&nbsp;b. Если det A ≠ 0, ответ один, x = A⁻¹·b. В&nbsp;регрессии уравнений больше, чем&nbsp;неизвестных: по&nbsp;одному на&nbsp;клиента, 1&nbsp;000 штук, а&nbsp;весов три. Точного решения X·w = y нет, и&nbsp;ищут веса с&nbsp;наименьшей суммой квадратов остатков — <span class="term" tabindex="0" data-g="lsq">метод наименьших квадратов</span>.</p>
+        <p>Геометрически X·w пробегает плоскость, натянутую на&nbsp;столбцы X, а&nbsp;лучший прогноз — проекция y на&nbsp;неё. Остаток y − X·w перпендикулярен каждому столбцу, Xᵀ(y − X·w) = 0, и&nbsp;отсюда <span class="term" tabindex="0" data-g="normaleq">нормальное уравнение</span><a class="ref" href="#src-2" data-ref="src-2">2</a>:</p>
+        <div class="formula"><span class="f">XᵀX · w = Xᵀy</span><small>X — таблица признаков (1000, 3) со&nbsp;столбцом единиц для&nbsp;свободного члена; y — траты, (1000,); w — веса, (3,). XᵀX — матрица (3, 3), Xᵀy — вектор (3,). Решение одно, если ранг X равен числу столбцов, то&nbsp;есть признаки не&nbsp;коллинеарны.</small></div>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: два вопроса к&nbsp;одной таблице</h2>
+        <p>Учебная таблица <code>clients.csv</code> — 1&nbsp;000&nbsp;клиентов интернет-магазина из&nbsp;темы 03: возраст, доход в&nbsp;месяц, число заказов и&nbsp;траты за&nbsp;квартал. Это&nbsp;матрица (1000, 4), и&nbsp;к&nbsp;ней два вопроса. В&nbsp;каком направлении клиенты различаются сильнее всего и&nbsp;можно&nbsp;ли описать каждого одним числом вместо четырёх? Как&nbsp;траты складываются из&nbsp;дохода и&nbsp;числа заказов?</p>
+        <p>Первый ответ дают собственные векторы ковариационной матрицы, второй — решение нормального уравнения. Задача страницы — увидеть обе операции на&nbsp;плоскости, а&nbsp;затем запустить на&nbsp;всей таблице.</p>
+      </section>
+
+      <section data-sec="deform" data-title="Матрица как деформация">
+        <h2 id="deform"><span class="sn">03</span>Матрица как&nbsp;деформация</h2>
+        <p>В&nbsp;интерактиве те&nbsp;же плоскость и&nbsp;30&nbsp;клиентов, но&nbsp;матрицу задаёте вы: четыре ползунка стоят там&nbsp;же, где&nbsp;элементы в&nbsp;записи матрицы. Сначала предскажите.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="deform"></div>
+        <p>При&nbsp;нулевом определителе облако ложится на&nbsp;прямую, по&nbsp;которой идут оба столбца: они пропорциональны. Красный пунктир — направление, которое сжалось в&nbsp;ноль: точки на&nbsp;любой параллельной ему прямой попадают в&nbsp;одно место. Ранг падает до&nbsp;1, а&nbsp;при&nbsp;четырёх нулях — до&nbsp;0.</p>
+        <p>Поворот честно показывает «нет»: числа λ у&nbsp;него комплексные, и&nbsp;стрелки для&nbsp;них на&nbsp;плоскости нет. При&nbsp;отрицательном определителе клетка выворачивается, как&nbsp;в&nbsp;зеркале.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: порядок, формы, solve и&nbsp;ковариация</h2>
+        <div class="callout"><p><b>AB ≠ BA.</b> S·R — сначала поворот, потом растяжение, R·S — наоборот, и&nbsp;матрицы получаются разные; совпадают только определители. Ошибка в&nbsp;порядке не&nbsp;роняет код: квадратные формы согласуются при&nbsp;любом порядке, и&nbsp;результат просто другой.</p></div>
+        <div class="callout"><p><b>(3, 4) на&nbsp;(3, 4) не&nbsp;умножить.</b> У <code>@</code> внутренние размеры должны совпасть, а&nbsp;здесь 4 столбца слева и&nbsp;3 строки справа: NumPy выдаёт ValueError<a class="ref" href="#src-6" data-ref="src-6">6</a>. Зато <code>*</code> с&nbsp;теми&nbsp;же формами проходит молча — это&nbsp;поэлементное умножение, другая операция. Обычно имели в&nbsp;виду <code>A @ B.T</code> или <code>A.T @ B</code>.</p></div>
+        <div class="block wide" data-code="order"></div>
+        <div class="callout"><p><b>solve, а&nbsp;не&nbsp;inv.</b> Чтобы решить систему, обращать матрицу не&nbsp;нужно: <code>np.linalg.solve(A, b)</code> решает её&nbsp;разложением, не&nbsp;вычисляя A⁻¹, и&nbsp;это&nbsp;быстрее и&nbsp;точнее<a class="ref" href="#src-5" data-ref="src-5">5</a><a class="ref" href="#src-6" data-ref="src-6">6</a>. Разница видна на&nbsp;плохо обусловленных матрицах. <span class="term" tabindex="0" data-g="cond">Число обусловленности</span> показывает, во&nbsp;сколько раз относительная ошибка на&nbsp;входе может вырасти в&nbsp;ответе. У&nbsp;матрицы Гильберта 10&nbsp;×&nbsp;10 оно 1,6·10¹³; так&nbsp;выглядит XᵀX / n для&nbsp;признаков 1, x, …, x⁹, когда x равномерно заполняет отрезок от&nbsp;0 до&nbsp;1.</p></div>
+        <div class="block wide" data-code="cond"></div>
+        <p>Вторая половина вывода — про нашу таблицу. Доход в&nbsp;рублях в&nbsp;десятки тысяч раз крупнее числа заказов, и&nbsp;cond(XᵀX) = 5·10¹⁰ — это&nbsp;квадрат cond(X). Нормальное уравнение возводит обусловленность в&nbsp;квадрат, поэтому <code>lstsq</code> работает с&nbsp;X напрямую, а&nbsp;признаки перед расчётом удобно стандартизовать: число падает до&nbsp;2,4.</p>
+        <div class="callout"><p><b>Ранг ловит коллинеарность.</b> Добавим в&nbsp;таблицу доход ещё раз, в&nbsp;тысячах: столбцов четыре, ранг три, det(XᵀX) = 0, и <code>solve</code> падает с&nbsp;LinAlgError. <code>lstsq</code> не&nbsp;падает: он&nbsp;видит ранг 3 и&nbsp;выбирает из&nbsp;бесконечного множества решений то, где&nbsp;веса наименьшие. Вклад дохода тот&nbsp;же, но&nbsp;делится между двумя столбцами, и&nbsp;по&nbsp;отдельности их&nbsp;веса ничего не&nbsp;значат.</p></div>
+        <div class="block wide" data-code="rank"></div>
+        <div class="callout"><p><b>Ковариационная матрица — мост к&nbsp;статистике.</b> C = ZᵀZ / n для&nbsp;стандартизованной таблицы Z: на&nbsp;диагонали дисперсии признаков, вне её&nbsp;— ковариации пар, у&nbsp;стандартизованных признаков это&nbsp;корреляции из&nbsp;2.3. Матрица симметрична, поэтому её&nbsp;собственные векторы перпендикулярны и&nbsp;задают оси облака, а&nbsp;собственные значения — разброс вдоль осей<a class="ref" href="#src-7" data-ref="src-7">7</a>. Ковариация и&nbsp;корреляция подробно — в&nbsp;теме 06.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: SVD и&nbsp;тензоры — дальше</h2>
+        <p>Страница держится на&nbsp;матрицах 2&nbsp;×&nbsp;2 и&nbsp;таблице из&nbsp;четырёх признаков. Два инструмента, без&nbsp;которых не&nbsp;обходится работа с&nbsp;большими данными, здесь только названы.</p>
+        <div class="callout"><p><b><span class="term" tabindex="0" data-g="svd">Сингулярное разложение</span> (SVD) — блок ML, тема&nbsp;05.</b> Раскладывает любую матрицу, даже прямоугольную (1000, 4), на&nbsp;поворот, растяжение вдоль осей и&nbsp;ещё один поворот. На&nbsp;нём работают <code>lstsq</code> — сингулярные числа в&nbsp;его выводе и&nbsp;есть растяжения — и&nbsp;PCA в&nbsp;scikit-learn<a class="ref" href="#src-8" data-ref="src-8">8</a>.</p></div>
+        <div class="callout"><p><b><span class="term" tabindex="0" data-g="tensor">Тензоры</span> — блок ML, тема&nbsp;08.</b> Массивы с&nbsp;тремя и&nbsp;более осями: пачка картинок (n, высота, ширина, каналы), последовательности в&nbsp;нейросетях. <code>@</code> умножает их&nbsp;как&nbsp;пачки матриц по&nbsp;двум последним осям, а&nbsp;по&nbsp;остальным действует broadcasting.</p></div>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: облако, PCA, регрессия</h2>
+        <p>Три ячейки одного ноутбука работают с <code>data/clients/clients.csv</code>. Первая повторяет сцену: те&nbsp;же 30&nbsp;клиентов и&nbsp;те&nbsp;же матрицы. В&nbsp;таблице точки лежат строками, поэтому облако P формы (30, 2) преобразуют как <code>P @ A.T</code> — это&nbsp;то&nbsp;же A·p для&nbsp;каждой строки.</p>
+        <div class="block wide" data-code="cloud"></div>
+        <p>Вторая — первый взгляд на&nbsp;PCA: собственные векторы ковариационной матрицы четырёх стандартизованных признаков — оси облака в&nbsp;четырёхмерном пространстве.</p>
+        <div class="block wide" data-code="pca"></div>
+        <p>У&nbsp;первого собственного вектора близкие веса дохода, заказов и&nbsp;трат (0,48–0,62) и&nbsp;малый вес возраста (0,12): это&nbsp;ось «насколько клиент активен». На&nbsp;неё приходится 55% разброса, и&nbsp;одно число <code>pc1</code> грубо заменяет четыре. Знак вектора произвольный: <code>eig</code> может вернуть и&nbsp;−v₁, ось от&nbsp;этого не&nbsp;меняется.</p>
+        <p>Третья — регрессия трат по&nbsp;доходу и&nbsp;числу заказов: <code>lstsq</code> и&nbsp;нормальное уравнение через <code>solve</code> дают одни и&nbsp;те&nbsp;же веса.</p>
+        <div class="block wide" data-code="lstsq"></div>
+        <p>Один заказ добавляет к&nbsp;тратам около 2&nbsp;550&nbsp;₽, каждая тысяча дохода — около 35&nbsp;₽, и&nbsp;модель объясняет 73% разброса трат. Последняя строка проверяет геометрию: остатки перпендикулярны столбцам X.</p>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где&nbsp;термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы анимации, интерактива и&nbsp;кода. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Математика для данных» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">3Blue1Brown. <a href="https://www.3blue1brown.com/topics/linear-algebra" target="_blank" rel="noopener">Essence of Linear Algebra</a>. Матрица как&nbsp;преобразование, столбцы как&nbsp;новые места базисных векторов, определитель как&nbsp;множитель площади; образец для&nbsp;сцены.</li>
+          <li id="src-2">Deisenroth M., Faisal A., Ong C. <a href="https://mml-book.github.io/" target="_blank" rel="noopener">Mathematics for Machine Learning</a>. Cambridge University Press, 2020. Определитель и&nbsp;обратная матрица, связь определителя с&nbsp;собственными значениями (глава 4), нормальное уравнение регрессии (глава 9).</li>
+          <li id="src-3">Strang G. <a href="https://math.mit.edu/~gs/linearalgebra/" target="_blank" rel="noopener">Introduction to Linear Algebra</a>, 6th ed., 2023; курс MIT 18.06. Ранг и&nbsp;независимые столбцы, собственные векторы симметричных матриц.</li>
+          <li id="src-4">NumPy. <a href="https://numpy.org/doc/stable/user/absolute_beginners.html" target="_blank" rel="noopener">NumPy: the absolute basics</a> и <a href="https://numpy.org/doc/stable/user/basics.broadcasting.html" target="_blank" rel="noopener">Broadcasting</a>. Формы массивов и&nbsp;правила, по&nbsp;которым они согласуются.</li>
+          <li id="src-5">Goodfellow I., Bengio Y., Courville A. <a href="https://www.deeplearningbook.org/" target="_blank" rel="noopener">Deep Learning</a>, главы 2 и&nbsp;4. Почему обратную матрицу не&nbsp;вычисляют на&nbsp;практике и&nbsp;что&nbsp;такое плохая обусловленность.</li>
+          <li id="src-6">NumPy. <a href="https://numpy.org/doc/stable/reference/routines.linalg.html" target="_blank" rel="noopener">Linear algebra (numpy.linalg)</a>. Справка по&nbsp;matmul, det, eig, solve, inv, lstsq, matrix_rank и&nbsp;cond.</li>
+          <li id="src-7">Pearson K. <a href="https://doi.org/10.1080/14786440109462720" target="_blank" rel="noopener">On lines and planes of closest fit to systems of points in space</a>. Philosophical Magazine, 1901, 2(11): 559–572. Первоисточник метода главных компонент: оси облака точек по&nbsp;наименьшим расстояниям.</li>
+          <li id="src-8">scikit-learn. <a href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html" target="_blank" rel="noopener">sklearn.decomposition.PCA</a>. Документация: PCA в&nbsp;библиотеке считается через сингулярное разложение.</li>
+        </ol>
+      </section>

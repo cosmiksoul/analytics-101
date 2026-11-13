@@ -1,0 +1,143 @@
+      <p class="eyebrow">Дата аналитика · Тема 03 · <b>SQL для&nbsp;анализа</b></p>
+      <h1>JOIN</h1>
+      <p class="lead">Почти любой отчёт собирают из&nbsp;нескольких таблиц, и&nbsp;именно на&nbsp;этом шаге строки теряются или&nbsp;размножаются. После страницы вы сможете выбрать тип соединения, предсказать число строк до&nbsp;запуска и&nbsp;объяснить, откуда в&nbsp;результате взялись лишние или&nbsp;пропавшие строки.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;11&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">4&nbsp;блока кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: соединение возвращает пары строк</h2>
+        <p><span class="term" tabindex="0" data-g="join">Соединение</span> (JOIN) ставит рядом строки двух таблиц, у&nbsp;которых совпал <span class="term" tabindex="0" data-g="key">ключ</span>, например customer_id клиента и&nbsp;заказа. Тип соединения решает судьбу строк без&nbsp;пары: INNER их&nbsp;отбрасывает, а&nbsp;LEFT, RIGHT и&nbsp;FULL оставляют и&nbsp;заполняют чужие столбцы пустым значением <span class="term" tabindex="0" data-g="null">NULL</span>. Число строк зависит не&nbsp;от&nbsp;типа, а&nbsp;от&nbsp;повторов ключа: если у&nbsp;клиента три заказа, его&nbsp;строка встретится в&nbsp;результате трижды. Поэтому привычная <span class="term" tabindex="0" data-g="venn">картинка из&nbsp;двух кругов</span> верна только для&nbsp;уникальных ключей, а&nbsp;честная модель JOIN — все пары строк, из&nbsp;которых условие оставляет совпавшие.</p>
+        <div class="scene" id="scene" aria-label="Анимация: клиенты и заказы раскладываются по двум кругам, INNER, LEFT, RIGHT и FULL JOIN собирают результат, дубликат ключа размножает строку, затем все 35 пар и условие ON"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же&nbsp;мысль подробно.</p>
+
+        <h3 class="sub-h">Как&nbsp;записывается соединение</h3>
+        <p>Соединение — часть FROM, а&nbsp;FROM, как&nbsp;на&nbsp;странице 3.1, выполняется первым: база сначала собирает из&nbsp;двух таблиц одну, и&nbsp;только потом WHERE её&nbsp;фильтрует.</p>
+        <p>Запись <code class="wrap">FROM customers AS c LEFT JOIN orders AS o ON o.customer_id = c.customer_id</code> читается так: взять клиентов и&nbsp;присоединить к&nbsp;ним заказы с&nbsp;тем же&nbsp;customer_id. Буквы после AS — <span class="term" tabindex="0" data-g="alias">псевдонимы таблиц</span>: c.customer_id и&nbsp;o.customer_id различают одноимённые столбцы двух таблиц. Выражение после ON — <span class="term" tabindex="0" data-g="on">условие соединения</span>, его&nbsp;проверяют для&nbsp;каждой пары строк. Просто JOIN означает INNER JOIN, а&nbsp;LEFT JOIN — то&nbsp;же, что&nbsp;LEFT OUTER JOIN<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+
+        <h3 class="sub-h">Пять типов</h3>
+        <p><span class="term" tabindex="0" data-g="inner">Внутреннее соединение</span> INNER JOIN оставляет только пары. <span class="term" tabindex="0" data-g="outer">Внешние</span> LEFT, RIGHT и&nbsp;FULL добавляют к&nbsp;парам строки без&nbsp;пары — из&nbsp;левой таблицы, из&nbsp;правой или&nbsp;из&nbsp;обеих. <span class="term" tabindex="0" data-g="cross">Перекрёстное</span> CROSS JOIN условия не&nbsp;имеет и&nbsp;ставит каждую строку рядом с&nbsp;каждой<a class="ref" href="#src-1" data-ref="src-1">1</a>. Числа — для&nbsp;выборки из&nbsp;сцены: 5&nbsp;клиентов и&nbsp;7&nbsp;заказов.</p>
+        <div class="tbl j32-tbl">
+          <table>
+            <thead><tr><th>Тип</th><th>Что&nbsp;остаётся</th><th>Строк</th></tr></thead>
+            <tbody>
+              <tr><td>INNER JOIN</td><td>только пары</td><td>5</td></tr>
+              <tr><td>LEFT JOIN</td><td>пары и&nbsp;клиенты без&nbsp;заказов, справа NULL</td><td>7</td></tr>
+              <tr><td>RIGHT JOIN</td><td>пары и&nbsp;заказы, чьих клиентов нет в&nbsp;выборке, слева NULL</td><td>7</td></tr>
+              <tr><td>FULL JOIN</td><td>пары и&nbsp;строки без&nbsp;пары с&nbsp;обеих сторон</td><td>9</td></tr>
+              <tr><td>CROSS JOIN</td><td>все сочетания строк</td><td>35</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>RIGHT JOIN — зеркало LEFT: <code>b RIGHT JOIN a</code> даёт те же&nbsp;строки, что <code>a LEFT JOIN b</code>, и&nbsp;пишут его&nbsp;редко. CROSS JOIN нужен, когда нужны все сочетания, например каждый день квартала с&nbsp;каждым каналом, чтобы поставить ноль там, где заказов не&nbsp;было. Чаще он появляется по&nbsp;ошибке: старая запись <code>FROM a, b</code> без&nbsp;условия соединяет всё со&nbsp;всем.</p>
+
+        <h3 class="sub-h">Почему круги врут</h3>
+        <p>Круги рисуют множества значений ключа, а&nbsp;соединение возвращает пары строк. Пока ключ уникален с&nbsp;обеих сторон, строк столько же, сколько ключей в&nbsp;пересечении. Но&nbsp;клиенты и&nbsp;заказы связаны «один ко&nbsp;многим» — такова <span class="term" tabindex="0" data-g="cardinality">кардинальность</span> связи, — и&nbsp;строка клиента повторяется по&nbsp;разу на&nbsp;каждый его&nbsp;заказ. Это <span class="term" tabindex="0" data-g="fanout">размножение строк</span>, и&nbsp;на&nbsp;кругах его&nbsp;не&nbsp;видно.</p>
+        <p>Честная модель — пары. Документация PostgreSQL так и&nbsp;определяет INNER JOIN: каждой строке первой таблицы соответствует по&nbsp;строке результата на&nbsp;каждую строку второй, для&nbsp;которой выполнено условие, а&nbsp;CROSS JOIN равносилен INNER JOIN с&nbsp;условием TRUE<a class="ref" href="#src-1" data-ref="src-1">1</a>. Внешние соединения добавляют строки, которым пара не&nbsp;досталась. Отсюда правило счёта:</p>
+        <div class="formula"><span class="f">строк = Σ<sub>k</sub> n<sub>L</sub>(k) · n<sub>R</sub>(k) + строки без&nbsp;пары</span><small>для&nbsp;каждого значения ключа k: число его&nbsp;строк слева × число справа; внешний тип добавляет строки без&nbsp;пары со&nbsp;своей стороны</small></div>
+
+        <h3 class="sub-h">ON против WHERE</h3>
+        <p>Для&nbsp;INNER JOIN всё равно, где стоит условие на&nbsp;правую таблицу, а&nbsp;для&nbsp;LEFT разница большая. Условие в&nbsp;ON решает, какую строку справа считать парой, и&nbsp;строка слева остаётся в&nbsp;любом случае. WHERE выполняется после соединения и&nbsp;у&nbsp;строк без&nbsp;пары видит в&nbsp;правых столбцах NULL. Сравнение <code>NULL = 'paid'</code> даёт не&nbsp;FALSE, а&nbsp;UNKNOWN — третье значение <span class="term" tabindex="0" data-g="tvl">троичной логики</span> SQL, — а&nbsp;WHERE пропускает только TRUE<a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+        <p>В&nbsp;выборке <code>o.status = 'paid'</code> в&nbsp;ON даёт 6&nbsp;строк и&nbsp;всех пятерых клиентов, а&nbsp;в&nbsp;WHERE — 4&nbsp;строки: клиенты без&nbsp;заказов пропали, и&nbsp;LEFT JOIN сработал как&nbsp;INNER. Документация PostgreSQL разбирает этот случай отдельно<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+
+        <h3 class="sub-h">Самосоединение и&nbsp;составной ключ</h3>
+        <p><span class="term" tabindex="0" data-g="selfjoin">Самосоединение</span> — JOIN таблицы с&nbsp;самой собой. В&nbsp;customers столбец referrer_id хранит номер клиента, который пригласил этого. Чтобы узнать имя пригласившего, таблицу берут дважды под&nbsp;разными псевдонимами: <code class="wrap">customers AS c JOIN customers AS r ON r.customer_id = c.referrer_id</code><a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+        <p>Иногда строку определяет не&nbsp;один столбец, а&nbsp;сочетание. <span class="term" tabindex="0" data-g="pk">Первичный ключ</span> order_items — пара (order_id, product_id), а&nbsp;в&nbsp;истории статусов order_status_log уникальна пара (order_id, status). Такой ключ называют <span class="term" tabindex="0" data-g="composite">составным</span>, и&nbsp;в&nbsp;ON перечисляют через AND все его&nbsp;части. Заказы с&nbsp;историей по&nbsp;одному order_id дают 483&nbsp;строки — всю историю, а&nbsp;по&nbsp;order_id и&nbsp;status — 231, по&nbsp;строке на&nbsp;заказ.</p>
+
+        <h3 class="sub-h">Анти-соединение</h3>
+        <p>Обратная задача — найти строки без&nbsp;пары: клиентов без&nbsp;заказов, товары без&nbsp;продаж. Это <span class="term" tabindex="0" data-g="antijoin">анти-соединение</span>, и&nbsp;записать его&nbsp;можно несколькими способами<a class="ref" href="#src-4" data-ref="src-4">4</a>.</p>
+        <ul>
+          <li><code>LEFT JOIN … WHERE o.order_id IS NULL</code> оставляет строки без&nbsp;пары. Проверять стоит столбец, который в&nbsp;правой таблице не&nbsp;бывает пустым, лучше её&nbsp;первичный ключ: <code>o.promo_code IS NULL</code> спутал бы «нет заказа» с&nbsp;«заказ без&nbsp;промокода».</li>
+          <li><code>NOT EXISTS (SELECT 1 FROM orders AS o WHERE o.customer_id = c.customer_id)</code> — запрос в&nbsp;скобках, <span class="term" tabindex="0" data-g="subquery">подзапрос</span>, ссылается на&nbsp;строку внешнего запроса. Такой подзапрос называют <span class="term" tabindex="0" data-g="correlated">коррелированным</span>: для&nbsp;каждого клиента база проверяет, нашёлся ли&nbsp;хоть один заказ<a class="ref" href="#src-5" data-ref="src-5">5</a>.</li>
+          <li><code>NOT IN (SELECT customer_id FROM orders)</code> короче, но&nbsp;ломается, если в&nbsp;подзапросе есть NULL.</li>
+          <li><span class="term" tabindex="0" data-g="except">EXCEPT</span> вычитает множества: customer_id клиентов минус customer_id из&nbsp;заказов. Повторы он убирает и&nbsp;возвращает только столбцы из&nbsp;SELECT<a class="ref" href="#src-6" data-ref="src-6">6</a>.</li>
+        </ul>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: отчёт, в&nbsp;котором сходятся строки</h2>
+        <p>Маркетинг просит по&nbsp;учебной базе магазина две вещи: таблицу «клиент — заказы — выручка» и&nbsp;список клиентов без&nbsp;заказов для&nbsp;письма с&nbsp;промокодом. Вы соединяете customers и&nbsp;orders, и&nbsp;числа не&nbsp;сходятся. Клиентов 60, а&nbsp;строк 239. К&nbsp;заказам присоединили order_items, чтобы показать товары, и&nbsp;выручка выросла с&nbsp;1&nbsp;051&nbsp;380&nbsp;до&nbsp;2&nbsp;069&nbsp;300&nbsp;₽. Подтянули названия стран, и&nbsp;два клиента пропали из&nbsp;отчёта.</p>
+        <p>Ни&nbsp;одна из&nbsp;этих цифр не&nbsp;ошибка базы: так работает соединение. Задача страницы — соединять таблицы и&nbsp;объяснять, откуда взялись лишние или&nbsp;пропавшие строки: предсказывать их&nbsp;число до&nbsp;запуска и&nbsp;проверять после.</p>
+      </section>
+
+      <section data-sec="method" data-title="Соедини и посчитай">
+        <h2 id="method"><span class="sn">03</span>Метод: сначала посчитать пары, потом соединять</h2>
+        <p>Перед соединением отвечают на&nbsp;два вопроса. Первый — уникален ли&nbsp;ключ с&nbsp;каждой стороны: <code>count(*)</code> и <code>count(DISTINCT ключ)</code> совпадают только у&nbsp;уникального. В&nbsp;orders 231&nbsp;строка и&nbsp;52&nbsp;разных customer_id: связь клиентов с&nbsp;заказами — один ко&nbsp;многим. Второй — что&nbsp;делать со&nbsp;строками без&nbsp;пары, и&nbsp;ответ задаёт тип соединения.</p>
+        <p>Дальше считают по&nbsp;формуле из&nbsp;«Идеи». В&nbsp;выборке 1&nbsp;× 1 + 1&nbsp;× 3 + 1&nbsp;× 1 = 5&nbsp;пар, LEFT JOIN добавляет двух клиентов без&nbsp;заказов, итого 7. После запуска <code>count(*)</code> сверяют с&nbsp;прогнозом, а <code>count(DISTINCT c.customer_id)</code> не&nbsp;может превысить число клиентов.</p>
+        <p>Ниже та&nbsp;же&nbsp;выборка, что&nbsp;в&nbsp;сцене. Запрос меняется прямо в&nbsp;тексте: тип соединения, условие ON и&nbsp;место фильтра по&nbsp;статусу. Вторая вкладка — задание: найти клиентов без&nbsp;заказов тремя способами. Сначала предскажите.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="join"></div>
+        <p>Столбец «в&nbsp;итоге» показывает, сколько строк результата дала каждая исходная строка: ×3&nbsp;у&nbsp;Ульяны М. и&nbsp;есть размножение. Ключ channel — соединение не&nbsp;по&nbsp;тому столбцу: значения повторяются с&nbsp;обеих сторон, и&nbsp;Фёдору Б. достаются чужие заказы. Составное условие по&nbsp;customer_id и&nbsp;channel строже: пару находит только заказ через тот же&nbsp;канал, по&nbsp;которому пришёл клиент.</p>
+        <p>На&nbsp;второй вкладке три способа сходятся, пока в&nbsp;подзапросе нет NULL, а&nbsp;учебный гостевой заказ с&nbsp;пустым customer_id, которого в&nbsp;базе нет, ломает только NOT IN. В&nbsp;pandas то&nbsp;же&nbsp;соединение делает merge, он разобран на&nbsp;странице 2.4; главное отличие — пустые ключи, о&nbsp;нём в&nbsp;нюансах. Ещё задачи на&nbsp;соединения — в&nbsp;браузерном тренажёре SQLBolt<a class="ref" href="#src-7" data-ref="src-7">7</a>.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: WHERE, NULL и&nbsp;порядок соединений</h2>
+        <div class="callout"><p><b>Фильтр в&nbsp;WHERE превращает LEFT в&nbsp;INNER.</b> Условие на&nbsp;правую таблицу в&nbsp;WHERE отбрасывает строки, где её&nbsp;столбцы — NULL, то&nbsp;есть все строки без&nbsp;пары. Нужны все клиенты и&nbsp;только оплаченные заказы — условие ставят в&nbsp;ON. Условие на&nbsp;левую таблицу, наоборот, пишут в&nbsp;WHERE: при&nbsp;LEFT JOIN в&nbsp;ON оно никого не&nbsp;уберёт, а&nbsp;только оставит без&nbsp;пары<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p></div>
+        <div class="callout"><p><b>NULL в&nbsp;ключах не&nbsp;соединяется.</b> Сравнение <code>NULL = NULL</code> даёт UNKNOWN, и&nbsp;строка с&nbsp;пустым ключом пары не&nbsp;находит, даже если пустой ключ есть и&nbsp;с&nbsp;другой стороны. У&nbsp;клиентов 117&nbsp;и&nbsp;142&nbsp;нет страны, и&nbsp;INNER JOIN со&nbsp;справочником countries возвращает 58&nbsp;строк из&nbsp;60. Чтобы сцепить пустые ключи, вместо = пишут <code>IS NOT DISTINCT FROM</code><a class="ref" href="#src-8" data-ref="src-8">8</a>. pandas.merge, наоборот, соединяет NaN с&nbsp;NaN, и&nbsp;при&nbsp;переносе расчёта в&nbsp;SQL строки могут пропасть.</p></div>
+        <div class="callout"><p><b>NOT IN и&nbsp;NULL.</b> Условие <code>x NOT IN (a, b, NULL)</code> равносильно <code>x &lt;&gt; a AND x &lt;&gt; b AND x &lt;&gt; NULL</code>, а&nbsp;последнее сравнение — UNKNOWN. Если в&nbsp;подзапросе встретился хоть один NULL, NOT IN не&nbsp;вернёт ни&nbsp;одной строки<a class="ref" href="#src-5" data-ref="src-5">5</a>. NOT EXISTS и&nbsp;LEFT JOIN … IS NULL так не&nbsp;ломаются, а&nbsp;в&nbsp;NOT IN подзапрос страхуют условием <code>WHERE … IS NOT NULL</code>.</p></div>
+        <div class="callout"><p><b>Порядок соединений и&nbsp;читаемость.</b> Для&nbsp;INNER JOIN порядок таблиц на&nbsp;результат не&nbsp;влияет, и <span class="term" tabindex="0" data-g="planner">планировщик</span> сам выбирает, с&nbsp;какой начать. Внешние соединения так не&nbsp;переставишь: <code>a LEFT JOIN b</code> и <code>b LEFT JOIN a</code> — разные запросы<a class="ref" href="#src-9" data-ref="src-9">9</a>. Удобно начинать с&nbsp;главной таблицы отчёта, присоединять остальные по&nbsp;одной на&nbsp;строку и&nbsp;вместо RIGHT JOIN менять таблицы местами. Каждое соединение по&nbsp;неуникальному ключу умножает строки — после каждого проверяйте <code>count(*)</code>.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: сколько стоит соединение</h2>
+        <p>Страница — про&nbsp;логику соединения: какие строки получатся. Сколько это&nbsp;стоит, решает план выполнения. PostgreSQL соединяет таблицы тремя способами — вложенными циклами, хеш-соединением и&nbsp;слиянием отсортированных таблиц — и&nbsp;выбирает способ по&nbsp;оценке размеров таблиц и&nbsp;по&nbsp;индексам<a class="ref" href="#src-10" data-ref="src-10">10</a>.</p>
+        <p>На&nbsp;учебной базе разницы не&nbsp;заметно, но&nbsp;CROSS JOIN двух таблиц по&nbsp;100&nbsp;000&nbsp;строк — это&nbsp;10&nbsp;миллиардов пар. План, индексы и&nbsp;стоимость соединений разобраны в&nbsp;блоке «Дата инженерия», тема&nbsp;03.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: пять типов, анти-соединение, размножение</h2>
+        <p>Все запросы запущены в&nbsp;PostgreSQL 16&nbsp;на&nbsp;учебной базе shop. Первый блок кладёт выборку из&nbsp;сцены во <span class="term" tabindex="0" data-g="temp">временные таблицы</span> и&nbsp;соединяет их&nbsp;пятью способами. UNION ALL ставит результаты нескольких запросов друг под&nbsp;другом.</p>
+        <div class="block wide" data-code="types"></div>
+        <p>Второй ищет клиентов без&nbsp;заказов во&nbsp;всей базе четырьмя способами и&nbsp;показывает, как&nbsp;NOT IN ломается на&nbsp;NULL. Подзапрос в&nbsp;FROM у&nbsp;EXCEPT нужен только для&nbsp;подсчёта, подробно такие подзапросы разобраны на&nbsp;странице 3.4.</p>
+        <div class="block wide" data-code="anti"></div>
+        <p>Третий соединяет customers с&nbsp;самой собой и&nbsp;проверяет, что&nbsp;NULL в&nbsp;ключе не&nbsp;находит пары даже среди других NULL.</p>
+        <div class="block wide" data-code="self"></div>
+        <p>Четвёртый проверяет ключ до&nbsp;соединения и&nbsp;число строк после — это&nbsp;главная привычка страницы. В&nbsp;конце — составной ключ.</p>
+        <div class="block wide" data-code="count"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «SQL для анализа» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">PostgreSQL 16 Documentation. <a href="https://www.postgresql.org/docs/16/queries-table-expressions.html" target="_blank" rel="noopener">Table Expressions: Joined Tables</a>. Типы соединений и&nbsp;разница между условием в&nbsp;ON и&nbsp;в&nbsp;WHERE.</li>
+          <li id="src-2">Winand M. <a href="https://modern-sql.com/concept/three-valued-logic" target="_blank" rel="noopener">The Three-Valued Logic of SQL</a>. Modern SQL. Откуда берётся UNKNOWN и&nbsp;почему WHERE пропускает только TRUE.</li>
+          <li id="src-3">Beaulieu A. Learning SQL, 3rd ed. O’Reilly, 2020. Внешние и&nbsp;перекрёстные соединения, самосоединение.</li>
+          <li id="src-4">Molinaro A., de Graaf R. SQL Cookbook, 2nd ed. O’Reilly, 2020. Рецепты для&nbsp;нескольких таблиц, в&nbsp;том числе поиск строк без&nbsp;пары.</li>
+          <li id="src-5">PostgreSQL 16 Documentation. <a href="https://www.postgresql.org/docs/16/functions-subquery.html" target="_blank" rel="noopener">Subquery Expressions</a>. EXISTS, IN и&nbsp;NOT IN, результат NOT IN при&nbsp;NULL.</li>
+          <li id="src-6">PostgreSQL 16 Documentation. <a href="https://www.postgresql.org/docs/16/queries-union.html" target="_blank" rel="noopener">Combining Queries (UNION, INTERSECT, EXCEPT)</a>. Разность множеств и&nbsp;склейка результатов через UNION ALL.</li>
+          <li id="src-7"><a href="https://sqlbolt.com/" target="_blank" rel="noopener">SQLBolt</a>. Упражнения на&nbsp;соединения прямо в&nbsp;браузере.</li>
+          <li id="src-8">PostgreSQL 16 Documentation. <a href="https://www.postgresql.org/docs/16/functions-comparison.html" target="_blank" rel="noopener">Comparison Functions and Operators</a>. IS NOT DISTINCT FROM — сравнение, при&nbsp;котором NULL равен NULL.</li>
+          <li id="src-9">PostgreSQL 16 Documentation. <a href="https://www.postgresql.org/docs/16/explicit-joins.html" target="_blank" rel="noopener">Controlling the Planner with Explicit JOIN Clauses</a>. Почему внутренние соединения планировщик переставляет свободно, а&nbsp;внешние — нет.</li>
+          <li id="src-10">PostgreSQL 16 Documentation. <a href="https://www.postgresql.org/docs/16/planner-optimizer.html" target="_blank" rel="noopener">Planner/Optimizer</a>. Три способа соединения: nested loop, merge join и&nbsp;hash join.</li>
+        </ol>
+      </section>

@@ -1,0 +1,179 @@
+      <p class="eyebrow">Дата аналитика · Тема 09 · <b>Продуктовые метрики и события</b></p>
+      <h1>Воронки и&nbsp;конверсии</h1>
+      <p class="lead"><span class="term" tabindex="0" data-g="funnel">Воронка</span> показывает, какая доля людей проходит каждый шаг на&nbsp;пути к&nbsp;цели. После этой страницы вы&nbsp;сможете записать определение воронки так, чтобы два аналитика получили одно число, и&nbsp;объяснить, почему на&nbsp;одном журнале выходит то&nbsp;8, то&nbsp;30%.</p>
+      <div class="meta-row"><span class="pill">≈ 30 минут</span><span class="pill">анимация из 10 шагов</span><span class="pill">1 интерактив</span><span class="pill">3 блока кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: число зависит от&nbsp;определения</h2>
+        <p>Воронка разбивает путь к&nbsp;покупке на&nbsp;шаги, а&nbsp;<span class="term" tabindex="0" data-g="conversion">конверсия</span> — доля тех, кто дошёл до&nbsp;шага. Эта доля зависит не&nbsp;только от&nbsp;продукта, но&nbsp;и&nbsp;от&nbsp;решений аналитика: считать людей или визиты, сколько ждать, важен&nbsp;ли порядок шагов, на&nbsp;каких сегментах смотреть. На&nbsp;одном учебном журнале магазина эти решения дают ответы от&nbsp;8 до&nbsp;30%. Поэтому конверсия без определения ничего не&nbsp;сообщает, а&nbsp;сама воронка — гипотеза о&nbsp;пути покупателя, а&nbsp;не&nbsp;готовый ответ.</p>
+        <div class="scene" id="scene" aria-label="Анимация: тысяча новичков идут через пять шагов воронки, строгий порядок и окно конверсии уменьшают число оплат"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Шаг, доля и&nbsp;её&nbsp;знаменатель</h3>
+        <p>Воронка магазина — пять <span class="term" tabindex="0" data-g="step">шагов</span>, и&nbsp;каждый — событие из&nbsp;плана событий страницы 9.1: открыл приложение или сайт (<code>app_open</code>), открыл карточку товара (<code>product_view</code>), положил в&nbsp;корзину (<code>add_to_cart</code>), начал оформление (<code>checkout_start</code>), оплатил (<code>order_paid</code>). Оплату берём с&nbsp;сервера: клиентский <code>purchase</code> теряется.</p>
+        <p>Конверсия — дробь. О&nbsp;числителе спорят редко, спорят о&nbsp;<span class="term" tabindex="0" data-g="denom">знаменателе</span>: кого считать начавшими — людей или сессии, — с&nbsp;какого момента и&nbsp;сколько ждать.</p>
+        <div class="formula"><span class="f">конверсия шага k = <b>дошли до шага k</b> / <b>вошли в воронку</b></span><small>Числитель и&nbsp;знаменатель — одни и&nbsp;те&nbsp;же объекты: люди с&nbsp;людьми, сессии с&nbsp;сессиями. Наши люди — 1&nbsp;610 новичков мая, у&nbsp;которых первый <code>app_open</code> пришёлся на&nbsp;май по&nbsp;Минску. Соглашения те&nbsp;же, что в&nbsp;9.1.</small></div>
+
+        <h3 class="sub-h">Пошаговая и&nbsp;сквозная конверсия</h3>
+        <p><span class="term" tabindex="0" data-g="stepconv">Пошаговая конверсия</span> делит шаг на&nbsp;предыдущий и&nbsp;показывает, где рвётся цепочка. <span class="term" tabindex="0" data-g="overall">Сквозная</span> делит на&nbsp;первый шаг и&nbsp;показывает, сколько дошло до&nbsp;конца. Сквозная равна произведению пошаговых, поэтому она не&nbsp;больше самой слабой из&nbsp;них.</p>
+        <div class="tbl fn-num">
+          <table>
+            <thead><tr><th>Шаг</th><th>Дошли</th><th>Пошаговая</th><th>Сквозная</th></tr></thead>
+            <tbody>
+              <tr><td>открыл</td><td>1&nbsp;610</td><td>—</td><td>100%</td></tr>
+              <tr><td>карточка</td><td>1&nbsp;525</td><td>94,7%</td><td>94,7%</td></tr>
+              <tr><td>корзина</td><td>654</td><td><b>42,9%</b></td><td>40,6%</td></tr>
+              <tr><td>оформление</td><td>344</td><td>52,6%</td><td>21,4%</td></tr>
+              <tr><td>оплата</td><td>329</td><td>95,6%</td><td>20,4%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Окно 7&nbsp;суток, порядок любой. Больше всего людей теряется между карточкой и&nbsp;корзиной: 871 из&nbsp;1&nbsp;525.</p>
+
+        <h3 class="sub-h">Люди или сессии</h3>
+        <p>По&nbsp;людям засчитан человек, прошедший шаги в&nbsp;пределах окна, по&nbsp;сессиям — визит, в&nbsp;котором прошли все шаги. Серверную оплату относим к&nbsp;визиту, если она пришла не&nbsp;позже 30 минут после его последнего события. Это разные вопросы: какая доля новичков покупает и&nbsp;какая доля визитов кончается покупкой. Ответы различаются втрое, почему — разберёте в&nbsp;интерактиве.</p>
+
+        <h3 class="sub-h">Окно конверсии</h3>
+        <p><span class="term" tabindex="0" data-g="window">Окно конверсии</span> — сколько ждать остальные шаги после первого. Без окна у&nbsp;новичка 1&nbsp;мая было почти два месяца, у&nbsp;новичка 31&nbsp;мая — четыре недели, и&nbsp;их конверсии несравнимы. Здесь окно отсчитывается от&nbsp;первого <code>app_open</code>, а&nbsp;сутки — это 24&nbsp;часа, а&nbsp;не&nbsp;календарный день. В&nbsp;Amplitude окно задают при построении воронки, в&nbsp;режиме любого порядка — от&nbsp;одного до&nbsp;90&nbsp;дней<a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+
+        <h3 class="sub-h">Строгий и&nbsp;нестрогий порядок</h3>
+        <p>При <span class="term" tabindex="0" data-g="strict">строгом порядке</span> шаг засчитан, только если он&nbsp;случился не&nbsp;раньше предыдущего. При <span class="term" tabindex="0" data-g="anyorder">нестрогом</span> достаточно, чтобы в&nbsp;окне были все шаги. В&nbsp;Amplitude это режимы <i>this order</i> и&nbsp;<i>any order</i>, а&nbsp;режим <i>exact order</i> ещё и&nbsp;не&nbsp;допускает других шагов между ними<a class="ref" href="#src-2" data-ref="src-2">2</a>. В&nbsp;магазине порядок ломает <span class="term" tabindex="0" data-g="quickadd">быстрое добавление</span>: кнопка «в&nbsp;корзину» прямо в&nbsp;каталоге. С&nbsp;неё начинается около 10% сессий.</p>
+
+        <h3 class="sub-h">Воронка — гипотеза, а&nbsp;не&nbsp;ответ</h3>
+        <p>Пять шагов — наше предположение о&nbsp;том, как люди покупают. Воронка показывает, где люди уходят, но&nbsp;не&nbsp;почему: карточку не&nbsp;открыли, потому что товар знаком или каталог неудобен? Слабый шаг — повод для гипотезы и&nbsp;эксперимента (тема 11), а&nbsp;не&nbsp;готовый вывод.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: одно число на&nbsp;двоих</h2>
+        <p>Продакт-менеджер спрашивает: «Какая у&nbsp;нас конверсия новичков в&nbsp;покупку?» Один аналитик приносит 30%, второй — 12%, третий, из&nbsp;веб-аналитики, — 10%. Все посчитали правильно, но&nbsp;каждый своё, и&nbsp;совещание уходит на&nbsp;спор, чьё число настоящее.</p>
+        <p>Задача страницы — посчитать воронку новичков мая так, чтобы любой аналитик получил то&nbsp;же число, и&nbsp;найти шаг, где теряется больше всего людей. Для этого нужно знать, как каждое решение двигает результат.</p>
+      </section>
+
+      <section data-sec="method" data-title="Четыре ответа">
+        <h2 id="method"><span class="sn">03</span>Одна воронка, четыре ответа</h2>
+        <p>Ниже — пять шагов на&nbsp;одном журнале и&nbsp;ответы четырёх аналитиков. Разницу двух процентов пишем в&nbsp;<span class="term" tabindex="0" data-g="pp">процентных пунктах</span>, п.&nbsp;п. Сначала ответьте на&nbsp;вопрос.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="funnel"></div>
+        <p>Порядок двигает ответ на&nbsp;1,6–2,4&nbsp;п.&nbsp;п., окно — до&nbsp;16&nbsp;п.&nbsp;п., единица счёта — на&nbsp;20. Ошибок нет ни&nbsp;в&nbsp;одном ответе: путаница начинается, когда число приносят без вопроса.</p>
+
+        <h3 class="sub-h">Определение в&nbsp;шесть строк</h3>
+        <p>Чтобы два аналитика получили одно число, определение записывают до&nbsp;расчёта и&nbsp;кладут рядом с&nbsp;результатом:</p>
+        <div class="tbl fn-def">
+          <table>
+            <tbody>
+              <tr><td>Когорта</td><td>новички мая: первый <code>app_open</code> с&nbsp;1 по&nbsp;31&nbsp;мая по&nbsp;Минску, без старых аккаунтов</td></tr>
+              <tr><td>Шаги</td><td><code>app_open</code> → <code>product_view</code> → <code>add_to_cart</code> → <code>checkout_start</code> → <code>order_paid</code> с&nbsp;сервера</td></tr>
+              <tr><td>Единица</td><td>человек после склейки устройств</td></tr>
+              <tr><td>Окно</td><td>7&nbsp;суток от&nbsp;первого <code>app_open</code></td></tr>
+              <tr><td>Порядок</td><td>строгий: каждый шаг не&nbsp;раньше предыдущего</td></tr>
+              <tr><td>Чистка</td><td>без дублей <code>event_id</code> и&nbsp;ботов</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>С&nbsp;таким определением ответ один — 18,0%, и&nbsp;его воспроизводит запрос из&nbsp;раздела «Код». Расчёт воронки на&nbsp;SQL разбирает Кэти Танимура<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+
+        <h3 class="sub-h">Где теряется больше всего</h3>
+        <p>Во&nbsp;всех восьми состояниях главная потеря — переход от&nbsp;карточки к&nbsp;корзине: от&nbsp;19% у&nbsp;сессий в&nbsp;строгом порядке до&nbsp;55% у&nbsp;людей без окна. Этот ответ от&nbsp;определения не&nbsp;зависит. Но&nbsp;самый слабый шаг — ещё не&nbsp;тот, который надо чинить: выбирать из&nbsp;нескольких карточек нормально.</p>
+      </section>
+
+      <section data-sec="segments" data-title="Сегменты">
+        <h2 id="segments"><span class="sn">04</span>Сегменты: парадокс Симпсона и&nbsp;время между шагами</h2>
+        <p><span class="term" tabindex="0" data-g="segment">Сегментация</span> — та&nbsp;же воронка отдельно по&nbsp;группам: каналам, платформам, странам. Сегментам нужна выборка побольше: берём всех новичков с&nbsp;5&nbsp;января по&nbsp;21&nbsp;июня, у&nbsp;которых окно 7&nbsp;суток закрылось, — 8&nbsp;486 человек. Канал и&nbsp;платформа — по&nbsp;первому <code>app_open</code>, поиск и&nbsp;прямые заходы считаем органикой.</p>
+        <div class="tbl fn-num">
+          <table>
+            <thead><tr><th>Канал</th><th>Приложение</th><th>Сайт</th></tr></thead>
+            <tbody>
+              <tr><td>органика</td><td><b>23,8%</b> из&nbsp;2&nbsp;624</td><td>16,7% из&nbsp;1&nbsp;260</td></tr>
+              <tr><td>партнёры</td><td><b>39,7%</b> из&nbsp;272</td><td>36,8% из&nbsp;1&nbsp;374</td></tr>
+              <tr><td>реклама</td><td><b>12,2%</b> из&nbsp;2&nbsp;257</td><td>10,4% из&nbsp;557</td></tr>
+              <tr><td>пуш, письмо</td><td><b>4,0%</b> из&nbsp;50</td><td>3,3% из&nbsp;92</td></tr>
+              <tr><td>всего</td><td>19,4% из&nbsp;5&nbsp;203</td><td><b>23,7%</b> из&nbsp;3&nbsp;283</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>В&nbsp;каждом канале приложение конвертирует лучше сайта, а&nbsp;в&nbsp;сумме выигрывает сайт. Это <span class="term" tabindex="0" data-g="simpson">парадокс Симпсона</span> из&nbsp;темы 06: при сложении групп разного размера вывод переворачивается<a class="ref" href="#src-5" data-ref="src-5">5</a>. На&nbsp;сайт ведут партнёры — кешбэк-сервисы, — и&nbsp;их люди покупают охотнее всех: это 1&nbsp;374 из&nbsp;3&nbsp;283 новичков сайта. В&nbsp;приложение идёт реклама с&nbsp;самой низкой конверсией: 2&nbsp;257 из&nbsp;5&nbsp;203.</p>
+        <p>Вывод «сайт продаёт лучше» неверен: рекламный трафик на&nbsp;сайте покупает хуже, чем в&nbsp;приложении. Платформы сравнивают внутри канала, а&nbsp;сдвиг смеси каналов меняет общую конверсию без всяких изменений в&nbsp;продукте.</p>
+
+        <h3 class="sub-h">Время между шагами</h3>
+        <p>У&nbsp;454 новичков мая, прошедших все шаги по&nbsp;порядку, медиана от&nbsp;входа до&nbsp;карточки — 36&nbsp;секунд, от&nbsp;карточки до&nbsp;корзины — почти 13&nbsp;часов, от&nbsp;корзины до&nbsp;оформления — 2,5&nbsp;минуты, от&nbsp;оформления до&nbsp;оплаты — 50&nbsp;секунд. От&nbsp;корзины до&nbsp;оплаты медиана — около 4&nbsp;минут, но&nbsp;у&nbsp;22% проходит больше суток.</p>
+        <p>Весь путь от&nbsp;первого входа до&nbsp;оплаты занимает в&nbsp;медиане 2&nbsp;дня 22&nbsp;часа, 36% платят позже недели: отсюда разница между окнами. В&nbsp;приложении медиана 3&nbsp;дня 9&nbsp;часов, на&nbsp;сайте — 1&nbsp;день 14&nbsp;часов, так что узкое окно сильнее режет приложение и&nbsp;сравнение платформ зависит ещё и&nbsp;от&nbsp;окна.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">05</span>Нюансы: повторы, незрелые окна, невидимые шаги, нелинейный путь</h2>
+        <div class="callout"><p><b>Повторные проходы.</b> 490 новичков мая, прошедших воронку без окна, оплатили 873 заказа: у&nbsp;192 человек (39%) их&nbsp;два и&nbsp;больше, у&nbsp;рекордсмена — 10. Воронка по&nbsp;людям засчитывает человека один раз. Если поделить заказы на&nbsp;новичков, выйдет 54% — это уже не&nbsp;конверсия, а&nbsp;заказы на&nbsp;человека. Повторы видны в&nbsp;воронке по&nbsp;сессиям.</p></div>
+        <div class="callout"><p><b>Незавершённые окна у&nbsp;свежих когорт.</b> <span class="term" tabindex="0" data-g="cohort">Когорта</span> — новички одного периода. Журнал кончается 29&nbsp;июня в&nbsp;03:00, и&nbsp;у&nbsp;новичков 22–28&nbsp;июня прошло в&nbsp;среднем 3,5 суток из&nbsp;7: полное окно — у&nbsp;одного человека из&nbsp;399. Их 7-дневная конверсия 22,8% занижена. Так выглядит любой недельный отчёт: в&nbsp;понедельник 22&nbsp;июня неделя 15–21&nbsp;июня показала&nbsp;бы 22,1%, а&nbsp;через неделю — 23,8%. Незрелую когорту не&nbsp;показывают или помечают.</p></div>
+        <div class="callout"><p><b>Шаги, которые не&nbsp;трекаются.</b> У&nbsp;части устройств на&nbsp;сайте блокировщик режет все клиентские события. 220 из&nbsp;4&nbsp;245 покупателей журнала — 11% покупателей сайта — видны только по&nbsp;серверному <code>order_paid</code>. Для воронки, которая начинается с&nbsp;клиентского <code>app_open</code>, их нет ни&nbsp;в&nbsp;знаменателе, ни&nbsp;в&nbsp;числителе. Если&nbsp;же закончить воронку клиентским <code>purchase</code>, пропадут и&nbsp;оплаты: на&nbsp;сайте он&nbsp;приходит для 87,5% заказов, в&nbsp;приложении — для 96%. Поэтому деньги считают на&nbsp;сервере: клиентским данным мешают блокировщики и&nbsp;старые браузеры<a class="ref" href="#src-4" data-ref="src-4">4</a>.</p></div>
+        <div class="callout"><p><b>Продукт без линейного пути.</b> Из&nbsp;879 заказов новичков мая путь «карточка → корзина → оплата» в&nbsp;одной сессии прошли 482 (55%). 146 (17%) начались с&nbsp;быстрого добавления, у&nbsp;138 (16%) корзина собрана в&nbsp;прошлой сессии, 108 (12%) обошлись без единой карточки, ещё 5 не&nbsp;привязались к&nbsp;сессии. Жёсткая цепочка описывает чуть больше половины покупок, поэтому воронку строят по&nbsp;ключевым шагам, например корзина → оформление → оплата, а&nbsp;пути изучают отдельно.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">06</span>Ограничения: атрибуция и&nbsp;воронки до&nbsp;продукта</h2>
+        <p>Страница — о&nbsp;воронке внутри продукта. Всё, что было до&nbsp;первого входа, — отдельная область со&nbsp;своими данными; здесь только карта.</p>
+        <div class="tbl fn-map">
+          <table>
+            <thead><tr><th>Что</th><th>О&nbsp;чём</th><th>Где</th></tr></thead>
+            <tbody>
+              <tr><td><span class="term" tabindex="0" data-g="mfunnel">Маркетинговая воронка</span></td><td>показ рекламы → клик → установка → первый вход; данные рекламных систем, а&nbsp;не&nbsp;журнала</td><td>«длинная воронка» в&nbsp;Lean Analytics<a class="ref" href="#src-1" data-ref="src-1">1</a></td></tr>
+              <tr><td>Пиратские метрики</td><td>AARRR: привлечение, активация, удержание, выручка, рекомендации</td><td>Lean Analytics, глава 5<a class="ref" href="#src-1" data-ref="src-1">1</a></td></tr>
+              <tr><td><span class="term" tabindex="0" data-g="attribution">Атрибуция</span></td><td>какому каналу засчитать покупку, если человек пришёл из&nbsp;рекламы, а&nbsp;купил после пуша</td><td>справка Google Analytics<a class="ref" href="#src-6" data-ref="src-6">6</a>, тема 10.3</td></tr>
+              <tr><td>Окупаемость каналов</td><td>сколько стоит покупатель из&nbsp;канала и&nbsp;когда он&nbsp;окупится</td><td>тема 10 «Юнит-экономика»</td></tr>
+              <tr><td>Эффект изменения шага</td><td>выросла&nbsp;ли конверсия от&nbsp;изменения, а&nbsp;не&nbsp;от&nbsp;смеси трафика</td><td>тема 11 «A/B-тестирование»</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">07</span>Код: SQL, pandas и&nbsp;график</h2>
+        <p>Данные — учебный журнал <code>data/events</code>: база <code>events</code> в&nbsp;PostgreSQL&nbsp;16 и&nbsp;файл <code>events.parquet</code>. Первый запрос повторяет соглашения темы и&nbsp;считает оба порядка сразу. Любой порядок — первое время каждого шага в&nbsp;окне. Строгий — цепочка <code>MIN(event_time)</code>: каждый следующий шаг ищется не&nbsp;раньше предыдущего.</p>
+        <div class="block wide" data-code="fun"></div>
+        <p>Та&nbsp;же воронка по&nbsp;сегментам в&nbsp;pandas. Функция <code>funnel</code> считает любой порядок: шаг засчитан, если в&nbsp;окне есть он&nbsp;и&nbsp;все шаги до&nbsp;него. В&nbsp;выводе виден Симпсон: в&nbsp;строках каналов приложение выше, в&nbsp;строке «всего» — ниже.</p>
+        <div class="block wide" data-code="seg"></div>
+        <p>График воронки без «воронки». В&nbsp;привычной трапеции полосы выровнены по&nbsp;центру: общей базы нет, а&nbsp;скосы рисуют плавный переход, которого не&nbsp;было. Столбцы от&nbsp;нуля сравнивать проще (страница 8.2). Подписи вместо оси, доля перехода над промежутком, один акцент и&nbsp;заголовок-вывод, который код сначала проверяет (страница 8.4).</p>
+        <div class="block wide" data-code="chart"></div>
+        <!--fig:chart:start--><figure class="fn-fig wide"><div class="fn-svg"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 463 282.4" role="img" aria-label="Столбцы воронки новичков мая: 1 610, 1 525, 654, 344 и 329 человек; из карточки в корзину переходит 43%"><g><path d="M0 282L463 282L463 0L0 0z" style="fill: #ffffff"/><g><path d="M65 240L456 240L456 40L65 40z" style="fill: #ffffff"/><path d="M83 240L129 240L129 76L83 76z" style="fill: #bbbbbb"/><path d="M160 240L206 240L206 85L160 85z" style="fill: #bbbbbb"/><path d="M237 240L284 240L284 173L237 173z" style="fill: #0072b2"/><path d="M314 240L361 240L361 205L314 205z" style="fill: #bbbbbb"/><path d="M392 240L438 240L438 206L392 206z" style="fill: #bbbbbb"/><g><g><g><defs><path id="fn-m02d31ea152" d="M0 0L0 4" style="stroke: #000000; stroke-width: 0.8"/></defs><use xlink:href="#fn-m02d31ea152" x="106.1" y="239.8" style="stroke: #000000; stroke-width: 0.8"/></g><text style="font-size: 10px; text-anchor: middle" x="106.1" y="254.4">открыл</text></g><g><use xlink:href="#fn-m02d31ea152" x="183.3" y="239.8" style="stroke: #000000; stroke-width: 0.8"/><text style="font-size: 10px; text-anchor: middle" x="183.3" y="254.4">карточка</text></g><g><use xlink:href="#fn-m02d31ea152" x="260.5" y="239.8" style="stroke: #000000; stroke-width: 0.8"/><text style="font-size: 10px; text-anchor: middle" x="260.5" y="254.4">корзина</text></g><g><use xlink:href="#fn-m02d31ea152" x="337.7" y="239.8" style="stroke: #000000; stroke-width: 0.8"/><text style="font-size: 10px; text-anchor: middle" x="337.7" y="254.4">оформление</text></g><g><use xlink:href="#fn-m02d31ea152" x="414.8" y="239.8" style="stroke: #000000; stroke-width: 0.8"/><text style="font-size: 10px; text-anchor: middle" x="414.8" y="254.4">оплата</text></g></g><g/><path d="M65 240L456 240" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter"/><text style="font-size: 10px; text-anchor: middle" x="106.1" y="71.1">1 610</text><text style="font-size: 10px; text-anchor: middle" x="183.3" y="79.8">1 525</text><text style="font-size: 10px; text-anchor: middle" x="260.5" y="168.3">654</text><text style="font-size: 10px; text-anchor: middle" x="337.7" y="199.8">344</text><text style="font-size: 10px; text-anchor: middle" x="414.8" y="201.3">329</text><text style="font-size: 10px; text-anchor: middle; fill: #555555" x="144.7" y="54.9">→ 95%</text><text style="font-weight: 700; font-size: 10px; text-anchor: middle; fill: #0072b2" x="221.9" y="54.9">→ 43%</text><text style="font-size: 10px; text-anchor: middle; fill: #555555" x="299.1" y="54.9">→ 53%</text><text style="font-size: 10px; text-anchor: middle; fill: #555555" x="376.3" y="54.9">→ 96%</text><text style="font-size: 10px; text-anchor: start; fill: #555555" x="65.2" y="32.2">Новички мая: сколько человек дошло до шага за 7 суток, любой порядок</text><text style="font-weight: 700; font-size: 12px; text-anchor: start" x="65.2" y="16.2">Из карточки в корзину доходит меньше половины</text></g><text style="font-size: 8px; text-anchor: start; fill: #777777" x="7.2" y="273.5">Источник: учебный журнал событий, events.parquet</text></g></svg></div><figcaption>Вывод кода выше: новички мая, окно 7 суток, любой порядок</figcaption></figure><!--fig:chart:end-->
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">08</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">09</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">10</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Продуктовые метрики и события» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Croll A., Yoskovitz B. <a href="https://www.oreilly.com/library/view/lean-analytics/9781449335687/ch05.html" target="_blank" rel="noopener">Lean Analytics, глава 5 «Analytics Frameworks»</a>. O’Reilly, 2013. Пиратские метрики и&nbsp;«длинная воронка» — карта воронок до&nbsp;продукта.</li>
+          <li id="src-2">Amplitude Docs: <a href="https://amplitude.com/docs/analytics/charts/funnel-analysis/funnel-analysis-build" target="_blank" rel="noopener">Build a&nbsp;funnel analysis</a>, <a href="https://amplitude.com/docs/analytics/charts/funnel-analysis/funnel-analysis-get-the-most" target="_blank" rel="noopener">Get the most out of&nbsp;Amplitude’s Funnel Analysis chart</a>. Режимы порядка шагов и&nbsp;окно конверсии в&nbsp;продуктовой аналитике.</li>
+          <li id="src-3">Tanimura C. <a href="https://www.oreilly.com/library/view/sql-for-data/9781492088776/ch09.html" target="_blank" rel="noopener">SQL for Data Analysis, глава 9, раздел «Funnel Analysis»</a>. O’Reilly, 2021. Воронка на&nbsp;SQL от&nbsp;автора, который пишет для аналитиков.</li>
+          <li id="src-4">Segment. <a href="https://www.twilio.com/docs/segment/guides/how-to-guides/collect-on-client-or-server" target="_blank" rel="noopener">Collecting Data on&nbsp;the Client or&nbsp;Server</a>. Почему клиентские события теряются из-за блокировщиков, а&nbsp;оплаты надёжнее собирать на&nbsp;сервере.</li>
+          <li id="src-5">Simpson E.&nbsp;H. <a href="https://www.jstor.org/stable/2984065" target="_blank" rel="noopener">The Interpretation of&nbsp;Interaction in&nbsp;Contingency Tables</a>. Journal of&nbsp;the Royal Statistical Society, Series&nbsp;B, 1951, 13(2), 238–241. Первоисточник парадокса Симпсона.</li>
+          <li id="src-6">Google. <a href="https://support.google.com/analytics/answer/10596866" target="_blank" rel="noopener">Get started with attribution</a>. Справка Google Analytics: что такое атрибуция и&nbsp;модели атрибуции.</li>
+        </ol>
+      </section>

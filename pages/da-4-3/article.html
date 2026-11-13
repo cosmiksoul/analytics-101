@@ -1,0 +1,154 @@
+      <p class="eyebrow">Дата аналитика · Тема 04 · <b>Математика для&nbsp;данных</b></p>
+      <h1>Производная и&nbsp;градиент</h1>
+      <p class="lead">После страницы вы будете понимать, что&nbsp;значит «минимизировать <span class="term" tabindex="0" data-g="loss">функцию потерь</span>»: как <span class="term" tabindex="0" data-g="derivative">производная</span> и <span class="term" tabindex="0" data-g="gradient">градиент</span> показывают, куда двигать веса модели, и&nbsp;как выбрать шаг, чтобы спуск не&nbsp;полз и&nbsp;не&nbsp;разлетался. Регрессию из&nbsp;4.2 вы обучите <span class="term" tabindex="0" data-g="gd">градиентным спуском</span> и&nbsp;получите те&nbsp;же веса, что&nbsp;дал <code>lstsq</code>.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;12&nbsp;шагов</span><span class="pill">1 интерактив</span><span class="pill">6 блоков кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: шагать против градиента</h2>
+        <p>Функция потерь сводит качество модели к&nbsp;одному числу — ошибке, которая зависит от&nbsp;весов модели. Производная показывает, как быстро растёт ошибка, если чуть сдвинуть один вес, а&nbsp;градиент собирает такие производные по&nbsp;всем весам в&nbsp;стрелку, направленную туда, где ошибка растёт быстрее всего. Градиентный спуск делает шаг против этой стрелки и&nbsp;повторяет, пока склон не&nbsp;станет плоским: там минимум. Исход решает размер шага, его называют <span class="term" tabindex="0" data-g="lr">шагом обучения</span>: маленький шаг ползёт, большой перелетает долину и&nbsp;раскачивается, а&nbsp;в&nbsp;какую из&nbsp;долин скатится шарик, зависит от&nbsp;старта.</p>
+        <div class="scene" id="scene" aria-label="Анимация: шарик спускается по карте ошибки с двумя долинами против градиента; маленький шаг ползёт, большой раскачивается, другой старт приводит в другую долину"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Производная: наклон и&nbsp;скорость</h3>
+        <p>Пусть ошибка L зависит от&nbsp;одного веса w. Производная L′(w) — наклон графика в&nbsp;точке w, то&nbsp;есть наклон <span class="term" tabindex="0" data-g="tangent">касательной</span>: прямой, которая касается графика и&nbsp;идёт с&nbsp;ним в&nbsp;одном направлении. Тот&nbsp;же наклон — скорость: на&nbsp;сколько меняется ошибка на&nbsp;единицу сдвига веса. В&nbsp;сцене производная при&nbsp;w = −1,8 равна −3,88, и&nbsp;сдвиг веса на&nbsp;+0,01 уменьшает ошибку примерно на&nbsp;0,039.</p>
+        <p>Для&nbsp;наклона нужны две точки, поэтому берут вторую, w + h, проводят прямую через обе и&nbsp;уменьшают h. Наклон прямой подходит всё ближе к&nbsp;одному числу. Его называют <span class="term" tabindex="0" data-g="limit">пределом</span>, а&nbsp;наклон в&nbsp;пределе и&nbsp;есть производная<a class="ref" href="#src-1" data-ref="src-1">1</a>:</p>
+        <div class="formula"><span class="f">L′(w) = lim<sub>h→0</sub> (L(w + h) − L(w)) / h</span><small>L′(w) — производная в&nbsp;точке w · h — маленький сдвиг веса · lim<sub>h→0</sub> — к&nbsp;чему подходит дробь, когда h стремится к&nbsp;нулю · дробь — наклон прямой через две точки графика</small></div>
+        <p>Знак производной говорит, куда идёт функция: плюс — растёт, минус — падает, ноль — график в&nbsp;этой точке плоский.</p>
+
+        <h3 class="sub-h">Частные производные и&nbsp;градиент</h3>
+        <p>Поверхность в&nbsp;сцене и&nbsp;интерактиве — учебная функция двух весов с&nbsp;двумя долинами:</p>
+        <div class="formula"><span class="f">L(w<sub>1</sub>, w<sub>2</sub>) = ¼(w<sub>1</sub><sup>2</sup> − 1)<sup>2</sup> + 0,15·w<sub>1</sub> + 4w<sub>2</sub><sup>2</sup> + 0,2</span><small>w<sub>1</sub>, w<sub>2</sub> — веса · ¼(w<sub>1</sub><sup>2</sup> − 1)<sup>2</sup> даёт две долины, у&nbsp;w<sub>1</sub> = −1 и&nbsp;у&nbsp;w<sub>1</sub> = 1 · 0,15·w<sub>1</sub> наклоняет поверхность, и&nbsp;левая долина выходит глубже · 4w<sub>2</sub><sup>2</sup> — крутые стенки поперёк долин · 0,2 поднимает ошибку выше нуля</small></div>
+        <p><span class="term" tabindex="0" data-g="partial">Частная производная</span> ∂L/∂w<sub>1</sub> — обычная производная по&nbsp;w<sub>1</sub>, пока w<sub>2</sub> заморожен, ∂L/∂w<sub>2</sub> — наоборот. Градиент ∇L (читается «набла L») — вектор из&nbsp;всех частных производных. Он указывает направление, в&nbsp;котором функция растёт быстрее всего, а&nbsp;его длина говорит, насколько крут склон<a class="ref" href="#src-2" data-ref="src-2">2</a><a class="ref" href="#src-3" data-ref="src-3">3</a>. На&nbsp;карте градиент пересекает <span class="term" tabindex="0" data-g="contour">линии уровня</span> под&nbsp;прямым углом.</p>
+        <div class="formula"><span class="f">∇L = (∂L/∂w<sub>1</sub>; ∂L/∂w<sub>2</sub>) = (w<sub>1</sub>(w<sub>1</sub><sup>2</sup> − 1) + 0,15; 8w<sub>2</sub>)</span><small>∂ — знак частной производной · в&nbsp;точке старта сцены (−1,8; 1,0) градиент равен (−3,88; 8)</small></div>
+
+        <h3 class="sub-h">Цепное правило на&nbsp;пальцах</h3>
+        <p>Функции потерь обычно составные: вес влияет на&nbsp;прогноз, прогноз — на&nbsp;промах, промах — на&nbsp;потерю. <span class="term" tabindex="0" data-g="chain">Цепное правило</span> перемножает скорости по&nbsp;цепочке<a class="ref" href="#src-2" data-ref="src-2">2</a>. Так с&nbsp;шестерёнками: если первая крутится вдвое быстрее второй, а&nbsp;вторая втрое быстрее третьей, то&nbsp;первая крутится в&nbsp;шесть раз быстрее третьей.</p>
+        <div class="formula"><span class="f">dL/dw = dL/de · de/dw</span><small>e — промежуточная величина, например промах прогноза e = w·x − y для&nbsp;одного клиента · при&nbsp;L = e<sup>2</sup> получаем dL/de = 2e и&nbsp;de/dw = x, поэтому dL/dw = 2e·x</small></div>
+        <p>По&nbsp;этой формуле ниже выводится градиент потерь регрессии. В&nbsp;нейросетях то&nbsp;же правило, применённое слой за&nbsp;слоем, называют обратным распространением ошибки (блок ML, тема&nbsp;08).</p>
+
+        <h3 class="sub-h">Минимум там, где производная равна нулю</h3>
+        <p>На&nbsp;дне долины касательная горизонтальна: L′ = 0, а&nbsp;для&nbsp;нескольких весов ∇L = 0. Обратное неверно: градиент нулевой и&nbsp;на&nbsp;вершине, и&nbsp;в <span class="term" tabindex="0" data-g="saddle">седловой точке</span>. На&nbsp;нашей поверхности такая точка — перевал (0,15; 0) между долинами: вдоль w<sub>1</sub> это вершина, поперёк — дно.</p>
+        <p>Если уравнение ∇L = 0 решается формулой, шаги не&nbsp;нужны: для&nbsp;x<sup>2</sup> это x = 0, для&nbsp;линейной регрессии — нормальное уравнение из&nbsp;4.2, которое решает <code>lstsq</code>. У&nbsp;большинства моделей такой формулы нет.</p>
+
+        <h3 class="sub-h">Градиентный спуск и&nbsp;шаг обучения</h3>
+        <p>Тогда минимум ищут шагами: из&nbsp;стартовой точки шагают против градиента, пересчитывают градиент и&nbsp;повторяют. Метод предложил Коши в&nbsp;1847&nbsp;году<a class="ref" href="#src-4" data-ref="src-4">4</a>, и&nbsp;его варианты обучают большинство моделей машинного обучения<a class="ref" href="#src-3" data-ref="src-3">3</a>:</p>
+        <div class="formula"><span class="f">w<sub>k+1</sub> = w<sub>k</sub> − η·∇L(w<sub>k</sub>)</span><small>w<sub>k</sub> — веса после k-й <span class="term" tabindex="0" data-g="iteration">итерации</span>, то&nbsp;есть k-го повтора шага · ∇L(w<sub>k</sub>) — градиент в&nbsp;этой точке · η («эта») — шаг обучения, множитель при&nbsp;градиенте · минус — шаг против градиента, вниз</small></div>
+        <p>Для&nbsp;параболы L = x<sup>2</sup> шаг умещается в&nbsp;строку: x ← x − η·2x = (1 − 2η)·x. При&nbsp;η &lt; 0,5 x ползёт к&nbsp;нулю, при&nbsp;0,5 &lt; η &lt; 1 перескакивает ноль, но&nbsp;каждый раз ближе, а&nbsp;при&nbsp;η &gt; 1 перелетает дальше, чем стоял, и&nbsp;спуск <b>расходится</b>. Шаг выбирает человек, модель его не&nbsp;подбирает.</p>
+
+        <h3 class="sub-h">Выпуклость и&nbsp;локальные минимумы</h3>
+        <p>Функция <span class="term" tabindex="0" data-g="convex">выпуклая</span>, если отрезок между любыми двумя точками её графика лежит не&nbsp;ниже графика, как у&nbsp;чаши. У&nbsp;такой функции любой <span class="term" tabindex="0" data-g="local">локальный минимум</span> — глобальный<a class="ref" href="#src-5" data-ref="src-5">5</a>, поэтому спуск с&nbsp;подходящим шагом приходит к&nbsp;лучшему ответу, откуда&nbsp;бы ни&nbsp;начал.</p>
+        <p>Наша поверхность не&nbsp;выпуклая: в&nbsp;ней две долины. Правая — локальный минимум: рядом всё выше, но&nbsp;слева есть точка ниже, 0,045 против 0,344. Спуск видит только склон под&nbsp;собой, и&nbsp;куда он придёт, решает старт.</p>
+
+        <h3 class="sub-h">Сумма и&nbsp;интеграл: площадь под&nbsp;кривой</h3>
+        <p>Производная разбирает функцию на&nbsp;наклоны, а&nbsp;интеграл собирает обратно — в&nbsp;площадь под&nbsp;кривой. Отрезок делят на&nbsp;n узких полос шириной Δx и&nbsp;складывают площади прямоугольников: чем уже полосы, тем точнее. Предел этой суммы и&nbsp;есть <span class="term" tabindex="0" data-g="integral">интеграл</span><a class="ref" href="#src-1" data-ref="src-1">1</a>:</p>
+        <div class="formula"><span class="f">∫<sub>a</sub><sup>b</sup> f(x) dx ≈ Σ f(x<sub>i</sub>)·Δx</span><small>a, b — края отрезка · x<sub>i</sub> — середина i-й полосы · Δx = (b − a) / n — ширина полосы · при&nbsp;n → ∞ сумма подходит к&nbsp;интегралу</small></div>
+        <p>Это мост к&nbsp;теме 05: площадь под <span class="term" tabindex="0" data-g="density">плотностью вероятности</span> на&nbsp;отрезке равна вероятности попасть в&nbsp;него, а&nbsp;вся площадь — единице<a class="ref" href="#src-2" data-ref="src-2">2</a>. Гистограмма дохода учебных клиентов с&nbsp;площадью 1 — уже такая плотность: площадь столбиков от&nbsp;50 до&nbsp;100&nbsp;тыс. ₽ равна 0,545, доле клиентов с&nbsp;таким доходом.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: обучить регрессию спуском</h2>
+        <p>На&nbsp;странице 4.2 траты клиента за&nbsp;квартал объясняли доходом и&nbsp;числом заказов: spend ≈ w<sub>0</sub> + w<sub>1</sub>·income + w<sub>2</sub>·orders. Данные — 1&nbsp;000 учебных клиентов из <code>clients.csv</code>, веса нашёл <code>np.linalg.lstsq</code> за&nbsp;один вызов: w ≈ [205; 0,0347; 2&nbsp;550]<a class="ref" href="#src-6" data-ref="src-6">6</a>.</p>
+        <p>Функция <code>lstsq</code> справляется, потому что&nbsp;у&nbsp;линейной регрессии есть формула ответа. У&nbsp;логистической регрессии, бустинга и&nbsp;нейросетей её нет, и&nbsp;их обучают спуском: выбирают функцию потерь, считают её градиент по&nbsp;весам и&nbsp;шагают. В&nbsp;блоке ML, тема&nbsp;01, это назовут «минимизировать функцию потерь».</p>
+        <p>Задача — получить те&nbsp;же веса спуском и&nbsp;разобраться по&nbsp;дороге, откуда берётся градиент, какой выбрать шаг и&nbsp;зачем стандартизировать признаки. Начнём с&nbsp;поверхности из&nbsp;сцены: там всё видно глазами.</p>
+      </section>
+
+      <section data-sec="descent" data-title="Спуск по холму">
+        <h2 id="descent"><span class="sn">03</span>Спуск по&nbsp;холму: шаг и&nbsp;старт решают исход</h2>
+        <p>Алгоритм умещается в&nbsp;четыре пункта<a class="ref" href="#src-3" data-ref="src-3">3</a>:</p>
+        <ol>
+          <li>выбрать стартовые веса и&nbsp;шаг η;</li>
+          <li>посчитать градиент ∇L в&nbsp;текущей точке;</li>
+          <li>сдвинуть веса: w ← w − η·∇L;</li>
+          <li>повторять, пока длина градиента не&nbsp;станет меньше порога (здесь 0,001) или&nbsp;не&nbsp;кончится лимит (здесь 300&nbsp;итераций).</li>
+        </ol>
+        <p>Если вес по&nbsp;модулю больше 10, спуск считается разошедшимся. Траектории интерактива считаются по&nbsp;формулам из&nbsp;файла <code>surface.py</code> и&nbsp;сверены с&nbsp;NumPy. Сначала предскажите.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="hill"></div>
+        <p>Почему порог — 0,25. Поперёк долины ошибка растёт как 4w<sub>2</sub><sup>2</sup>, её производная 8w<sub>2</sub>, и&nbsp;шаг умножает w<sub>2</sub> на&nbsp;1 − 8η, как множитель 1 − 2η у&nbsp;параболы. При&nbsp;η &lt; 0,125 шарик съезжает по&nbsp;стенке, при&nbsp;η от&nbsp;0,125 до&nbsp;0,25 качается с&nbsp;затуханием, при&nbsp;0,25 качается вечно, выше — разлетается. Порог задаёт самая крутая стенка: 2 / 8 = 0,25.</p>
+        <p>Быстрее всего спуск сходится не&nbsp;у&nbsp;порога, а&nbsp;заметно ниже: со&nbsp;старта (−1,8; 1,0) при&nbsp;η = 0,15 хватает 14&nbsp;итераций, при&nbsp;0,24 нужно 108, при&nbsp;0,01 — 276. Старты (0; 1) и&nbsp;(0,3; 1) лежат по&nbsp;разные стороны перевала, и&nbsp;шарики приходят в&nbsp;разные долины.</p>
+      </section>
+
+      <section data-sec="mse" data-title="Потери регрессии">
+        <h2 id="mse"><span class="sn">04</span>Функция потерь регрессии — одна чаша</h2>
+        <p>Для&nbsp;регрессии из&nbsp;задачи функция потерь — <span class="term" tabindex="0" data-g="mse">среднеквадратичная ошибка</span> (MSE), средний квадрат промаха по&nbsp;всем клиентам. Её градиент:</p>
+        <div class="formula"><span class="f">L(w) = (1/n)·Σ(x<sub>i</sub>·w − y<sub>i</sub>)<sup>2</sup>,   ∇L(w) = (2/n)·X<sup>T</sup>(Xw − y)</span><small>n — число клиентов, 1&nbsp;000 · x<sub>i</sub> — строка признаков клиента i с&nbsp;единицей впереди · y<sub>i</sub> — его траты · X — матрица всех строк, Xw − y — вектор промахов · X<sup>T</sup> — транспонированная X из&nbsp;4.2</small></div>
+        <p>Градиент получается по&nbsp;цепному правилу: производная квадрата — удвоенный промах, производная промаха по&nbsp;весу — сам признак, а&nbsp;сумма по&nbsp;клиентам записывается умножением на&nbsp;X<sup>T</sup>. Если приравнять градиент нулю, выйдет X<sup>T</sup>Xw = X<sup>T</sup>y — нормальное уравнение из&nbsp;4.2.</p>
+        <p>MSE линейной регрессии выпуклая: над&nbsp;пространством весов это одна чаша без&nbsp;второй долины. Спуск с&nbsp;подходящим шагом придёт в&nbsp;тот&nbsp;же минимум, что&nbsp;и <code>lstsq</code>, — в&nbsp;разделе «Код» он сходится за&nbsp;60&nbsp;итераций до&nbsp;четвёртого знака. Но&nbsp;только после <span class="term" tabindex="0" data-g="standard">стандартизации</span> признаков.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">05</span>Нюансы: масштаб признаков и&nbsp;проверка градиента</h2>
+        <div class="callout"><p><b>Градиент зависит от&nbsp;масштаба признаков.</b> Доход измерен в&nbsp;рублях и&nbsp;в&nbsp;десятки тысяч раз крупнее числа заказов, поэтому производная MSE по&nbsp;весу дохода в&nbsp;нулевой точке равна −2,4·10<sup>9</sup>, а&nbsp;по&nbsp;весу заказов — −1,3·10<sup>5</sup>. Чаша вытянута в&nbsp;узкий овраг: шаг 3·10<sup>−10</sup> уже раскачивает вес дохода, а&nbsp;шаг 10<sup>−10</sup> за&nbsp;10&nbsp;000&nbsp;итераций почти не&nbsp;двигает остальные. Стандартизация — вычесть среднее и&nbsp;разделить на&nbsp;стандартное отклонение — делает чашу почти круглой, и&nbsp;шаг 0,3 сходится за&nbsp;60&nbsp;итераций. Это вторая причина масштабировать признаки после расстояний из&nbsp;4.1: в&nbsp;вытянутой чаше спуск идёт плохо<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p></div>
+        <div class="block wide" data-code="scale"></div>
+        <div class="callout"><p><b>Численная производная проверяет формулу.</b> В&nbsp;градиенте, выведенном руками, легко ошибиться в&nbsp;знаке или&nbsp;множителе. Проверка — <span class="term" tabindex="0" data-g="numdiff">численная производная</span>: центральная разность (L(w + h) − L(w − h)) / 2h по&nbsp;каждому весу. При&nbsp;h = 10<sup>−6</sup> она совпадает с&nbsp;формулой до&nbsp;восьми знаков, а&nbsp;при&nbsp;h = 10<sup>−12</sup> снова врёт из-за&nbsp;ошибок округления. Так проверяют градиенты и&nbsp;в&nbsp;нейросетях<a class="ref" href="#src-3" data-ref="src-3">3</a>; код — первый блок раздела «Код».</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">06</span>Ограничения: полный градиент дорог, долин много</h2>
+        <p>У&nbsp;простого спуска три слабости, и&nbsp;у&nbsp;каждой есть лекарство из&nbsp;блока ML:</p>
+        <ul>
+          <li>Каждый шаг проходит по&nbsp;всем строкам, а&nbsp;на&nbsp;миллионах строк это долго. Поэтому градиент оценивают по&nbsp;случайной пачке строк — это <span class="term" tabindex="0" data-g="sgd">стохастический градиентный спуск</span> (SGD)<a class="ref" href="#src-3" data-ref="src-3">3</a>.</li>
+          <li>В&nbsp;узких оврагах спуск качается, как шарик с&nbsp;шагом 0,24. <span class="term" tabindex="0" data-g="momentum">Момент</span> копит направление прошлых шагов и&nbsp;гасит качели, а <span class="term" tabindex="0" data-g="adam">Adam</span> подбирает свой шаг каждому весу<a class="ref" href="#src-7" data-ref="src-7">7</a>.</li>
+          <li>На&nbsp;невыпуклой поверхности никто не&nbsp;обещает глобального минимума: спуск может остановиться в&nbsp;локальной долине или&nbsp;надолго застрять у&nbsp;седла.</li>
+        </ul>
+        <p>Это темы 08–09 блока ML. Любой из&nbsp;этих методов — тот&nbsp;же шаг против градиента, только с&nbsp;другой оценкой градиента или&nbsp;длины шага.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">07</span>Код: от&nbsp;наклона к&nbsp;регрессии</h2>
+        <p>Код запущен в&nbsp;Python 3.13 с&nbsp;NumPy 2.5.3 и&nbsp;pandas 3.0.5, вывод вставлен без&nbsp;правок. Первый блок считает градиент поверхности из&nbsp;сцены формулой и&nbsp;численно, при&nbsp;разных h.</p>
+        <div class="block wide" data-code="deriv"></div>
+        <p>Второй — градиентный спуск для&nbsp;параболы x<sup>2</sup> в&nbsp;десять строк. Видны все режимы: ползёт, качается, разлетается. Шаг 0,5 приводит в&nbsp;ноль за&nbsp;один шаг: для&nbsp;x<sup>2</sup> он идеальный.</p>
+        <div class="block wide" data-code="parab"></div>
+        <p>Третий — спуск по&nbsp;поверхности сцены с&nbsp;теми&nbsp;же правилами остановки, что&nbsp;в&nbsp;интерактиве. Отсюда числа сцены: 52&nbsp;итерации при&nbsp;η = 0,05, 108 при&nbsp;0,24 и&nbsp;правая долина со&nbsp;старта (1,7; 0,9).</p>
+        <div class="block wide" data-code="surface"></div>
+        <p>Четвёртый обучает регрессию <code>spend ~ income + orders</code> спуском по&nbsp;стандартизованным признакам. После спуска веса переводятся обратно в&nbsp;рубли и&nbsp;штуки: вес признака делится на&nbsp;его стандартное отклонение, а&nbsp;свободный член пересчитывается через средние.</p>
+        <div class="block wide" data-code="regression"></div>
+        <p>Пятый считает интеграл суммой прямоугольников: площадь под&nbsp;плотностью нормального распределения от&nbsp;−1 до&nbsp;1 и&nbsp;площадь гистограммы дохода с <code>density=True</code>: NumPy нормирует высоты так, чтобы вся площадь равнялась единице<a class="ref" href="#src-8" data-ref="src-8">8</a>.</p>
+        <div class="block wide" data-code="integral"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">08</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">09</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">10</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Математика для данных» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">3Blue1Brown. <a href="https://www.3blue1brown.com/topics/calculus" target="_blank" rel="noopener">Essence of Calculus</a>. Производная как предел наклона секущей и&nbsp;интеграл как площадь — интуиция, на&nbsp;которой построена сцена.</li>
+          <li id="src-2">Deisenroth M., Faisal A., Ong C. <a href="https://mml-book.github.io/" target="_blank" rel="noopener">Mathematics for Machine Learning</a>. Cambridge University Press, 2020. Главы 5–7: градиент и&nbsp;цепное правило, плотность вероятности, градиентный спуск.</li>
+          <li id="src-3">Goodfellow I., Bengio Y., Courville A. <a href="https://www.deeplearningbook.org/" target="_blank" rel="noopener">Deep Learning</a>. MIT Press, 2016. Глава 4 — спуск и&nbsp;шаг обучения, глава 8 — SGD и&nbsp;момент, раздел 11.5 — проверка градиента.</li>
+          <li id="src-4">Cauchy A. Méthode générale pour la résolution des systèmes d’équations simultanées. Comptes rendus de l’Académie des sciences, 1847, т. 25, с. 536–538. Первая публикация метода; перепечатка — <a href="https://doi.org/10.1017/CBO9780511702396.063" target="_blank" rel="noopener">Œuvres complètes</a>, Cambridge University Press, 2009, с.&nbsp;399–402.</li>
+          <li id="src-5">Boyd S., Vandenberghe L. <a href="https://web.stanford.edu/~boyd/cvxbook/" target="_blank" rel="noopener">Convex Optimization</a>. Cambridge University Press, 2004. Выпуклые функции и&nbsp;почему их локальный минимум глобальный (раздел 4.2.2).</li>
+          <li id="src-6">NumPy. <a href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html" target="_blank" rel="noopener">numpy.linalg.lstsq</a>. Метод наименьших квадратов из&nbsp;4.2, с&nbsp;которым сверяется спуск.</li>
+          <li id="src-7">Kingma D., Ba J. <a href="https://arxiv.org/abs/1412.6980" target="_blank" rel="noopener">Adam: A Method for Stochastic Optimization</a>. ICLR, 2015. Оригинальная статья об&nbsp;Adam.</li>
+          <li id="src-8">NumPy. <a href="https://numpy.org/doc/stable/reference/generated/numpy.histogram.html" target="_blank" rel="noopener">numpy.histogram</a>. Параметр density: площадь гистограммы равна 1.</li>
+        </ol>
+      </section>

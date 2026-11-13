@@ -1,0 +1,158 @@
+      <p class="eyebrow">Дата аналитика · Тема 10 · <b>Юнит-экономика</b></p>
+      <h1>CAC, ARPU, маржа</h1>
+      <p class="lead"><span class="term" tabindex="0" data-g="ue">Юнит-экономика</span> отвечает на&nbsp;два вопроса: зарабатывает&nbsp;ли магазин на&nbsp;каждом клиенте и&nbsp;окупается&nbsp;ли его привлечение. На&nbsp;этой странице вы&nbsp;соберёте экономику одного клиента учебного магазина из&nbsp;трёх выгрузок&nbsp;— расходов на&nbsp;рекламу, клиентов и&nbsp;заказов с&nbsp;<span class="term" tabindex="0" data-g="cogs">себестоимостью</span>&nbsp;— и&nbsp;увидите, как от&nbsp;знаменателя в&nbsp;разы меняются <span class="term" tabindex="0" data-g="cac">CAC</span> и&nbsp;<span class="term" tabindex="0" data-g="arpu">ARPU</span>.</p>
+      <div class="meta-row"><span class="pill">≈ 30 минут</span><span class="pill">анимация из 10 шагов</span><span class="pill">1 интерактив</span><span class="pill">3 блока кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: клиент на&nbsp;весах</h2>
+        <p>Юнит-экономика смотрит на&nbsp;бизнес через одну единицу&nbsp;— <span class="term" tabindex="0" data-g="unit">юнит</span>: клиента, заказ или подписку. Для клиента считают, сколько стоило его привлечь (это и&nbsp;есть CAC, стоимость привлечения) и&nbsp;сколько магазину осталось от&nbsp;его платежей после себестоимости и&nbsp;<span class="term" tabindex="0" data-g="varcost">переменных издержек</span> вроде доставки&nbsp;— <span class="term" tabindex="0" data-g="cm">маржинальный доход</span>. Клиент выгоден, когда накопленный маржинальный доход перевешивает CAC: в&nbsp;учебном магазине средний клиент из&nbsp;поиска стоит 1&nbsp;506&nbsp;₽ и&nbsp;окупается только на&nbsp;13-м месяце. Почти каждое число на&nbsp;этом пути&nbsp;— дробь, и&nbsp;от&nbsp;выбранного знаменателя оно меняется в&nbsp;разы.</p>
+        <div class="scene" id="scene" aria-label="Анимация: монеты рекламы вливаются в клиента, от его платежей откалываются себестоимость, доставка и эквайринг, весы сравнивают CAC с накопленным маржинальным доходом"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже&nbsp;— та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Юнит: клиент, заказ или подписка</h3>
+        <p>Юнит выбирают под вопрос. Окупается&nbsp;ли реклама&nbsp;— юнит клиент: на&nbsp;привлечение тратят один раз, а&nbsp;покупает он&nbsp;много раз. Выгоден&nbsp;ли заказ с&nbsp;бесплатной доставкой&nbsp;— юнит заказ. В&nbsp;подписке юнит&nbsp;— подписка или её&nbsp;месяц; юниты разных моделей бизнеса разобраны в&nbsp;Lean Analytics<a class="ref" href="#src-2" data-ref="src-2">2</a>. Здесь юнит&nbsp;— клиент, а&nbsp;заказ&nbsp;— кирпичик его дохода.</p>
+
+        <h3 class="sub-h">CAC: что входит в&nbsp;стоимость привлечения</h3>
+        <div class="formula"><span class="f">CAC = расходы на&nbsp;привлечение / новые клиенты</span><small>Расходы и&nbsp;клиенты&nbsp;— за&nbsp;один и&nbsp;тот&nbsp;же период и&nbsp;из&nbsp;одного канала. Поиск за&nbsp;24 месяца: 23,62&nbsp;млн&nbsp;₽ / 15&nbsp;691 новичок = 1&nbsp;506&nbsp;₽.</small></div>
+        <p>В&nbsp;учебной выгрузке расходы&nbsp;— бюджет рекламы в&nbsp;поиске и&nbsp;соцсетях и&nbsp;выплаты партнёрам, кешбэк-сервисам: им&nbsp;магазин платит 1&nbsp;400&nbsp;₽ за&nbsp;первый заказ клиента, это <span class="term" tabindex="0" data-g="cpa">оплата за&nbsp;действие</span>. В&nbsp;настоящей компании в&nbsp;CAC добавляют зарплаты маркетологов, агентство, баннеры. У&nbsp;Дэвида Скока то&nbsp;же правило: в&nbsp;CAC считают все расходы на&nbsp;продажи и&nbsp;маркетинг, а&nbsp;не&nbsp;один рекламный бюджет<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <p>Знаменатель тоже выбирают: зарегистрировавшиеся или первые покупатели. Регистрация из&nbsp;поиска стоит 1&nbsp;506&nbsp;₽, покупатель&nbsp;— 2&nbsp;157&nbsp;₽, потому что купили 70% новичков. Дальше CAC считаем на&nbsp;клиента, а&nbsp;CAC на&nbsp;покупателя держим рядом.</p>
+
+        <h3 class="sub-h">Смешанный CAC и&nbsp;CAC по&nbsp;каналам</h3>
+        <div class="tbl ue-tbl">
+          <table>
+            <thead><tr><th>Канал</th><th>Расходы, млн&nbsp;₽</th><th>Новых</th><th>CAC, ₽</th><th>На покупателя</th></tr></thead>
+            <tbody>
+              <tr><td>органика</td><td>—</td><td>27&nbsp;742</td><td>—</td><td>—</td></tr>
+              <tr><td>поиск</td><td>23,62</td><td>15&nbsp;691</td><td>1&nbsp;506</td><td>2&nbsp;157</td></tr>
+              <tr><td>соцсети</td><td>25,97</td><td>8&nbsp;505</td><td>3&nbsp;054</td><td>6&nbsp;954</td></tr>
+              <tr><td>партнёры</td><td>10,82</td><td>8&nbsp;566</td><td>1&nbsp;263</td><td>1&nbsp;400</td></tr>
+              <tr><td>вся реклама</td><td>60,41</td><td>32&nbsp;762</td><td>1&nbsp;844</td><td>2&nbsp;695</td></tr>
+              <tr><td>реклама + органика</td><td>60,41</td><td>60&nbsp;504</td><td>998</td><td>1&nbsp;411</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><span class="term" tabindex="0" data-g="blended">Смешанный CAC</span> делит все расходы на&nbsp;всех новичков, <span class="term" tabindex="0" data-g="chcac">CAC по&nbsp;каналу</span>&nbsp;— расходы канала на&nbsp;его новичков. Смешанный удобен для общего отчёта, но&nbsp;не&nbsp;говорит, как работает рекламный рубль в&nbsp;каждом канале<a class="ref" href="#src-3" data-ref="src-3">3</a>: клиент из&nbsp;соцсетей вдвое дороже клиента из&nbsp;поиска, а&nbsp;в&nbsp;среднем по&nbsp;рекламе этого не&nbsp;видно.</p>
+        <p>Отдельный вопрос&nbsp;— <span class="term" tabindex="0" data-g="organic">органика</span>, клиенты без оплаченной рекламы. Положите их в&nbsp;знаменатель, и&nbsp;CAC упадёт с&nbsp;1&nbsp;844 до&nbsp;998&nbsp;₽, в&nbsp;1,85 раза. Верны оба числа, но&nbsp;отвечают на&nbsp;разные вопросы: 998&nbsp;₽ маркетинг тратит на&nbsp;одного нового клиента магазина, а&nbsp;1&nbsp;844&nbsp;₽ стоит клиент, купленный рекламой. Решать про бюджет нужно по&nbsp;второму, а&nbsp;лучше&nbsp;— по&nbsp;CAC канала. Граница размыта: человек мог увидеть баннер, а&nbsp;через неделю прийти сам. Это вопрос атрибуции из&nbsp;10.3.</p>
+
+        <h3 class="sub-h">ARPU и&nbsp;ARPPU: одна выручка, три знаменателя</h3>
+        <p>ARPU&nbsp;— выручка за&nbsp;период на&nbsp;одного пользователя<a class="ref" href="#src-4" data-ref="src-4">4</a>, <span class="term" tabindex="0" data-g="arppu">ARPPU</span>&nbsp;— на&nbsp;одного платящего. Числитель один, знаменатели разные. Июнь 2026&nbsp;года: <span class="term" tabindex="0" data-g="netrev">чистая выручка</span>, то&nbsp;есть без возвращённых заказов, 18,69&nbsp;млн&nbsp;₽.</p>
+        <div class="tbl ue-tbl">
+          <table>
+            <thead><tr><th>Делим на</th><th>Людей</th><th>На одного, ₽</th></tr></thead>
+            <tbody>
+              <tr><td>платящих: оплатили заказ в&nbsp;июне (ARPPU)</td><td>4&nbsp;545</td><td>4&nbsp;112</td></tr>
+              <tr><td>активных: заходили в&nbsp;июне (ARPU)</td><td>11&nbsp;065</td><td>1&nbsp;689</td></tr>
+              <tr><td>всю базу: зарегистрированы к&nbsp;концу июня</td><td>60&nbsp;504</td><td>309</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>ARPPU в&nbsp;2,4 раза больше ARPU на&nbsp;активного: в&nbsp;июне платил 41% заходивших. И&nbsp;в&nbsp;13 раз больше ARPU на&nbsp;всю базу, где лежат и&nbsp;ушедшие год назад. Часто пишут, что ARPU и&nbsp;ARPPU различаются в&nbsp;десять раз. Так бывает при знаменателе «вся база» и&nbsp;в&nbsp;продуктах вроде мобильных игр, где платит малая доля играющих. В&nbsp;магазин приходят за&nbsp;покупкой, и&nbsp;на&nbsp;активных разница меньше. Поэтому у&nbsp;ARPU всегда называют знаменатель.</p>
+
+        <h3 class="sub-h">Средний чек и&nbsp;частота</h3>
+        <p>ARPU раскладывается на&nbsp;множители, как выручка в&nbsp;дереве метрик из&nbsp;9.4: доля платящих × <span class="term" tabindex="0" data-g="freq">частота покупок</span> × выручка на&nbsp;заказ. Июнь: 0,41 × 1,17 заказа на&nbsp;платящего × 3&nbsp;519&nbsp;₽ ≈ 1&nbsp;689&nbsp;₽. <span class="term" tabindex="0" data-g="aov">Средний чек</span>&nbsp;— сколько клиент платит за&nbsp;заказ&nbsp;— в&nbsp;июне 4&nbsp;400&nbsp;₽, больше выручки на&nbsp;заказ: часть заказов&nbsp;— чужой товар, с&nbsp;которого магазину достаётся комиссия, а&nbsp;часть вернули. Чек описывает заказ, ARPU&nbsp;— человека за&nbsp;период, вместе с&nbsp;теми, кто ничего не&nbsp;купил.</p>
+
+        <h3 class="sub-h">От&nbsp;оборота к&nbsp;маржинальному доходу</h3>
+        <div class="tbl ue-tbl ue-wf">
+          <table>
+            <thead><tr><th>За 24 месяца</th><th>Млн&nbsp;₽</th></tr></thead>
+            <tbody>
+              <tr><td><span class="term" tabindex="0" data-g="gmv">Оборот (GMV)</span> по&nbsp;ценам до&nbsp;скидки</td><td>382,34</td></tr>
+              <tr><td>− скидки и&nbsp;бонусы</td><td>18,66</td></tr>
+              <tr><td>= оплачено клиентами</td><td>363,69</td></tr>
+              <tr><td>− доля продавцов <span class="term" tabindex="0" data-g="mkt">маркетплейса</span></td><td>59,24</td></tr>
+              <tr><td>= <span class="term" tabindex="0" data-g="revenue">выручка</span></td><td>304,44</td></tr>
+              <tr><td>− возвраты</td><td>14,95</td></tr>
+              <tr><td>= чистая выручка</td><td>289,49</td></tr>
+              <tr><td>− себестоимость проданного</td><td>182,20</td></tr>
+              <tr><td>= валовая прибыль</td><td>107,29</td></tr>
+              <tr><td>− доставка, у&nbsp;возвратов дважды</td><td>19,18</td></tr>
+              <tr><td>− эквайринг</td><td>8,00</td></tr>
+              <tr class="ue-tot"><td>= маржинальный доход</td><td>80,11</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Часть заказов&nbsp;— товары чужих продавцов: магазин берёт 15% комиссии, остальное уходит продавцу. <span class="term" tabindex="0" data-g="gm">Валовая маржа</span>&nbsp;— доля чистой выручки, которая остаётся после себестоимости: 107,29 / 289,49 = 37,1%. Переменные издержки растут с&nbsp;каждым заказом: доставка и&nbsp;<span class="term" tabindex="0" data-g="acq">эквайринг</span>, комиссия банка 2,2% за&nbsp;приём оплаты картой. Маржинальный доход&nbsp;— выручка минус себестоимость и&nbsp;все переменные издержки<a class="ref" href="#src-5" data-ref="src-5">5</a>, его называют и&nbsp;маржинальной прибылью: 80,11&nbsp;млн&nbsp;₽, 27,7% чистой выручки. <span class="term" tabindex="0" data-g="fixed">Постоянные издержки</span>&nbsp;— аренда, зарплаты, серверы&nbsp;— от&nbsp;числа заказов не&nbsp;зависят и&nbsp;в&nbsp;юнит не&nbsp;входят.</p>
+        <p>На&nbsp;одном заказе: обычный заказ своего товара (до&nbsp;10&nbsp;000&nbsp;₽ по&nbsp;ценам до&nbsp;скидки, без возврата) оплачен в&nbsp;среднем на&nbsp;3&nbsp;186&nbsp;₽. Себестоимость 2&nbsp;081&nbsp;₽, доставка 251&nbsp;₽, эквайринг 70&nbsp;₽, маржинальный доход&nbsp;— 783&nbsp;₽ (слагаемые округлены). На&nbsp;клиента такой доход копится месяц за&nbsp;месяцем, как на&nbsp;весах в&nbsp;сцене, а&nbsp;месяц, когда весы перевешивают,&nbsp;— <span class="term" tabindex="0" data-g="payback">срок окупаемости</span>.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: окупается&nbsp;ли реклама</h2>
+        <p>Маркетинг просит добавить бюджет соцсетям и&nbsp;приносит смешанный CAC: 998&nbsp;₽ на&nbsp;нового клиента, а&nbsp;клиент за&nbsp;два года приносит больше. У&nbsp;финансов свой отчёт, где реклама и&nbsp;доход стоят в&nbsp;одной строке месяца.</p>
+        <p>Задача&nbsp;— собрать экономику одного клиента из&nbsp;данных трёх отделов. Расходы по&nbsp;каналам и&nbsp;месяцам ведёт маркетинг (<code>marketing_spend</code>), клиентов с&nbsp;каналом и&nbsp;активностью&nbsp;— продукт (<code>clients</code>, <code>activity</code>), заказы с&nbsp;себестоимостью, доставкой, эквайрингом и&nbsp;возвратами&nbsp;— финансы (<code>orders</code>). По&nbsp;каждому каналу нужно ответить: сколько стоит клиент, сколько он&nbsp;оставляет магазину и&nbsp;что из&nbsp;этого больше.</p>
+      </section>
+
+      <section data-sec="method" data-title="Собери юнит">
+        <h2 id="method"><span class="sn">03</span>Метод: собери юнит</h2>
+        <p>Сводим три таблицы по&nbsp;каналу: из&nbsp;маркетинга&nbsp;— расходы, из&nbsp;продукта&nbsp;— сколько клиентов пришло и&nbsp;сколько из&nbsp;них платили, из&nbsp;финансов&nbsp;— их&nbsp;заказы. Маржинальный доход заказа считаем по&nbsp;соглашению учебника: у&nbsp;возвращённого заказа выручки и&nbsp;себестоимости нет, доставка оплачена дважды, эквайринг не&nbsp;возвращается.</p>
+        <div class="formula"><span class="f">МД на&nbsp;клиента = доля платящих × заказов на&nbsp;платящего × средний чек × маржа с&nbsp;чека</span><small>МД&nbsp;— маржинальный доход, маржа с&nbsp;чека&nbsp;— он&nbsp;же в&nbsp;процентах от&nbsp;оплаченного. Вся реклама: 0,684 × 1,845 × 4&nbsp;137&nbsp;₽ × 21,97% = 1&nbsp;147&nbsp;₽ против CAC 1&nbsp;844&nbsp;₽.</small></div>
+        <p>Горизонт&nbsp;— 24 месяца данных. Клиенты последних месяцев ещё не&nbsp;успели вернуться за&nbsp;покупками, поэтому доход на&nbsp;клиента здесь ниже, чем в&nbsp;сцене; как выбрать горизонт, разберём в&nbsp;10.2.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="unit"></div>
+        <p>Без органики реклама вернула 62% расходов, с&nbsp;органикой&nbsp;— «133%»: в&nbsp;юнит добавили 27&nbsp;742 бесплатных клиента с&nbsp;их доходом. Партнёры окупились: магазин платит только за&nbsp;купивших. Поиск в&nbsp;минусе на&nbsp;128&nbsp;₽ на&nbsp;клиента, но&nbsp;это лаг: 58% его клиентов пришли меньше года назад и&nbsp;до&nbsp;13-го месяца не&nbsp;дожили. Соцсети вернули 14% расходов.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: оборот, возвраты, лаг, среднее по&nbsp;каналам</h2>
+        <div class="callout"><p><b>Выручка и&nbsp;оборот&nbsp;— разные вещи.</b> Маркетплейс дал 24,1% заказов и&nbsp;19,2% оборота, но&nbsp;только 3,4% выручки. Средний заказ маркетплейса без возврата оплачен на&nbsp;3&nbsp;404&nbsp;₽, а&nbsp;выручки даёт 511&nbsp;₽ и&nbsp;маржинального дохода 436&nbsp;₽. Сравнивать CAC с&nbsp;оборотом нельзя: оборот&nbsp;— не&nbsp;выручка<a class="ref" href="#src-3" data-ref="src-3">3</a>. В&nbsp;беттинге то&nbsp;же различие: оборот&nbsp;— сумма всех ставок, а&nbsp;доход букмекера начинается с&nbsp;<span class="term" tabindex="0" data-g="ggr">GGR</span>, ставок минус выигрыши игроков. Оборот может расти, а&nbsp;GGR падать, если игроки стали чаще выигрывать, поэтому юнит-экономику букмекера считают от&nbsp;GGR.</p></div>
+        <div class="callout"><p><b>Возвраты и&nbsp;бонусы.</b> Вернули 5,5% заказов, у&nbsp;маркетплейса 7,1%. Возврат дороже, чем кажется: выручки нет, доставка оплачена дважды, эквайринг не&nbsp;вернулся. Возвраты меняют и&nbsp;знаменатели: без 223 человек, вернувших в&nbsp;июне все заказы, ARPPU станет 4&nbsp;324&nbsp;₽ вместо 4&nbsp;112&nbsp;₽. Скидки и&nbsp;бонусы съели 4,9% оборота, и&nbsp;важно, куда их записать. Приветственная скидка 15% на&nbsp;первый заказ по&nbsp;сути расход на&nbsp;привлечение: в&nbsp;поиске она подняла&nbsp;бы CAC с&nbsp;1&nbsp;506 до&nbsp;1&nbsp;714&nbsp;₽, а&nbsp;органика перестала&nbsp;бы быть бесплатной&nbsp;— 211&nbsp;₽ на&nbsp;клиента, 5,84&nbsp;млн&nbsp;₽ за&nbsp;два года. Записывайте скидку в&nbsp;одно место: в&nbsp;CAC или в&nbsp;маржу, но&nbsp;не&nbsp;в&nbsp;оба.</p></div>
+        <div class="callout"><p><b>Лаг между расходом и&nbsp;доходом.</b> Реклама оплачена в&nbsp;месяц привлечения, а&nbsp;маржинальный доход идёт больше года: в&nbsp;первый месяц клиент поиска возвращает 523 из&nbsp;1&nbsp;506&nbsp;₽, 35%. Месячный отчёт «реклама против маржинального дохода» сравнивает новых клиентов со&nbsp;старыми: в&nbsp;июне 2026&nbsp;года 68% маржинального дохода принесли пришедшие раньше. Добавьте бюджет&nbsp;— месяц покажет убыток, урежьте&nbsp;— «рост эффективности». Окупаемость смотрят по&nbsp;когортам, это тема 10.3.</p></div>
+        <div class="callout"><p><b>Смешанный CAC скрывает соцсети.</b> Соцсети забирают 43% рекламного бюджета и&nbsp;дают 26% рекламных новичков. Платит 44% из&nbsp;них, реже и&nbsp;с&nbsp;меньшим чеком: 429&nbsp;₽ маржинального дохода на&nbsp;клиента против 3&nbsp;054&nbsp;₽ CAC. Даже за&nbsp;24 месяца жизни средний клиент из&nbsp;соцсетей приносит лишь 576&nbsp;₽. В&nbsp;смешанном CAC этого не&nbsp;видно: реклама целиком вернула 62%, а&nbsp;без соцсетей&nbsp;— 98,5% (CAC 1&nbsp;420&nbsp;₽, маржинальный доход 1&nbsp;399&nbsp;₽ на&nbsp;клиента).</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения</h2>
+        <p>Бухгалтерский учёт и&nbsp;<span class="term" tabindex="0" data-g="pnl">P&amp;L</span>, отчёт о&nbsp;прибылях и&nbsp;убытках, в&nbsp;учебник не&nbsp;входят. Здесь управленческий взгляд аналитика: деньги раскладывают по&nbsp;клиентам и&nbsp;каналам, чтобы решить, куда тратить бюджет, а&nbsp;не&nbsp;чтобы сдать отчётность. Поэтому в&nbsp;юните нет постоянных издержек, налогов, амортизации и&nbsp;того, когда деньги на&nbsp;самом деле пришли на&nbsp;счёт. Маржинальный доход аналитика не&nbsp;совпадёт с&nbsp;прибылью в&nbsp;отчётности, и&nbsp;это нормально, если определения записаны.</p>
+        <p>Накопленный доход среднего клиента&nbsp;— первый шаг к&nbsp;<span class="term" tabindex="0" data-g="ltv">LTV</span>. Горизонт, хвост и&nbsp;интервал разберём в&nbsp;10.2, окупаемость по&nbsp;когортам и&nbsp;предельный CAC&nbsp;— в&nbsp;10.3.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: CAC, ARPU, сводная по&nbsp;каналам</h2>
+        <p>CAC по&nbsp;каналам из&nbsp;таблицы расходов и&nbsp;таблицы привлечений, смешанный CAC без органики и&nbsp;с&nbsp;ней. База <code>unit</code> в&nbsp;PostgreSQL 16 загружена из&nbsp;тех&nbsp;же CSV, что и&nbsp;pandas.</p>
+        <div class="block wide" data-code="cac"></div>
+        <p>ARPU и&nbsp;ARPPU по&nbsp;месяцам: одна выручка на&nbsp;три знаменателя.</p>
+        <div class="block wide" data-code="arpu"></div>
+        <p>Сводная юнит-экономики по&nbsp;каналам в&nbsp;pandas: те&nbsp;же числа, что в&nbsp;интерактиве, и&nbsp;средний клиент по&nbsp;месяцам жизни, как в&nbsp;сцене.</p>
+        <div class="block wide" data-code="unit"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Юнит-экономика» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Skok D. <a href="https://www.forentrepreneurs.com/saas-metrics-2/" target="_blank" rel="noopener">SaaS Metrics 2.0&nbsp;— A Guide to Measuring and Improving What Matters</a>. For Entrepreneurs. Классический разбор CAC и&nbsp;срока его окупаемости; там&nbsp;же правило считать в&nbsp;CAC все расходы на&nbsp;продажи и&nbsp;маркетинг.</li>
+          <li id="src-2">Croll A., Yoskovitz B. Lean Analytics. O'Reilly, 2013. Юнит-экономика и&nbsp;главные метрики по&nbsp;типам бизнеса: интернет-магазин, маркетплейс, подписка, мобильное приложение.</li>
+          <li id="src-3">Andreessen Horowitz. <a href="https://a16z.com/16-startup-metrics/" target="_blank" rel="noopener">16 Startup Metrics</a>. Оборот (GMV) против выручки и&nbsp;смешанный CAC против CAC платных каналов&nbsp;— типичные ошибки в&nbsp;определениях.</li>
+          <li id="src-4">Andreessen Horowitz. <a href="https://a16z.com/16-more-startup-metrics/" target="_blank" rel="noopener">16 More Startup Metrics</a>. Определение ARPU: выручка за&nbsp;период на&nbsp;одного пользователя.</li>
+          <li id="src-5">Horngren C.&nbsp;T., Datar S.&nbsp;M., Rajan M.&nbsp;V. Cost Accounting: A Managerial Emphasis. 14th ed. Pearson, 2012. Маржинальный доход и&nbsp;переменные издержки в&nbsp;управленческом учёте, глава об&nbsp;анализе «затраты&nbsp;— объём&nbsp;— прибыль».</li>
+        </ol>
+      </section>

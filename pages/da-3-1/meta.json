@@ -1,0 +1,5 @@
+{
+  "title": "SELECT и порядок выполнения",
+  "description": "Страница 3.1 курса «Аналитика 101»: в каком порядке база выполняет SELECT, чем WHERE отличается от HAVING, фильтры IN, BETWEEN и LIKE, NULL в сортировке, DISTINCT, LIMIT и OFFSET и различия диалектов SQL.",
+  "file": "da-3-1-select-order"
+}

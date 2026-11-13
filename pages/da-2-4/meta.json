@@ -1,0 +1,5 @@
+{
+  "title": "Группировки, сводные, соединения",
+  "description": "Страница 2.4 курса «Аналитика 101»: groupby и split-apply-combine, agg и transform, pivot_table и melt, типы merge, индикатор и проверка кардинальности на учебной выгрузке заказов.",
+  "file": "da-2-4-groupby-pivot-merge"
+}

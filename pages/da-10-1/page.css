@@ -1,0 +1,90 @@
+/* ===== Сцена: клиент на весах ===== */
+.scene .ue-sc { position: relative; width: 100%; height: 100%; }
+.scene .ue-sc-in svg { display: block; overflow: visible; }
+.scene .ue-sc-in svg text { font-family: var(--mono); }
+.scene .ue-sc-in svg text.ue-halo { paint-order: stroke; stroke: #0b0f19; stroke-width: 4px; stroke-linejoin: round; }
+.scene .ue-sc-calls { position: absolute; inset: 0; pointer-events: none; }
+.scene .ue-call { position: absolute; background: #141b2b; border: 1px solid var(--s-acc); color: var(--s-ink); font: 500 12.5px/1.35 var(--ui); padding: 6px 10px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .35); text-align: center; animation: ueIn .35s ease; }
+.scene .ue-call.up { transform: translateY(-100%); }
+@keyframes ueIn { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .scene .ue-call { animation: none; } }
+.scene .sc-leg span { white-space: nowrap; }
+@container (max-width: 1100px) { .scene .sc-info { display: none; } }
+@container (max-width: 860px) { .scene .sc-stage { height: 560px; } }
+@container (max-width: 560px) {
+  .scene .sc-stage { height: 600px; }
+  .scene .sc-html { padding: 70px 8px 54px; }
+  .scene .ue-call { font-size: 11px; padding: 5px 8px; }
+  .scene .hb span { white-space: nowrap; }
+  .scene .hb small { display: none; }
+}
+
+/* ===== Таблицы в тексте ===== */
+.ue-tbl td:not(:first-child), .ue-tbl th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ue-wf td:first-child { white-space: normal; }
+.ue-wf tr.ue-tot td { font-weight: 650; border-top: 2px solid var(--line-2); }
+@media (max-width: 640px) {
+  .ue-tbl table { font-size: 12.5px; }
+  .ue-tbl td, .ue-tbl th { padding-right: 6px; }
+  .ue-tbl th { font-size: 10px; letter-spacing: 0; }
+  .ue-tbl td:first-child { white-space: normal; }
+  .formula .f { white-space: normal; }
+}
+
+/* ===== Интерактив «Собери юнит» ===== */
+.ue-do { padding: 10px 16px 0; margin: 0 !important; }
+.ue-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 16px 4px; }
+.ue-top .seg { flex-wrap: wrap; max-width: 100%; }
+.ue-org { display: inline-flex; align-items: center; gap: 8px; font: 500 13.5px/1.2 var(--ui); color: var(--ink); cursor: pointer; }
+.ue-org input { width: 17px; height: 17px; accent-color: var(--accent); margin: 0; }
+.ue-org.off { color: var(--muted); cursor: not-allowed; }
+.ue-fields { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; padding: 10px 16px 4px; }
+.ue-f { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.ue-f span { font: 12px/1.25 var(--ui); color: var(--muted); min-height: 30px; display: flex; align-items: flex-end; }
+.ue-f input { width: 100%; min-width: 0; font: 500 14px/1.2 var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); background: var(--paper); border: 1px solid var(--line-2); border-radius: 8px; padding: 7px 9px; text-align: right; }
+.ue-f input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.ue-f input.ue-bad { border-color: var(--bad); color: var(--bad); }
+.article .block p.ue-orgline { margin: 0; padding: 2px 16px 0; font: 12.5px/1.45 var(--ui); color: var(--muted); min-height: 18px; }
+.ue-flow { padding: 6px 16px 0; min-width: 0; }
+.ue-flow svg { display: block; width: 100%; height: auto; overflow: visible; }
+.ue-flow .ue-b-sp { fill: var(--warn); opacity: .45; }
+.ue-flow .ue-b-pd { fill: var(--c1); opacity: .32; }
+.ue-flow .ue-b-cm { fill: var(--accent); opacity: .55; }
+.ue-flow .ue-b-co { fill: var(--c8); opacity: .3; }
+.ue-flow .ue-n { fill: var(--surface); stroke: var(--line-2); stroke-width: 1.2; }
+.ue-flow .ue-n-sp { stroke: var(--warn); fill: var(--warn-soft); }
+.ue-flow .ue-n-cm { stroke: var(--accent); fill: var(--accent-soft); }
+.ue-flow .ue-n-co { stroke: var(--line-2); fill: var(--sunk); }
+.ue-flow text { font: 12px var(--ui); fill: var(--ink-2); }
+.ue-flow text.ue-t0 { font: 600 12px var(--ui); fill: var(--ink); }
+.ue-flow text.ue-tb { font: 600 14px var(--mono); fill: var(--ink); }
+.ue-flow text.ue-tor { font: 500 11.5px var(--ui); fill: var(--accent); }
+.ue-unit { padding: 14px 16px 4px; display: grid; gap: 6px; }
+.ue-ut { font: 600 12px/1.3 var(--ui); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.ue-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 84px; align-items: center; gap: 10px; }
+.ue-rl { font: 13px/1.25 var(--ui); color: var(--ink-2); }
+.ue-row b { font: 600 14px/1 var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.ue-bar { display: block; height: 14px; background: var(--sunk); border-radius: 4px; overflow: hidden; }
+.ue-bar i { display: block; height: 100%; border-radius: 4px; transition: width .25s ease; }
+.ue-bar .ue-bc { background: var(--warn); }
+.ue-bar .ue-bm { background: var(--accent); }
+.ue-res { font: 600 13.5px/1.35 var(--ui); padding: 2px 0 0; }
+.ue-res.ue-pos { color: var(--good); }
+.ue-res.ue-neg { color: var(--bad); }
+.ue-narr { padding: 8px 16px 12px; }
+.article .block .ue-narr p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink-2); }
+@media (prefers-reduced-motion: reduce) { .ue-bar i { transition: none; } }
+@media (max-width: 900px) { .ue-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) {
+  .ue-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 10px 12px 4px; }
+  .ue-top, .ue-unit, .ue-narr, .ue-flow { padding-left: 12px; padding-right: 12px; }
+  .ue-top .seg button { padding: 5px 7px; font-size: 12.5px; }
+  .article .block p.ue-orgline { padding-left: 12px; padding-right: 12px; }
+  .ue-row { grid-template-columns: 96px minmax(0, 1fr) 72px; gap: 8px; }
+  .ue-rl { font-size: 12px; }
+  .ue-row b { font-size: 13px; }
+  .ue-flow text.ue-tb { font-size: 13px; }
+}
+
+/* вывод psql и pandas: широкие таблицы прокручиваются, а не переносятся */
+.block .out pre { white-space: pre; overflow-x: auto; max-height: none; }

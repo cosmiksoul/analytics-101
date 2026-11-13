@@ -1,0 +1,59 @@
+/* ===== Сцена: выборки из 100 000 пользователей ===== */
+.scene .sb-sc { position: relative; flex: 1; align-self: stretch; min-width: 0; min-height: 0; }
+.scene .sb-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* табло справа наезжает на счётчики */
+@container (max-width: 1100px) { .scene .sc-info { display: none; } }
+@container (max-width: 860px) { .sc-stage { height: 560px; } }
+@container (max-width: 560px) {
+  .sc-stage { height: 580px; }
+  .scene .sc-html { padding-top: 76px; }
+  .scene .hb small { display: block; margin: 2px 0 0; font-size: 9.5px; }
+  .scene .hb b { font-size: 16px; }
+}
+.scene .sc-leg span { white-space: nowrap; }
+
+/* ===== Таблицы статьи ===== */
+.sb-t td, .sb-t th { font-variant-numeric: tabular-nums; }
+.sb-wide td:first-child { white-space: normal; min-width: 9em; }
+@media (max-width: 640px) {
+  .formula .f { white-space: normal; }
+  .sb-t td:first-child { white-space: normal; }
+  .sb-t table { font-size: 13.5px; }
+  .sb-wide td:first-child { min-width: 7em; }
+}
+
+/* ===== Интерактив «Смещение против разброса» ===== */
+.tg-do { padding: 10px 16px 0; margin: 0 !important; }
+.tg-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 10px 16px 12px; }
+.tg-grp { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.tg-lb { font: 500 12px/1 var(--mono); color: var(--muted); }
+.tg-ctl .seg { flex-wrap: wrap; }
+.tg-stage { display: grid; grid-template-columns: minmax(0, 1fr) 300px; border-top: 1px solid var(--line); }
+.tg-cvw { position: relative; height: 420px; min-width: 0; }
+.tg-cvw canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.tg-side { border-left: 1px solid var(--line); padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.article .block .tg-cap { font: 600 14px/1.35 var(--ui); margin: 0; color: var(--ink); min-height: 2.7em; }
+.tg-ro { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+.tg-ro > div { min-width: 0; }
+.tg-ro .big { font-size: 19px; overflow-wrap: anywhere; }
+.tg-ro .lbl { font-size: 11.5px; line-height: 1.3; }
+.article .block .tg-pp { margin: 0; font: 12px/1.45 var(--ui); color: var(--ink-2); }
+.tg-log table { width: 100%; border-collapse: collapse; font: 12px/1.3 var(--mono); font-variant-numeric: tabular-nums; }
+.tg-log th { text-align: right; font: 500 10.5px/1.2 var(--mono); color: var(--muted); padding: 0 0 5px 6px; border-bottom: 1px solid var(--line); }
+.tg-log td { text-align: right; padding: 4px 0 4px 6px; border-bottom: 1px solid var(--line); color: var(--ink-2); white-space: nowrap; }
+.tg-log th:first-child, .tg-log td:first-child { text-align: left; padding-left: 0; }
+.tg-log tr:first-child td { color: var(--ink); }
+.article .block .tg-empty { margin: 0; font: 12px/1.4 var(--ui); color: var(--muted); }
+@media (max-width: 860px) {
+  .tg-stage { grid-template-columns: 1fr; }
+  .tg-side { border-left: 0; border-top: 1px solid var(--line); }
+  .tg-cvw { height: 380px; }
+}
+@media (max-width: 420px) {
+  .tg-ctl { gap: 10px 12px; padding: 10px 12px 12px; }
+  .tg-ctl .seg button { padding: 5px 7px; font-size: 12.5px; }
+  .tg-cvw { height: 340px; }
+}
+
+/* ===== Вывод кода: таблицы не переносятся, а прокручиваются ===== */
+.block[data-code] .out pre { white-space: pre; overflow-x: auto; }

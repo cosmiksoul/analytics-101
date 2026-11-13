@@ -1,0 +1,147 @@
+      <p class="eyebrow">Дата аналитика · Тема 05 · <b>Вероятность</b></p>
+      <h1>Случайные величины и&nbsp;распределения</h1>
+      <p class="lead">После страницы вы будете узнавать в&nbsp;данных продукта знакомые <span class="term" tabindex="0" data-g="rv">случайные величины</span> и&nbsp;их <span class="term" tabindex="0" data-g="dist">распределения</span>: число покупок, время между заказами, сумму чека. И&nbsp;знать, какая сводка для&nbsp;каждой честна: среднее, <span class="term" tabindex="0" data-g="median">медиана</span> или <span class="term" tabindex="0" data-g="percentile">перцентиль</span>.</p>
+      <div class="meta-row"><span class="pill">≈&nbsp;30&nbsp;минут</span><span class="pill">анимация из&nbsp;12&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">7&nbsp;блоков кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: число, у&nbsp;которого есть распределение</h2>
+        <p>Случайная величина — число, которое получается из&nbsp;случайного исхода: покупки в&nbsp;сотне визитов, дни до&nbsp;следующего заказа, рубли в&nbsp;чеке. До&nbsp;опыта её значение неизвестно, но&nbsp;известно распределение — какие значения выпадают и&nbsp;как&nbsp;часто, и&nbsp;его задают несколько <span class="term" tabindex="0" data-g="param">параметров</span>. У&nbsp;продуктовых метрик формы повторяются: число покупок — биномиальное, интервал между заказами — экспоненциальное, сумма чека — горб с&nbsp;длинным хвостом вправо. От&nbsp;формы зависит, какая сводка честна: на&nbsp;симметричных данных среднее и&nbsp;медиана совпадают, а&nbsp;хвост уводит среднее вправо, и&nbsp;типичное значение показывает медиана.</p>
+        <div class="scene" id="scene" aria-label="Анимация: монетка конверсии бросается сто раз, из тысячи сотен визитов вырастает биномиальная гистограмма; интервалы между заказами рисуют экспоненту, суммы чеков — горб с длинным хвостом; ползунки параметров меняют форму, в конце среднее, медиана и 95-й перцентиль трёх распределений рядом"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже — та же мысль подробно.</p>
+
+        <h3 class="sub-h">Дискретные и&nbsp;непрерывные</h3>
+        <p><span class="term" tabindex="0" data-g="discrete">Дискретная</span> величина принимает отдельные значения, которые можно перечислить: покупок в&nbsp;сотне визитов 0, 1, 2… <span class="term" tabindex="0" data-g="continuous">Непрерывная</span> — любое число из&nbsp;отрезка: интервал между заказами бывает и&nbsp;8,29, и&nbsp;8,291&nbsp;дня. Сумма чека формально дискретна, до&nbsp;копейки, но&nbsp;значений так много, что&nbsp;её считают непрерывной.</p>
+
+        <h3 class="sub-h">Функция массы и&nbsp;плотность</h3>
+        <p>Распределение дискретной величины задаёт <span class="term" tabindex="0" data-g="pmf">функция массы</span> — вероятность каждого значения<a class="ref" href="#src-1" data-ref="src-1">1</a>:</p>
+        <div class="formula"><span class="f">p(k) = P(K = k),   Σ<sub>k</sub> p(k) = 1</span><small>K — случайная величина, k — одно из&nbsp;её значений · сумма по&nbsp;всем значениям равна единице · для&nbsp;числа покупок в&nbsp;сотне визитов p(3) = 0,222</small></div>
+        <p>У&nbsp;непрерывной величины вероятность точного значения нулевая: интервал ровно в&nbsp;8,000… дня не&nbsp;повторится. Вместо неё работает <span class="term" tabindex="0" data-g="pdf">плотность</span> f(x) — вероятность на&nbsp;единицу длины. Вероятность попасть в&nbsp;отрезок равна площади под&nbsp;плотностью, как&nbsp;в&nbsp;интеграле из&nbsp;4.3<a class="ref" href="#src-1" data-ref="src-1">1</a>:</p>
+        <div class="formula"><span class="f">P(a ≤ X ≤ b) = ∫<sub>a</sub><sup>b</sup> f(x) dx</span><small>f(x) — плотность в&nbsp;точке x · площадь под&nbsp;всей кривой равна 1 · для&nbsp;интервалов между заказами P(0 ≤ X ≤ 7) = 0,442</small></div>
+
+        <h3 class="sub-h">Функция распределения и&nbsp;квантили</h3>
+        <p><span class="term" tabindex="0" data-g="cdf">Функция распределения</span> F(x) = P(X ≤ x) работает для&nbsp;обоих видов: она копит вероятность слева направо от&nbsp;0&nbsp;до&nbsp;1. Обратный вопрос — где набирается доля p — задаёт <span class="term" tabindex="0" data-g="quantile">квантиль</span> уровня p. Медиана — квантиль 0,5, перцентиль — квантиль с&nbsp;уровнем в&nbsp;процентах: 95-й перцентиль интервала между заказами — 35,9&nbsp;дня, 95% интервалов короче.</p>
+        <div class="formula"><span class="f">F(x) = P(X ≤ x),   F(q<sub>p</sub>) = p</span><small>F растёт от&nbsp;0&nbsp;до&nbsp;1 · q<sub>p</sub> — квантиль уровня p, в&nbsp;SciPy это метод ppf · q<sub>0,5</sub> — медиана, q<sub>0,95</sub> — 95-й перцентиль</small></div>
+
+        <h3 class="sub-h">Матожидание и&nbsp;дисперсия</h3>
+        <p><span class="term" tabindex="0" data-g="expect">Матожидание</span> E[X] — среднее значений величины, где каждое взвешено своей вероятностью; по&nbsp;выборке его оценивает обычное среднее. <span class="term" tabindex="0" data-g="variance">Дисперсия</span> — средний квадрат отклонения от&nbsp;матожидания, а&nbsp;корень из&nbsp;неё, <span class="term" tabindex="0" data-g="sd">стандартное отклонение</span>, измеряется в&nbsp;единицах самой величины<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <div class="formula"><span class="f">E[X] = Σ<sub>k</sub> k·p(k),   Var X = E[(X − E[X])<sup>2</sup>],   σ = √Var X</span><small>у&nbsp;непрерывной величины сумма меняется на&nbsp;интеграл ∫ x·f(x) dx · для&nbsp;числа покупок в&nbsp;сотне E[K] = 100 · 0,034 = 3,4, Var K = 3,28, σ = 1,81</small></div>
+
+        <h3 class="sub-h">Шесть распределений из&nbsp;продукта</h3>
+        <div class="tbl d52-t"><table>
+          <thead><tr><th>Распределение</th><th>Значения</th><th>Пример</th><th>Среднее</th><th>Дисперсия</th></tr></thead>
+          <tbody>
+            <tr><td><span class="term" tabindex="0" data-g="bern">Бернулли</span>, p</td><td data-l="Значения">0&nbsp;или&nbsp;1</td><td data-l="Пример">купит ли визит, p = 0,034</td><td data-l="Среднее">p</td><td data-l="Дисперсия">p(1 − p)</td></tr>
+            <tr><td><span class="term" tabindex="0" data-g="binom">Биномиальное</span>, n и&nbsp;p</td><td data-l="Значения">0…n</td><td data-l="Пример">покупок из&nbsp;100&nbsp;визитов</td><td data-l="Среднее">np</td><td data-l="Дисперсия">np(1 − p)</td></tr>
+            <tr><td><span class="term" tabindex="0" data-g="pois">Пуассона</span>, λ</td><td data-l="Значения">0, 1, 2…</td><td data-l="Пример">заказов за&nbsp;день, λ ≈&nbsp;38</td><td data-l="Среднее">λ</td><td data-l="Дисперсия">λ</td></tr>
+            <tr><td><span class="term" tabindex="0" data-g="expo">Экспоненциальное</span>, m</td><td data-l="Значения">x ≥ 0</td><td data-l="Пример">дней между заказами, m = 12</td><td data-l="Среднее">m</td><td data-l="Дисперсия">m<sup>2</sup></td></tr>
+            <tr><td><span class="term" tabindex="0" data-g="normal">Нормальное</span>, μ и&nbsp;σ</td><td data-l="Значения">любые</td><td data-l="Пример">средний чек по&nbsp;400&nbsp;заказам</td><td data-l="Среднее">μ</td><td data-l="Дисперсия">σ<sup>2</sup></td></tr>
+            <tr><td><span class="term" tabindex="0" data-g="lognorm">Логнормальное</span>, e<sup>μ</sup> и&nbsp;σ</td><td data-l="Значения">x &gt; 0</td><td data-l="Пример">сумма чека</td><td data-l="Среднее">e<sup>μ + σ²/2</sup></td><td data-l="Дисперсия">(e<sup>σ²</sup> − 1)e<sup>2μ + σ²</sup></td></tr>
+          </tbody>
+        </table></div>
+        <p>Бернулли — одна попытка, биномиальное — сумма n независимых попыток. Пуассон считает независимые события за&nbsp;интервал; при&nbsp;большом n и&nbsp;малом p биномиальное почти не&nbsp;отличается от&nbsp;Пуассона с&nbsp;λ = np<a class="ref" href="#src-1" data-ref="src-1">1</a>. Экспоненциальное — ожидание следующего события: если заказы идут по&nbsp;Пуассону, время между ними экспоненциально. Нормальное описывает суммы и&nbsp;средние многих независимых слагаемых — поэтому его пример средний чек по&nbsp;выборке, об&nbsp;этом страница 5.3. Логнормальное получается из&nbsp;произведения многих множителей: логарифм произведения — сумма логарифмов, и&nbsp;он нормален. Так часто ведут себя суммы чеков, цены и&nbsp;доходы.</p>
+
+        <h3 class="sub-h">Среднее против медианы на&nbsp;тяжёлых хвостах</h3>
+        <p>У&nbsp;симметричного распределения среднее и&nbsp;медиана совпадают. С <span class="term" tabindex="0" data-g="tail">тяжёлым хвостом</span> — нет: редкие огромные значения входят в&nbsp;среднее всей величиной и&nbsp;тянут его вправо, а&nbsp;медиане важен только порядок. У&nbsp;учебных чеков среднее 4&nbsp;334&nbsp;₽, медиана 3&nbsp;080&nbsp;₽, и&nbsp;70,5% чеков дешевле среднего. Про типичный чек честнее медиана, а&nbsp;среднее нужно, когда считаете сумму: выручка — число чеков, умноженное на&nbsp;средний чек.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: узнать распределение и&nbsp;выбрать сводку</h2>
+        <p>Аналитик учебного интернет-магазина готовит месячный отчёт. В&nbsp;нём три метрики, и&nbsp;у&nbsp;каждой есть файл учебных данных (seed 505): число заказов за&nbsp;день — <code>daily_orders.csv</code>, 90&nbsp;дней; дни между заказами клиента — <code>order_gaps.csv</code>, 5&nbsp;000&nbsp;интервалов; сумма оплаченного чека — <code>checks.csv</code>, 20&nbsp;000&nbsp;чеков.</p>
+        <p>Для&nbsp;каждой метрики нужно ответить на&nbsp;два вопроса: на&nbsp;какое распределение похожи данные и&nbsp;какая сводка их честно описывает. «Среднее» подходит не&nbsp;всегда. Фраза «клиент возвращается в&nbsp;среднем через 12&nbsp;дней» внушает, что&nbsp;типичный клиент ждёт 12&nbsp;дней, а&nbsp;половина интервалов короче 8,3&nbsp;дня.</p>
+      </section>
+
+      <section data-sec="zoo" data-title="Зоопарк распределений">
+        <h2 id="zoo"><span class="sn">03</span>Зоопарк распределений: узнать форму по&nbsp;данным</h2>
+        <p>Распределение узнают по&nbsp;гистограмме и&nbsp;по&nbsp;тому, как&nbsp;устроен процесс, который порождает данные<a class="ref" href="#src-3" data-ref="src-3">3</a>. Четыре вопроса к&nbsp;метрике:</p>
+        <ol>
+          <li>Дискретная или&nbsp;непрерывная? Счёт событий дискретен, время и&nbsp;деньги непрерывны.</li>
+          <li>Есть ли граница? Количество, время и&nbsp;деньги не&nbsp;бывают меньше нуля, а&nbsp;нормальное этого не&nbsp;знает.</li>
+          <li>Симметрия или&nbsp;хвост? Если среднее заметно больше медианы, хвост вправо — кандидаты экспоненциальное и&nbsp;логнормальное.</li>
+          <li>Что&nbsp;порождает данные? Счёт независимых событий — Пуассон, сумма многих слагаемых — нормальное, произведение многих множителей — логнормальное, ожидание события — экспоненциальное.</li>
+        </ol>
+        <p>У&nbsp;счётчиков есть быстрая проверка: у&nbsp;Пуассона среднее равно дисперсии. В <code>daily_orders.csv</code> среднее 38,7, дисперсия 42,3 — близко; код в&nbsp;разделе «Код».</p>
+        <p>Интерактив рисует все шесть распределений, как&nbsp;в&nbsp;Seeing Theory<a class="ref" href="#src-2" data-ref="src-2">2</a>. Функции массы и&nbsp;плотности, средние, медианы и&nbsp;квантили считаются по&nbsp;формулам. Выборка из&nbsp;500&nbsp;значений берётся из&nbsp;встроенного в&nbsp;страницу генератора с <span class="term" tabindex="0" data-g="seed">зерном</span>: одно зерно — одна и&nbsp;та же выборка, как&nbsp;у <code>default_rng</code> в&nbsp;NumPy<a class="ref" href="#src-7" data-ref="src-7">7</a>. Сначала предскажите.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="zoo"></div>
+        <p>Лучший подбор, который находит перебор, — логнормальное с&nbsp;медианой 3&nbsp;050&nbsp;₽ и&nbsp;сигмой 0,61: расхождение 2,7%. Расхождение — доля площади гистограммы, которая не&nbsp;совпала с&nbsp;моделью: половина суммы модулей разностей по&nbsp;столбикам в&nbsp;500&nbsp;₽ и&nbsp;хвосту дороже 30&nbsp;000&nbsp;₽. Нормальное в&nbsp;лучшем случае даёт 17,8%, экспоненциальное — 27,7%.</p>
+        <p>Тело совпало, хвост — нет: дороже 15&nbsp;000&nbsp;₽ в&nbsp;модели 0,5% чеков, в&nbsp;данных 2,9%. Учебные чеки — <span class="term" tabindex="0" data-g="mixture">смесь</span>: 97% розницы и&nbsp;3% опта со&nbsp;своим горбом около 25&nbsp;000&nbsp;₽. Кнопка «Как&nbsp;подобрал SciPy» показывает подбор <span class="term" tabindex="0" data-g="mle">методом максимального правдоподобия</span>: он поднимает сигму до&nbsp;0,70, чтобы дотянуться до&nbsp;опта, и&nbsp;портит тело — расхождение 7,6%, а&nbsp;хвост по-прежнему вдвое тоньше данных.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: плотность, суммы, логарифм, хвост</h2>
+        <div class="callout"><p><b>Плотность — не&nbsp;вероятность.</b> Она измеряется в&nbsp;вероятности на&nbsp;единицу x и&nbsp;бывает больше 1. Плотность интервала между заказами в&nbsp;нуле — 0,083&nbsp;на&nbsp;день. Переведите дни в&nbsp;годы, и&nbsp;та же плотность станет 30,4&nbsp;на&nbsp;год, а&nbsp;вероятности не&nbsp;изменятся: P(до&nbsp;7&nbsp;дней) = 0,442&nbsp;в&nbsp;обеих шкалах, площадь под&nbsp;кривой по-прежнему 1.</p></div>
+        <div class="block wide" data-code="density"></div>
+        <div class="callout"><p><b>Дисперсия суммы независимых — сумма дисперсий.</b> Если X и&nbsp;Y независимы, Var(X + Y) = Var X + Var Y<a class="ref" href="#src-1" data-ref="src-1">1</a>. Складываются дисперсии, а&nbsp;не&nbsp;стандартные отклонения: у&nbsp;суммы двух чеков σ = 7&nbsp;681&nbsp;₽, а&nbsp;не&nbsp;10&nbsp;836&nbsp;₽. Для&nbsp;зависимых правило не&nbsp;работает: X + X = 2X, и&nbsp;дисперсия вчетверо больше. Заказы за&nbsp;неделю — сумма семи независимых дней, их дисперсия 7 · 38 = 266. На&nbsp;этом правиле держится стандартная ошибка в&nbsp;5.3.</p></div>
+        <div class="block wide" data-code="var_sum"></div>
+        <div class="callout"><p><b>Логарифм делает логнормальное нормальным.</b> Если X логнормальна, ln X нормальна со&nbsp;средним ln(медианы) и&nbsp;стандартным отклонением σ<a class="ref" href="#src-5" data-ref="src-5">5</a>. <span class="term" tabindex="0" data-g="skew">Асимметрия</span> логнормальной выборки после логарифма падает с&nbsp;2,36&nbsp;до&nbsp;0,01, а&nbsp;у&nbsp;чеков — с&nbsp;6,55&nbsp;только до&nbsp;0,67: опт оставляет второй горб и&nbsp;на&nbsp;логарифмах. Поэтому деньги часто анализируют в&nbsp;логарифмах и&nbsp;возвращаются в&nbsp;рубли через exp.</p></div>
+        <div class="block wide" data-code="log_normal"></div>
+        <div class="callout"><p><b>Среднее чувствительно к&nbsp;хвосту, медиана — нет.</b> Уберите 1% самых дорогих чеков — среднее упадёт на&nbsp;404&nbsp;₽, медиана на&nbsp;30&nbsp;₽. Добавьте один чек на&nbsp;1&nbsp;млн ₽ — среднее вырастет на&nbsp;50&nbsp;₽, медиана не&nbsp;сдвинется. Одна опечатка в&nbsp;сумме заказа меняет средний чек в&nbsp;отчёте.</p></div>
+        <div class="block wide" data-code="mean_median"></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: смеси и&nbsp;нули</h2>
+        <p>Реальные данные редко следуют одному распределению, и&nbsp;шесть форм из&nbsp;таблицы — заготовки, а&nbsp;не&nbsp;законы.</p>
+        <ul>
+          <li><b>Смеси.</b> Чеки — розница и&nbsp;опт, пользователи — новые и&nbsp;постоянные, трафик — будни и&nbsp;выходные. Одна кривая на&nbsp;смесь не&nbsp;ложится, и&nbsp;первым это показывает хвост. Если признак группы есть в&nbsp;данных, распределение строят по&nbsp;каждой группе отдельно; модели смесей — тема блока ML.</li>
+          <li><b>Нули.</b> В <code>visits.csv</code> 96,6% визитов без&nbsp;покупки, поэтому траты на&nbsp;визит — гора нулей и&nbsp;логнормальный хвост у&nbsp;купивших. Ни&nbsp;одно распределение из&nbsp;таблицы такую форму не&nbsp;даёт. Долю нулей описывают отдельно, как&nbsp;Бернулли, а&nbsp;траты купивших — своим распределением. Медиана трат на&nbsp;визит при&nbsp;этом 0&nbsp;₽: честная, но&nbsp;бесполезная сводка.</li>
+        </ul>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: scipy.stats, Пуассон, подбор и&nbsp;Q–Q</h2>
+        <p>Код запущен в&nbsp;Python 3.13&nbsp;с&nbsp;NumPy 2.5.3, pandas 3.0.5&nbsp;и&nbsp;SciPy 1.18.1, вывод вставлен без&nbsp;правок. У&nbsp;каждого распределения в <code>scipy.stats</code> одни и&nbsp;те же методы<a class="ref" href="#src-4" data-ref="src-4">4</a>: <code>pmf</code> или <code>pdf</code> — функция массы или&nbsp;плотность, <code>cdf</code> — функция распределения, <code>ppf</code> — квантиль, <code>rvs</code> — выборка, <code>mean</code>, <code>var</code> и <code>median</code> — сводки. У&nbsp;экспоненциального <code>scale</code> — среднее, у&nbsp;логнормального <code>s</code> — сигма, а <code>scale</code> — медиана<a class="ref" href="#src-5" data-ref="src-5">5</a>.</p>
+        <div class="block wide" data-code="scipy_basics"></div>
+        <p>Число заказов за&nbsp;день сравниваем с&nbsp;Пуассоном, у&nbsp;которого λ — среднее по&nbsp;90&nbsp;дням. На&nbsp;такой короткой выборке доли по&nbsp;интервалам отличаются на&nbsp;несколько процентных пунктов, но&nbsp;форма и&nbsp;близость среднего к&nbsp;дисперсии на&nbsp;месте.</p>
+        <div class="block wide" data-code="daily"></div>
+        <p>Метод <code>fit</code> подбирает параметры методом максимального правдоподобия, <code>floc=0</code> запрещает сдвиг: чек не&nbsp;бывает отрицательным. <span class="term" tabindex="0" data-g="qq">Q–Q-график</span> сравнивает квантили данных и&nbsp;модели на&nbsp;одних уровнях: если модель подходит, точки ложатся на&nbsp;диагональ<a class="ref" href="#src-6" data-ref="src-6">6</a>.</p>
+        <div class="block wide" data-code="fit_qq"></div>
+        <!--qq:start--><figure class="d52-fig wide"><figcaption>Тело чеков легло на прямую, а хвост ушёл вверх: опт дороже, чем обещает модель</figcaption>
+<svg class="d52-qq" viewBox="0 0 480 360" role="img" aria-label="Q–Q-график: квантили логнормальной модели по горизонтали и квантили чеков по вертикали, обе оси в логарифмическом масштабе. Точки лежат на диагонали примерно до 10 тысяч рублей, выше уходят над ней."><line class="d52-gr" x1="54.0" y1="14" x2="54.0" y2="314"/><line class="d52-gr" x1="54" y1="314.0" x2="464" y2="314.0"/><text class="d52-tk" x="54.0" y="330" text-anchor="middle">0,1</text><text class="d52-tk" x="48" y="318.0" text-anchor="end">0,1</text><line class="d52-gr" x1="119.2" y1="14" x2="119.2" y2="314"/><line class="d52-gr" x1="54" y1="266.3" x2="464" y2="266.3"/><text class="d52-tk" x="119.2" y="330" text-anchor="middle">0,3</text><text class="d52-tk" x="48" y="270.3" text-anchor="end">0,3</text><line class="d52-gr" x1="190.7" y1="14" x2="190.7" y2="314"/><line class="d52-gr" x1="54" y1="214.0" x2="464" y2="214.0"/><text class="d52-tk" x="190.7" y="330" text-anchor="middle">1</text><text class="d52-tk" x="48" y="218.0" text-anchor="end">1</text><line class="d52-gr" x1="255.9" y1="14" x2="255.9" y2="314"/><line class="d52-gr" x1="54" y1="166.3" x2="464" y2="166.3"/><text class="d52-tk" x="255.9" y="330" text-anchor="middle">3</text><text class="d52-tk" x="48" y="170.3" text-anchor="end">3</text><line class="d52-gr" x1="327.3" y1="14" x2="327.3" y2="314"/><line class="d52-gr" x1="54" y1="114.0" x2="464" y2="114.0"/><text class="d52-tk" x="327.3" y="330" text-anchor="middle">10</text><text class="d52-tk" x="48" y="118.0" text-anchor="end">10</text><line class="d52-gr" x1="392.5" y1="14" x2="392.5" y2="314"/><line class="d52-gr" x1="54" y1="66.3" x2="464" y2="66.3"/><text class="d52-tk" x="392.5" y="330" text-anchor="middle">30</text><text class="d52-tk" x="48" y="70.3" text-anchor="end">30</text><line class="d52-gr" x1="464.0" y1="14" x2="464.0" y2="314"/><line class="d52-gr" x1="54" y1="14.0" x2="464" y2="14.0"/><text class="d52-tk" x="464.0" y="330" text-anchor="end">100</text><text class="d52-tk" x="48" y="18.0" text-anchor="end">100</text><line class="d52-diag" x1="54.0" y1="314.0" x2="464.0" y2="14.0"/><path class="d52-pts" d="M134 244h0M149 238h0M156 232h0M161 229h0M165 226h0M168 224h0M171 223h0M173 221h0M176 220h0M178 218h0M179 217h0M181 215h0M182 214h0M184 213h0M185 213h0M187 212h0M188 211h0M189 210h0M190 209h0M191 209h0M192 208h0M193 208h0M194 207h0M195 206h0M196 206h0M197 205h0M197 205h0M198 205h0M199 204h0M200 204h0M200 203h0M201 203h0M202 202h0M203 202h0M203 201h0M204 201h0M204 201h0M205 200h0M206 200h0M206 199h0M207 199h0M207 198h0M208 198h0M209 198h0M209 198h0M210 197h0M210 197h0M211 196h0M211 196h0M212 196h0M212 196h0M213 195h0M213 195h0M214 195h0M214 194h0M215 194h0M215 194h0M216 194h0M216 193h0M217 193h0M217 193h0M217 192h0M218 192h0M218 192h0M219 191h0M219 191h0M220 191h0M220 191h0M220 190h0M221 190h0M221 190h0M222 190h0M222 189h0M222 189h0M223 189h0M223 189h0M224 188h0M224 188h0M224 188h0M225 188h0M225 188h0M225 187h0M226 187h0M226 187h0M227 187h0M227 186h0M227 186h0M228 186h0M228 186h0M228 185h0M229 185h0M229 185h0M229 185h0M230 185h0M230 184h0M230 184h0M231 184h0M231 184h0M231 183h0M232 183h0M232 183h0M232 183h0M233 183h0M233 182h0M233 182h0M234 182h0M234 182h0M234 182h0M235 182h0M235 181h0M235 181h0M235 181h0M236 181h0M236 180h0M236 180h0M237 180h0M237 180h0M237 180h0M238 180h0M238 179h0M238 179h0M239 179h0M239 179h0M239 178h0M239 178h0M240 178h0M240 178h0M240 178h0M241 177h0M241 177h0M241 177h0M241 177h0M242 177h0M242 177h0M242 176h0M243 176h0M243 176h0M243 176h0M243 176h0M244 176h0M244 175h0M244 175h0M245 175h0M245 175h0M245 175h0M245 175h0M246 174h0M246 174h0M246 174h0M246 174h0M247 174h0M247 174h0M247 173h0M248 173h0M248 173h0M248 173h0M248 173h0M249 172h0M249 172h0M249 172h0M249 172h0M250 172h0M250 172h0M250 171h0M251 171h0M251 171h0M251 171h0M251 171h0M252 171h0M252 170h0M252 170h0M252 170h0M253 170h0M253 170h0M253 170h0M253 169h0M254 169h0M254 169h0M254 169h0M255 169h0M255 169h0M255 168h0M255 168h0M256 168h0M256 168h0M256 168h0M256 167h0M257 167h0M257 167h0M257 167h0M257 167h0M258 167h0M258 166h0M258 166h0M258 166h0M259 166h0M259 166h0M259 166h0M259 165h0M260 165h0M260 165h0M260 165h0M261 165h0M261 165h0M261 164h0M261 164h0M262 164h0M262 164h0M262 164h0M262 163h0M263 163h0M263 163h0M263 163h0M263 163h0M264 163h0M264 162h0M264 162h0M264 162h0M265 162h0M265 162h0M265 162h0M266 161h0M266 161h0M266 161h0M266 161h0M267 161h0M267 160h0M267 160h0M267 160h0M268 160h0M268 160h0M268 160h0M268 159h0M269 159h0M269 159h0M269 159h0M269 159h0M270 159h0M270 158h0M270 158h0M271 158h0M271 158h0M271 158h0M271 158h0M272 157h0M272 157h0M272 157h0M272 157h0M273 157h0M273 156h0M273 156h0M274 156h0M274 156h0M274 156h0M274 155h0M275 155h0M275 155h0M275 155h0M276 155h0M276 155h0M276 154h0M276 154h0M277 154h0M277 154h0M277 154h0M277 153h0M278 153h0M278 153h0M278 153h0M279 153h0M279 152h0M279 152h0M280 152h0M280 152h0M280 152h0M280 151h0M281 151h0M281 151h0M281 151h0M282 151h0M282 150h0M282 150h0M282 150h0M283 150h0M283 150h0M283 149h0M284 149h0M284 149h0M284 149h0M285 148h0M285 148h0M285 148h0M286 148h0M286 148h0M286 147h0M287 147h0M287 147h0M287 147h0M288 147h0M288 146h0M288 146h0M288 146h0M289 146h0M289 146h0M289 145h0M290 145h0M290 145h0M291 145h0M291 144h0M291 144h0M292 144h0M292 144h0M292 143h0M293 143h0M293 143h0M293 143h0M294 142h0M294 142h0M294 142h0M295 142h0M295 141h0M296 141h0M296 141h0M296 140h0M297 140h0M297 140h0M297 139h0M298 139h0M298 139h0M299 139h0M299 138h0M299 138h0M300 138h0M300 138h0M301 137h0M301 137h0M302 137h0M302 136h0M302 136h0M303 136h0M303 135h0M304 135h0M304 135h0M305 134h0M305 134h0M306 134h0M306 133h0M307 133h0M307 133h0M308 132h0M308 132h0M309 132h0M309 131h0M310 131h0M310 130h0M311 130h0M311 129h0M312 129h0M313 128h0M313 128h0M314 127h0M314 127h0M315 126h0M316 126h0M316 125h0M317 125h0M318 124h0M318 123h0M319 123h0M320 122h0M321 121h0M321 121h0M322 120h0M323 119h0M324 118h0M325 117h0M326 116h0M327 115h0M327 114h0M328 113h0M330 112h0M331 111h0M332 109h0M333 108h0M334 106h0M336 103h0M337 101h0M339 97h0M340 93h0M342 88h0M344 84h0M346 80h0M348 76h0M351 73h0M354 69h0M358 63h0M363 58h0M371 50h0M385 36h0"/><text class="d52-an" x="344.3" y="36.6" text-anchor="end"><tspan>99-й перцентиль:</tspan><tspan x="344.3" dy="1.2em">чеки 29 770 ₽, модель 16 300 ₽</tspan></text><circle class="d52-hl" cx="356.3" cy="66.6" r="6"/><text class="d52-an d52-an2" x="214.7" y="236.2">тело чеков —</text><text class="d52-an d52-an2" x="214.7" y="252.2">на диагонали</text><text class="d52-ax" x="259" y="352" text-anchor="middle">квантиль модели, тыс. ₽ (шкала логарифмическая)</text><text class="d52-ax" transform="translate(14 164) rotate(-90)" text-anchor="middle">квантиль чеков, тыс. ₽</text></svg>
+<p class="d52-figsub">399 точек из блока кода выше: уровни p = (i − 0,5) / 399. Диагональ — «данные совпали с моделью».</p></figure><!--qq:end-->
+        <p>До&nbsp;95-го перцентиля модель и&nbsp;чеки почти совпадают: 10&nbsp;050&nbsp;и&nbsp;10&nbsp;120&nbsp;₽. Выше точки уходят над&nbsp;диагональ: 99-й перцентиль чеков — 29&nbsp;770&nbsp;₽, у&nbsp;модели 16&nbsp;300&nbsp;₽. Это и&nbsp;есть опт, которого одно логнормальное не&nbsp;видит.</p>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Вероятность» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Blitzstein J., Hwang J. <a href="https://projects.iq.harvard.edu/stat110/home" target="_blank" rel="noopener">Introduction to Probability</a>, 2nd ed. CRC Press, 2019. Определения случайной величины, функции массы, плотности и&nbsp;функции распределения, матожидания и&nbsp;дисперсии; биномиальное, Пуассон, экспоненциальное и&nbsp;нормальное и&nbsp;связи между ними.</li>
+          <li id="src-2"><a href="https://seeing-theory.brown.edu/" target="_blank" rel="noopener">Seeing Theory</a>. Brown University. Глава о&nbsp;распределениях — образец интерактива, где параметры меняют форму на&nbsp;глазах.</li>
+          <li id="src-3">Downey A. <a href="https://allendowney.github.io/ThinkStats/" target="_blank" rel="noopener">Think Stats</a>, 3rd ed., 2025. Распределения на&nbsp;реальных данных в&nbsp;Python: функции массы и&nbsp;распределения, моделирование экспоненциальным, нормальным и&nbsp;логнормальным.</li>
+          <li id="src-4">SciPy. <a href="https://docs.scipy.org/doc/scipy/reference/stats.html" target="_blank" rel="noopener">Statistical functions (scipy.stats)</a>. Общий интерфейс распределений: pmf, pdf, cdf, ppf, rvs, fit.</li>
+          <li id="src-5">SciPy. <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.lognorm.html" target="_blank" rel="noopener">scipy.stats.lognorm</a>. Параметры логнормального: s — стандартное отклонение логарифма, scale = e<sup>μ</sup> — медиана.</li>
+          <li id="src-6">Wilk M. B., Gnanadesikan R. <a href="https://doi.org/10.1093/biomet/55.1.1" target="_blank" rel="noopener">Probability plotting methods for the analysis of data</a>. Biometrika, 1968, т. 55, № 1, с. 1–17. Классическая статья о&nbsp;Q–Q-графиках.</li>
+          <li id="src-7">NumPy. <a href="https://numpy.org/doc/stable/reference/random/generator.html" target="_blank" rel="noopener">Random Generator</a>. Генератор <code>default_rng</code> и&nbsp;зерно, с&nbsp;которыми в&nbsp;коде повторяются выборки.</li>
+        </ol>
+      </section>

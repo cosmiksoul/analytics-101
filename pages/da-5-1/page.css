@@ -1,0 +1,71 @@
+/* ===== Сцена: камера на круге ===== */
+.scene .d51 { position: relative; width: 100%; height: 100%; align-self: stretch; }
+.scene .d51-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: hidden; }
+.scene .d51-rect { fill: rgba(232, 236, 244, .025); stroke: #2a3550; stroke-width: 1; }
+.scene .d51-ring { fill: none; stroke-width: 2; stroke-linecap: round; }
+.scene .d51-rB { stroke: #e3c04d; }
+.scene .d51-rA { stroke: #36b8a6; }
+.scene .d51-call { position: absolute; left: 0; top: 0; opacity: 0; visibility: hidden; will-change: transform; z-index: 3; background: #141b2b; border: 1px solid #36b8a6; color: var(--s-ink); font: 500 12.5px/1.25 var(--ui); padding: 5px 9px; border-radius: 7px; box-shadow: 0 6px 18px rgba(0, 0, 0, .35); white-space: nowrap; }
+.scene .d51-cB { border-color: #e3c04d; }
+.scene .d51-cX { border-color: #f06ba5; }
+.scene .sc-leg span { white-space: nowrap; }
+@container (max-width: 1100px) { .scene .sc-info { display: none; } }
+@container (max-width: 860px) { .sc-stage { height: 470px; } }
+@container (max-width: 560px) {
+  .sc-stage { height: 440px; }
+  .scene .d51-call { font-size: 11px; padding: 4px 7px; }
+  .hb small { margin-left: 4px; }
+}
+
+/* ===== Формулы и таблица статьи ===== */
+@media (max-width: 640px) { .formula .f { white-space: normal; } }
+.d51-t td, .d51-t th { font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) { .d51-t table { font-size: 13.5px; } .d51-t th { font-size: 10px; } .d51-t td:first-child { white-space: normal; } }
+
+/* ===== Интерактив «Камера на круге» ===== */
+[data-w="cam"] [hidden] { display: none !important; }
+.cc-do { padding: 10px 16px 0; margin: 0 !important; }
+.cc-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 16px; }
+.cc-lb { font: 500 12px/1 var(--mono); color: var(--muted); }
+.cc-main { min-width: 0; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.cc-plot { position: relative; margin: 12px 12px 0; min-width: 0; overflow: hidden; border-radius: 10px; }
+.cc-plot canvas { display: block; width: 100%; user-select: none; -webkit-user-select: none; }
+.cc-h { position: absolute; left: 0; top: 0; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; padding: 0; border: 0; background: transparent; cursor: grab; touch-action: none; will-change: transform; }
+.cc-h::before { content: ""; width: 18px; height: 18px; box-sizing: border-box; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 1.5px var(--ink), 0 1px 6px rgba(0, 0, 0, .3); }
+.cc-hA::before { background: var(--accent); }
+.cc-hB::before { background: var(--c2); }
+.cc-h:active { cursor: grabbing; }
+.cc-h.sel::before { box-shadow: 0 0 0 1.5px var(--ink), 0 0 0 5px color-mix(in srgb, var(--ink) 22%, transparent), 0 1px 6px rgba(0, 0, 0, .3); }
+.cc-h:focus-visible { outline: 2px dashed var(--ink); outline-offset: -2px; }
+.cc-pad { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 16px 12px; margin-top: auto; }
+.cc-mv, .cc-pre { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.cc-rg { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font: 13px/1.3 var(--ui); color: var(--ink-2); }
+.cc-rg input { width: 150px; accent-color: var(--accent); }
+.cc-rg b { font: 600 13px/1 var(--mono); color: var(--ink); min-width: 96px; }
+.cc-ro { display: grid; gap: 8px; }
+.cc-r { display: grid; gap: 4px; padding: 9px 11px; border-radius: 10px; background: var(--sunk); border: 1px solid transparent; min-width: 0; }
+.cc-r.on { border-color: var(--accent); background: var(--accent-soft); }
+.cc-big { font: 600 24px/1 var(--mono); color: var(--ink); }
+.cc-lbl { font: 12.5px/1.35 var(--ui); color: var(--ink-2); overflow-wrap: anywhere; }
+.article .block .cc-gap { font: 13px/1.45 var(--ui); color: var(--ink-2); }
+.article .block .cc-gap b { color: var(--ink); }
+.cc-tree { display: grid; gap: 4px; font: 12.5px/1.45 var(--ui); color: var(--ink-2); }
+.cc-tree b { color: var(--ink); font: 600 12.5px/1 var(--mono); }
+.article .block .cc-tasks { margin: 0; padding: 0 16px 14px; list-style: none; display: grid; gap: 6px; }
+.article .block .cc-tasks li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 6px; margin: 0; padding: 0; color: var(--ink-2); font-size: 12.5px; line-height: 1.4; }
+.article .block .cc-tasks li b { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-2); display: inline-grid; place-items: center; font: 600 11px/1 var(--mono); color: var(--ink-2); }
+.article .block .cc-tasks li.cc-ok { color: var(--ink); }
+.article .block .cc-tasks li.cc-ok b { background: var(--good); border-color: var(--good); color: var(--surface); }
+.article [data-w="cam"] .narr-text { font-size: 13.5px; }
+@media (max-width: 1180px) { .cc-ro { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) {
+  .cc-bar, .cc-pad { padding-left: 12px; padding-right: 12px; }
+  .article .block .cc-tasks { padding: 0 12px 12px; }
+  .cc-plot { margin: 10px 8px 0; }
+  .cc-big { font-size: 20px; }
+  .cc-rg input { width: 140px; }
+  .cc-mv .btn.small, .cc-pre .btn.small { padding: 6px 9px; }
+}
+
+/* Вывод кода: таблицы pandas прокручиваются, а не переносятся */
+.article [data-code] .out pre { white-space: pre; overflow-x: auto; max-height: 560px; }

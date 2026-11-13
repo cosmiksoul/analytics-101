@@ -1,0 +1,195 @@
+      <p class="eyebrow">Дата аналитика · Тема 01 · <b>Python для анализа</b></p>
+      <h1>Типы и&nbsp;коллекции</h1>
+      <p class="lead">У&nbsp;каждого значения в&nbsp;Python есть <span class="term" tabindex="0" data-g="type">тип</span>, а&nbsp;значения складывают в&nbsp;<span class="term" tabindex="0" data-g="collection">коллекции</span>: список, кортеж, словарь и&nbsp;множество. После страницы вы&nbsp;сможете выбрать коллекцию под задачу, разобрать JSON-ответ сервиса и&nbsp;не&nbsp;попасться на&nbsp;то, что две переменные смотрят на&nbsp;один и&nbsp;тот&nbsp;же список.</p>
+      <div class="meta-row"><span class="pill">≈ 25 минут</span><span class="pill">анимация из 11 шагов</span><span class="pill">1 интерактив</span><span class="pill">3 блока кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: у&nbsp;каждого значения есть тип</h2>
+        <p>Каждое значение в&nbsp;Python — <span class="term" tabindex="0" data-g="object">объект</span> своего типа: число, строка, True или None. Когда значений много, их&nbsp;складывают в&nbsp;коллекции, и&nbsp;четыре главные по-разному обходятся с&nbsp;одними и&nbsp;теми&nbsp;же данными. Список хранит всё по&nbsp;порядку вместе с&nbsp;повторами, кортеж — то&nbsp;же, но&nbsp;его нельзя изменить, множество оставляет только уникальные значения, а&nbsp;словарь находит значение по&nbsp;ключу.</p>
+        <div class="scene" id="scene" aria-label="Анимация: бренды пяти заказов падают в&nbsp;список, кортеж, словарь и&nbsp;множество"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+        <p>Всё, с&nbsp;чем работает Python, — объекты: число, строка, список, даже None. У&nbsp;каждого объекта есть тип, значение и&nbsp;своё место в&nbsp;памяти<a class="ref" href="#src-1" data-ref="src-1">1</a>. Тип определяет, что с&nbsp;объектом можно делать: числа складывают, строки режут на&nbsp;части, в&nbsp;список дописывают элементы. Узнать тип можно функцией <code>type()</code>: <code>type(1200)</code> вернёт <code>int</code>.</p>
+
+        <h3 class="sub-h">Числа: int и&nbsp;float</h3>
+        <p><span class="term" tabindex="0" data-g="int">int</span> — целое число любой длины: <code>2 ** 100</code> Python посчитает точно, до&nbsp;последней цифры<a class="ref" href="#src-2" data-ref="src-2">2</a>. <span class="term" tabindex="0" data-g="float">float</span> — дробное число, которое хранится в&nbsp;двоичном виде с&nbsp;конечной точностью. Обычное деление всегда даёт float: <code>10 / 2</code> равно <code>5.0</code>.</p>
+        <p>Отсюда самая известная странность: <code>0.1 + 0.2</code> в&nbsp;Python равно <code>0.30000000000000004</code>, и&nbsp;сравнение <code>0.1 + 0.2 == 0.3</code> даёт False. Дробь 0,1 в&nbsp;двоичной системе бесконечная, как 1/3 в&nbsp;десятичной, поэтому хранится её ближайшее приближение. При сложении погрешности двух приближений складываются и&nbsp;становятся видны<a class="ref" href="#src-3" data-ref="src-3">3</a>. Это свойство формата чисел, а&nbsp;не&nbsp;ошибка Python: JavaScript покажет то&nbsp;же самое.</p>
+
+        <h3 class="sub-h">Строки и&nbsp;их методы</h3>
+        <p><span class="term" tabindex="0" data-g="str">Строка</span> (str) — последовательность символов в&nbsp;кавычках: <code>'Сова'</code>, <code>"2026-03-14"</code>. У&nbsp;строки много <span class="term" tabindex="0" data-g="method">методов</span>, их вызывают через точку после значения. <code>' Сова '.strip()</code> убирает пробелы по&nbsp;краям, <code>.lower()</code> переводит в&nbsp;нижний регистр, <code>.split(',')</code> режет строку на&nbsp;список кусков, <code>.replace('-', '.')</code> заменяет символы.</p>
+        <p>Строку нельзя изменить на&nbsp;месте. Каждый метод возвращает новую строку, а&nbsp;исходная остаётся прежней: после <code>s.upper()</code> в&nbsp;<code>s</code> всё ещё <code>'Сова'</code><a class="ref" href="#src-4" data-ref="src-4">4</a>. Чтобы сохранить результат, его присваивают: <code>s = s.upper()</code>.</p>
+
+        <h3 class="sub-h">bool и&nbsp;None</h3>
+        <p><span class="term" tabindex="0" data-g="bool">bool</span> — тип с&nbsp;двумя значениями, True и&nbsp;False. Их возвращают сравнения и&nbsp;проверки: <code>amount &gt; 1000</code>, <code>'Луч' in brands</code>. bool — разновидность int, и&nbsp;True считается единицей<a class="ref" href="#src-2" data-ref="src-2">2</a>, поэтому <code>sum([True, False, True])</code> даёт 2. Так считают, сколько заказов прошло условие.</p>
+        <p><span class="term" tabindex="0" data-g="none">None</span> — отдельное значение «ничего нет»: промокод не&nbsp;указан, поле не&nbsp;заполнено. Это не&nbsp;ноль и&nbsp;не&nbsp;пустая строка: <code>None == 0</code> даёт False. Проверяют его выражением <code>x is None</code>.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: какая коробка под какие данные</h2>
+        <p>На&nbsp;странице 1.1 заказы лежали в&nbsp;одном списке сумм. В&nbsp;жизни у&nbsp;заказа есть номер, дата, бренд, сумма и&nbsp;признак оплаты, а&nbsp;сервис магазина отдаёт заказы пачкой, в&nbsp;виде вложенных словарей и&nbsp;списков. Прежде чем считать, данные раскладывают так, чтобы нужный вопрос решался одной строкой.</p>
+        <p>Вопросы к&nbsp;данным бывают трёх видов: найти по&nbsp;ключу, перебрать по&nbsp;порядку, проверить принадлежность. Под каждый в&nbsp;Python есть своя структура.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Вопрос к&nbsp;данным</th><th>Структура</th><th>Почему она</th></tr></thead>
+            <tbody>
+              <tr><td>Сумма заказа по&nbsp;номеру</td><td>словарь <code>{1043: 2300}</code></td><td>Значение находится по&nbsp;ключу сразу</td></tr>
+              <tr><td>Заказы по&nbsp;порядку</td><td>список <code>[1200, 850]</code></td><td>Хранит порядок и&nbsp;повторы</td></tr>
+              <tr><td>Бренд среди партнёров?</td><td>множество <code>{'Сова', 'Луч'}</code></td><td>Проверка «есть&nbsp;ли» не&nbsp;зависит от&nbsp;размера</td></tr>
+              <tr><td>Ключ отчёта «год, месяц»</td><td>кортеж <code>(2026, 3)</code></td><td>Не&nbsp;меняется, поэтому годится в&nbsp;ключи</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Задача страницы — понять, чем эти структуры отличаются, и&nbsp;выбирать их осознанно, а&nbsp;не&nbsp;складывать всё в&nbsp;список по&nbsp;привычке.</p>
+      </section>
+
+      <section data-sec="colls" data-title="Четыре коллекции">
+        <h2 id="colls"><span class="sn">03</span>Четыре коллекции: порядок, повторы, изменяемость</h2>
+        <p>Коллекция — объект, внутри которого лежат другие объекты. Встроенных коллекций в&nbsp;Python четыре, и&nbsp;каждая отвечает на&nbsp;свой вопрос<a class="ref" href="#src-5" data-ref="src-5">5</a>.</p>
+        <ul>
+          <li><span class="term" tabindex="0" data-g="list">Список</span> (list) <code>[1200, 850, 2300]</code> хранит элементы по&nbsp;порядку, вместе с&nbsp;повторами. Его можно дописывать, сокращать и&nbsp;править.</li>
+          <li><span class="term" tabindex="0" data-g="tuple">Кортеж</span> (tuple) <code>(2026, 3)</code> тоже хранит порядок и&nbsp;повторы, но&nbsp;после создания не&nbsp;меняется.</li>
+          <li><span class="term" tabindex="0" data-g="dict">Словарь</span> (dict) <code>{'Сова': 3, 'Кедр': 1}</code> хранит пары «ключ → значение». Ключи уникальны, значение находят по&nbsp;ключу. С&nbsp;Python 3.7 словарь гарантированно помнит порядок, в&nbsp;котором добавляли ключи<a class="ref" href="#src-2" data-ref="src-2">2</a>.</li>
+          <li><span class="term" tabindex="0" data-g="set">Множество</span> (set) <code>{'Сова', 'Кедр'}</code> хранит только уникальные элементы и&nbsp;не&nbsp;хранит порядок. Пустое множество пишут <code>set()</code>, потому что пустые фигурные скобки <code>{}</code> — это словарь.</li>
+        </ul>
+        <div class="tbl tc-five">
+          <table>
+            <thead><tr><th>Свойство</th><th>list</th><th>tuple</th><th>dict</th><th>set</th></tr></thead>
+            <tbody>
+              <tr><td>Порядок</td><td>да</td><td>да</td><td>как добавляли</td><td>нет</td></tr>
+              <tr><td>Повторы</td><td>да</td><td>да</td><td>у&nbsp;ключей нет</td><td>нет</td></tr>
+              <tr><td>Можно менять</td><td>да</td><td>нет</td><td>да</td><td>да</td></tr>
+              <tr><td>Доступ</td><td>по&nbsp;индексу</td><td>по&nbsp;индексу</td><td>по&nbsp;ключу</td><td>только in</td></tr>
+              <tr><td>Поиск in</td><td>перебор</td><td>перебор</td><td>по&nbsp;хэшу</td><td>по&nbsp;хэшу</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Главное различие между списком и&nbsp;кортежем — <span class="term" tabindex="0" data-g="mutable">изменяемость</span>. Изменяемый объект (mutable) меняется на&nbsp;месте: список после <code>append</code> — тот&nbsp;же объект, только длиннее. Неизменяемый (immutable) поменять нельзя, можно только собрать новый. Неизменяемы числа, строки и&nbsp;кортежи<a class="ref" href="#src-6" data-ref="src-6">6</a>. Поэтому кортеж берут для того, что не&nbsp;должно меняться: пара «год, месяц», координаты, запись из&nbsp;выгрузки. Подробно списки, словари и&nbsp;кортежи разобраны в&nbsp;главах 9–11 «Think Python»<a class="ref" href="#src-7" data-ref="src-7">7</a>.</p>
+
+        <h3 class="sub-h">Скорость поиска</h3>
+        <p>Проверка <code>'Луч' in brands</code> в&nbsp;списке идёт перебором: Python сравнивает элементы по&nbsp;очереди, пока не&nbsp;найдёт нужный. В&nbsp;списке из&nbsp;миллиона элементов это до&nbsp;миллиона сравнений.</p>
+        <p>Множество и&nbsp;словарь устроены иначе. Для каждого элемента они вычисляют <span class="term" tabindex="0" data-g="hash">хэш</span> — число, которое получается из&nbsp;самого значения, — и&nbsp;кладут элемент в&nbsp;ячейку по&nbsp;этому числу. Чтобы проверить принадлежность, достаточно посчитать хэш и&nbsp;заглянуть в&nbsp;одну ячейку. По&nbsp;документации Python, время <code>x in s</code> для списка растёт вместе с&nbsp;его длиной, а&nbsp;для множества в&nbsp;среднем от&nbsp;размера не&nbsp;зависит<a class="ref" href="#src-8" data-ref="src-8">8</a>.</p>
+        <p>В&nbsp;песочнице учебника поиск числа в&nbsp;конце списка из&nbsp;миллиона элементов занял около 5&nbsp;мс, во&nbsp;множестве — меньше десятой доли микросекунды. Убрать повторы из&nbsp;20&nbsp;000 чисел циклом с&nbsp;проверкой <code>if x not in seen</code> вышло примерно за&nbsp;полсекунды, а&nbsp;<code>set(data)</code> — меньше чем за&nbsp;миллисекунду. На&nbsp;вашей машине числа будут другими, но&nbsp;разрыв останется.</p>
+      </section>
+
+      <section data-sec="slices" data-title="Индексы и срезы">
+        <h2 id="slices"><span class="sn">04</span>Индексы, срезы и&nbsp;вложенные структуры</h2>
+        <p>В&nbsp;списке, кортеже и&nbsp;строке элементы пронумерованы. Номер элемента — <span class="term" tabindex="0" data-g="index">индекс</span> — начинается с&nbsp;нуля. В&nbsp;списке <code>a = [1200, 850, 2300, 640, 1750]</code> элемент <code>a[0]</code> — это 1200, а&nbsp;<code>a[4]</code> — 1750. Отрицательный индекс считает с&nbsp;конца: <code>a[-1]</code> — последний элемент.</p>
+        <p><span class="term" tabindex="0" data-g="slice">Срез</span> вырезает кусок последовательности и&nbsp;возвращает его как новый объект того&nbsp;же типа<a class="ref" href="#src-4" data-ref="src-4">4</a>.</p>
+        <div class="formula"><span class="f tc-f">a[<b>start</b> : <b>stop</b> : <b>step</b>]</span><small>start — с&nbsp;какого индекса брать, включительно (если пропущен — с&nbsp;начала); stop — на&nbsp;каком остановиться, сам он&nbsp;не&nbsp;входит (если пропущен — до&nbsp;конца); step — шаг (по&nbsp;умолчанию 1, отрицательный идёт с&nbsp;конца).</small></div>
+        <p>Любую часть среза можно опустить. <code>a[1:3]</code> — это <code>[850, 2300]</code>, <code>a[:2]</code> — первые два элемента, <code>a[-2:]</code> — последние два, <code>a[::2]</code> — каждый второй. Отрицательный шаг идёт с&nbsp;конца, поэтому <code>a[::-1]</code> возвращает новый список задом наперёд: <code>[1750, 640, 2300, 850, 1200]</code>.</p>
+        <p>Срезы работают и&nbsp;на&nbsp;строках. Если дата всегда записана как <code>'2026-03-14T10:22:05'</code>, с&nbsp;ведущими нулями, позиции символов фиксированы: <code>[:4]</code> даёт год, <code>[5:7]</code> — месяц, <code>[:7]</code> — год с&nbsp;месяцем. Так заказы группируют по&nbsp;месяцам без разбора даты, это есть в&nbsp;коде ниже.</p>
+
+        <h3 class="sub-h">Вложенные структуры как JSON</h3>
+        <p>Коллекции можно класть друг в&nbsp;друга: список словарей, словарь списков. Так устроен <span class="term" tabindex="0" data-g="json">JSON</span> — текстовый формат, в&nbsp;котором сервисы обмениваются данными. Когда аналитик запрашивает заказы у&nbsp;<span class="term" tabindex="0" data-g="api">API</span> магазина, ответ приходит строкой JSON. Модуль <code>json</code> — набор готовых функций, который подключают командой <code>import json</code>, — превращает её в&nbsp;словари и&nbsp;списки Python<a class="ref" href="#src-9" data-ref="src-9">9</a>.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>В&nbsp;JSON</th><th>В&nbsp;Python</th><th>Пример из&nbsp;ответа магазина</th></tr></thead>
+            <tbody>
+              <tr><td>объект {…}</td><td>dict</td><td><code>{"brand": "Сова"}</code></td></tr>
+              <tr><td>массив […]</td><td>list</td><td><code>[{…}, {…}]</code></td></tr>
+              <tr><td>строка</td><td>str</td><td><code>"2026-03-14T10:22:05"</code></td></tr>
+              <tr><td>целое число</td><td>int</td><td><code>1200</code></td></tr>
+              <tr><td>число с&nbsp;точкой</td><td>float</td><td><code>0.1</code></td></tr>
+              <tr><td>true, false</td><td>True, False</td><td><code>"paid": true</code></td></tr>
+              <tr><td>null</td><td>None</td><td><code>"promo": null</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>В&nbsp;учебном ответе магазина верхний уровень — словарь, под ключом <code>"orders"</code> лежит список заказов, а&nbsp;каждый заказ — снова словарь. Путь к&nbsp;бренду третьего заказа читается слева направо: <code>data["orders"][2]["brand"]</code> — ключ, индекс, ключ.</p>
+      </section>
+
+      <section data-sec="refs" data-title="Ссылка или копия">
+        <h2 id="refs"><span class="sn">05</span>Ссылка или копия</h2>
+        <p>Переменная в&nbsp;Python — не&nbsp;коробка с&nbsp;данными, а&nbsp;имя, которое указывает на&nbsp;объект. Такую связь называют <span class="term" tabindex="0" data-g="reference">ссылкой</span>. Присваивание <code>b = a</code> не&nbsp;копирует список, а&nbsp;даёт тому&nbsp;же объекту второе имя<a class="ref" href="#src-1" data-ref="src-1">1</a>. С&nbsp;числами и&nbsp;строками этого не&nbsp;видно, их нельзя изменить. Со&nbsp;списком разница становится заметной. Сначала предскажите, потом проверьте.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="refs"></div>
+        <p>Python Tutor рисует память так&nbsp;же: имена слева, объекты справа, стрелки между ними<a class="ref" href="#src-10" data-ref="src-10">10</a>. Туда можно вставить свой код и&nbsp;пройти его по&nbsp;шагам.</p>
+        <p><code>b = a.copy()</code> создаёт <span class="term" tabindex="0" data-g="copy">копию</span> — новый список с&nbsp;теми&nbsp;же элементами, и&nbsp;у&nbsp;каждого имени появляется свой объект. То&nbsp;же дают <code>a[:]</code> и&nbsp;<code>list(a)</code>. Проверить, один&nbsp;ли это объект, можно оператором <code>is</code>: <code>a is b</code> сравнивает сами объекты, а&nbsp;<code>a == b</code> — только содержимое.</p>
+        <p>Кортежу копия не&nbsp;нужна: его нельзя изменить ни&nbsp;через одно имя. Запись <code>a += (990,)</code> не&nbsp;трогает старый кортеж, а&nbsp;собирает новый и&nbsp;переставляет на&nbsp;него имя a. У&nbsp;списка та&nbsp;же запись <code>a += [990]</code> работает как append и&nbsp;меняет общий объект, а&nbsp;новый список создаёт только <code>a = a + [990]</code>.</p>
+        <p>Где это бьёт по&nbsp;аналитику: список заказов передали в&nbsp;функцию очистки, она удалила из&nbsp;него тестовые заказы, и&nbsp;исходный список тоже стал короче. Если исходные данные ещё понадобятся, в&nbsp;функцию отдают копию.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">06</span>Нюансы: ключи, вложенные копии и&nbsp;сравнение float</h2>
+        <div class="callout"><p><b>Ключ словаря должен быть хэшируемым.</b> Словарь ищет ключ по&nbsp;хэшу, поэтому хэш ключа не&nbsp;должен меняться, пока ключ лежит в&nbsp;словаре. Числа, строки и&nbsp;кортежи из&nbsp;них годятся, список — нет: <code>{[2026, 3]: 4990}</code> падает с&nbsp;ошибкой <code>TypeError: unhashable type: 'list'</code>. Отчёт с&nbsp;ключом «год, месяц» пишут через кортеж: <code>{(2026, 3): 4990}</code><a class="ref" href="#src-11" data-ref="src-11">11</a>. Кортеж со&nbsp;списком внутри тоже не&nbsp;хэшируется.</p></div>
+        <div class="callout"><p><b>Срез копирует список, но&nbsp;не&nbsp;то, что лежит внутри.</b> <code>a[:]</code> и&nbsp;<code>a.copy()</code> делают <span class="term" tabindex="0" data-g="shallow">поверхностную копию</span>: новый внешний список со&nbsp;ссылками на&nbsp;те&nbsp;же вложенные объекты. Если <code>rows = [[1200, 'Сова'], [850, 'Кедр']]</code> и&nbsp;<code>c = rows[:]</code>, то&nbsp;<code>c.append(…)</code> исходник не&nbsp;тронет, а&nbsp;<code>c[0][0] = 0</code> поменяет и&nbsp;<code>rows[0][0]</code>. Независимую копию всей структуры делает <code>copy.deepcopy</code><a class="ref" href="#src-12" data-ref="src-12">12</a>.</p></div>
+        <div class="callout"><p><b>float сравнивают с&nbsp;допуском.</b> Вместо <code>x == 0.3</code> пишут <code>math.isclose(x, 0.3)</code>. По&nbsp;умолчанию функция считает числа равными, если они совпадают примерно в&nbsp;девяти значащих цифрах<a class="ref" href="#src-13" data-ref="src-13">13</a>. Деньги надёжнее хранить в&nbsp;копейках как int или считать модулем <code>decimal</code><a class="ref" href="#src-3" data-ref="src-3">3</a>.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">07</span>Ограничения: списки медленны для расчётов</h2>
+        <p>Список хранит не&nbsp;сами числа, а&nbsp;ссылки на&nbsp;отдельные объекты-числа<a class="ref" href="#src-14" data-ref="src-14">14</a>. Цикл по&nbsp;такому списку Python выполняет шаг за&nbsp;шагом и&nbsp;на&nbsp;каждом шаге заново выясняет, что за&nbsp;объект перед ним. На&nbsp;тысяче заказов это незаметно, на&nbsp;миллионе — уже да.</p>
+        <p>Для расчётов на&nbsp;числах есть <span class="term" tabindex="0" data-g="numpy">NumPy</span>. В&nbsp;его массиве все числа одного типа и&nbsp;одного размера, а&nbsp;операция над всем массивом выполняется заранее скомпилированным кодом на&nbsp;C, без цикла Python<a class="ref" href="#src-15" data-ref="src-15">15</a>. В&nbsp;песочнице учебника умножить миллион сумм на&nbsp;0,9 циклом по&nbsp;списку заняло около 40&nbsp;мс, тем&nbsp;же выражением в&nbsp;NumPy — около 1&nbsp;мс.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Задача</th><th>Чем удобнее</th><th>Где подробно</th></tr></thead>
+            <tbody>
+              <tr><td>Записи с&nbsp;разными полями</td><td>Списки и&nbsp;словари, как в&nbsp;ответе API</td><td>Эта страница</td></tr>
+              <tr><td>Арифметика над миллионом чисел</td><td>Массивы NumPy</td><td>Тема 04</td></tr>
+              <tr><td>Таблица заказов с&nbsp;фильтрами</td><td>Таблица pandas (DataFrame)</td><td>Тема 02</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">08</span>Код: от&nbsp;JSON к&nbsp;частотам и&nbsp;месяцам</h2>
+        <p>Три блока идут подряд в&nbsp;одном ноутбуке: второй и&nbsp;третий берут <code>orders</code> из&nbsp;первого. Данные — пять учебных заказов из&nbsp;анимации, с&nbsp;теми&nbsp;же суммами, что на&nbsp;странице 1.1. Первый блок разбирает ответ API: превращает строку JSON в&nbsp;словари и&nbsp;списки и&nbsp;показывает, какими типами Python стали поля заказа.</p>
+        <div class="block wide" data-code="json"></div>
+        <p>Второй блок считает частоты брендов. Сначала вручную: словарь и&nbsp;метод <code>.get(b, 0)</code>, который возвращает 0 для ключа, которого ещё нет. Потом одной строкой через <span class="term" tabindex="0" data-g="counter">Counter</span> из&nbsp;модуля collections<a class="ref" href="#src-16" data-ref="src-16">16</a>. Множество в&nbsp;конце даёт уникальные бренды. Его печатают через <code>sorted</code>: порядок элементов множества не&nbsp;гарантирован, а&nbsp;у&nbsp;строк он меняется от&nbsp;запуска к&nbsp;запуску.</p>
+        <div class="block wide" data-code="freq"></div>
+        <p>Третий блок режет строку с&nbsp;датой срезами и&nbsp;методом <code>split</code>, а&nbsp;потом собирает выручку по&nbsp;месяцам в&nbsp;словарь с&nbsp;ключом «год-месяц».</p>
+        <div class="block wide" data-code="dates"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">09</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">10</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">11</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Python для анализа» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Python Software Foundation. <a href="https://docs.python.org/3/reference/datamodel.html" target="_blank" rel="noopener">The Python Language Reference: Data model</a>. У&nbsp;объекта есть идентичность, тип и&nbsp;значение; is сравнивает идентичность.</li>
+          <li id="src-2">Python Software Foundation. <a href="https://docs.python.org/3/library/stdtypes.html" target="_blank" rel="noopener">Built-in Types</a>. int без ограничений, bool как подтип int, срезы, порядок ключей словаря.</li>
+          <li id="src-3">Python Software Foundation. <a href="https://docs.python.org/3/tutorial/floatingpoint.html" target="_blank" rel="noopener">The Python Tutorial: Floating-Point Arithmetic: Issues and Limitations</a>. Почему 0.1 + 0.2 не&nbsp;равно 0.3, math.isclose и&nbsp;decimal.</li>
+          <li id="src-4">Python Software Foundation. <a href="https://docs.python.org/3/tutorial/introduction.html" target="_blank" rel="noopener">The Python Tutorial: An Informal Introduction to Python</a>. Неизменяемые строки, индексы и&nbsp;срезы.</li>
+          <li id="src-5">Python Software Foundation. <a href="https://docs.python.org/3/tutorial/datastructures.html" target="_blank" rel="noopener">The Python Tutorial: Data Structures</a>. Четыре коллекции и&nbsp;пустое множество set().</li>
+          <li id="src-6">Real Python. <a href="https://realpython.com/python-mutable-vs-immutable-types/" target="_blank" rel="noopener">Python’s Mutable vs Immutable Types: What’s the Difference?</a> Изменяемые и&nbsp;неизменяемые типы на&nbsp;практике.</li>
+          <li id="src-7">Downey A. <a href="https://allendowney.github.io/ThinkPython/" target="_blank" rel="noopener">Think Python</a>. 3rd ed. O’Reilly, 2024. Главы 9–11: списки, словари и&nbsp;кортежи, бесплатно онлайн.</li>
+          <li id="src-8">Python Software Foundation. <a href="https://docs.python.org/3/builtins/time-complexity.html" target="_blank" rel="noopener">Time complexity of operations on built-in types</a>. Сколько стоят операции, в&nbsp;том числе x in s.</li>
+          <li id="src-9">Python Software Foundation. <a href="https://docs.python.org/3/library/json.html" target="_blank" rel="noopener">json — JSON encoder and decoder</a>. Как типы JSON переходят в&nbsp;типы Python.</li>
+          <li id="src-10">Guo P. <a href="https://pythontutor.com/" target="_blank" rel="noopener">Python Tutor</a>. Имена, объекты и&nbsp;ссылки по&nbsp;шагам — образец для интерактива.</li>
+          <li id="src-11">Python Software Foundation. <a href="https://docs.python.org/3/glossary.html#term-hashable" target="_blank" rel="noopener">Glossary: hashable</a>. Что годится в&nbsp;ключи словаря.</li>
+          <li id="src-12">Python Software Foundation. <a href="https://docs.python.org/3/library/copy.html" target="_blank" rel="noopener">copy — Shallow and deep copy operations</a>. Поверхностная и&nbsp;глубокая копия.</li>
+          <li id="src-13">Python Software Foundation. <a href="https://docs.python.org/3/library/math.html#math.isclose" target="_blank" rel="noopener">math.isclose</a>. Допуск по&nbsp;умолчанию.</li>
+          <li id="src-14">Python Software Foundation. <a href="https://docs.python.org/3/faq/design.html#how-are-lists-implemented-in-cpython" target="_blank" rel="noopener">Design and History FAQ: How are lists implemented in CPython?</a> Список — массив ссылок на&nbsp;другие объекты.</li>
+          <li id="src-15">NumPy Developers. <a href="https://numpy.org/doc/stable/user/whatisnumpy.html" target="_blank" rel="noopener">What is NumPy?</a> Чем массив NumPy отличается от&nbsp;списка.</li>
+          <li id="src-16">Python Software Foundation. <a href="https://docs.python.org/3/library/collections.html#collections.Counter" target="_blank" rel="noopener">collections.Counter</a>. Подсчёт повторов и&nbsp;most_common.</li>
+        </ol>
+      </section>

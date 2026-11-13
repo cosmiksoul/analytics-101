@@ -1,0 +1,167 @@
+      <p class="eyebrow">Дата аналитика · Тема 02 · <b>Pandas и&nbsp;подготовка данных</b></p>
+      <h1>Группировки, сводные таблицы, соединения</h1>
+      <p class="lead">Почти любой отчёт — это метрики по&nbsp;<span class="term" tabindex="0" data-g="segment">сегментам</span>, собранные из&nbsp;нескольких таблиц. После страницы вы сможете посчитать выручку по&nbsp;странам, месяцам и&nbsp;группам клиентов, разложить её в&nbsp;таблицу «страны × месяцы» и&nbsp;подтянуть сведения из&nbsp;второй таблицы так, чтобы ни&nbsp;одна строка не&nbsp;потерялась и&nbsp;не&nbsp;размножилась.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;10&nbsp;шагов</span><span class="pill">1 интерактив</span><span class="pill">4 блока кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: разделить, посчитать, собрать и&nbsp;пристыковать по&nbsp;ключу</h2>
+        <p>Чтобы посчитать метрику по&nbsp;сегментам, строки делят на&nbsp;группы по&nbsp;значению <span class="term" tabindex="0" data-g="key">ключа</span>, в&nbsp;каждой группе сворачивают значения в&nbsp;одно число и&nbsp;собирают ответы в&nbsp;новую таблицу — это <span class="term" tabindex="0" data-g="groupby">группировка</span>. Если ключей два, например страна и&nbsp;месяц, результат удобно развернуть в&nbsp;<span class="term" tabindex="0" data-g="pivot">сводную таблицу</span>: страны в&nbsp;строках, месяцы в&nbsp;столбцах. Недостающие сведения пристыковывают из&nbsp;<span class="term" tabindex="0" data-g="lookup">справочника</span> <span class="term" tabindex="0" data-g="merge">соединением</span> по&nbsp;общему ключу: совпавшие строки сцепляются, а&nbsp;у&nbsp;несовпавших на&nbsp;месте чужих столбцов остаётся пропуск <span class="term" tabindex="0" data-g="nan">NaN</span>. Если ключ в&nbsp;справочнике повторяется, строки размножаются, и&nbsp;выручка в&nbsp;отчёте тихо растёт.</p>
+        <div class="scene" id="scene" aria-label="Анимация: заказы разбегаются по группам «страна × месяц», сворачиваются в сводную, к ней пристыковывается справочник стран"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Разделить, применить, собрать</h3>
+        <p>У&nbsp;группировки есть короткое имя — <span class="term" tabindex="0" data-g="sac">split-apply-combine</span>. Хэдли Уикем описал эту схему как общий приём анализа: большую задачу разбивают на&nbsp;посильные куски, решают каждый отдельно и&nbsp;собирают ответы вместе<a class="ref" href="#src-1" data-ref="src-1">1</a>. В&nbsp;pandas её выполняет метод <code>groupby</code><a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+        <p>Вызов <code>paid.groupby(["country", "month"])</code> только раскладывает строки по&nbsp;группам и&nbsp;ничего не&nbsp;считает. Считает <span class="term" tabindex="0" data-g="agg">агрегирующая функция</span>: <code>sum</code>, <code>mean</code>, <code>size</code>, <code>nunique</code> сворачивают значения группы в&nbsp;одно число. Потом pandas собирает ответы в&nbsp;таблицу, где ключи групп становятся <span class="term" tabindex="0" data-g="index">индексом</span> — подписями строк. В&nbsp;сцене 25 оплаченных заказов разошлись по&nbsp;12&nbsp;группам, а&nbsp;выручка 79&nbsp;430&nbsp;₽ не&nbsp;изменилась: группировка не&nbsp;теряет строки, пока в&nbsp;ключе нет пропусков.</p>
+
+        <h3 class="sub-h">Несколько ключей и&nbsp;именованные агрегаты</h3>
+        <p>Ключ группировки — один столбец или список столбцов: каждая уникальная комбинация значений образует группу. Несколько метрик сразу передают в&nbsp;<code>agg</code>, удобнее всего — как <span class="term" tabindex="0" data-g="namedagg">именованные агрегаты</span>: имя нового столбца и&nbsp;пара «исходный столбец, функция»<a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+        <p>Запись <code class="wrap">agg(revenue=("amount", "sum"), orders=("order_id", "size"))</code> даёт таблицу из&nbsp;сцены: 12&nbsp;строк и&nbsp;два столбца с&nbsp;понятными именами. <code>size</code> считает строки группы, а&nbsp;<code>count</code> — только непустые значения столбца, и&nbsp;при&nbsp;пропусках они расходятся.</p>
+
+        <h3 class="sub-h">agg сворачивает, transform возвращает на&nbsp;место</h3>
+        <p><code>agg</code> отдаёт по&nbsp;строке на&nbsp;группу: четыре страны — четыре строки. <span class="term" tabindex="0" data-g="transform">transform</span> считает ту&nbsp;же метрику, но&nbsp;возвращает её в&nbsp;каждую строку группы, и&nbsp;длина результата равна длине таблицы<a class="ref" href="#src-2" data-ref="src-2">2</a>. Это нужно, когда метрику группы сравнивают со&nbsp;строкой.</p>
+        <p>Доля заказа в&nbsp;выручке своей страны — <code class="wrap">paid["amount"] / paid.groupby("country")["amount"].transform("sum")</code>. Заказ 1002 даёт 21% выручки Узбекистана: 3&nbsp;380 из&nbsp;16&nbsp;340&nbsp;₽. Так&nbsp;же находят <span class="term" tabindex="0" data-g="cohort">когорту</span> клиента — месяц его первой оплаты: <code>transform("min")</code> по&nbsp;клиенту ставит этот месяц в&nbsp;каждую его строку.</p>
+        <div class="tbl da24-tbl">
+          <table>
+            <thead><tr><th></th><th>agg</th><th>transform</th></tr></thead>
+            <tbody>
+              <tr><td>Строк в&nbsp;результате</td><td>по&nbsp;одной на&nbsp;группу: 4</td><td>как в&nbsp;таблице: 25</td></tr>
+              <tr><td>Индекс</td><td>ключи групп</td><td>исходный</td></tr>
+              <tr><td>Зачем</td><td>отчёт по&nbsp;сегментам</td><td>признак строки: доля, отклонение, когорта</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: отчёт из&nbsp;трёх таблиц</h2>
+        <p>Нужен отчёт по&nbsp;учебной выгрузке заказов интернет-магазина: выручка и&nbsp;число заказов по&nbsp;странам и&nbsp;месяцам, выручка по&nbsp;каналам, когорты клиентов, а&nbsp;у&nbsp;каждого заказа — название страны и&nbsp;ответственный менеджер. Заказы лежат в&nbsp;orders.csv, названия стран — в&nbsp;справочнике countries.csv, менеджеры — в&nbsp;managers.csv.</p>
+        <p>Отчёт собирается двумя операциями, и&nbsp;у&nbsp;каждой есть ошибка, которую не&nbsp;видно глазами. Группировка по&nbsp;столбцу с&nbsp;пропусками молча выбрасывает строки. Соединение по&nbsp;неполному ключу размножает их, и&nbsp;выручка растёт без&nbsp;единого предупреждения.</p>
+        <p>Задача страницы — считать метрики по&nbsp;сегментам и&nbsp;собирать таблицу из&nbsp;нескольких источников без&nbsp;потери и&nbsp;размножения строк, а&nbsp;проверять это кодом: числом строк, индикатором и&nbsp;проверкой ключа. Подробнее те&nbsp;же приёмы разобраны у&nbsp;Маккинни, автора pandas<a class="ref" href="#src-3" data-ref="src-3">3</a>, и&nbsp;у&nbsp;Вандерпласа<a class="ref" href="#src-4" data-ref="src-4">4</a>.</p>
+      </section>
+
+      <section data-sec="shape" data-title="Широкий и длинный">
+        <h2 id="shape"><span class="sn">03</span>Широкий и&nbsp;длинный формат</h2>
+        <p>Таблицу из&nbsp;сцены можно записать двумя способами. В&nbsp;<span class="term" tabindex="0" data-g="long">длинном формате</span> строка — одна пара «страна, месяц» с&nbsp;выручкой: 12&nbsp;строк. В&nbsp;<span class="term" tabindex="0" data-g="wide">широком</span> страны стоят в&nbsp;строках, месяцы — в&nbsp;столбцах: 4&nbsp;строки и&nbsp;3 столбца с&nbsp;числами. Данные одни, форма разная.</p>
+        <p>Уикем назвал <span class="term" tabindex="0" data-g="tidy">опрятными</span> (tidy data) таблицы, где каждая переменная — столбец, каждое наблюдение — строка, а&nbsp;каждый тип наблюдений — отдельная таблица<a class="ref" href="#src-5" data-ref="src-5">5</a>. Длинная таблица опрятна: страна, месяц и&nbsp;выручка лежат в&nbsp;трёх столбцах. В&nbsp;широкой значения месяца стали заголовками столбцов. Справочник стран отделён по&nbsp;тому&nbsp;же правилу: название описывает страну, а&nbsp;не&nbsp;заказ, и&nbsp;не&nbsp;повторяется в&nbsp;каждой строке заказов.</p>
+        <p>Человеку удобнее читать широкую таблицу, расчётам и&nbsp;графикам — длинную. Между формами переходят четырьмя способами<a class="ref" href="#src-6" data-ref="src-6">6</a>.</p>
+        <div class="tbl da24-tbl da24-nw">
+          <table>
+            <thead><tr><th>Переход</th><th>Метод</th><th>Что делает</th></tr></thead>
+            <tbody>
+              <tr><td>длинная → широкая</td><td><code>pivot_table</code></td><td>группирует и&nbsp;разворачивает, повторы сворачивает функцией aggfunc</td></tr>
+              <tr><td>длинная → широкая</td><td><code>pivot</code></td><td>только разворачивает, на&nbsp;повторах падает</td></tr>
+              <tr><td>широкая → длинная</td><td><span class="term" tabindex="0" data-g="melt"><code>melt</code></span></td><td>превращает столбцы в&nbsp;пары «название, значение»</td></tr>
+              <tr><td>индекс ↔ столбцы</td><td><code>unstack</code>, <code>stack</code></td><td>то&nbsp;же для&nbsp;индекса из&nbsp;нескольких уровней</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><code>pivot_table</code> — это группировка по&nbsp;двум ключам с&nbsp;разворотом второго ключа в&nbsp;столбцы. По&nbsp;умолчанию aggfunc — среднее, поэтому для&nbsp;выручки пишут <code>aggfunc="sum"</code><a class="ref" href="#src-7" data-ref="src-7">7</a>. Если на&nbsp;пару «месяц, канал» не&nbsp;пришлось ни&nbsp;одной строки, в&nbsp;ячейке будет NaN: в&nbsp;учебных данных за&nbsp;январь нет оплаченных заказов из&nbsp;рассылки. <code>fill_value=0</code> ставит на&nbsp;это место ноль.</p>
+        <p><code>pivot</code> ничего не&nbsp;считает, а&nbsp;только переставляет значения, поэтому каждой паре «строка, столбец» должна соответствовать одна строка исходной таблицы. На&nbsp;пару «январь, органика» приходится два заказа, и&nbsp;pivot падает с&nbsp;ошибкой «Index contains duplicate entries, cannot reshape». <code>melt</code> делает обратное: сводная месяц × канал из&nbsp;трёх строк превращается в&nbsp;девять строк «месяц, канал, выручка». Именно такую таблицу ждёт seaborn<a class="ref" href="#src-8" data-ref="src-8">8</a>.</p>
+      </section>
+
+      <section data-sec="join" data-title="Соединение">
+        <h2 id="join"><span class="sn">04</span>Соединение: тип, ключ, кардинальность</h2>
+        <p><code>merge</code> ставит рядом строки двух таблиц, у&nbsp;которых совпал ключ. Ключ — столбец или список столбцов в&nbsp;параметре <code>on</code>; если в&nbsp;таблицах он называется по-разному, пишут <code>left_on</code> и&nbsp;<code>right_on</code><a class="ref" href="#src-9" data-ref="src-9">9</a>. Какие строки останутся, решает <span class="term" tabindex="0" data-g="jointype">тип соединения</span> — параметр <code>how</code><a class="ref" href="#src-10" data-ref="src-10">10</a>:</p>
+        <ul>
+          <li><code>inner</code> (по&nbsp;умолчанию) — только строки, для&nbsp;которых нашлась пара, в&nbsp;порядке левой таблицы;</li>
+          <li><code>left</code> — все строки левой, а&nbsp;где пары нет, правые столбцы получают NaN;</li>
+          <li><code>right</code> — то&nbsp;же для&nbsp;правой таблицы;</li>
+          <li><code>outer</code> — все строки обеих, ключи отсортированы.</li>
+        </ul>
+        <p>Сколько строк получится, решает <span class="term" tabindex="0" data-g="cardinality">кардинальность</span> ключа — сколько раз каждое значение встречается с&nbsp;каждой стороны. Соединение «многие к&nbsp;одному», как заказы и&nbsp;справочник стран, строк не&nbsp;добавляет. «Многие ко&nbsp;многим» сцепляет каждую строку слева с&nbsp;каждой парной строкой справа: три заказа RU и&nbsp;два менеджера RU дают шесть строк.</p>
+        <p>Ниже — шесть заказов из&nbsp;учебной выгрузки и&nbsp;учебная таблица менеджеров: за&nbsp;каждой парой «страна, канал» закреплён один человек. У&nbsp;менеджеров нет Узбекистана, зато есть Армения, которой нет в&nbsp;заказах. Сначала предскажите результат.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="join"></div>
+        <p>Столбец <code>_merge</code> — <span class="term" tabindex="0" data-g="indicator">индикатор</span>: при&nbsp;<code>indicator=True</code> merge подписывает каждую строку значением both, left_only или right_only<a class="ref" href="#src-9" data-ref="src-9">9</a>. <code>value_counts()</code> по&nbsp;нему — первая проверка после любого соединения: сразу видно, сколько строк не&nbsp;нашли пару.</p>
+        <p>При&nbsp;ключе country в&nbsp;результате два столбца channel: channel_x из&nbsp;заказов и&nbsp;channel_y от&nbsp;менеджеров. Это <span class="term" tabindex="0" data-g="suffix">суффиксы</span>, которые merge добавляет одноимённым столбцам вне ключа. Если они появились неожиданно, скорее всего, столбец забыли включить в&nbsp;ключ. В&nbsp;результатах right и&nbsp;outer целые order_id и&nbsp;amount превратились в&nbsp;1003.0 и&nbsp;3400.0: в&nbsp;целочисленном столбце NumPy нет места для&nbsp;пропуска, и&nbsp;pandas переводит столбец в&nbsp;float.</p>
+        <p>Ожидаемую кардинальность записывают прямо в&nbsp;вызове: <span class="term" tabindex="0" data-g="validate">validate</span>=<code>"many_to_one"</code> обещает, что справа ключ уникален. Если это не&nbsp;так, merge падает с&nbsp;MergeError, а&nbsp;не&nbsp;размножает строки молча<a class="ref" href="#src-9" data-ref="src-9">9</a>. В&nbsp;интерактиве проверка проходит только с&nbsp;ключом country + channel.</p>
+
+        <h3 class="sub-h">concat: склеить, а&nbsp;не&nbsp;соединить</h3>
+        <p><span class="term" tabindex="0" data-g="concat">pd.concat</span> не&nbsp;ищет пары по&nbsp;ключу, а&nbsp;ставит таблицы друг под&nbsp;другом, а&nbsp;с&nbsp;<code>axis=1</code> — рядом<a class="ref" href="#src-10" data-ref="src-10">10</a>. Так выгрузки за&nbsp;январь, февраль и&nbsp;март собирают в&nbsp;одну. Столбцы выравниваются по&nbsp;названиям: чего нет в&nbsp;одной из&nbsp;таблиц, заполняется NaN. Индексы склеиваются как есть, для&nbsp;новой нумерации передают <code>ignore_index=True</code>. Дубли concat не&nbsp;проверяет: если дописать к&nbsp;справочнику выгрузку, где снова есть Россия, ключ RU перестанет быть уникальным. Этот случай разобран в&nbsp;разделе «Код».</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">05</span>Нюансы: дубли и&nbsp;пропуски в&nbsp;ключах, порядок, итоги</h2>
+        <div class="callout"><p><b>validate ловит дубли ключей.</b> Если справочник стоит слева, а&nbsp;заказы справа, ожидание записывают как <code>validate="one_to_many"</code>: слева каждый ключ встречается один раз. Дубль в&nbsp;справочнике даёт MergeError «Merge keys are not unique in left dataset; not a one-to-many merge» со&nbsp;списком повторов. Для&nbsp;порядка «заказы слева» то&nbsp;же условие пишут как <code>"many_to_one"</code>, для&nbsp;двух уникальных сторон — <code>"one_to_one"</code><a class="ref" href="#src-9" data-ref="src-9">9</a>.</p></div>
+        <div class="callout"><p><b>NaN в&nbsp;ключах.</b> groupby по&nbsp;умолчанию выбрасывает строки с&nbsp;NaN в&nbsp;ключе (<code>dropna=True</code>), и&nbsp;сумма по&nbsp;группам становится меньше общей; <code>dropna=False</code> оставляет группу NaN<a class="ref" href="#src-11" data-ref="src-11">11</a>. merge поступает наоборот: пустой ключ слева находит пару с&nbsp;пустым ключом справа. В&nbsp;SQL NULL не&nbsp;равен NULL, и&nbsp;документация pandas прямо предупреждает об&nbsp;этом отличии<a class="ref" href="#src-9" data-ref="src-9">9</a>. Пустые ключи ищут до&nbsp;соединения: <code>df["country"].isna().sum()</code>.</p></div>
+        <div class="callout"><p><b>Порядок после groupby.</b> groupby сортирует группы по&nbsp;ключу: страны идут BY, KZ, RU, UZ, по&nbsp;алфавиту, а&nbsp;не&nbsp;в&nbsp;порядке выгрузки. <code>sort=False</code> оставляет порядок первого появления: UZ, BY, KZ, RU. У&nbsp;столбца <span class="term" tabindex="0" data-g="categorical">категориального типа</span> порядок задают сами категории, а&nbsp;параметр <code>observed</code> решает, показывать&nbsp;ли категории без&nbsp;строк. В&nbsp;pandas 3.0 по&nbsp;умолчанию <code>observed=True</code>, и&nbsp;пустых групп нет; с&nbsp;<code>observed=False</code> в&nbsp;отчёт попадут и&nbsp;категории без строк: например, канал «партнёры» с&nbsp;нулевой выручкой, если он&nbsp;объявлен среди категорий<a class="ref" href="#src-11" data-ref="src-11">11</a>.</p></div>
+        <div class="callout"><p><b>Итоги через margins.</b> <code>pivot_table(margins=True)</code> добавляет строку и&nbsp;столбец <span class="term" tabindex="0" data-g="margins">итогов</span> с&nbsp;подписью All, <code>margins_name</code> меняет подпись<a class="ref" href="#src-7" data-ref="src-7">7</a>. Итоги считаются той&nbsp;же aggfunc по&nbsp;исходным строкам, а&nbsp;не&nbsp;по&nbsp;ячейкам: средний чек за&nbsp;квартал в&nbsp;учебных данных — 3&nbsp;177&nbsp;₽ по&nbsp;всем 25&nbsp;заказам, а&nbsp;среднее трёх месячных средних — 3&nbsp;151&nbsp;₽.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">06</span>Ограничения: считать там, где лежат данные</h2>
+        <p>pandas считает в&nbsp;памяти одного процесса: чтобы сгруппировать заказы, их сначала целиком загружают из&nbsp;базы. Если в&nbsp;базе миллионы строк, а&nbsp;нужен итог по&nbsp;12&nbsp;группам, разумнее отправить группировку в&nbsp;базу и&nbsp;забрать готовые 12&nbsp;строк. Те&nbsp;же операции на&nbsp;SQL разобраны в&nbsp;теме 03.</p>
+        <div class="tbl da24-tbl">
+          <table>
+            <thead><tr><th>pandas</th><th>SQL</th></tr></thead>
+            <tbody>
+              <tr><td><code>groupby</code> + <code>agg</code></td><td>GROUP BY с&nbsp;SUM, COUNT</td></tr>
+              <tr><td><code>transform</code></td><td>оконная функция <code>SUM() OVER (PARTITION BY …)</code></td></tr>
+              <tr><td><code>merge</code>, <code>how="left"</code></td><td>LEFT JOIN</td></tr>
+              <tr><td><code>concat</code></td><td>UNION ALL</td></tr>
+              <tr><td><code>pivot_table</code></td><td>GROUP BY с&nbsp;условной агрегацией</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Ошибки там те&nbsp;же: JOIN по&nbsp;неполному ключу размножает строки и&nbsp;в&nbsp;SQL. Главное различие — пустые ключи: в&nbsp;SQL NULL не&nbsp;совпадает с&nbsp;NULL, и&nbsp;такие строки пару не&nbsp;находят.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">07</span>Код: когорты, сводная, соединение, melt</h2>
+        <p>Блоки идут подряд в&nbsp;одном ноутбуке на&nbsp;учебной выгрузке из&nbsp;сцены: 32&nbsp;заказа, 25 оплаченных. Зерно&nbsp;186 подобрано перебором, условия отбора&nbsp;— в&nbsp;<code>data/gen.py</code>. Первый считает когорты: transform ставит каждому заказу месяц первой оплаты клиента, а&nbsp;agg с&nbsp;именованными агрегатами сворачивает когорты в&nbsp;отчёт.</p>
+        <div class="block wide" data-code="cohorts"></div>
+        <p>Второй строит сводную месяц × канал с&nbsp;итогами и&nbsp;пробует сделать то&nbsp;же через pivot.</p>
+        <div class="block wide" data-code="pivot"></div>
+        <p>Третий соединяет заказы со&nbsp;справочником стран, проверяет ключ и&nbsp;показывает, как concat принёс в&nbsp;справочник дубль.</p>
+        <div class="block wide" data-code="merge"></div>
+        <p>Четвёртый переводит сводную в&nbsp;длинный формат и&nbsp;рисует по&nbsp;ней график: линия на&nbsp;каждый канал.</p>
+        <div class="block wide" data-code="melt"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">08</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">09</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">10</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Pandas и подготовка данных» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Wickham H. <a href="https://doi.org/10.18637/jss.v040.i01" target="_blank" rel="noopener">The Split-Apply-Combine Strategy for Data Analysis</a>. Journal of Statistical Software, 2011, 40(1). Схема «разделить, применить, собрать» как общий приём анализа.</li>
+          <li id="src-2">pandas. <a href="https://pandas.pydata.org/docs/user_guide/groupby.html" target="_blank" rel="noopener">User Guide: Group by: split-apply-combine</a>. agg, именованные агрегаты и&nbsp;transform.</li>
+          <li id="src-3">McKinney W. <a href="https://wesmckinney.com/book/" target="_blank" rel="noopener">Python for Data Analysis</a>, 3rd ed. O’Reilly, 2022. Главы 8 и&nbsp;10: соединения, развороты и&nbsp;группировки, бесплатно онлайн.</li>
+          <li id="src-4">VanderPlas J. <a href="https://jakevdp.github.io/PythonDataScienceHandbook/" target="_blank" rel="noopener">Python Data Science Handbook</a>. Глава 3: merge, concat, группировка и&nbsp;сводные таблицы.</li>
+          <li id="src-5">Wickham H. <a href="https://doi.org/10.18637/jss.v059.i10" target="_blank" rel="noopener">Tidy Data</a>. Journal of Statistical Software, 2014, 59(10). Три правила опрятных данных.</li>
+          <li id="src-6">pandas. <a href="https://pandas.pydata.org/docs/user_guide/reshaping.html" target="_blank" rel="noopener">User Guide: Reshaping and pivot tables</a>. pivot, pivot_table, melt, stack и&nbsp;unstack.</li>
+          <li id="src-7">pandas. <a href="https://pandas.pydata.org/docs/reference/api/pandas.pivot_table.html" target="_blank" rel="noopener">pandas.pivot_table</a>. aggfunc по&nbsp;умолчанию, fill_value, margins и&nbsp;margins_name.</li>
+          <li id="src-8">seaborn. <a href="https://seaborn.pydata.org/tutorial/data_structure.html" target="_blank" rel="noopener">Data structures accepted by seaborn</a>. Чем длинный формат удобнее широкого для&nbsp;графиков.</li>
+          <li id="src-9">pandas. <a href="https://pandas.pydata.org/docs/reference/api/pandas.merge.html" target="_blank" rel="noopener">pandas.merge</a>. Параметры how, on, indicator, validate, suffixes и&nbsp;предупреждение о&nbsp;NaN в&nbsp;ключах.</li>
+          <li id="src-10">pandas. <a href="https://pandas.pydata.org/docs/user_guide/merging.html" target="_blank" rel="noopener">User Guide: Merge, join, concatenate and compare</a>. Типы соединений и&nbsp;concat.</li>
+          <li id="src-11">pandas. <a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.groupby.html" target="_blank" rel="noopener">pandas.DataFrame.groupby</a>. Параметры sort, observed и&nbsp;dropna.</li>
+        </ol>
+      </section>

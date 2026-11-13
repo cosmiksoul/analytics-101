@@ -1,0 +1,161 @@
+      <p class="eyebrow">Дата аналитика · Тема 04 · <b>Математика для&nbsp;данных</b></p>
+      <h1>Векторы и&nbsp;матрицы в&nbsp;NumPy</h1>
+      <p class="lead">После страницы вы&nbsp;будете видеть в&nbsp;таблице <span class="term" tabindex="0" data-g="matrix">матрицу</span>, а&nbsp;в&nbsp;каждой её&nbsp;строке — <span class="term" tabindex="0" data-g="vector">вектор</span>, стрелку с&nbsp;длиной и&nbsp;направлением. Вы&nbsp;посчитаете в&nbsp;NumPy расстояния и&nbsp;сходство между тысячей клиентов без&nbsp;единого цикла и&nbsp;прочитаете строку <code>X @ w</code> как&nbsp;тысячу <span class="term" tabindex="0" data-g="dot">скалярных произведений</span>.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;10&nbsp;шагов</span><span class="pill">1 интерактив</span><span class="pill">6 блоков кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: таблица — матрица, строка — стрелка</h2>
+        <p>Строка таблицы — это&nbsp;вектор: несколько чисел, которые рисуют точкой в&nbsp;пространстве <span class="term" tabindex="0" data-g="feature">признаков</span> или&nbsp;стрелкой из&nbsp;нуля в&nbsp;эту точку, а&nbsp;вся таблица — матрица из&nbsp;таких строк. Сравнить двух клиентов значит сравнить две стрелки: их&nbsp;длину, расстояние между концами и&nbsp;угол, который ловит скалярное произведение. NumPy считает это&nbsp;сразу для&nbsp;всех строк одной операцией над&nbsp;массивом. Геометрия честна, только когда признаки измерены в&nbsp;сравнимых единицах: в&nbsp;рублях доход в&nbsp;тысячи раз&nbsp;крупнее возраста и&nbsp;один решает, кто на&nbsp;кого похож.</p>
+        <div class="scene" id="scene" aria-label="Анимация: строка клиента становится точкой и стрелкой в трёхмерном пространстве признаков, тысяча строк — облаком стрелок; в рублях все стрелки ложатся на ось дохода, после стандартизации расходятся, и скалярное произведение двух клиентов растёт, когда стрелки смотрят в одну сторону"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Трёхмерное пространство показано проекцией на&nbsp;экран, числа в&nbsp;счётчиках посчитаны NumPy в&nbsp;трёх измерениях.</p>
+
+        <h3 class="sub-h">Вектор: точка и&nbsp;стрелка</h3>
+        <p>Клиент 49 из&nbsp;учебной таблицы — три&nbsp;числа: 57&nbsp;лет, доход 118&nbsp;000&nbsp;₽ в&nbsp;месяц и&nbsp;6&nbsp;заказов за&nbsp;квартал. Упорядоченный набор чисел и&nbsp;есть вектор, а&nbsp;каждое число — его&nbsp;<span class="term" tabindex="0" data-g="coord">координата</span>. Точка показывает адрес клиента в&nbsp;пространстве, где у&nbsp;каждого признака своя ось. Стрелка из&nbsp;начала координат в&nbsp;ту&nbsp;же&nbsp;точку хранит те&nbsp;же&nbsp;числа, но&nbsp;у&nbsp;неё сразу видны длина и&nbsp;направление<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <p>Формулы ниже от&nbsp;числа измерений не&nbsp;зависят: клиент с&nbsp;50&nbsp;признаками — стрелка в&nbsp;50-мерном пространстве, её&nbsp;не&nbsp;нарисовать, но&nbsp;длину и&nbsp;угол NumPy посчитает так&nbsp;же.</p>
+
+        <h3 class="sub-h">Длина и&nbsp;расстояние</h3>
+        <p><span class="term" tabindex="0" data-g="norm">Длина вектора</span>, или&nbsp;норма, — корень из&nbsp;суммы квадратов координат: теорема Пифагора для&nbsp;любого числа осей. <span class="term" tabindex="0" data-g="dist">Расстояние</span> между двумя клиентами — длина разности их&nbsp;векторов, то&nbsp;есть отрезка между концами стрелок<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+        <div class="formula"><span class="f">‖a‖ = √(a<sub>1</sub>² + a<sub>2</sub>² + … + a<sub>n</sub>²)<br>‖a − b‖ = √((a<sub>1</sub> − b<sub>1</sub>)² + … + (a<sub>n</sub> − b<sub>n</sub>)²)</span><small>a и&nbsp;b — векторы двух клиентов; a<sub>i</sub> — i-я координата, значение i-го признака; n — число признаков; ‖·‖ — длина вектора.</small></div>
+        <p>Длина вектора клиента 49 в&nbsp;исходных единицах — √(57² + 118&nbsp;000² + 6²) = 118&nbsp;000,01. Возраст и&nbsp;заказы добавили к&nbsp;ней одну сотую: квадрат дохода — 99,99998% суммы под&nbsp;корнем. Первый знак, что&nbsp;сравнивать клиентов в&nbsp;рублях опасно.</p>
+
+        <h3 class="sub-h">Скалярное произведение и&nbsp;косинус</h3>
+        <p>Скалярное произведение двух векторов — сумма произведений их&nbsp;координат по&nbsp;парам. У&nbsp;него есть и&nbsp;геометрический смысл: это&nbsp;произведение длин на&nbsp;косинус угла между стрелками<a class="ref" href="#src-2" data-ref="src-2">2</a><a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+        <div class="formula"><span class="f">a · b = a<sub>1</sub>b<sub>1</sub> + a<sub>2</sub>b<sub>2</sub> + … + a<sub>n</sub>b<sub>n</sub> = ‖a‖ · ‖b‖ · cos θ</span><small>θ — угол между стрелками a и&nbsp;b. cos θ = 1, когда стрелки смотрят в&nbsp;одну сторону, 0 — под&nbsp;прямым углом, −1 — в&nbsp;противоположные.</small></div>
+        <p>При&nbsp;тех&nbsp;же&nbsp;длинах скалярное произведение тем больше, чем точнее стрелки смотрят в&nbsp;одну сторону. Ноль значит, что&nbsp;векторы <span class="term" tabindex="0" data-g="orth">перпендикулярны</span>: по&nbsp;направлению они&nbsp;никак не&nbsp;связаны. Отрицательное значение — стрелки смотрят в&nbsp;разные стороны. Если поделить скалярное произведение на&nbsp;длины, останется чистое направление — <span class="term" tabindex="0" data-g="cos">косинусная близость</span>:</p>
+        <div class="formula"><span class="f">cos θ = a · b / (‖a‖ · ‖b‖)</span><small>От&nbsp;−1 до&nbsp;1. Не&nbsp;меняется, если стрелку удлинить: покупатель, купивший вдвое больше тех&nbsp;же&nbsp;товаров, смотрит туда&nbsp;же.</small></div>
+        <p>Косинус выбирают, когда важна пропорция, а&nbsp;не&nbsp;масштаб: так в&nbsp;разделе «Код» сравниваются товары по&nbsp;тому, кто их&nbsp;покупал.</p>
+
+        <h3 class="sub-h">Матрица: объекты × признаки и&nbsp;строка X @ w</h3>
+        <p>Тысяча клиентов по&nbsp;три&nbsp;признака — матрица X из&nbsp;1&nbsp;000&nbsp;строк и&nbsp;3&nbsp;столбцов. Строка X[i] — вектор одного клиента, столбец X[:, j] — вектор одного признака по&nbsp;всем клиентам<a class="ref" href="#src-6" data-ref="src-6">6</a>. По&nbsp;строкам сравнивают клиентов, по&nbsp;столбцам — признаки.</p>
+        <p>Самая частая операция с&nbsp;такой матрицей — <span class="term" tabindex="0" data-g="matmul">умножение на&nbsp;вектор весов</span>, в&nbsp;Python его&nbsp;пишут знаком @. Если X — матрица (n, d), а&nbsp;w — вектор из&nbsp;d чисел, результат — вектор из&nbsp;n чисел, по&nbsp;одному на&nbsp;строку<a class="ref" href="#src-8" data-ref="src-8">8</a>:</p>
+        <div class="formula"><span class="f">(X @ w)<sub>i</sub> = x<sub>i1</sub>w<sub>1</sub> + x<sub>i2</sub>w<sub>2</sub> + … + x<sub>id</sub>w<sub>d</sub> = x<sub>i</sub> · w</span><small>x<sub>i</sub> — i-я строка X; x<sub>ij</sub> — значение j-го признака у&nbsp;i-го объекта; w<sub>j</sub> — вес j-го признака. Каждое число результата — скалярное произведение строки на&nbsp;w.</small></div>
+        <p>В&nbsp;учебных данных траты клиента за&nbsp;квартал хорошо описывает формула 205 + 0,0347 · доход + 2&nbsp;550 · заказы. Добавим к&nbsp;таблице столбец единиц, и&nbsp;прогноз трат всех 1&nbsp;000&nbsp;клиентов — одна строка <code>X1 @ w</code>. Как&nbsp;такие веса находят, покажет страница 4.2.</p>
+
+        <h3 class="sub-h">NumPy: ndarray, shape, dtype</h3>
+        <p>Матрицу в&nbsp;NumPy хранит <span class="term" tabindex="0" data-g="ndarray">ndarray</span> — массив чисел одного типа в&nbsp;одном куске памяти<a class="ref" href="#src-4" data-ref="src-4">4</a>. <span class="term" tabindex="0" data-g="shape">Форма</span> (shape) — кортеж с&nbsp;длиной по&nbsp;каждой оси: у&nbsp;X это&nbsp;(1000, 3), у&nbsp;одного клиента — (3,). <span class="term" tabindex="0" data-g="dtype">dtype</span> — тип элементов, один на&nbsp;весь массив: таблица из&nbsp;целых столбцов становится int64, после деления появляется float64.</p>
+        <p><span class="term" tabindex="0" data-g="axis">Ось</span> — одно из&nbsp;измерений массива. axis=0 — ось строк: <code>X.mean(axis=0)</code> идёт по&nbsp;строкам сверху вниз и&nbsp;сворачивает&nbsp;их, остаются три&nbsp;средних по&nbsp;столбцам, а&nbsp;<code>X.mean(axis=1)</code> дал&nbsp;бы&nbsp;по&nbsp;числу на&nbsp;клиента. <span class="term" tabindex="0" data-g="slice">Срез</span> выбирает часть массива: <code>X[48]</code> — строка клиента 49 (счёт с&nbsp;нуля), <code>X[:, 1]</code> — весь столбец дохода, <code>X[:3, 1]</code> — доход первых трёх.</p>
+
+        <h3 class="sub-h">Векторизация и&nbsp;broadcasting</h3>
+        <p><span class="term" tabindex="0" data-g="vectorize">Векторизация</span> — запись операции для&nbsp;целого массива вместо цикла по&nbsp;элементам. <code>X - X.mean(axis=0)</code> вычитает средние из&nbsp;всех 3&nbsp;000 чисел одной строкой, а&nbsp;цикл идёт внутри NumPy, в&nbsp;скомпилированном коде, и&nbsp;не&nbsp;тратит время на&nbsp;интерпретатор Python.</p>
+        <p>Вычесть вектор (3,) из&nbsp;матрицы (1000, 3) позволяет <span class="term" tabindex="0" data-g="bcast">broadcasting</span>: правило, по&nbsp;которому NumPy совмещает массивы разных форм, не&nbsp;копируя данные<a class="ref" href="#src-5" data-ref="src-5">5</a>. Формы сравнивают справа налево. Две длины совместимы, если они&nbsp;равны или&nbsp;одна из&nbsp;них 1, а&nbsp;недостающие оси слева считаются единицами. Ось длины 1 растягивается до&nbsp;длины соседа.</p>
+        <div class="tbl v41-t">
+          <table>
+            <thead><tr><th>Слева</th><th>Справа</th><th>Результат</th></tr></thead>
+            <tbody>
+              <tr><td>(1000, 3)</td><td>(3,)</td><td>(1000, 3): из&nbsp;каждой строки вычли один вектор</td></tr>
+              <tr><td>(6, 1, 3)</td><td>(1, 6, 3)</td><td>(6, 6, 3): разности всех пар из&nbsp;шести клиентов</td></tr>
+              <tr><td>(3,)</td><td>(3, 1)</td><td>(3, 3): строка и&nbsp;столбец дали таблицу</td></tr>
+              <tr><td>(1000, 3)</td><td>(1000,)</td><td>ошибка: 3 и&nbsp;1&nbsp;000 не&nbsp;равны, и&nbsp;ни&nbsp;одна не&nbsp;1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Вторая строка даёт расстояния между всеми парами без&nbsp;цикла, третья — ловушка из&nbsp;«Нюансов».</p>
+
+        <h3 class="sub-h">Почему признаки масштабируют</h3>
+        <p>Расстояние складывает квадраты разностей, а&nbsp;у&nbsp;разностей разные единицы. Разница в&nbsp;40&nbsp;лет даёт в&nbsp;сумму 1&nbsp;600, разница в&nbsp;40&nbsp;000&nbsp;₽ — 1,6&nbsp;млрд. Среди 1&nbsp;000 учебных клиентов в&nbsp;рублях нет двух, между стрелками которых угол больше 0,15°: все&nbsp;стрелки лежат почти на&nbsp;оси дохода, и&nbsp;возраст с&nbsp;заказами не&nbsp;влияют ни&nbsp;на&nbsp;расстояние, ни&nbsp;на&nbsp;косинус.</p>
+        <p>Лекарство — привести признаки к&nbsp;общей шкале. Самый частый способ — <span class="term" tabindex="0" data-g="std">стандартизация</span>: вычесть из&nbsp;признака среднее и&nbsp;разделить на&nbsp;<span class="term" tabindex="0" data-g="sigma">стандартное отклонение</span>, типичный разброс вокруг среднего.</p>
+        <div class="formula"><span class="f">z = (x − μ) / σ</span><small>x — значение признака у&nbsp;клиента; μ — среднее признака по&nbsp;всем клиентам; σ — стандартное отклонение, корень из&nbsp;среднего квадрата отклонений от&nbsp;μ. У&nbsp;возраста σ = 15,5&nbsp;года, у&nbsp;дохода — 38&nbsp;232&nbsp;₽.</small></div>
+        <p>После стандартизации координата говорит, на&nbsp;сколько σ клиент выше или&nbsp;ниже среднего, а&nbsp;начало координат — средний клиент. Клиенты 49 и&nbsp;881 в&nbsp;рублях смотрят почти в&nbsp;одну сторону, угол 0,04°, а&nbsp;в&nbsp;стандартных единицах угол между ними 158°: один старше, богаче и&nbsp;активнее среднего, другой — наоборот.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: похожие клиенты и&nbsp;строка X @ w</h2>
+        <p>Учебная таблица — 1&nbsp;000&nbsp;клиентов интернет-магазина из&nbsp;темы 03: возраст, доход в&nbsp;месяц, число заказов за&nbsp;квартал и&nbsp;траты. Данные сгенерированы для&nbsp;учебника. С&nbsp;ней приходят две просьбы.</p>
+        <p>Маркетолог хочет найти клиентов, похожих на&nbsp;клиента 49, чтобы показать им ту&nbsp;же&nbsp;рекламу. «Похожих» надо перевести в&nbsp;число — расстояние между строками, и&nbsp;сразу встаёт вопрос, как&nbsp;не&nbsp;дать доходу заслонить остальные признаки.</p>
+        <p>Коллега оставил в&nbsp;ноутбуке строку <code>pred = X1 @ w</code> и&nbsp;сказал, что&nbsp;это&nbsp;прогноз трат. Чтобы ей доверять, надо понимать, что&nbsp;она&nbsp;умножает и&nbsp;какой формы результат.</p>
+        <p>Обе задачи решаются, если видеть в&nbsp;таблице матрицу, а&nbsp;в&nbsp;строке — вектор.</p>
+      </section>
+
+      <section data-sec="two" data-title="Два клиента">
+        <h2 id="two"><span class="sn">03</span>Два&nbsp;клиента: расстояние, скалярное произведение и&nbsp;угол руками</h2>
+        <p>Возьмём два&nbsp;признака, чтобы всё&nbsp;легло на&nbsp;плоскость: доход по&nbsp;горизонтали, возраст по&nbsp;вертикали. Серые точки — 1&nbsp;000 учебных клиентов, A и&nbsp;B — два&nbsp;из&nbsp;них. Без&nbsp;масштаба стрелки выходят из&nbsp;нуля, с&nbsp;масштабом признаки стандартизованы, и&nbsp;стрелки выходят из&nbsp;среднего клиента.</p>
+        <p>В&nbsp;начале A — клиент 175 (26&nbsp;лет, 116&nbsp;000&nbsp;₽), B — клиент 15 (64&nbsp;года, 60&nbsp;000&nbsp;₽). Сначала предскажите.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="two"></div>
+        <p>Без&nbsp;масштаба сравняйте возраст A и&nbsp;B: расстояние уменьшится с&nbsp;56&nbsp;000,01 до&nbsp;56&nbsp;000,00. Стрелки на&nbsp;графике расходятся только потому, что&nbsp;оси в&nbsp;разных единицах: если год и&nbsp;рубль одной длины, угол между ними 0,05°, как&nbsp;на&nbsp;вставке в&nbsp;углу.</p>
+        <p>С&nbsp;масштабом оба признака измерены в&nbsp;σ, и&nbsp;угол на&nbsp;экране настоящий. Те&nbsp;же&nbsp;двое почти противоположны, косинус −0,95: один моложе и&nbsp;богаче среднего, другой старше и&nbsp;беднее.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: формы, broadcasting и&nbsp;типы</h2>
+        <div class="callout"><p><b>(n,) и&nbsp;(n, 1) — разные массивы.</b> Одномерный массив формы (5,) — просто пять чисел: у&nbsp;него нет «строки» и&nbsp;«столбца», и&nbsp;транспонирование <code>.T</code> его&nbsp;не&nbsp;меняет. Двумерный (5, 1) — матрица-столбец. Один индекс <code>X[:5, 0]</code> убирает ось, список <code>X[:5, [0]]</code> или&nbsp;срез <code>X[:5, 0:1]</code> её&nbsp;сохраняет. Перевести одно в&nbsp;другое — <code>reshape(-1, 1)</code> или&nbsp;<code>[:, None]</code>.</p></div>
+        <div class="block wide" data-code="shape1"></div>
+        <div class="callout"><p><b>Broadcasting молча делает не&nbsp;то.</b> Правило не&nbsp;спрашивает, чего вы&nbsp;хотели. Вектор (3,) плюс столбец (3, 1) — не&nbsp;сумма трёх пар чисел, а&nbsp;таблица 3&nbsp;×&nbsp;3. Хуже, когда так выходит в&nbsp;расчёте ошибки: траты (1000,) минус прогноз-столбец (1000, 1) дают матрицу 1&nbsp;000&nbsp;×&nbsp;1&nbsp;000, и&nbsp;«средняя ошибка» по&nbsp;миллиону пар получается 7&nbsp;532&nbsp;₽ вместо 3&nbsp;017&nbsp;₽ — без&nbsp;единого предупреждения. Проверяйте <code>.shape</code> после операций с&nbsp;массивами разных форм.</p></div>
+        <div class="block wide" data-code="bcast"></div>
+        <div class="callout"><p><b>Целые и&nbsp;вещественные dtype.</b> Таблица из&nbsp;целых столбцов даёт массив int64. Дробь, записанная в&nbsp;такой массив, обрезается молча, а&nbsp;вычитание на&nbsp;месте <code>X -= X.mean(axis=0)</code> падает: результат float64 не&nbsp;помещается в&nbsp;int64. Обычное <code>X - X.mean(axis=0)</code> создаёт новый массив и&nbsp;само повышает тип. Самое коварное — <span class="term" tabindex="0" data-g="overflow">переполнение</span>: в&nbsp;int32 квадрат дохода 80&nbsp;500&nbsp;₽ не&nbsp;помещается и&nbsp;становится отрицательным числом, а&nbsp;NumPy не&nbsp;предупреждает<a class="ref" href="#src-7" data-ref="src-7">7</a>. Деление <code>/</code> всегда даёт float, <code>//</code> — целую часть.</p></div>
+        <div class="block wide" data-code="dtype"></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: в&nbsp;сотнях измерений расстояния выравниваются</h2>
+        <p>Для&nbsp;трёх признаков интуиция «близко — далеко» работает. В&nbsp;сотнях измерений она&nbsp;ломается, это&nbsp;называют <span class="term" tabindex="0" data-g="curse">проклятием размерности</span><a class="ref" href="#src-6" data-ref="src-6">6</a><a class="ref" href="#src-9" data-ref="src-9">9</a>. Расстояния от&nbsp;одной точки до&nbsp;остальных становятся почти одинаковыми, а&nbsp;случайные векторы — почти перпендикулярными. Учебный расчёт в&nbsp;NumPy: 1&nbsp;000 случайных точек с&nbsp;независимыми стандартизованными признаками и&nbsp;ещё одна точка, seed 4. В&nbsp;таблице — расстояния от&nbsp;неё до&nbsp;ближайшей и&nbsp;самой далёкой точки и&nbsp;доля почти перпендикулярных векторов.</p>
+        <div class="tbl v41-t">
+          <table>
+            <thead><tr><th>Признаков</th><th>Ближайшая</th><th>Самая далёкая</th><th>Во&nbsp;сколько раз&nbsp;дальше</th><th>|cos| &lt; 0,1</th></tr></thead>
+            <tbody>
+              <tr><td>2</td><td>0,10</td><td>4,81</td><td>49,6</td><td>7%</td></tr>
+              <tr><td>3</td><td>0,21</td><td>5,89</td><td>28,0</td><td>10%</td></tr>
+              <tr><td>10</td><td>1,86</td><td>7,48</td><td>4,0</td><td>23%</td></tr>
+              <tr><td>100</td><td>10,93</td><td>16,12</td><td>1,5</td><td>69%</td></tr>
+              <tr><td>500</td><td>29,34</td><td>34,97</td><td>1,2</td><td>98%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Когда самая далёкая точка всего на&nbsp;19% дальше ближайшей, «ближайший сосед» почти ничего не&nbsp;значит. Поэтому на&nbsp;сотнях признаков сначала уменьшают размерность или&nbsp;отбирают признаки. Как&nbsp;это&nbsp;делает метод главных компонент, разбирается в&nbsp;блоке ML, тема 05.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: массивы, расстояния, косинус</h2>
+        <p>Код запущен в&nbsp;Python 3.13 с&nbsp;NumPy 2.5.3 и&nbsp;pandas 3.0.5, вывод вставлен как&nbsp;есть. Первый блок создаёт вектор и&nbsp;матрицу, показывает shape, dtype и&nbsp;срезы и&nbsp;считает прогноз трат одной строкой <code>X1 @ w</code>.</p>
+        <div class="block wide" data-code="arrays"></div>
+        <p>Второй считает расстояния без&nbsp;циклов. Для&nbsp;шести клиентов — через broadcasting в&nbsp;массив разностей (6, 6, 3). Для&nbsp;всех 1&nbsp;000 такой массив занял&nbsp;бы&nbsp;24&nbsp;МБ, поэтому квадрат расстояния раскладывают через скалярные произведения: ‖a − b‖² = ‖a‖² + ‖b‖² − 2 a · b, и&nbsp;вся матрица 1&nbsp;000&nbsp;×&nbsp;1&nbsp;000 собирается из&nbsp;одного <code>Z @ Z.T</code>. Ближе всех к&nbsp;клиенту 49 оказались клиенты 960, 745 и&nbsp;387 — это&nbsp;ответ маркетологу.</p>
+        <div class="block wide" data-code="dist"></div>
+        <p>Третий сравнивает товары. Из&nbsp;учебной базы магазина собрана матрица «клиенты × товары»: строка — клиент, столбец — товар, в&nbsp;клетке — сколько штук клиент купил в&nbsp;оплаченных заказах. Столбец — вектор покупателей товара, и&nbsp;косинус двух столбцов говорит, насколько похожи их&nbsp;аудитории.</p>
+        <div class="block wide" data-code="cosprod"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Математика для данных» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">3Blue1Brown. <a href="https://www.3blue1brown.com/topics/linear-algebra" target="_blank" rel="noopener">Essence of Linear Algebra</a>. Вектор как&nbsp;стрелка и&nbsp;скалярное произведение на&nbsp;картинках — образец для&nbsp;сцены.</li>
+          <li id="src-2">Deisenroth M., Faisal A., Ong C. <a href="https://mml-book.github.io/" target="_blank" rel="noopener">Mathematics for Machine Learning</a>. Cambridge University Press, 2020. Глава 3: нормы, скалярное произведение, углы и&nbsp;ортогональность.</li>
+          <li id="src-3">Strang G. <a href="https://math.mit.edu/~gs/linearalgebra/" target="_blank" rel="noopener">Introduction to Linear Algebra</a>, 6th ed., 2023. Глава 1: длина, расстояние и&nbsp;косинус угла через скалярное произведение.</li>
+          <li id="src-4">NumPy. <a href="https://numpy.org/doc/stable/user/absolute_beginners.html" target="_blank" rel="noopener">NumPy: the absolute basics for beginners</a>. ndarray, shape, dtype, оси, индексы и&nbsp;срезы.</li>
+          <li id="src-5">NumPy. <a href="https://numpy.org/doc/stable/user/basics.broadcasting.html" target="_blank" rel="noopener">Broadcasting</a>. Правило совместимости форм: сравнение справа, равные длины или&nbsp;единица.</li>
+          <li id="src-6">Goodfellow I., Bengio Y., Courville A. <a href="https://www.deeplearningbook.org/" target="_blank" rel="noopener">Deep Learning</a>. MIT Press, 2016. Глава 2 — векторы, матрицы и&nbsp;нормы; раздел 5.11.1 — проклятие размерности.</li>
+          <li id="src-7">NumPy. <a href="https://numpy.org/doc/stable/user/basics.types.html" target="_blank" rel="noopener">Data types</a>. Целые типы фиксированной длины и&nbsp;переполнение в&nbsp;них.</li>
+          <li id="src-8">NumPy. <a href="https://numpy.org/doc/stable/reference/generated/numpy.matmul.html" target="_blank" rel="noopener">numpy.matmul</a>. Как&nbsp;@ обращается с&nbsp;одномерным операндом и&nbsp;какой формы получается результат.</li>
+          <li id="src-9">Beyer K., Goldstein J., Ramakrishnan R., Shaft U. <a href="https://doi.org/10.1007/3-540-49257-7_15" target="_blank" rel="noopener">When Is “Nearest Neighbor” Meaningful?</a> ICDT’99, Springer, 1999, с.&nbsp;217–235. Почему в&nbsp;многомерных данных ближайший и&nbsp;самый далёкий соседи почти равноудалены.</li>
+        </ol>
+      </section>

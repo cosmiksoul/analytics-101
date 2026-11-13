@@ -1,0 +1,107 @@
+/* ===== Сцена: релиз под слоями помех ===== */
+.scene .xp-sc { position: relative; width: 100%; height: 100%; }
+.scene .xp-sc-in svg { display: block; overflow: visible; }
+.scene .xp-sc-in svg text { font-family: var(--ui); }
+.scene .xp-sc-in svg text.xp-halo { paint-order: stroke; stroke: #0b0f19; stroke-width: 4px; stroke-linejoin: round; }
+.scene .xp-sc-calls { position: absolute; inset: 0; pointer-events: none; }
+.scene .xp-call { position: absolute; background: #141b2b; border: 1px solid var(--s-acc); color: var(--s-ink); font: 500 12.5px/1.35 var(--ui); padding: 6px 10px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .35); text-align: center; animation: xpIn .35s ease; }
+.scene .xp-call.up { transform: translateY(-100%); }
+@keyframes xpIn { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .scene .xp-call { animation: none; } }
+.scene .sc-leg span { white-space: nowrap; }
+/* три счётчика HUD: табло справа вверху наезжает на третий — прячем */
+.scene .sc-info { display: none; }
+@container (max-width: 860px) { .scene .sc-stage { height: 580px; } }
+@container (max-width: 560px) {
+  .scene .sc-stage { height: 590px; }
+  .scene .sc-html { padding: 66px 6px 50px; }
+  .scene .xp-call { font-size: 11px; padding: 5px 8px; }
+  .scene .hb small { display: none; }
+  .scene .hb span { white-space: nowrap; }
+}
+
+/* ===== Таблицы в тексте ===== */
+.xp-tbl td:last-child, .xp-tbl th:last-child { white-space: nowrap; }
+.xp-tbl td:first-child { white-space: normal; min-width: 120px; }
+.xp-bal td:not(:first-child), .xp-bal th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; width: 90px; }
+.xp-map td:last-child { white-space: normal; }
+@media (max-width: 640px) {
+  .xp-tbl table { font-size: 13px; }
+  .xp-tbl th { font-size: 10px; letter-spacing: 0; }
+  .xp-tbl td, .xp-tbl th { padding-right: 8px; }
+  .xp-tbl td:first-child { min-width: 96px; }
+  .xp-bal td:not(:first-child) { width: 64px; }
+  .formula .f { white-space: normal; }
+}
+
+/* ===== Рисунок под кодом ===== */
+.xp-fig { margin: 4px auto 26px; }
+.xp-fsc { overflow-x: auto; }
+.xp-fig img { display: block; width: 100%; max-width: 700px; height: auto; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 6px; }
+.xp-fig figcaption { font: 13px/1.45 var(--ui); color: var(--muted); margin-top: 6px; text-align: center; }
+@media (max-width: 640px) { .xp-fig img { min-width: 480px; } .xp-fig figcaption { text-align: left; } }
+
+/* ===== Интерактив «Слои помех» ===== */
+.article .block p.xp-do { padding: 10px 16px 0; margin: 0; }
+.xp-tg { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px 6px; }
+.xp-chip { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-2); background: var(--paper); border-radius: 999px; padding: 6px 12px 6px 9px; font: 500 13.5px/1.2 var(--ui); color: var(--ink-2); cursor: pointer; }
+.xp-chip i { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid var(--line-2); background: var(--surface); flex: none; }
+.xp-chip:hover { border-color: var(--bad); }
+.xp-chip[aria-pressed="true"] { border-color: var(--bad); background: var(--bad-soft); color: var(--ink); }
+.xp-chip[aria-pressed="true"] i { background: var(--bad); border-color: var(--bad); }
+.xp-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.xp-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-top: 1px solid var(--line); margin-top: 6px; }
+.xp-pane { min-width: 0; padding: 0 10px 4px 0; }
+.xp-pane + .xp-pane { border-left: 1px solid var(--line); }
+.article .block p.xp-cap { font: 600 13px/1.3 var(--ui); color: var(--ink); padding: 10px 16px 2px; margin: 0; }
+.xp-ch { padding: 4px 0 0 6px; }
+.xp-ch svg { display: block; width: 100%; height: auto; overflow: visible; }
+.xp-ch svg text { font-family: var(--ui); font-size: 10.5px; }
+.xp-ch .xp-grid { stroke: var(--line); stroke-width: 1; }
+.xp-ch .xp-tx { fill: var(--muted); }
+.xp-ch .xp-band { fill: var(--bad-soft); }
+.xp-ch .xp-bandt { fill: var(--bad); }
+.xp-ch .xp-rel { stroke: var(--accent); stroke-width: 1.4; }
+.xp-ch .xp-relt { fill: var(--accent); font-weight: 600; }
+.xp-ch polyline { fill: none; stroke-width: 1.7; stroke-linejoin: round; }
+.xp-ch .xp-ln { stroke: var(--ink-2); }
+.xp-ch .xp-ln-a { stroke: var(--c1); }
+.xp-ch .xp-ln-b { stroke: var(--accent); }
+.xp-ch .xp-mean, .xp-ch .xp-mean-a, .xp-ch .xp-mean-b { stroke-width: 2; stroke-dasharray: 6 3; }
+.xp-ch .xp-mean { stroke: var(--c2); }
+.xp-ch .xp-mean-a { stroke: var(--c1); }
+.xp-ch .xp-mean-b { stroke: var(--accent); }
+.xp-ch .xp-mt, .xp-ch .xp-mt-a, .xp-ch .xp-mt-b { font-weight: 650; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.xp-ch .xp-mt { fill: var(--c2); }
+.xp-ch .xp-mt-a { fill: var(--c1); }
+.xp-ch .xp-mt-b { fill: var(--accent); }
+.xp-meter { border-top: 1px solid var(--line); padding: 10px 16px 0; }
+.xp-mlab { display: block; font: 500 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.xp-track { position: relative; height: 92px; margin: 2px 10px 0; }
+.xp-track::before { content: ""; position: absolute; left: 0; right: 0; top: 28px; height: 2px; background: var(--line-2); border-radius: 1px; }
+.xp-tk { position: absolute; top: 24px; width: 1px; height: 10px; background: var(--line-2); }
+.xp-tk i { position: absolute; top: 12px; left: 0; transform: translateX(-50%); font: 400 10.5px/1 var(--mono); font-style: normal; color: var(--muted); white-space: nowrap; }
+.xp-truth { position: absolute; top: 16px; height: 58px; width: 0; border-left: 1.5px dashed var(--ink-2); }
+.xp-dot { position: absolute; top: 22px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; border: 2px solid var(--surface); transition: left .45s ease; }
+.xp-dot-ba { background: var(--c2); }
+.xp-dot-ab { background: var(--accent); }
+.xp-tl { position: absolute; transform: translateX(-50%); white-space: nowrap; font: 650 12.5px/1.2 var(--ui); transition: left .45s ease; }
+.xp-tl-ba { top: 2px; color: var(--c2); }
+.xp-tl-ab { top: 54px; color: var(--accent); }
+.xp-tl-tr { top: 76px; color: var(--muted); font-weight: 500; font-size: 11.5px; }
+.article .block p.xp-narr { padding: 6px 16px 12px; margin: 0; min-height: 62px; color: var(--ink-2); font-size: 14px; line-height: 1.55; }
+@media (prefers-reduced-motion: reduce) { .xp-dot, .xp-tl { transition: none; } }
+@media (max-width: 720px) {
+  .xp-two { grid-template-columns: minmax(0, 1fr); }
+  .xp-pane + .xp-pane { border-left: 0; border-top: 1px solid var(--line); }
+}
+@media (max-width: 560px) {
+  .xp-tg { padding: 10px 12px 4px; gap: 6px; }
+  .xp-chip { font-size: 12.5px; padding: 5px 10px 5px 8px; }
+  .article .block p.xp-do, .article .block p.xp-cap, .article .block p.xp-narr { padding-left: 12px; padding-right: 12px; }
+  .xp-meter { padding: 10px 12px 0; }
+  .xp-tl { font-size: 11.5px; }
+}
+
+/* вывод psql и pandas: широкие таблицы прокручиваются, а не переносятся */
+.block .out pre { white-space: pre; overflow-x: auto; max-height: none; }

@@ -1,0 +1,172 @@
+      <p class="eyebrow">Дата аналитика · Тема 02 · <b>Pandas и&nbsp;подготовка данных</b></p>
+      <h1>DataFrame изнутри: индекс, типы, выборка</h1>
+      <p class="lead">После этой страницы вы перестанете путать <span class="term" tabindex="0" data-g="loc">loc</span> и&nbsp;<span class="term" tabindex="0" data-g="iloc">iloc</span>, <span class="term" tabindex="0" data-g="index">индекс</span> и&nbsp;столбец, <span class="term" tabindex="0" data-g="series">Series</span> и&nbsp;<span class="term" tabindex="0" data-g="dataframe">DataFrame</span>, объясните, почему столбец с&nbsp;числами получил строковый тип, и&nbsp;замените цикл по&nbsp;строкам одним выражением над столбцом.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;12&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">6&nbsp;блоков кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: таблица — это столбцы с&nbsp;общим индексом</h2>
+        <p>DataFrame устроен не&nbsp;как сетка ячеек, а&nbsp;как набор столбцов: каждый столбец — массив значений одного <span class="term" tabindex="0" data-g="dtype">типа</span>, и&nbsp;все столбцы подписаны общим индексом. Индекс хранит <span class="term" tabindex="0" data-g="label">метки</span> строк, и&nbsp;метка не&nbsp;равна <span class="term" tabindex="0" data-g="position">позиции</span> — порядковому номеру строки: после сортировки или фильтра они расходятся. Поэтому строку выбирают двумя способами: loc ищет по&nbsp;метке, iloc — по&nbsp;позиции, а&nbsp;<span class="term" tabindex="0" data-g="mask">булева маска</span> оставляет строки, прошедшие условие. Операции идут над целым столбцом сразу — это <span class="term" tabindex="0" data-g="vectorization">векторизация</span>, и&nbsp;цикл по&nbsp;строкам почти всегда лишний.</p>
+        <div class="scene" id="scene" aria-label="Анимация: таблица заказов распадается на столбцы с общим индексом, loc выбирает строку по метке, iloc — по позиции, маска гасит строки, не прошедшие условие"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно: Series, DataFrame, типы данных и&nbsp;индекс.</p>
+
+        <h3 class="sub-h">Series: массив с&nbsp;метками</h3>
+        <p>Series — одномерный массив с&nbsp;метками: значения, индекс и&nbsp;имя<a class="ref" href="#src-1" data-ref="src-1">1</a>. Столбец <code>s = df["amount"]</code> из&nbsp;сцены — Series с&nbsp;именем amount, типом int64 и&nbsp;индексом таблицы. Метки дают ему свойства словаря: <code>s.loc[2]</code> вернёт 910 — сумму заказа с&nbsp;меткой 2. Порядок даёт свойства списка: <code>s.iloc[2]</code> вернёт 2&nbsp;640 — третье значение сверху. Короткая запись <code>s[2]</code> в&nbsp;pandas 3 всегда ищет метку<a class="ref" href="#src-2" data-ref="src-2">2</a>, а&nbsp;в&nbsp;pandas 2 на&nbsp;индексе из&nbsp;строк ещё понимала число как позицию.</p>
+
+        <h3 class="sub-h">DataFrame: словарь столбцов</h3>
+        <p>Документация предлагает думать о&nbsp;DataFrame как о&nbsp;словаре объектов Series<a class="ref" href="#src-1" data-ref="src-1">1</a>: ключ — имя столбца, значение — столбец. Поэтому <code>df["amount"]</code> достаёт столбец, <code>df[["brand", "amount"]]</code> — таблицу из&nbsp;двух столбцов, а&nbsp;<code>for c in df</code> перебирает имена столбцов, а&nbsp;не&nbsp;строки. Все столбцы делят один индекс, и&nbsp;новый столбец из&nbsp;Series pandas записывает по&nbsp;меткам, а&nbsp;не&nbsp;по&nbsp;порядку: это <span class="term" tabindex="0" data-g="align">выравнивание по&nbsp;индексу</span><a class="ref" href="#src-4" data-ref="src-4">4</a>.</p>
+
+        <h3 class="sub-h">dtype: один тип на&nbsp;столбец</h3>
+        <p>У&nbsp;столбца один тип на&nbsp;все значения, dtype. От&nbsp;него зависят память и&nbsp;доступные операции: даты вычитают, числа складывают, у&nbsp;строк есть методы <code>.str</code>. Вот типы учебной выгрузки из&nbsp;100&nbsp;000 заказов, с&nbsp;которой работает раздел «Код»:</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>dtype</th><th>Столбцы</th><th>Как хранится</th><th>На&nbsp;100&nbsp;000 значений</th></tr></thead>
+            <tbody>
+              <tr><td>int64</td><td>order_id, amount</td><td>целые числа подряд, по&nbsp;8&nbsp;байт</td><td>781&nbsp;КБ</td></tr>
+              <tr><td>datetime64[us]</td><td>date</td><td>число микросекунд от&nbsp;1970 года, тоже 8&nbsp;байт</td><td>781&nbsp;КБ</td></tr>
+              <tr><td>str</td><td>brand, country, channel, status</td><td>текст в&nbsp;буфере <span class="term" tabindex="0" data-g="arrow">Arrow</span> и&nbsp;смещения к&nbsp;нему</td><td>977–2&nbsp;279&nbsp;КБ</td></tr>
+              <tr><td>object</td><td>так строки хранил pandas 2</td><td>указатели на&nbsp;отдельные объекты Python</td><td>brand: 7&nbsp;178&nbsp;КБ</td></tr>
+              <tr><td>category</td><td>переводят вручную</td><td>словарь значений и&nbsp;коды по&nbsp;1&nbsp;байту</td><td>brand: 98&nbsp;КБ</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub-h">Почему object медленный</h3>
+        <p>Тип <span class="term" tabindex="0" data-g="object">object</span> — «любой объект Python»: массив хранит указатели на&nbsp;отдельные объекты, разбросанные по&nbsp;памяти. Чтобы сравнить такой столбец со&nbsp;строкой «Сова», pandas для каждого значения вызывает сравнение Python — это тот&nbsp;же цикл, только спрятанный. Столбец int64 то&nbsp;же сравнение проходит одной операцией по&nbsp;сплошной памяти.</p>
+        <p>До&nbsp;pandas 3 строки по&nbsp;умолчанию хранились в&nbsp;object, и&nbsp;документация признаёт, что это часто неэффективно и&nbsp;по&nbsp;скорости, и&nbsp;по&nbsp;памяти<a class="ref" href="#src-3" data-ref="src-3">3</a>. В&nbsp;pandas 3 у&nbsp;строк свой тип <span class="term" tabindex="0" data-g="str">str</span>: с&nbsp;пакетом pyarrow текст лежит в&nbsp;буфере Arrow, без него — в&nbsp;том&nbsp;же object<a class="ref" href="#src-2" data-ref="src-2">2</a>. На&nbsp;учебной выгрузке brand в&nbsp;str занимает 1,5&nbsp;МБ, в&nbsp;object — 7,0&nbsp;МБ, а&nbsp;сравнение в&nbsp;object в&nbsp;три с&nbsp;половиной раза медленнее. Сам object остался для смешанных столбцов: <code>pd.Series([3430, "н/д"])</code> получит именно его.</p>
+
+        <h3 class="sub-h">Почему числа стали строками</h3>
+        <p>Отсюда частая загадка: столбец сумм прочитался не&nbsp;как int64. Хватит одного «н/д» или «1&nbsp;300» с&nbsp;пробелом, и&nbsp;<code>read_csv</code> оставит весь столбец текстом: в&nbsp;pandas 3 — str, в&nbsp;pandas 2 — object. Пустая ячейка действует иначе: столбец станет float64 с&nbsp;NaN. Ошибки при этом нет, а&nbsp;<code>sum()</code> склеит строки в&nbsp;«3430400н/д1&nbsp;300». Лечится явным переводом <code>pd.to_numeric(…, errors="coerce")</code>: нечисловое станет NaN.</p>
+
+        <h3 class="sub-h">Индекс и&nbsp;его сброс</h3>
+        <p>Если индекс не&nbsp;задан, pandas ставит <span class="term" tabindex="0" data-g="rangeindex">RangeIndex</span>: метки 0, 1, 2… совпадают с&nbsp;позициями, но&nbsp;только до&nbsp;первой сортировки или фильтра. <code>set_index("order_id")</code> делает метками номера заказов. <code>reset_index()</code> ставит метки 0, 1, 2… заново и&nbsp;переносит старый индекс в&nbsp;столбец index, а&nbsp;с&nbsp;<code>drop=True</code> старый индекс выбрасывает. После сброса loc и&nbsp;iloc снова дают одну и&nbsp;ту&nbsp;же строку. У&nbsp;<code>sort_values</code> для этого есть аргумент <code>ignore_index=True</code>.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: «вторая строка» или «строка 2»</h2>
+        <p>Аналитик взял первые восемь заказов учебной выгрузки, отсортировал их по&nbsp;сумме и&nbsp;хочет второй по&nbsp;величине заказ. Он пишет <code>df.loc[1]</code> и&nbsp;получает самый дешёвый заказ на&nbsp;400&nbsp;₽: метка 1 после сортировки уехала в&nbsp;конец. Коллега для «заказа номер 2» пишет <code>df.iloc[2]</code> и&nbsp;тоже получает чужую строку. Код не&nbsp;упал, ошибки нет, просто в&nbsp;отчёт ушли не&nbsp;те числа.</p>
+        <p>Задача страницы — перестать путать loc и&nbsp;iloc, индекс и&nbsp;столбец, Series и&nbsp;DataFrame. Устройство таблицы мы уже разобрали, дальше — правила выборки на&nbsp;тех&nbsp;же восьми заказах.</p>
+      </section>
+
+      <section data-sec="select" data-title="Выборка">
+        <h2 id="select"><span class="sn">03</span>Выборка: loc, iloc и&nbsp;маски</h2>
+        <p>Строки и&nbsp;столбцы выбирают квадратными скобками<a class="ref" href="#src-4" data-ref="src-4">4</a>: loc работает с&nbsp;метками и&nbsp;именами, iloc — с&nbsp;позициями, маска — с&nbsp;условием.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Запись</th><th>loc: метки</th><th>iloc: позиции</th></tr></thead>
+            <tbody>
+              <tr><td><code>[2]</code></td><td>строка с&nbsp;меткой 2 → Series</td><td>третья строка сверху → Series</td></tr>
+              <tr><td><code>[[2, 5]]</code></td><td>строки с&nbsp;метками 2 и&nbsp;5 → DataFrame</td><td>строки на&nbsp;позициях 2 и&nbsp;5 → DataFrame</td></tr>
+              <tr><td><code>[0:2]</code></td><td>от&nbsp;метки 0 до&nbsp;метки 2 включительно</td><td>позиции 0 и&nbsp;1, конец не&nbsp;входит</td></tr>
+              <tr><td><code>[маска]</code></td><td>строки, где True</td><td>то&nbsp;же; в&nbsp;pandas 2 — ошибка</td></tr>
+              <tr><td>Чего нет</td><td>KeyError</td><td>IndexError</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Через запятую пишут столбцы: <code>df.loc[2, "amount"]</code> вернёт одно значение, <code>df.loc[:, ["brand", "amount"]]</code> — два столбца целиком, двоеточие значит «все». Одна метка убирает измерение: строка становится Series, ячейка — значением. Список из&nbsp;одной метки измерение сохраняет: <code>df.loc[[2]]</code> — таблица из&nbsp;одной строки.</p>
+        <p>У&nbsp;среза loc правая граница входит<a class="ref" href="#src-5" data-ref="src-5">5</a>: у&nbsp;метки «март» нет очевидной соседки справа, и&nbsp;срез от&nbsp;«января» до&nbsp;«марта» без марта выглядел&nbsp;бы странно. Если метки идут вразнобой, срез берёт строки в&nbsp;текущем порядке: <code>df.loc[0:2]</code> в&nbsp;нашей таблице — семь строк, от&nbsp;метки 0 до&nbsp;метки 2. Нет одной из&nbsp;границ — KeyError.</p>
+        <p>Скобки без loc и&nbsp;iloc — сокращение с&nbsp;тремя правилами: имя или список имён выбирает столбцы, маска — строки, срез чисел — строки по&nbsp;позициям<a class="ref" href="#src-6" data-ref="src-6">6</a>. Число без среза ищется среди имён столбцов, поэтому <code>df[2]</code> даёт KeyError: 2.</p>
+
+        <h3 class="sub-h">Маска: условие вместо адреса</h3>
+        <p>Сравнение столбца со&nbsp;значением даёт булеву маску — Series из&nbsp;True и&nbsp;False с&nbsp;тем&nbsp;же индексом. <code>df[mask]</code> и&nbsp;<code>df.loc[mask]</code> оставляют строки, где True. Условия соединяют знаками <code>&amp;</code> («и»), <code>|</code> («или») и&nbsp;<code>~</code> («не»), а&nbsp;слова and, or, not с&nbsp;масками дают ValueError<a class="ref" href="#src-4" data-ref="src-4">4</a>. Каждое сравнение берут в&nbsp;скобки: в&nbsp;Python <code>&amp;</code> выполняется раньше, чем <code>&gt;</code>, и&nbsp;<code>df[df["amount"] &gt; 1000 &amp; (df["status"] == "paid")]</code> вернёт все восемь строк.</p>
+        <p>Сначала предскажите, потом проверьте в&nbsp;интерактиве. Его разбор выражений написан на&nbsp;JavaScript и&nbsp;понимает ограниченный набор форм; результаты сверены с&nbsp;pandas 3.0.5 на&nbsp;той&nbsp;же таблице.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="sel"></div>
+        <p>У&nbsp;строк с&nbsp;метками 0, 3 и&nbsp;4 метка случайно совпала с&nbsp;позицией. На&nbsp;них loc и&nbsp;iloc дают одно и&nbsp;то&nbsp;же, поэтому ошибка «перепутал loc и&nbsp;iloc» может долго жить в&nbsp;коде, пока данные не&nbsp;придут в&nbsp;другом порядке. Правило простое: «какая по&nbsp;счёту» — iloc, «какая по&nbsp;имени» — loc, «какие подходят» — маска.</p>
+      </section>
+
+      <section data-sec="assign" data-title="Присваивание">
+        <h2 id="assign"><span class="sn">04</span>Присваивание: один loc вместо цепочки</h2>
+        <p>Менять значения надёжно только одним способом: <code>df.loc[строки, столбцы] = значение</code> на&nbsp;самой таблице. Две пары скобок подряд, <code>df[…][…] = значение</code>, — это <span class="term" tabindex="0" data-g="chained">цепочка присваивания</span> (chained assignment). Первые скобки возвращают промежуточный объект, вторые меняют его, и&nbsp;всё зависит от&nbsp;того, связан&nbsp;ли он с&nbsp;исходной таблицей.</p>
+        <p>В&nbsp;pandas 2 это зависело от&nbsp;того, что вернули первые скобки: копию или <span class="term" tabindex="0" data-g="view">представление</span>, и&nbsp;документация признаёт, что предсказать это было трудно<a class="ref" href="#src-3" data-ref="src-3">3</a>. Сигналом служило <span class="term" tabindex="0" data-g="swc">SettingWithCopyWarning</span>. Оно срабатывало и&nbsp;зря, на&nbsp;честную новую таблицу из&nbsp;выборки, и&nbsp;код обрастал защитными <code>.copy()</code>.</p>
+        <p>В&nbsp;pandas 3 правило одно: любой результат выборки ведёт себя как копия. Это <span class="term" tabindex="0" data-g="cow">Copy-on-Write</span>: данные копируются при первой записи, и&nbsp;меняется только тот объект, в&nbsp;который пишут<a class="ref" href="#src-2" data-ref="src-2">2</a>. Цепочка присваивания поэтому не&nbsp;работает никогда: pandas предупреждает ChainedAssignmentError, таблица остаётся прежней. SettingWithCopyWarning убрали.</p>
+        <div class="block wide" data-code="chain"></div>
+        <p>В&nbsp;pandas 2 цепочка B поменяла таблицу, а&nbsp;A — нет, хотя предупреждение одно и&nbsp;то&nbsp;же. В&nbsp;строке C pandas 2 предупреждает зря: менять отдельную таблицу paid — законное желание. В&nbsp;pandas 3 обе цепочки не&nbsp;работают, C проходит молча, а&nbsp;таблицу в&nbsp;обеих версиях меняет только D.</p>
+      </section>
+
+      <section data-sec="vec" data-title="Векторизация">
+        <h2 id="vec"><span class="sn">05</span>Векторизация вместо циклов</h2>
+        <p>Векторизация — операция над целым столбцом вместо цикла по&nbsp;значениям: <code>orders["amount"] * 0.9</code> умножает сто тысяч сумм одним вызовом. Цикл при этом есть, но&nbsp;он написан на&nbsp;C и&nbsp;идёт по&nbsp;сплошной памяти без проверки типа на&nbsp;каждом шаге<a class="ref" href="#src-8" data-ref="src-8">8</a>. Цикл Python на&nbsp;каждой итерации достаёт объект, выясняет его тип и&nbsp;вызывает нужную операцию — это и&nbsp;стоит времени.</p>
+        <p>Медленнее всего <code>iterrows()</code>: он собирает из&nbsp;каждой строки новую Series, и&nbsp;документация предупреждает, что перебор строк обычно медленный и&nbsp;не&nbsp;нужен<a class="ref" href="#src-7" data-ref="src-7">7</a>. В&nbsp;замере из&nbsp;раздела «Код» выручка оплаченных заказов через iterrows считается 1,7&nbsp;секунды, циклом по&nbsp;двум столбцам — 56&nbsp;мс, маской и&nbsp;<code>sum()</code> — 1,8&nbsp;мс, примерно в&nbsp;900&nbsp;раз быстрее iterrows.</p>
+        <p>Цикл по&nbsp;строкам почти всегда заменяется выражением над столбцами: условие — маской, «если, иначе» — <code>np.where</code>, разбор строк — методами <code>.str</code>, дат — методами <code>.dt</code>. <code>apply</code> с&nbsp;функцией Python векторизацией не&nbsp;считается: он вызывает функцию для каждой строки, цикл просто спрятан внутри<a class="ref" href="#src-7" data-ref="src-7">7</a>.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">06</span>Нюансы: category, часовые пояса, копия или представление</h2>
+        <div class="callout"><p><b>Категориальный тип экономит память.</b> Если разных значений мало — четыре бренда, четыре страны, — <span class="term" tabindex="0" data-g="category">тип category</span> хранит каждое значение один раз, а&nbsp;в&nbsp;строках держит маленькие целые коды<a class="ref" href="#src-9" data-ref="src-9">9</a>. Столбец brand занимает в&nbsp;нём 98&nbsp;КБ вместо 1,5&nbsp;МБ, сравнение с&nbsp;«Сова» в&nbsp;замере быстрее почти в&nbsp;20&nbsp;раз, а&nbsp;вся выгрузка после перевода четырёх таких столбцов худеет с&nbsp;8,2 до&nbsp;2,7&nbsp;МБ. Для почти уникальных значений вроде номеров заказов category бесполезен. И&nbsp;новое значение в&nbsp;такой столбец не&nbsp;записать, пока его нет среди категорий: будет TypeError.</p></div>
+        <div class="callout"><p><b>Дата и&nbsp;часовой пояс.</b> С&nbsp;pandas 3 строки с&nbsp;датами по&nbsp;умолчанию разбираются до&nbsp;микросекунд, datetime64[us], а&nbsp;раньше всегда получались наносекунды<a class="ref" href="#src-2" data-ref="src-2">2</a>. Дата без пояса — <span class="term" tabindex="0" data-g="naive">наивная</span>: pandas не&nbsp;знает, минское это время или UTC. <code>tz_localize</code> объявляет пояс, <code>tz_convert</code> переводит тот&nbsp;же момент на&nbsp;другие часы<a class="ref" href="#src-10" data-ref="src-10">10</a>. Для аналитики это граница суток: заказ 28&nbsp;марта в&nbsp;22:30 по&nbsp;UTC по&nbsp;минскому времени сделан уже 29-го и&nbsp;попадёт в&nbsp;выручку другого дня.</p></div>
+        <div class="block wide" data-code="tz"></div>
+        <div class="callout"><p><b>Копия или представление.</b> Представление смотрит в&nbsp;ту&nbsp;же память, что и&nbsp;исходный объект, копия хранит свои данные. В&nbsp;pandas 2 выборка возвращала то&nbsp;одно, то&nbsp;другое в&nbsp;зависимости от&nbsp;операции и&nbsp;типов столбцов. pandas 3 по-прежнему делит память, где можно, но&nbsp;запись в&nbsp;объект сначала отделяет его данные, так что для объектов pandas вопрос снят: всё ведёт себя как копия. Он остаётся для массивов NumPy, поэтому <code>df["amount"].to_numpy()</code> отдаёт массив только для чтения<a class="ref" href="#src-3" data-ref="src-3">3</a>. Код с&nbsp;pandas 2 при переходе стоит проверить: цепочки, которые меняли таблицу, перестанут это делать.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">07</span>Ограничения: pandas живёт в&nbsp;памяти одного процесса</h2>
+        <p>pandas загружает таблицу целиком в&nbsp;оперативную память одного процесса Python. Документация прямо пишет, что данные больше памяти анализировать в&nbsp;pandas сложно, а&nbsp;неудобно становится раньше: часть операций делает промежуточные копии<a class="ref" href="#src-11" data-ref="src-11">11</a>. Учебная выгрузка из&nbsp;100&nbsp;000 строк весит 8,2&nbsp;МБ; миллиард таких строк занял&nbsp;бы около 80&nbsp;ГБ ещё до&nbsp;первой операции.</p>
+        <ul>
+          <li><b>Ужать.</b> Читать только нужные столбцы, повторяющиеся строки переводить в&nbsp;category: так учебная выгрузка уменьшилась втрое.</li>
+          <li><b>Читать частями</b> и&nbsp;сразу сводить каждый кусок к&nbsp;итогам — об&nbsp;этом страница 2.2.</li>
+          <li><b>Сменить инструмент.</b> <span class="term" tabindex="0" data-g="polars">Polars</span> строит план запроса и&nbsp;умеет обрабатывать данные потоком, не&nbsp;держа их в&nbsp;памяти целиком<a class="ref" href="#src-12" data-ref="src-12">12</a>. <span class="term" tabindex="0" data-g="duckdb">DuckDB</span> выполняет SQL прямо по&nbsp;файлам CSV и&nbsp;Parquet<a class="ref" href="#src-13" data-ref="src-13">13</a>.</li>
+          <li><b>Распределить.</b> Данные, которые не&nbsp;помещаются на&nbsp;одну машину, — тема ДЕ&nbsp;12 «Большие данные».</li>
+        </ul>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">08</span>Код: типы, память, выборка, скорость</h2>
+        <p>Блоки работают с&nbsp;одной учебной выгрузкой из&nbsp;100&nbsp;000 заказов с&nbsp;фиксированным зерном и&nbsp;запускаются по&nbsp;порядку, как ячейки ноутбука. Таблица <code>df</code> из&nbsp;сцены — первые восемь строк <code>orders</code> после сортировки по&nbsp;сумме. Без <code>deep=True</code> pandas считает для object только указатели и&nbsp;занижает память brand в&nbsp;разы: 0,8&nbsp;МБ вместо 7,0.</p>
+        <div class="block wide" data-code="info"></div>
+        <p>Перевод типов: brand в&nbsp;трёх типах, вся таблица в&nbsp;category и&nbsp;числа, пришедшие строками.</p>
+        <div class="block wide" data-code="types"></div>
+        <p>Одна выборка четырьмя способами. Результаты совпадают, но&nbsp;для записи годится только первый: второй — та&nbsp;самая цепочка, а&nbsp;четвёртый привязан к&nbsp;порядку строк.</p>
+        <div class="block wide" data-code="four"></div>
+        <p>Замер цикла против векторного выражения на&nbsp;одной задаче — выручке оплаченных заказов.</p>
+        <div class="block wide" data-code="speed"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">09</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">10</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">11</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Pandas и подготовка данных» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">pandas. <a href="https://pandas.pydata.org/docs/user_guide/dsintro.html" target="_blank" rel="noopener">Intro to data structures</a>. Series как массив с&nbsp;метками, DataFrame как словарь Series.</li>
+          <li id="src-2">pandas. <a href="https://pandas.pydata.org/docs/whatsnew/v3.0.0.html" target="_blank" rel="noopener">What’s new in&nbsp;3.0.0</a>. Тип str, Copy-on-Write, метки в&nbsp;s[…], маски в&nbsp;iloc, микросекунды в&nbsp;датах.</li>
+          <li id="src-3">pandas. <a href="https://pandas.pydata.org/docs/user_guide/migration.html" target="_blank" rel="noopener">Migration Guides</a>. Копии и&nbsp;представления до&nbsp;pandas 3, недостатки object для строк, массивы только для чтения.</li>
+          <li id="src-4">pandas. <a href="https://pandas.pydata.org/docs/user_guide/indexing.html" target="_blank" rel="noopener">Indexing and selecting data</a>. Правила loc, iloc и&nbsp;масок, операторы &amp;, |, ~, выравнивание по&nbsp;индексу.</li>
+          <li id="src-5">VanderPlas J. Python Data Science Handbook: <a href="https://jakevdp.github.io/PythonDataScienceHandbook/03.02-data-indexing-and-selection.html" target="_blank" rel="noopener">Data Indexing and Selection</a>. Явный и&nbsp;неявный индекс, границы срезов.</li>
+          <li id="src-6">McKinney W. Python for Data Analysis, 3rd ed., 2022: <a href="https://wesmckinney.com/book/pandas-basics.html" target="_blank" rel="noopener">глава 5 «Getting Started with pandas»</a>. Квадратные скобки, loc и&nbsp;iloc от&nbsp;автора pandas.</li>
+          <li id="src-7">pandas. <a href="https://pandas.pydata.org/docs/user_guide/basics.html#iteration" target="_blank" rel="noopener">Essential basic functionality: Iteration</a>. Почему перебор строк медленный и&nbsp;apply — не&nbsp;ради скорости.</li>
+          <li id="src-8">NumPy. <a href="https://numpy.org/doc/stable/user/whatisnumpy.html" target="_blank" rel="noopener">What is NumPy?</a> Что такое векторизация и&nbsp;почему цикл на&nbsp;C быстрее цикла Python.</li>
+          <li id="src-9">pandas. <a href="https://pandas.pydata.org/docs/user_guide/categorical.html" target="_blank" rel="noopener">Categorical data</a>. Устройство типа category и&nbsp;экономия памяти.</li>
+          <li id="src-10">pandas. <a href="https://pandas.pydata.org/docs/user_guide/timeseries.html#time-zone-handling" target="_blank" rel="noopener">Time series: Time zone handling</a>. tz_localize и&nbsp;tz_convert.</li>
+          <li id="src-11">pandas. <a href="https://pandas.pydata.org/docs/user_guide/scale.html" target="_blank" rel="noopener">Scaling to large datasets</a>. Почему pandas рассчитан на&nbsp;данные в&nbsp;памяти.</li>
+          <li id="src-12"><a href="https://docs.pola.rs/" target="_blank" rel="noopener">Polars User Guide</a>. Ленивые вычисления и&nbsp;потоковая обработка.</li>
+          <li id="src-13"><a href="https://duckdb.org/docs/stable/" target="_blank" rel="noopener">DuckDB Documentation</a>. SQL по&nbsp;файлам CSV, Parquet и&nbsp;таблицам pandas.</li>
+        </ol>
+      </section>

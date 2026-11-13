@@ -1,0 +1,108 @@
+/* Страница 8.2: цвета каналов, сцена «одни продажи — шесть форм», интерактив «пять секунд», рисунки кода */
+:root { --ct-c9: #8a5a2b; --ct-c10: #4f7f17; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ct-c9: #d39a6a; --ct-c10: #a4d36b; } }
+:root[data-theme="dark"] { --ct-c9: #d39a6a; --ct-c10: #a4d36b; }
+.ct-k0 { --k: var(--c1); } .ct-k1 { --k: var(--c2); } .ct-k2 { --k: var(--c3); } .ct-k3 { --k: var(--c4); } .ct-k4 { --k: var(--c5); }
+.ct-k5 { --k: var(--c6); } .ct-k6 { --k: var(--c7); } .ct-k7 { --k: var(--c8); } .ct-k8 { --k: var(--ct-c9); } .ct-k9 { --k: var(--ct-c10); }
+.ct-acc { --k: var(--accent); }
+
+/* ---------- сцена ---------- */
+.scene .ct-sc { width: 100%; height: 100%; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.scene .ct-qs { display: grid; gap: 5px; }
+.scene .ct-q { margin: 0; display: flex; gap: 8px; align-items: baseline; font: 14px/1.35 var(--ui); color: var(--s-ink); }
+.scene .ct-q b { flex: none; width: 74px; font: 600 10.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 6px; border-radius: 5px; white-space: nowrap; text-align: center; }
+.scene .ct-good b { background: rgba(54, 184, 166, .16); color: #36b8a6; }
+.scene .ct-bad b { background: rgba(242, 117, 106, .16); color: #f2756a; }
+.scene .ct-plot { position: relative; flex: 1; min-height: 0; }
+.scene .ct-svg { position: absolute; left: 0; top: 0; display: block; overflow: visible; }
+.scene .ct-svg text { font: 12px var(--ui); }
+.scene .ct-t { fill: var(--s-ink2); }
+.scene .ct-hi { fill: #f0a247; font-weight: 600; }
+.scene .ct-svg .ct-tm { fill: var(--s-mut); font: 11px var(--mono); }
+.scene .ct-ax { stroke: #3a4766; fill: none; }
+.scene .ct-gr { stroke: #18203a; }
+.scene .ct-line { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.scene .ct-anc { fill: #0b0f19; stroke: var(--s-ink); stroke-width: 1.6; }
+.scene .ct-calls { position: absolute; inset: 0; pointer-events: none; }
+.scene .ct-call { position: absolute; width: max-content; max-width: 210px; background: #141b2b; border: 1px solid var(--s-acc); color: var(--s-ink); font: 500 12.5px/1.35 var(--ui); padding: 6px 9px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .4); animation: ctIn .35s ease; }
+.scene .ct-u { transform: translate(-50%, calc(-100% - 10px)); }
+.scene .ct-d { transform: translate(-50%, 10px); }
+.scene .ct-r { transform: translate(0, -50%); }
+.scene .ct-l { transform: translate(-100%, -50%); }
+@keyframes ctIn { from { opacity: 0; } to { opacity: 1; } }
+@container (max-width: 1000px) { .scene .sc-info { display: none; } }
+@container (max-width: 760px) {
+  .scene .ct-call { max-width: 150px; font-size: 11px; padding: 4px 7px; }
+  .scene .ct-q { font-size: 12.5px; gap: 6px; }
+  .scene .ct-q b { width: 64px; font-size: 9.5px; }
+  .scene .ct-svg text { font-size: 10.5px; }
+  .scene .ct-svg .ct-tm { font-size: 9.5px; }
+}
+@container (max-width: 560px) { .scene .sc-stage { height: 530px; } }
+@media (prefers-reduced-motion: reduce) { .scene .ct-call { animation: none; } }
+
+/* ---------- интерактив «Найдите ответ за пять секунд» ---------- */
+.ct-do { padding: 10px 16px 0; margin: 0 !important; }
+.ct-types { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.ct-types button { border: 1px solid var(--line-2); background: var(--paper); border-radius: 9px; padding: 7px 8px; font-size: 13px; line-height: 1.25; cursor: pointer; color: var(--ink-2); }
+.ct-types button:hover { border-color: var(--accent); }
+.ct-types button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.ct-wbox { padding: 12px 16px 14px; min-width: 0; }
+.ct-clock { height: 6px; border-radius: 3px; background: var(--sunk); overflow: hidden; margin-bottom: 10px; }
+.ct-clock i { display: block; height: 100%; width: 0; background: var(--good); }
+.ct-clock i.over { background: var(--bad); }
+.ct-wplot { position: relative; }
+.ct-wplot svg { display: block; overflow: visible; }
+.ct-wplot text { font: 12px var(--ui); }
+.ct-wplot .ct-wm { font: 11px var(--mono); fill: var(--muted); }
+.ct-wt { fill: var(--ink-2); }
+.ct-wg { stroke: var(--line); fill: none; }
+.ct-bar, .ct-heat { fill: var(--accent); }
+.ct-fill { fill: var(--k); }
+.ct-ln { fill: none; stroke: var(--k); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+.ct-cell { fill: var(--paper); stroke: var(--line); }
+.ct-wplot .ct-on { fill: var(--paper); font-weight: 600; }
+.ct-dim { opacity: .16; }
+.ct-cover { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--sunk); border: 1px dashed var(--line-2); border-radius: 12px; padding: 16px; text-align: center; }
+.article .block .ct-cover p { color: var(--ink-2); max-width: 440px; }
+.ct-cover .btn { min-width: 140px; }
+.ct-chips { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 10px; font: 12px/1.3 var(--ui); color: var(--ink-2); min-height: 16px; }
+.ct-chips i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; background: var(--k); }
+.ct-grad { color: var(--muted); }
+.ct-sec { display: flex; align-items: baseline; gap: 8px; }
+.ct-sec b { font: 600 28px/1 var(--mono); font-variant-numeric: tabular-nums; }
+.ct-sec span { color: var(--muted); font-size: 12.5px; }
+.ct-ans { display: grid; gap: 6px; }
+.ct-a { text-align: left; border: 1px solid var(--line-2); background: var(--paper); border-radius: 9px; padding: 8px 10px; font-size: 14px; cursor: pointer; color: var(--ink); }
+.ct-a:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.ct-a:disabled { cursor: default; color: var(--muted); }
+.ct-a.right { border-color: var(--good); background: var(--good-soft); color: var(--ink); }
+.ct-a.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--ink); }
+.ct-again { justify-self: start; margin-top: 2px; }
+.ct-res { padding: 10px 16px 12px; border-top: 1px solid var(--line); }
+.ct-res table { width: 100%; border-collapse: collapse; font: 12.5px/1.3 var(--mono); }
+.ct-res th { text-align: left; font: 600 11.5px/1.2 var(--ui); color: var(--muted); padding: 4px 6px; border-bottom: 1px solid var(--line); }
+.ct-res td { padding: 4px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.ct-res td:first-child { font-family: var(--ui); color: var(--ink-2); white-space: normal; }
+.ct-r-no { color: var(--line-2); }
+.ct-r-ok { background: var(--good-soft); color: var(--good); }
+.ct-r-ok.slow { background: var(--warn-soft); color: var(--warn); }
+.ct-r-pass { color: var(--muted); }
+.ct-r-bad, .ct-r-late { background: var(--bad-soft); color: var(--bad); }
+.article .block .ct-res .hint { margin-top: 6px; }
+@media (max-width: 640px) {
+  .ct-types { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px 12px; }
+  .ct-wbox { padding: 10px 12px 12px; }
+  .ct-res { padding: 8px 12px 10px; }
+  .ct-res td, .ct-res th { padding: 4px 3px; }
+  .ct-res table { font-size: 11.5px; }
+}
+
+/* ---------- таблицы и рисунки из кода ---------- */
+.ct-tbl td:first-child { white-space: normal; }
+.ct-tbl table { font-size: 14px; }
+.ct-fig { margin: 4px auto 26px; }
+.ct-fsc { overflow-x: auto; }
+.ct-fig img { display: block; width: 100%; max-width: 700px; height: auto; margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 6px; }
+.ct-fig figcaption { font: 13px/1.45 var(--ui); color: var(--muted); margin-top: 6px; text-align: center; }
+@media (max-width: 640px) { .ct-fig img { min-width: 500px; } .ct-fig figcaption { text-align: left; } }

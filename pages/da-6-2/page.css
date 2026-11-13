@@ -1,0 +1,62 @@
+/* ===== Сцена: сто интервалов и бутстрэп ===== */
+.scene .ci-sc { position: relative; flex: 1; align-self: stretch; min-width: 0; min-height: 0; }
+.scene .ci-scv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.scene .sc-leg span { white-space: nowrap; }
+@container (max-width: 1000px) { .scene .sc-info { display: none; } }
+.scene .sc-html { padding-top: 90px; padding-bottom: 58px; }
+@container (max-width: 860px) { .scene .sc-stage { height: 560px; } }
+@container (max-width: 560px) {
+  .scene .sc-stage { height: 590px; }
+  .scene .sc-html { padding-top: 86px; padding-bottom: 50px; }
+  .scene .hb small { display: block; margin: 2px 0 0; font-size: 9.5px; }
+  .scene .hb b { font-size: 16px; }
+}
+
+/* ===== Таблица и формулы статьи ===== */
+.d62-t td, .d62-t th { font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) {
+  .formula .f { white-space: normal; }
+  .d62-t td:first-child { white-space: normal; }
+}
+
+/* ===== Интерактив «Сто интервалов» ===== */
+.ci-do { padding: 10px 16px 0; margin: 0 !important; }
+.ci-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 10px 16px 12px; }
+.ci-grp { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.ci-lb { font: 500 12px/1 var(--mono); color: var(--muted); }
+.ci-ctl .seg { flex-wrap: wrap; }
+.ci-stage { display: grid; grid-template-columns: minmax(0, 1fr) 290px; border-top: 1px solid var(--line); }
+.ci-cvw { position: relative; height: 380px; min-width: 0; }
+.ci-cvw canvas, .ci-bcvw canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ci-cvw canvas { cursor: pointer; }
+.ci-cvw canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px; }
+.ci-side { border-left: 1px solid var(--line); padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.article .block .ci-cap { font: 600 14px/1.35 var(--ui); margin: 0; color: var(--ink); min-height: 2.7em; }
+.ci-ro { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+.ci-ro > div { min-width: 0; }
+.ci-ro .big { font-size: 19px; overflow-wrap: anywhere; }
+.ci-ro .lbl { font-size: 11.5px; line-height: 1.3; }
+.article .block .ci-mult { margin: 0; font: 12px/1.45 var(--ui); color: var(--ink-2); }
+.ci-log table { width: 100%; border-collapse: collapse; font: 12px/1.3 var(--mono); font-variant-numeric: tabular-nums; }
+.ci-log th { text-align: right; font: 500 10.5px/1.2 var(--mono); color: var(--muted); padding: 0 0 5px 6px; border-bottom: 1px solid var(--line); }
+.ci-log td { text-align: right; padding: 4px 0 4px 6px; border-bottom: 1px solid var(--line); color: var(--ink-2); }
+.ci-log th:first-child, .ci-log td:first-child { text-align: left; padding-left: 0; }
+.ci-log tr:first-child td { color: var(--ink); }
+.article .block .ci-empty { margin: 0; font: 12px/1.4 var(--ui); color: var(--muted); }
+.ci-boot { border-top: 1px solid var(--line); }
+.ci-boot[hidden] { display: none; }
+.ci-bhd { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; padding: 10px 16px 4px; }
+.ci-bt { font: 600 13.5px/1.35 var(--ui); color: var(--ink); }
+.ci-bcvw { position: relative; height: 250px; min-width: 0; }
+@media (max-width: 860px) {
+  .ci-stage { grid-template-columns: 1fr; }
+  .ci-side { border-left: 0; border-top: 1px solid var(--line); }
+  .ci-cvw { height: 340px; }
+}
+@media (max-width: 420px) {
+  .ci-ctl { gap: 10px 12px; padding: 10px 12px 12px; }
+  .ci-ctl .seg button { padding: 5px 7px; font-size: 12.5px; }
+  .ci-cvw { height: 320px; }
+  .ci-bcvw { height: 260px; }
+  .ci-bhd { padding: 10px 12px 4px; }
+}

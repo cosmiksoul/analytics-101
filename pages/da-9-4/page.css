@@ -1,0 +1,90 @@
+/* ===== Сцена: дерево выручки на тёмной сцене ===== */
+.scene .mt-sc { position: relative; width: 100%; height: 100%; }
+.scene .mt-sc-in svg { display: block; overflow: visible; }
+.scene .mt-sc-in svg text { font-family: var(--mono); }
+.scene .mt-sc-calls { position: absolute; inset: 0; pointer-events: none; }
+.scene .mt-call { position: absolute; background: #141b2b; border: 1px solid var(--s-acc); color: var(--s-ink); font: 500 12.5px/1.35 var(--ui); padding: 6px 10px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .35); text-align: center; animation: mtIn .35s ease; }
+.scene .mt-call.up { transform: translateY(-100%); }
+@keyframes mtIn { from { opacity: 0; } to { opacity: 1; } }
+.scene .sc-leg span { white-space: nowrap; }
+@container (max-width: 1100px) { .scene .sc-info { display: none; } }
+@container (max-width: 860px) { .scene .sc-stage { height: 540px; } }
+@container (max-width: 560px) {
+  .scene .sc-stage { height: 540px; }
+  .scene .sc-html { padding: 66px 8px 54px; }
+  .scene .mt-call { font-size: 11.5px; padding: 5px 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .scene .mt-call { animation: none; } }
+.scene .mt-sc-in svg text.mt-halo { paint-order: stroke; stroke: #0b0f19; stroke-width: 4px; stroke-linejoin: round; }
+@container (max-width: 560px) { .scene .hb span { white-space: nowrap; } .scene .hb small { display: none; } }
+
+/* ===== Таблицы в тексте ===== */
+.mt-tbl td, .mt-tbl th { white-space: nowrap; }
+.mt-tbl td:not(:first-child), .mt-tbl th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+.mt-card td:not(:first-child) { text-align: left; white-space: normal; }
+.mt-card td:first-child { width: 120px; color: var(--muted); font-weight: 500; }
+.mt-frac { white-space: nowrap; }
+@media (max-width: 640px) {
+  .mt-tbl table { font-size: 12.5px; }
+  .mt-tbl td, .mt-tbl th { padding-right: 6px; }
+  .mt-tbl th { font-size: 10px; letter-spacing: 0; }
+  .mt-card td:first-child { width: 92px; white-space: normal; }
+  .formula .f { white-space: normal; }
+}
+
+/* ===== Интерактив «Почему упала выручка» ===== */
+.mt-do { padding: 10px 16px 0; margin: 0 !important; }
+.mt-meth { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 16px 12px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink-2); }
+.mt-tree { padding: 8px 10px 12px; min-width: 0; }
+.mt-head, .mt-row { display: grid; grid-template-columns: 16px minmax(0, 1fr) 160px 60px 112px 88px; align-items: center; column-gap: 8px; }
+.mt-head { padding: 4px 8px 6px; font: 500 10.5px/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); }
+.mt-head span:nth-child(n+3) { text-align: right; }
+.mt-head span:nth-child(4) { grid-column: 4 / span 2; text-align: center; }
+.mt-head span:nth-child(5) { grid-column: 6; }
+.mt-row { width: 100%; text-align: left; background: transparent; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 7px 8px 7px calc(8px + var(--d, 0) * 18px); cursor: pointer; color: var(--ink); font: 14px/1.3 var(--ui); }
+.mt-row:hover { background: var(--sunk); }
+.mt-row.sel { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.mt-row.hit .mt-lab { color: var(--bad); font-weight: 650; }
+.mt-car { color: var(--muted); font-size: 12px; text-align: center; }
+.mt-lab { min-width: 0; overflow-wrap: break-word; }
+.mt-op { font: 600 12px/1 var(--mono); color: var(--muted); margin-right: 6px; }
+.mt-val, .mt-ch, .mt-cn { font: 12.5px/1.3 var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.mt-val { color: var(--ink-2); }
+.mt-ch.bad { color: var(--bad); font-weight: 600; }
+.mt-c { position: relative; display: block; text-align: right; }
+.mt-cn { display: block; font-weight: 600; }
+.mt-cn.neg { color: var(--bad); }
+.mt-cn.pos { color: var(--good); }
+.mt-bar { display: block; height: 4px; border-radius: 2px; margin: 3px 0 0 auto; max-width: 100%; }
+.mt-bar.neg { background: var(--bad); }
+.mt-bar.pos { background: var(--good); }
+.mt-g { display: block; justify-self: center; width: 112px; height: 18px; }
+.mt-gb { fill: var(--sunk); stroke: var(--line-2); stroke-width: 1; }
+.mt-g0 { stroke: var(--muted); stroke-width: 1; }
+.mt-gin { fill: var(--ink-2); }
+.mt-gout { fill: var(--bad); stroke: var(--surface); stroke-width: 1.5; }
+.mt-grp { grid-template-columns: 16px minmax(0, 1fr) auto; }
+.mt-grp .mt-lab { font-style: italic; color: var(--ink-2); }
+.mt-sub { font: 12px/1.3 var(--ui); color: var(--muted); }
+.article .block .narr-text p { margin: 0 0 8px; font-size: 14px; line-height: 1.5; }
+@media (max-width: 1180px) { .mt-narr { display: none !important; } }
+.mt-inl { margin: 0 8px 6px calc(8px + var(--d, 0) * 18px); padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; }
+.article .block .mt-inl p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.5; color: var(--ink-2); }
+.article .block .mt-inl p:last-child { margin-bottom: 0; }
+.mt-meth .seg { flex-wrap: wrap; max-width: 100%; }
+@media (max-width: 760px) {
+  .mt-head { display: none; }
+  .mt-tree { padding: 6px 6px 10px; }
+  .mt-row { grid-template-columns: 16px minmax(0, 1fr) auto auto; grid-template-areas: "car lab lab ch" ". val g g"; column-gap: 6px; row-gap: 3px; padding: 8px 6px 8px calc(4px + var(--d, 0) * 12px); }
+  .mt-row.has-c { grid-template-areas: "car lab ch c" ". val val g"; }
+  .mt-car { grid-area: car; } .mt-lab { grid-area: lab; } .mt-c { grid-area: c; } .mt-ch { grid-area: ch; }
+  .mt-val { grid-area: val; text-align: left; font-size: 11.5px; }
+  .mt-g { grid-area: g; justify-self: end; width: 84px; height: 13px; }
+  .mt-grp { grid-template-columns: 16px minmax(0, 1fr); grid-template-areas: "car lab" ". sub"; }
+  .mt-grp .mt-sub { grid-area: sub; }
+  .mt-cn { font-size: 12px; }
+  .mt-bar { display: none; }
+  .mt-inl { margin: 0 4px 6px calc(4px + var(--d, 0) * 12px); }
+}
+/* вывод psql и pandas: широкие таблицы прокручиваются, а не переносятся */
+.block .out pre { white-space: pre; overflow-x: auto; }

@@ -1,0 +1,174 @@
+      <p class="eyebrow">Дата аналитика · Тема 01 · <b>Python для анализа</b></p>
+      <h1>Условия, циклы, функции и&nbsp;comprehensions</h1>
+      <p class="lead">После этой страницы вы напишете фильтр, преобразование и&nbsp;итог для выгрузки любой длины без копипаста и&nbsp;прочитаете чужой код, где всё это свёрнуто в&nbsp;одну строку <span class="term" tabindex="0" data-g="comprehension">comprehension</span>.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;10&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">8&nbsp;блоков кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: решить для одной строки и&nbsp;повторить для всех</h2>
+        <p>Чтобы не&nbsp;копировать одну и&nbsp;ту&nbsp;же проверку на&nbsp;каждую строку, в&nbsp;Python есть четыре инструмента. <span class="term" tabindex="0" data-g="cond">Условие</span> решает, что делать с&nbsp;одним значением, <span class="term" tabindex="0" data-g="loop">цикл</span> повторяет действие для каждого элемента, <span class="term" tabindex="0" data-g="function">функция</span> даёт куску кода имя, а&nbsp;comprehension записывает цикл одним выражением.</p>
+        <div class="scene" id="scene" aria-label="Анимация: строки выгрузки проходят через условие, цикл и comprehension, а строк кода становится меньше"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже — подробно: в&nbsp;этом разделе условия и&nbsp;циклы, в&nbsp;следующих — функции и&nbsp;comprehension.</p>
+
+        <h3 class="sub-h">if, elif, else: ветки и&nbsp;отступы</h3>
+        <p><span class="term" tabindex="0" data-g="cond">Условие</span> <code>if</code> вычисляет выражение и&nbsp;выполняет вложенный блок, только если получилось <code>True</code>. Блок задаётся <span class="term" tabindex="0" data-g="indent">отступом</span>: строки, сдвинутые на&nbsp;четыре пробела под <code>if</code>, относятся к&nbsp;нему, а&nbsp;первая строка без сдвига — уже нет. Фигурных скобок и&nbsp;слова «конец» в&nbsp;Python нет, поэтому отступ — часть синтаксиса, а&nbsp;не&nbsp;оформление.</p>
+        <p><code>elif</code> («иначе если») добавляет следующую проверку, <code>else</code> ловит всё остальное. Python идёт по&nbsp;веткам сверху вниз, выполняет первую, чьё условие истинно, а&nbsp;следующие уже не&nbsp;проверяет<a class="ref" href="#src-1" data-ref="src-1">1</a>. Поэтому порядок важен: если первой поставить проверку <code>a &gt;= 1000</code>, до&nbsp;ветки <code>a &gt;= 2000</code> крупный заказ не&nbsp;дойдёт.</p>
+
+        <h3 class="sub-h">Истинность: что if считает ложью</h3>
+        <p>В&nbsp;<code>if</code> можно поставить не&nbsp;только сравнение, но&nbsp;и&nbsp;любое значение. Тогда Python проверяет его <span class="term" tabindex="0" data-g="truthy">истинность</span>: ноль, пустая строка, пустая коллекция и&nbsp;<code>None</code> считаются ложью, всё остальное — истиной<a class="ref" href="#src-4" data-ref="src-4">4</a>. Это удобно: <code>if brands:</code> читается как «если список не&nbsp;пуст». Но&nbsp;в&nbsp;данных это ловушка: сумма 0&nbsp;₽ и&nbsp;пропущенная сумма для <code>if</code> выглядят одинаково.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Значение</th><th>Для if</th><th>Где встречается в&nbsp;данных</th></tr></thead>
+            <tbody>
+              <tr><td><code>0</code>, <code>0.0</code></td><td>ложь</td><td>нулевая сумма, подарочный заказ</td></tr>
+              <tr><td><code>""</code></td><td>ложь</td><td>пустая ячейка в&nbsp;CSV</td></tr>
+              <tr><td><code>None</code></td><td>ложь</td><td>значение не&nbsp;загрузилось</td></tr>
+              <tr><td><code>[]</code>, <code>{}</code></td><td>ложь</td><td>пустой список, пустой словарь</td></tr>
+              <tr><td><code>"0"</code>, <code>" "</code>, <code>[0]</code></td><td>истина</td><td>строка с&nbsp;нулём, пробел, список с&nbsp;одним нулём</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Если ноль — законное значение, проверяйте пропуск явно: <code>if amount is not None:</code>.</p>
+
+        <h3 class="sub-h">for: одно действие для каждого элемента</h3>
+        <p><span class="term" tabindex="0" data-g="loop">Цикл for</span> перебирает коллекцию: кладёт очередной элемент в&nbsp;переменную цикла и&nbsp;выполняет тело — блок с&nbsp;отступом под <code>for</code>. Один такой проход называется <span class="term" tabindex="0" data-g="iteration">итерацией</span>. <code>for row in rows:</code> читается как «для каждой строки выгрузки»: строк восемь — восемь итераций, сто тысяч — сто тысяч, а&nbsp;код тот&nbsp;же.</p>
+        <p>Три помощника закрывают почти все случаи<a class="ref" href="#src-2" data-ref="src-2">2</a>. <span class="term" tabindex="0" data-g="range"><code>range(n)</code></span> выдаёт числа от&nbsp;0 до&nbsp;n − 1, когда важно число повторов, а&nbsp;не&nbsp;сами элементы. <span class="term" tabindex="0" data-g="enumerate"><code>enumerate(rows, start=1)</code></span> отдаёт пары «номер, элемент»: удобно нумеровать строки отчёта. <span class="term" tabindex="0" data-g="zip"><code>zip(brands, amounts)</code></span> идёт по&nbsp;двум спискам в&nbsp;ногу, отдаёт пары «бренд, сумма» и&nbsp;останавливается на&nbsp;самом коротком списке.</p>
+
+        <h3 class="sub-h">while: пока условие истинно</h3>
+        <p><span class="term" tabindex="0" data-g="while">Цикл while</span> повторяет тело, пока условие истинно. Он нужен, когда число повторов заранее неизвестно: например, читать страницы API, пока не&nbsp;придёт пустая. Выход — ваша забота: если условие никогда не&nbsp;станет ложным, цикл не&nbsp;закончится. <code>break</code> прерывает любой цикл досрочно, <code>continue</code> пропускает остаток итерации и&nbsp;переходит к&nbsp;следующей<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <p>В&nbsp;примере ниже — все конструкции раздела на&nbsp;суммах со&nbsp;страницы 1.1. У&nbsp;<code>while</code> четыре заказа дают 4&nbsp;990&nbsp;₽, до&nbsp;плана в&nbsp;5&nbsp;000&nbsp;₽ не&nbsp;хватает десяти рублей, и&nbsp;цикл берёт пятый.</p>
+        <div class="block wide" data-code="basics"></div>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: одно действие для каждой строки</h2>
+        <p>На&nbsp;странице 1.1 выручка считалась по&nbsp;пяти суммам. Теперь учебная выгрузка заказов посложнее: у&nbsp;каждой строки бренд, сумма и&nbsp;статус, а&nbsp;бренд записан как попало — «BRISA», «brisa», «Brisa » с&nbsp;пробелом в&nbsp;конце. Нужно оставить оплаченные заказы, привести бренды к&nbsp;одному написанию и&nbsp;посчитать выручку по&nbsp;каждому.</p>
+        <p>В&nbsp;Excel это фильтр, формула, протянутая вниз, и&nbsp;сводная таблица. В&nbsp;Python первое желание — написать проверку для первой строки и&nbsp;скопировать её на&nbsp;остальные. Такой код работает, пока строк восемь. Завтра их девять, через месяц сто тысяч, и&nbsp;любую правку придётся вносить во&nbsp;все копии.</p>
+        <p>Задача страницы — записать проверку, преобразование и&nbsp;<span class="term" tabindex="0" data-g="aggregate">агрегат</span> один раз, чтобы они работали на&nbsp;выгрузке любой длины, и&nbsp;научиться читать чужой код, где всё это уместилось в&nbsp;одну строку.</p>
+      </section>
+
+      <section data-sec="func" data-title="Функции">
+        <h2 id="func"><span class="sn">03</span>Функции: имя для повторяемого куска</h2>
+        <p><span class="term" tabindex="0" data-g="function">Функция</span> — именованный кусок кода, который выполняется при вызове. Её объявляют словом <code>def</code>, а&nbsp;вызывают по&nbsp;имени со&nbsp;скобками: <code>clean_brand(" lumo")</code>. Значения в&nbsp;скобках при вызове — это <span class="term" tabindex="0" data-g="argument">аргументы</span>, а&nbsp;имена в&nbsp;объявлении, которые их получают, — параметры. <code>return</code> завершает функцию и&nbsp;отдаёт <span class="term" tabindex="0" data-g="ret">результат</span> тому, кто её вызвал; функция без <code>return</code> возвращает <code>None</code>.</p>
+        <p>Параметру можно дать <span class="term" tabindex="0" data-g="default">значение по&nbsp;умолчанию</span>: <code class="w">def clean_brand(name, default="Без бренда")</code>. Такой аргумент можно не&nbsp;передавать или передать по&nbsp;имени: <code class="w">clean_brand(raw, default="—")</code>. Аргументы по&nbsp;имени читаются лучше, когда их больше двух: не&nbsp;нужно помнить порядок.</p>
+        <p>Строго говоря, функция возвращает одно значение, но&nbsp;им может быть кортеж: <code class="w">return len(paid), sum(paid)</code>. При вызове кортеж раскладывают по&nbsp;переменным — это <span class="term" tabindex="0" data-g="unpacking">распаковка</span>: <code class="w">n, total = paid_stats(rows)</code>.</p>
+
+        <h3 class="sub-h">Область видимости: что видит функция</h3>
+        <p>Параметры и&nbsp;переменные, созданные внутри функции, существуют только во&nbsp;время вызова и&nbsp;видны только ей. Это её локальная <span class="term" tabindex="0" data-g="scope">область видимости</span>. Имена верхнего уровня ноутбука или скрипта глобальные: функция может их прочитать, но&nbsp;присваивание внутри функции создаёт новую локальную переменную и&nbsp;глобальную не&nbsp;трогает<a class="ref" href="#src-7" data-ref="src-7">7</a>.</p>
+        <p>Так сделано, чтобы функцию можно было понять отдельно от&nbsp;остальной программы: всё нужное приходит через параметры, результат уходит через <code>return</code>. Функция, которая втихую читает глобальные переменные, ведёт себя как ячейка со&nbsp;страницы 1.1: работает, пока в&nbsp;памяти лежит нужное.</p>
+      </section>
+
+      <section data-sec="comp" data-title="Comprehensions">
+        <h2 id="comp"><span class="sn">04</span>Comprehensions: цикл, свёрнутый в&nbsp;выражение</h2>
+        <p>Comprehension строит новый список из&nbsp;коллекции одним выражением в&nbsp;квадратных скобках. Устоявшегося русского термина нет, иногда говорят «списковое включение». <code class="w">[row["amount"] for row in rows if row["status"] == "paid"]</code> делает то&nbsp;же, что цикл из&nbsp;четырёх строк в&nbsp;анимации: перебирает <code>rows</code>, оставляет оплаченные и&nbsp;кладёт в&nbsp;результат сумму<a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+        <p>Читать его удобнее в&nbsp;порядке выполнения, а&nbsp;не&nbsp;слева направо: сначала <code>for</code> — откуда брать, потом <code>if</code> — какие оставить, и&nbsp;только потом выражение в&nbsp;начале — что положить. Если скобки фигурные, а&nbsp;в&nbsp;начале стоит пара «ключ: значение», получается словарь, dict comprehension. <code class="w">{brand: round(s / total * 100) for brand, s in totals.items()}</code> превращает выручку брендов в&nbsp;их доли.</p>
+
+        <h3 class="sub-h">Когда comprehension хуже цикла</h3>
+        <p>Цикл лучше comprehension в&nbsp;четырёх случаях.</p>
+        <ul>
+          <li><b>Два for подряд.</b> В&nbsp;<code class="w">[x for day in days for x in day if x]</code> внешний цикл пишется первым, и&nbsp;это приходится вспоминать.</li>
+          <li><b>Два разных if.</b> В&nbsp;<code class="w">[a if a &gt; 0 else 0 for a in amounts if a is not None]</code> слева условное выражение, справа фильтр, и&nbsp;легко перепутать, что из&nbsp;них что.</li>
+          <li><b>Нужен побочный эффект:</b> печать, запись в&nbsp;файл, дописывание в&nbsp;другой список. Строить список ради <code>print</code> — значит выбросить результат.</li>
+          <li><b>Нужна отладка.</b> У&nbsp;копящегося списка нет имени, промежуточного состояния не&nbsp;видно — это заметно в&nbsp;трассировке ниже.</li>
+        </ul>
+        <p>Правило простое: если comprehension не&nbsp;пересказывается одной фразой, разверните его в&nbsp;цикл.</p>
+      </section>
+
+      <section data-sec="trace" data-title="Трассировка">
+        <h2 id="trace"><span class="sn">05</span>Трассировка: что происходит при вызове функции</h2>
+        <p><span class="term" tabindex="0" data-g="trace">Трассировка</span> — запись выполнения программы по&nbsp;шагам: какая строка выполняется, какие переменные существуют и&nbsp;кто кого вызвал. Так работают визуализатор Python Tutor<a class="ref" href="#src-8" data-ref="src-8">8</a> и&nbsp;интерактив ниже. Трассу для него записал настоящий Python 3.13 через функцию <code>sys.settrace</code>, которая сообщает о&nbsp;каждой строке, вызове и&nbsp;возврате<a class="ref" href="#src-9" data-ref="src-9">9</a>.</p>
+        <p>Главное, что видно в&nbsp;трассировке, — <span class="term" tabindex="0" data-g="stack">стек вызовов</span>. Когда одна функция вызывает другую, Python кладёт поверх текущего кадра новый. В&nbsp;кадре лежат параметры и&nbsp;локальные переменные этого вызова и&nbsp;строка, на&nbsp;которой он сейчас стоит. <code>return</code> снимает кадр, и&nbsp;его переменные исчезают<a class="ref" href="#src-6" data-ref="src-6">6</a>. Сначала предскажите, что окажется в&nbsp;кадре <code>clean_brand</code>.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="trace"></div>
+        <p>Переключите версию на&nbsp;comprehension. Строк кода меньше, а&nbsp;шагов не&nbsp;меньше: работа та&nbsp;же, меняется только запись. Своего кадра у&nbsp;comprehension нет: с&nbsp;Python 3.12 интерпретатор встраивает его в&nbsp;код функции, но&nbsp;переменная <code>row</code> наружу по-прежнему не&nbsp;выходит<a class="ref" href="#src-10" data-ref="src-10">10</a>. А&nbsp;копящийся список вы так и&nbsp;не&nbsp;увидите: имени у&nbsp;него нет, пока comprehension не&nbsp;закончится.</p>
+
+        <h3 class="sub-h">Рекурсия как идея</h3>
+        <p>Функция может вызвать сама себя — это <span class="term" tabindex="0" data-g="recursion">рекурсия</span>. Стек при этом растёт так&nbsp;же, как в&nbsp;трассировке: каждый вызов — новый кадр со&nbsp;своими переменными. Рекурсия удобна для данных, вложенных сами в&nbsp;себя: дерево каталога, папки в&nbsp;папках, JSON с&nbsp;вложенными объектами.</p>
+        <p>Чтобы вызовы закончились, нужен базовый случай — вход, на&nbsp;котором функция отвечает сразу и&nbsp;себя не&nbsp;вызывает<a class="ref" href="#src-6" data-ref="src-6">6</a>. В&nbsp;примере ниже это раздел без подразделов, где лежит просто число товаров. Глубина стека ограничена: по&nbsp;умолчанию предел — 1&nbsp;000&nbsp;кадров, глубже Python остановится с&nbsp;ошибкой <code>RecursionError</code><a class="ref" href="#src-9" data-ref="src-9">9</a>.</p>
+        <div class="block wide" data-code="recur"></div>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">06</span>Нюансы: значение по&nbsp;умолчанию, переменная цикла, ранний return</h2>
+        <div class="callout"><p><b>Изменяемое значение по&nbsp;умолчанию.</b> Значение по&nbsp;умолчанию вычисляется один раз, когда выполняется <code>def</code>, а&nbsp;не&nbsp;при каждом вызове<a class="ref" href="#src-1" data-ref="src-1">1</a>. Для числа или строки это незаметно, а&nbsp;список создаётся один на&nbsp;все вызовы и&nbsp;хранится в&nbsp;самой функции, поэтому <code>def f(x, acc=[])</code> дописывает каждый новый <code>x</code> в&nbsp;тот&nbsp;же список. Исправление — <code>None</code> по&nbsp;умолчанию и&nbsp;новый список внутри функции.</p></div>
+        <div class="block wide" data-code="defaults"></div>
+        <div class="callout"><p><b>Переменная цикла живёт после цикла.</b> <code>for</code> не&nbsp;создаёт своей области видимости: после цикла <code>row</code> хранит последнюю строку выгрузки<a class="ref" href="#src-5" data-ref="src-5">5</a>. Опечатка ниже цикла, <code>row</code> вместо <code>r</code>, не&nbsp;даст ошибки и&nbsp;молча возьмёт эту строку. Если выгрузка пустая, цикл не&nbsp;сделает ни&nbsp;одной итерации, и&nbsp;переменная не&nbsp;появится вовсе. У&nbsp;comprehension, наоборот, своя область: его переменная наружу не&nbsp;выходит.</p></div>
+        <div class="block wide" data-code="leak"></div>
+        <div class="callout"><p><b>Ранний return вместо вложенных if.</b> Когда проверок несколько, вложенные <code>if</code> уводят логику вправо, и&nbsp;у&nbsp;последнего <code>else</code> уже не&nbsp;вспомнить, к&nbsp;какой проверке он относится. <span class="term" tabindex="0" data-g="guard">Ранний return</span> переворачивает порядок: сначала отсеять особые случаи и&nbsp;сразу вернуть ответ, а&nbsp;основной случай оставить в&nbsp;конце без отступа. Результат тот&nbsp;же, а&nbsp;функция читается сверху вниз.</p></div>
+        <div class="block wide" data-code="guard"></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">07</span>Ограничения: в&nbsp;pandas цикл по&nbsp;строкам почти всегда ошибка</h2>
+        <p>Всё на&nbsp;этой странице — чистый Python. В&nbsp;таблице pandas цикл по&nbsp;строкам становится ошибкой: pandas хранит столбец как массив значений одного типа и&nbsp;применяет операцию ко&nbsp;всему столбцу за&nbsp;один вызов. Это <span class="term" tabindex="0" data-g="vectorization">векторизация</span>, а&nbsp;цикл <code>for</code> по&nbsp;строкам или <code>df.iterrows()</code> её отключает: каждая строка снова превращается в&nbsp;объекты Python. Документация pandas прямо предупреждает, что перебор строк обычно медленный и&nbsp;чаще всего не&nbsp;нужен<a class="ref" href="#src-11" data-ref="src-11">11</a>.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Что делали циклом</th><th>Как это пишут в&nbsp;pandas</th></tr></thead>
+            <tbody>
+              <tr><td>Оставить оплаченные</td><td><code>df[df["status"] == "paid"]</code></td></tr>
+              <tr><td>Привести бренд к&nbsp;одному виду</td><td><code>df["brand"].str.strip().str.title()</code></td></tr>
+              <tr><td>Выручка по&nbsp;брендам</td><td><code>df.groupby("brand")["amount"].sum()</code></td></tr>
+              <tr><td>Категория по&nbsp;сумме</td><td><code>pd.cut</code> или <code>numpy.select</code> вместо if, elif, else</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Функции и&nbsp;comprehension при этом остаются в&nbsp;деле: функцию очистки применяют к&nbsp;столбцу, comprehension собирает список файлов. Векторизация и&nbsp;замер скорости — в&nbsp;теме 02.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">08</span>Код: очистка бренда, список файлов, генератор</h2>
+        <p>Функция очистки бренда собирает приёмы страницы: значение по&nbsp;умолчанию, ранний return, цикл с&nbsp;условием, агрегат и&nbsp;dict comprehension для долей. Данные — учебная выгрузка из&nbsp;анимации.</p>
+        <div class="block wide" data-code="brand"></div>
+        <p>Comprehension для списка файлов. В&nbsp;учебной папке <code>exports</code> лежат ежедневные выгрузки вперемешку с&nbsp;возвратами, файлами Excel и&nbsp;README. Одно выражение оставляет нужные, второе строит словарь «дата → файл» срезом имени (срезы — на&nbsp;странице 1.2).</p>
+        <div class="block wide" data-code="files"></div>
+        <p><span class="term" tabindex="0" data-g="generator">Генератор</span> — функция, в&nbsp;которой вместо <code>return</code> стоит <code>yield</code>. Вызов такой функции ничего не&nbsp;выполняет, а&nbsp;возвращает объект, который отдаёт значения по&nbsp;одному, когда их просят. Это частный случай <span class="term" tabindex="0" data-g="iterator">итератора</span> — объекта, у&nbsp;которого можно попросить следующий элемент через <code>next()</code><a class="ref" href="#src-3" data-ref="src-3">3</a>. <code>for</code> перебирает любой итератор, поэтому генератор встаёт туда, где раньше был список. Comprehension в&nbsp;круглых скобках вместо квадратных — генераторное выражение: тот&nbsp;же цикл, но&nbsp;без списка в&nbsp;памяти.</p>
+        <p>Аналитику это нужно для файлов, которые не&nbsp;помещаются в&nbsp;память. Учебный файл ниже — миллион строк. Список из&nbsp;всех строк занял около 360&nbsp;МБ, генератор при том&nbsp;же результате — 0,03&nbsp;МБ.</p>
+        <div class="block wide" data-code="gen"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">09</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">10</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">11</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Python для анализа» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Python Software Foundation. <a href="https://docs.python.org/3/tutorial/controlflow.html" target="_blank" rel="noopener">The Python Tutorial: More Control Flow Tools</a>. Условия, циклы, функции и&nbsp;предупреждение о&nbsp;значениях по&nbsp;умолчанию.</li>
+          <li id="src-2">Python Software Foundation. <a href="https://docs.python.org/3/tutorial/datastructures.html" target="_blank" rel="noopener">The Python Tutorial: Data Structures</a>. Comprehensions, перебор с&nbsp;enumerate и&nbsp;zip.</li>
+          <li id="src-3">Python Software Foundation. <a href="https://docs.python.org/3/tutorial/classes.html#iterators" target="_blank" rel="noopener">The Python Tutorial: Iterators and Generators</a>. Итераторы, генераторы и&nbsp;генераторные выражения.</li>
+          <li id="src-4">Python Software Foundation. <a href="https://docs.python.org/3/library/stdtypes.html#truth-value-testing" target="_blank" rel="noopener">Built-in Types: Truth Value Testing</a>. Какие значения if считает ложью.</li>
+          <li id="src-5">Python Software Foundation. <a href="https://docs.python.org/3/reference/compound_stmts.html#the-for-statement" target="_blank" rel="noopener">The Python Language Reference: The for statement</a>. Переменная цикла после цикла и&nbsp;на&nbsp;пустой коллекции.</li>
+          <li id="src-6">Downey A. Think Python, 3rd ed., 2024: главы <a href="https://allendowney.github.io/ThinkPython/chap03.html" target="_blank" rel="noopener">Functions</a> и&nbsp;<a href="https://allendowney.github.io/ThinkPython/chap05.html" target="_blank" rel="noopener">Conditionals and Recursion</a>. Стек-диаграммы вызовов, базовый случай рекурсии.</li>
+          <li id="src-7">Sweigart A. <a href="https://automatetheboringstuff.com/3e/chapter4.html" target="_blank" rel="noopener">Automate the Boring Stuff with Python, глава 4 «Functions»</a>. Стек вызовов, локальная и&nbsp;глобальная области видимости.</li>
+          <li id="src-8"><a href="https://pythontutor.com/" target="_blank" rel="noopener">Python Tutor</a>. Визуальная трассировка кода по&nbsp;шагам — образец для интерактива.</li>
+          <li id="src-9">Python Software Foundation. <a href="https://docs.python.org/3/library/sys.html#sys.settrace" target="_blank" rel="noopener">sys — System-specific parameters and functions</a>. sys.settrace, которым записана трасса, и&nbsp;предел рекурсии.</li>
+          <li id="src-10">Meyer C. <a href="https://peps.python.org/pep-0709/" target="_blank" rel="noopener">PEP 709 — Inlined comprehensions</a>. Почему с&nbsp;Python 3.12 у&nbsp;comprehension нет своего кадра в&nbsp;стеке и&nbsp;трассе.</li>
+          <li id="src-11">pandas. <a href="https://pandas.pydata.org/docs/user_guide/basics.html#iteration" target="_blank" rel="noopener">Essential basic functionality: Iteration</a>. Почему перебор строк DataFrame медленный и&nbsp;чем его заменить.</li>
+        </ol>
+      </section>

@@ -1,0 +1,92 @@
+/* Страница 9.2 · Воронки и конверсии. Префикс fn- — сцена и рисунки, fw- — интерактив */
+
+/* ---------- сцена ---------- */
+.scene .fn-sc { position: relative; width: 100%; height: 100%; }
+.scene .fn-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.scene .fn-call { transition: opacity .25s ease; font-size: 12.5px; z-index: 2; }
+.scene .sc-info { display: none; }
+@container (max-width: 860px) {
+  .scene .sc-stage { height: 500px; }
+}
+@container (max-width: 560px) {
+  .scene .fn-call { font-size: 11.5px; padding: 6px 8px; }
+  .scene .hb small { margin-left: 5px; font-size: 10px; }
+  .scene .sc-html { padding-top: 68px; }
+}
+
+/* ---------- интерактив «Одна воронка, четыре ответа» ---------- */
+.fw-pres { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 12px 16px 0; }
+.fw-pre { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; border: 1px solid var(--line-2); background: var(--paper); color: var(--ink-2); border-radius: 10px; padding: 8px 10px; cursor: pointer; min-width: 0; }
+.fw-pre b { font: 600 14px/1.2 var(--mono); color: var(--ink); }
+.fw-pre small { font: 12px/1.3 var(--ui); color: var(--muted); }
+.fw-pre:hover { border-color: var(--accent); }
+.fw-pre[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.fw-pre[aria-pressed="true"] b { color: var(--accent); }
+.fw-ctrls { display: flex; flex-wrap: wrap; gap: 10px 22px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.fw-ctl { display: flex; align-items: center; gap: 8px; }
+.fw-cl { font: 500 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.fw-ctl .seg button:disabled { opacity: .4; cursor: default; }
+.fw-plot { padding: 14px 16px 12px; min-width: 0; }
+.fw-bars { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.fw-col { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.fw-n { font: 600 14px/1.2 var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.fw-p { font: 500 11.5px/1.3 var(--mono); color: var(--muted); margin-bottom: 4px; }
+.fw-track { position: relative; width: 100%; height: 230px; display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid var(--line-2); }
+.fw-bar { width: 70%; background: var(--c8); border-radius: 4px 4px 0 0; transition: height .35s ease; min-height: 1px; }
+.fw-bar.last { background: var(--accent); }
+.fw-gh { position: absolute; bottom: 0; left: 15%; width: 70%; border: 1.5px dashed var(--ink-2); border-bottom: 0; border-radius: 4px 4px 0 0; transition: height .35s ease; pointer-events: none; }
+.fw-gh[hidden] { display: none; }
+.fw-name { font: 500 12.5px/1.3 var(--ui); color: var(--ink-2); margin-top: 6px; text-align: center; }
+.fw-trans { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 4px; }
+.fw-trans span { justify-self: start; transform: translateX(calc(-50% - 5px)); font: 500 12px/1.3 var(--mono); color: var(--muted); white-space: nowrap; }
+.fw-trans span.bad { color: var(--bad); font-weight: 600; }
+.fw-leg { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin: 10px 0 0 !important; font: 12px/1.3 var(--ui) !important; color: var(--muted); }
+.fw-leg span { display: inline-block; }
+.fw-lg-bar { width: 10px; height: 10px; border-radius: 2px; background: var(--c8); }
+.fw-lg-gh { width: 10px; height: 10px; border: 1.5px dashed var(--ink-2); margin-left: 8px; }
+.fw-lg-bad { font: 600 12px/1 var(--mono); color: var(--bad); margin-left: 8px; }
+.fw-tb { padding: 12px 16px 14px; border-top: 1px solid var(--line); }
+.fw-tb .cap { margin-bottom: 8px !important; }
+.article .block .fw-tasks { grid-template-columns: 1fr 1fr; }
+.fw-tasks li > span { min-width: 0; }
+.fw-s { display: none; }
+.fw-trans span i { font-style: normal; }
+.fw-ans { border: 0; background: none; padding: 0; margin-left: 4px; font: 600 12.5px/1.4 var(--ui); color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.fw-why { display: block; margin-top: 6px; color: var(--ink-2); }
+.fw-why[hidden] { display: none; }
+.fw-do { padding: 10px 16px 0; margin: 0 !important; }
+@media (max-width: 640px) {
+  .fw-pres { grid-template-columns: 1fr 1fr; padding: 10px 12px 0; }
+  .fw-ctrls { padding: 10px 12px; gap: 8px 14px; }
+  .fw-ctl { flex-wrap: wrap; }
+  .fw-plot { padding: 12px 10px 10px; }
+  .fw-bars, .fw-trans { gap: 4px; }
+  .fw-track { height: 150px; }
+  .fw-n { font-size: 12px; }
+  .fw-p { font-size: 10px; }
+  .fw-name { font-size: 10.5px; }
+  .fw-l { display: none; }
+  .fw-s { display: inline; }
+  .fw-trans span i { display: none; }
+  .fw-tb { padding: 10px 12px 12px; }
+  .article .block .fw-tasks { grid-template-columns: 1fr; }
+  .fw-trans span { font-size: 10px; transform: translateX(calc(-50% - 2px)); }
+  .fw-do { padding: 10px 12px 0; }
+}
+
+/* ---------- таблицы и рисунок ---------- */
+.fn-num td { font-variant-numeric: tabular-nums; }
+.fn-def td:first-child, .fn-map td:first-child { white-space: normal; }
+.fn-map td:first-child { min-width: 110px; }
+.fn-fig { margin: 6px auto 22px; }
+.fn-svg { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; max-width: 760px; margin: 0 auto; }
+.fn-svg svg { display: block; width: 100%; height: auto; }
+.fn-svg svg text { font-family: var(--ui); }
+.fn-fig figcaption { font: 12.5px/1.4 var(--ui); color: var(--muted); text-align: center; margin-top: 6px; }
+@media (max-width: 640px) {
+  .fn-svg { padding: 6px; }
+  .tbl.fn-num td:first-child { white-space: normal; }
+}
+
+/* ---------- вывод psql и pandas: широкие таблицы прокручиваются, а не переносятся ---------- */
+.block[data-code] .out pre { white-space: pre; overflow-x: auto; }

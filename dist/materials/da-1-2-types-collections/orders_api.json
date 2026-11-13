@@ -1,0 +1,15 @@
+{
+  "shop": "учебный магазин",
+  "orders": [
+    {"id": 1041, "created": "2026-03-14T10:22:05", "brand": "Сова",
+     "amount": 1200, "discount": 0.1, "paid": true, "promo": null},
+    {"id": 1042, "created": "2026-03-14T18:03:41", "brand": "Кедр",
+     "amount": 850, "discount": 0.0, "paid": true, "promo": "ВЕСНА"},
+    {"id": 1043, "created": "2026-03-15T09:47:12", "brand": "Сова",
+     "amount": 2300, "discount": 0.0, "paid": false, "promo": null},
+    {"id": 1044, "created": "2026-03-28T21:15:00", "brand": "Луч",
+     "amount": 640, "discount": 0.0, "paid": true, "promo": null},
+    {"id": 1045, "created": "2026-04-02T08:30:59", "brand": "Сова",
+     "amount": 1750, "discount": 0.1, "paid": true, "promo": "ВЕСНА"}
+  ]
+}

@@ -1,0 +1,151 @@
+      <p class="eyebrow">Дата аналитика · Тема 05 · <b>Вероятность</b></p>
+      <h1>Вероятность, условная вероятность, Байес</h1>
+      <p class="lead">После страницы вы&nbsp;будете читать любую <span class="term" tabindex="0" data-g="cond">условную вероятность</span> как&nbsp;долю внутри «нового всего» и&nbsp;не&nbsp;спутаете P(купил&nbsp;|&nbsp;реклама) с&nbsp;P(реклама&nbsp;|&nbsp;купил). Вы&nbsp;посчитаете обе по&nbsp;таблице в&nbsp;pandas, переведёте одну в&nbsp;другую <span class="term" tabindex="0" data-g="bayes">теоремой Байеса</span> и&nbsp;увидите, почему сработка точного теста на&nbsp;редкое событие так&nbsp;часто ложная.</p>
+      <div class="meta-row"><span class="pill">≈&nbsp;30&nbsp;минут</span><span class="pill">анимация из&nbsp;10&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">3&nbsp;блока кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: условие меняет знаменатель</h2>
+        <p><span class="term" tabindex="0" data-g="prob">Вероятность</span> <span class="term" tabindex="0" data-g="event">события</span>&nbsp;— доля <span class="term" tabindex="0" data-g="outcome">исходов</span>, в&nbsp;которых оно&nbsp;случилось, среди всех возможных. Условие «при&nbsp;B» сужает «всё» до&nbsp;B, поэтому P(A&nbsp;|&nbsp;B) и&nbsp;P(B&nbsp;|&nbsp;A) делят одно и&nbsp;то&nbsp;же&nbsp;пересечение на&nbsp;разные знаменатели и&nbsp;могут различаться в&nbsp;разы. Насколько&nbsp;— решают размеры событий до&nbsp;всяких условий, их <span class="term" tabindex="0" data-g="base">базовые частоты</span>: теорема Байеса пересчитывает одно число в&nbsp;другое через них. Когда событие редкое, его&nbsp;круг крошечный, и&nbsp;даже у&nbsp;точного теста ложные сработки легко оказываются в&nbsp;большинстве.</p>
+        <div class="scene" id="scene" aria-label="Анимация: тысяча визитов точками в прямоугольнике, круг «реклама» на 299 точек и круг «купил» на 34 пересекаются по 12 точкам; камера наезжает на круг «реклама» — доля покупок 12 из 299, четыре процента; затем переезжает на круг «купил» — доля рекламы 12 из 34, тридцать пять процентов"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже&nbsp;— та&nbsp;же&nbsp;мысль подробно.</p>
+
+        <h3 class="sub-h">Вероятность как&nbsp;доля и&nbsp;как&nbsp;степень уверенности</h3>
+        <p>Учебные данные&nbsp;— 100&nbsp;000&nbsp;визитов в&nbsp;интернет-магазин из&nbsp;тем 02–04, файл visits.csv: источник визита (органика, реклама, рассылка) и&nbsp;отметка о&nbsp;покупке. Визит&nbsp;— исход, событие&nbsp;— множество исходов: «пришёл из&nbsp;рекламы», «купил». Если&nbsp;визит выбран наугад, вероятность события&nbsp;— просто доля:</p>
+        <div class="formula"><span class="f">P(A) = |A| / |Ω|</span><small>|A|&nbsp;— число исходов в&nbsp;событии A; Ω (омега)&nbsp;— все&nbsp;исходы, |Ω| =&nbsp;100&nbsp;000. Вероятность лежит от&nbsp;0&nbsp;до&nbsp;1: P(Ω) =&nbsp;1, у&nbsp;пустого события&nbsp;— 0.</small></div>
+        <p>Это&nbsp;частотный взгляд: доля в&nbsp;длинной серии. Второй взгляд&nbsp;— степень уверенности, когда серии нет: «этот перевод, скорее всего, мошеннический». Правила у&nbsp;обоих одни, поэтому формулы ниже годятся для&nbsp;обоих<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <p>В&nbsp;анимации&nbsp;— пропорциональная тысяча визитов: из&nbsp;каждой клетки «источник × покупка» взяли столько, сколько приходится на&nbsp;тысячу (seed 505). Случайная тысяча врёт сильнее: доля рекламы среди покупателей в&nbsp;200&nbsp;попытках гуляла от&nbsp;14&nbsp;до&nbsp;63%.</p>
+
+        <h3 class="sub-h">Пересечение, объединение, противоположное событие</h3>
+        <p><span class="term" tabindex="0" data-g="inter">Пересечение</span> A ∩ B&nbsp;— исходы, где&nbsp;случилось и&nbsp;A, и&nbsp;B: визит из&nbsp;рекламы с&nbsp;покупкой. <span class="term" tabindex="0" data-g="union">Объединение</span> A ∪ B&nbsp;— где&nbsp;случилось хотя&nbsp;бы&nbsp;одно. При&nbsp;сложении кругов пересечение считается дважды, поэтому его&nbsp;вычитают:</p>
+        <div class="formula"><span class="f">P(A&nbsp;∪&nbsp;B) = P(A) + P(B) − P(A&nbsp;∩&nbsp;B)</span><small>∩ читается «и», ∪&nbsp;— «или». Здесь (29&nbsp;848 +&nbsp;3&nbsp;376 −&nbsp;1&nbsp;172) /&nbsp;100&nbsp;000 =&nbsp;0,321.</small></div>
+        <p><span class="term" tabindex="0" data-g="compl">Противоположное событие</span> «не&nbsp;A»&nbsp;— всё&nbsp;вне&nbsp;круга: P(не&nbsp;A) =&nbsp;1 − P(A). <span class="term" tabindex="0" data-g="disjoint">Несовместные события</span> не&nbsp;пересекаются: у&nbsp;визита один источник, из&nbsp;рекламы и&nbsp;из&nbsp;рассылки сразу он&nbsp;не&nbsp;придёт. Для&nbsp;них P(A&nbsp;∪&nbsp;B) = P(A) + P(B).</p>
+
+        <h3 class="sub-h">Условная вероятность: новое «всё»</h3>
+        <p>P(A&nbsp;|&nbsp;B)&nbsp;— вероятность A, если&nbsp;известно, что&nbsp;B случилось. Это&nbsp;знание выбрасывает все&nbsp;исходы вне&nbsp;B: круг B становится новым «всем», и&nbsp;доля A считается внутри него<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <div class="formula"><span class="f">P(A&nbsp;|&nbsp;B) = P(A&nbsp;∩&nbsp;B) / P(B) = |A ∩ B| / |B|</span><small>Черта | читается «при&nbsp;условии», знаменатель&nbsp;— то, что&nbsp;после неё. P(B) &gt; 0, иначе делить не&nbsp;на&nbsp;что.</small></div>
+        <p>Из&nbsp;29&nbsp;848&nbsp;рекламных визитов купили 1&nbsp;172: P(купил&nbsp;|&nbsp;реклама) =&nbsp;3,9%. Обратный вопрос делит то&nbsp;же&nbsp;пересечение на&nbsp;всех покупателей, их&nbsp;3&nbsp;376: P(реклама&nbsp;|&nbsp;купил) =&nbsp;34,7%. Пересечение одно, вопросы разные.</p>
+        <p>Если&nbsp;домножить определение на&nbsp;знаменатель, получится правило умножения: P(A&nbsp;∩&nbsp;B) = P(A&nbsp;|&nbsp;B) · P(B) = P(B&nbsp;|&nbsp;A) · P(A). Пересечение собирается с&nbsp;любой стороны&nbsp;— на&nbsp;этом стоит теорема Байеса.</p>
+
+        <h3 class="sub-h">Независимость: условие ничего не&nbsp;меняет</h3>
+        <p>События <span class="term" tabindex="0" data-g="indep">независимы</span>, если&nbsp;знание о&nbsp;B не&nbsp;меняет шанс A: P(A&nbsp;|&nbsp;B) = P(A). Тогда пересечение раскладывается в&nbsp;произведение:</p>
+        <div class="formula"><span class="f">P(A&nbsp;∩&nbsp;B) = P(A) · P(B)</span><small>При&nbsp;P(B) &gt; 0&nbsp;обе записи равносильны. При&nbsp;независимости рекламных покупок было&nbsp;бы&nbsp;29&nbsp;848 ·&nbsp;3&nbsp;376 /&nbsp;100&nbsp;000 ≈&nbsp;1&nbsp;008, а&nbsp;их&nbsp;1&nbsp;172.</small></div>
+        <p>В&nbsp;учебных данных источник и&nbsp;покупка зависимы: среди всех визитов покупает 3,4%, среди рекламных&nbsp;— 3,9%, среди пришедших из&nbsp;рассылки&nbsp;— 6,0%.</p>
+        <p>Несовместные события с&nbsp;ненулевыми вероятностями всегда зависимы: визит из&nbsp;рекламы точно не&nbsp;из&nbsp;рассылки, P(рассылка&nbsp;|&nbsp;реклама) =&nbsp;0&nbsp;при&nbsp;P(рассылка) =&nbsp;0,15. Независимые события не&nbsp;влияют друг на&nbsp;друга, а&nbsp;несовместные исключают друг друга&nbsp;— сильнее влиять некуда.</p>
+
+        <h3 class="sub-h">Формула полной вероятности: целое из&nbsp;частей</h3>
+        <p>Если&nbsp;исходы разбиты на&nbsp;непересекающиеся группы, вероятность события&nbsp;— сумма условных вероятностей внутри групп, взвешенных по&nbsp;размеру групп. Это <span class="term" tabindex="0" data-g="total">формула полной вероятности</span><a class="ref" href="#src-1" data-ref="src-1">1</a>:</p>
+        <div class="formula"><span class="f">P(A) = Σ<sub>i</sub> P(A | B<sub>i</sub>) · P(B<sub>i</sub>)</span><small>B<sub>1</sub>, …, B<sub>k</sub>&nbsp;— группы без&nbsp;пересечений, вместе дающие всё; Σ&nbsp;— сумма по&nbsp;ним. Здесь A&nbsp;— «купил», группы&nbsp;— источники: P(B<sub>i</sub>)&nbsp;— доля источника, P(A | B<sub>i</sub>)&nbsp;— его&nbsp;конверсия, слагаемое&nbsp;— вклад.</small></div>
+        <div class="tbl d51-t">
+          <table>
+            <thead><tr><th>Источник</th><th>Доля</th><th>Конверсия</th><th>Вклад</th></tr></thead>
+            <tbody>
+              <tr><td>органика</td><td>0,551</td><td>2,37%</td><td>0,01307</td></tr>
+              <tr><td>реклама</td><td>0,298</td><td>3,93%</td><td>0,01172</td></tr>
+              <tr><td>рассылка</td><td>0,150</td><td>5,96%</td><td>0,00897</td></tr>
+              <tr><td>сумма</td><td>1</td><td></td><td>0,03376</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Общая доля покупок, 3,38%,&nbsp;— не&nbsp;простое среднее трёх конверсий, то&nbsp;есть долей покупок внутри источников (оно&nbsp;равно 4,09%), а&nbsp;взвешенное по&nbsp;трафику: органики больше половины, и&nbsp;она&nbsp;тянет итог вниз.</p>
+
+        <h3 class="sub-h">Теорема Байеса на&nbsp;натуральных частотах</h3>
+        <p>Из&nbsp;правила умножения следует теорема Байеса&nbsp;— она&nbsp;переворачивает условие<a class="ref" href="#src-1" data-ref="src-1">1</a>:</p>
+        <div class="formula"><span class="f">P(B&nbsp;|&nbsp;A) = P(A&nbsp;|&nbsp;B) · P(B) / P(A)</span><small>P(B)&nbsp;— <span class="term" tabindex="0" data-g="prior">априорная вероятность</span> B, до&nbsp;того как&nbsp;стало известно A; P(B&nbsp;|&nbsp;A)&nbsp;— <span class="term" tabindex="0" data-g="posterior">апостериорная</span>, после; P(A) считают по&nbsp;формуле полной вероятности. Для&nbsp;визитов: 0,0393 ·&nbsp;0,2985 /&nbsp;0,0338 =&nbsp;0,347.</small></div>
+        <p>Формулу легко забыть, а&nbsp;проценты от&nbsp;процентов путают даже врачи и&nbsp;юристы. Герд Гигеренцер предлагает считать то&nbsp;же&nbsp;самое в <span class="term" tabindex="0" data-g="natfreq">натуральных частотах</span>&nbsp;— числами случаев вместо долей, и&nbsp;задача Байеса сводится к&nbsp;счёту<a class="ref" href="#src-3" data-ref="src-3">3</a>:</p>
+        <ul>
+          <li>Из&nbsp;100&nbsp;000&nbsp;визитов 29&nbsp;848&nbsp;пришли из&nbsp;рекламы, и&nbsp;1&nbsp;172&nbsp;из&nbsp;них закончились покупкой.</li>
+          <li>Из&nbsp;остальных 70&nbsp;152&nbsp;визитов покупкой закончились 2&nbsp;204.</li>
+          <li>Всего покупок 3&nbsp;376, из&nbsp;рекламы 1&nbsp;172&nbsp;— это&nbsp;34,7%.</li>
+        </ul>
+
+        <h3 class="sub-h">Базовая частота: почему точный тест на&nbsp;редкое событие ошибается</h3>
+        <p>Базовая частота&nbsp;— доля события до&nbsp;всяких проверок. Пусть мошеннических транзакций (фрода) 1%, а&nbsp;правило антифрода описывают два числа. <span class="term" tabindex="0" data-g="sens">Чувствительность</span>&nbsp;— доля фрода, которую оно&nbsp;ловит, P(сработка&nbsp;|&nbsp;фрод). <span class="term" tabindex="0" data-g="spec">Специфичность</span>&nbsp;— доля честных транзакций, на&nbsp;которых оно&nbsp;молчит, P(нет&nbsp;сработки&nbsp;|&nbsp;честная). «Точность 99%» пусть значит 99% для&nbsp;обоих.</p>
+        <p>Из&nbsp;10&nbsp;000&nbsp;транзакций мошеннических 100, правило поймает 99. Остальные 9&nbsp;900&nbsp;честные, и&nbsp;1% из&nbsp;них, 99&nbsp;штук, тоже вызовут сработку&nbsp;— это <span class="term" tabindex="0" data-g="fp">ложные сработки</span>. Всего сработок 198, фрода среди них 99&nbsp;— ровно половина.</p>
+        <div class="formula"><span class="f">P(фрод&nbsp;|&nbsp;сработка) = s · b / (s · b + (1 − c) · (1 − b))</span><small>b&nbsp;— базовая частота, 0,01; s&nbsp;— чувствительность, c&nbsp;— специфичность, обе 0,99. Числитель&nbsp;— пойманный фрод, знаменатель&nbsp;— все&nbsp;сработки. 0,0099 / (0,0099 +&nbsp;0,0099) =&nbsp;0,5.</small></div>
+        <p>При&nbsp;точности 95% на&nbsp;95&nbsp;пойманных приходится 495&nbsp;ложных: верна одна сработка из&nbsp;шести. При&nbsp;фроде 0,1% и&nbsp;точности 99%&nbsp;— одна из&nbsp;одиннадцати. Честных так&nbsp;много, что&nbsp;даже малая доля ошибок на&nbsp;них перевешивает весь фрод. Забыть об&nbsp;этом&nbsp;— значит <span class="term" tabindex="0" data-g="neglect">игнорировать базовую частоту</span>; это одна из&nbsp;самых известных ошибок в&nbsp;оценке рисков<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: какое из&nbsp;двух чисел в&nbsp;отчёте</h2>
+        <p>Маркетолог пишет в&nbsp;отчёте: «35% покупок пришли из&nbsp;рекламы». Руководитель читает «каждый третий рекламный визит заканчивается покупкой» и&nbsp;предлагает удвоить бюджет. В&nbsp;отчёте&nbsp;— P(реклама&nbsp;|&nbsp;купил), а&nbsp;прочитана P(купил&nbsp;|&nbsp;реклама), которая в&nbsp;учебных данных равна 3,9%.</p>
+        <p>Та&nbsp;же&nbsp;ошибка живёт в&nbsp;новостях. Фраза «большинство заболевших были привиты» сообщает P(привит&nbsp;|&nbsp;заболел): если&nbsp;привиты почти все, они&nbsp;будут большинством и&nbsp;среди заболевших&nbsp;— по&nbsp;базовой частоте. О&nbsp;прививке судят по&nbsp;P(заболел&nbsp;|&nbsp;привит) против P(заболел&nbsp;|&nbsp;не&nbsp;привит). Подмену одной условной вероятности другой называют <span class="term" tabindex="0" data-g="inverse">ошибкой инверсии</span>, а&nbsp;в&nbsp;суде&nbsp;— ошибкой прокурора<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <p>Задача страницы&nbsp;— в&nbsp;любой фразе с&nbsp;процентами находить условие, считать по&nbsp;нему знаменатель и&nbsp;переводить одну условную вероятность в&nbsp;другую.</p>
+      </section>
+
+      <section data-sec="method" data-title="Камера на круге">
+        <h2 id="method"><span class="sn">03</span>Камера на&nbsp;круге: сначала знаменатель</h2>
+        <p>Условную вероятность читают в&nbsp;три хода: найти условие (после черты | или&nbsp;слов «среди», «из&nbsp;тех, кто»), взять его&nbsp;размер за&nbsp;новое «всё» и&nbsp;посчитать долю второго события внутри.</p>
+        <p>В&nbsp;интерактиве та&nbsp;же&nbsp;тысяча визитов. Круг&nbsp;— граница события, точки внутри&nbsp;— его&nbsp;исходы; круги можно двигать и&nbsp;менять в&nbsp;размере, как&nbsp;в&nbsp;визуальных учебниках вероятности<a class="ref" href="#src-2" data-ref="src-2">2</a>. Сначала предскажите.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="cam"></div>
+        <p>Как&nbsp;ни&nbsp;двигай круги, обе условные вероятности различаются ровно во&nbsp;столько раз, во&nbsp;сколько различаются размеры кругов. Это&nbsp;теорема Байеса, записанная отношением:</p>
+        <div class="formula"><span class="f">P(B&nbsp;|&nbsp;A) / P(A&nbsp;|&nbsp;B) = P(B) / P(A)</span><small>Числитель у&nbsp;обеих условных вероятностей общий, |A ∩ B|, и&nbsp;при&nbsp;делении он&nbsp;сокращается. Остаются знаменатели: |B| / |A| =&nbsp;299 /&nbsp;34 ≈&nbsp;8,8.</small></div>
+        <h3 class="sub-h">Режим «антифрод»</h3>
+        <p>Режим «Антифрод»&nbsp;— 10&nbsp;000&nbsp;транзакций, из&nbsp;них 100&nbsp;мошеннических. Ползунки задают, сколько фрода правило ловит и&nbsp;на&nbsp;скольких честных ошибается. При&nbsp;точности 99% половина круга сработок&nbsp;— честные клиенты, а&nbsp;кнопка «95%» сжимает долю фрода в&nbsp;нём до&nbsp;16%.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: независимость и&nbsp;симуляция</h2>
+        <div class="callout"><p><b>Независимость предполагают чаще, чем&nbsp;проверяют.</b> Риск «упадут оба сервера» считают квадратом риска одного, а&nbsp;серверы в&nbsp;одной стойке падают вместе, и&nbsp;квадрат занижает риск. Проверка по <span class="term" tabindex="0" data-g="crosstab">таблице сопряжённости</span> идёт в&nbsp;два шага. Сначала сравнить P(A&nbsp;|&nbsp;B) с&nbsp;P(A): у&nbsp;независимых событий доли по&nbsp;строкам таблицы одинаковы. Затем понять, не&nbsp;шум&nbsp;ли&nbsp;разница: <span class="term" tabindex="0" data-g="chi2">критерий хи-квадрат</span> сравнивает таблицу с&nbsp;той, что&nbsp;была&nbsp;бы&nbsp;при&nbsp;независимости, и&nbsp;выдаёт <span class="term" tabindex="0" data-g="pvalue">p-значение</span>. На&nbsp;visits.csv для&nbsp;источника оно&nbsp;ничтожно, 9,1·10⁻¹¹¹, для&nbsp;чётности номера визита&nbsp;— 0,56: она&nbsp;с&nbsp;покупкой не&nbsp;связана. Выбор критерия и&nbsp;чтение p&nbsp;— страницы 6.3&nbsp;и&nbsp;6.4.</p></div>
+        <div class="callout"><p><b>Симуляция, когда формула не&nbsp;вспоминается.</b> Вероятность можно не&nbsp;выводить, а&nbsp;посчитать: сгенерировать много случайных миров с&nbsp;заданными правилами и&nbsp;посмотреть на&nbsp;доли. Это <span class="term" tabindex="0" data-g="sim">метод Монте-Карло</span>; считать вместо того, чтобы выводить, учит книга Think Stats<a class="ref" href="#src-4" data-ref="src-4">4</a>. Сто тысяч пользователей из&nbsp;учебного генератора дают P(реклама&nbsp;|&nbsp;купил) =&nbsp;34,5% при&nbsp;34,5% по&nbsp;формуле, антифрод&nbsp;— 48,9% при&nbsp;теоретических 50%. Цена&nbsp;— шум: чем&nbsp;меньше выборка, тем сильнее прыгает ответ. Сколько данных нужно для&nbsp;заданной точности, покажет страница 5.3.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: здесь все&nbsp;вероятности известны</h2>
+        <p>Здесь вероятности известны: их&nbsp;посчитали по&nbsp;100&nbsp;000&nbsp;визитов или&nbsp;задали, как&nbsp;1% фрода. В&nbsp;работе базовую частоту и&nbsp;точность правила оценивают по&nbsp;данным, с&nbsp;погрешностью,&nbsp;— об&nbsp;этом тема 06.</p>
+        <p>Следующий шаг&nbsp;— <span class="term" tabindex="0" data-g="bayesinf">байесовский вывод</span>: теорему Байеса применяют к&nbsp;неизвестному параметру, например к&nbsp;конверсии нового канала, у&nbsp;которого пока 40&nbsp;визитов. Вместо одной априорной вероятности берут <span class="term" tabindex="0" data-g="priordist">априорное распределение</span>&nbsp;— какие значения конверсии правдоподобны до&nbsp;данных,&nbsp;— и&nbsp;данные превращают его&nbsp;в&nbsp;апостериорное. Коротко&nbsp;— на&nbsp;странице 11.5, в&nbsp;байесовском A/B-тесте.</p>
+        <p>И&nbsp;последнее: условная вероятность описывает связь, а&nbsp;не&nbsp;причину. Рекламные визиты покупают чаще, но&nbsp;рекламу могли показывать тем, кто и&nbsp;так&nbsp;собирался купить. Причину от&nbsp;связи отличают страницы 6.5&nbsp;и&nbsp;11.1.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: симуляция, таблица и&nbsp;проверка независимости</h2>
+        <p>Код запущен в&nbsp;Python 3.13&nbsp;с&nbsp;NumPy 2.5.3, pandas 3.0.5&nbsp;и&nbsp;SciPy 1.18.1, вывод вставлен как&nbsp;есть. Первый блок&nbsp;— симуляция: сто тысяч пользователей, у&nbsp;каждого источник и&nbsp;монетка покупки с&nbsp;весом своего источника. Условные доли считаются масками: <code>bought[ad]</code>&nbsp;— покупки внутри круга «реклама», <code>ad[bought]</code>&nbsp;— реклама внутри круга «купил».</p>
+        <div class="block wide" data-code="sim"></div>
+        <p>Второй&nbsp;— таблица сопряжённости на&nbsp;visits.csv. Параметр <code>normalize</code> выбирает знаменатель: <code>"index"</code> делит на&nbsp;суммы строк и&nbsp;даёт P(купил&nbsp;|&nbsp;источник), <code>"columns"</code>&nbsp;— на&nbsp;суммы столбцов и&nbsp;даёт P(источник&nbsp;|&nbsp;купил)<a class="ref" href="#src-6" data-ref="src-6">6</a>. Байес из&nbsp;таблицы совпадает с&nbsp;прямым подсчётом по&nbsp;столбцу.</p>
+        <div class="block wide" data-code="crosstab"></div>
+        <p>Третий&nbsp;— проверка независимости из&nbsp;«Нюансов»: доли по&nbsp;строкам, ожидаемая таблица при&nbsp;независимости и&nbsp;хи-квадрат из&nbsp;SciPy<a class="ref" href="#src-5" data-ref="src-5">5</a>.</p>
+        <div class="block wide" data-code="indep"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если&nbsp;не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где&nbsp;термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Вероятность» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Blitzstein J., Hwang J. <a href="https://projects.iq.harvard.edu/stat110/home" target="_blank" rel="noopener">Introduction to Probability</a>, 2nd ed., 2019; курс Stat 110. Главы 1–2: трактовки вероятности, условная вероятность, полная вероятность, Байес, ошибка прокурора.</li>
+          <li id="src-2"><a href="https://seeing-theory.brown.edu/" target="_blank" rel="noopener">Seeing Theory</a>. Brown University. Визуальное введение в&nbsp;вероятность&nbsp;— образец для&nbsp;интерактива с&nbsp;кругами-событиями.</li>
+          <li id="src-3">Gigerenzer G. Calculated Risks: How to Know When Numbers Deceive You. Simon &amp; Schuster, 2002. Байес на&nbsp;натуральных частотах и&nbsp;ошибки в&nbsp;оценке рисков у&nbsp;врачей и&nbsp;юристов.</li>
+          <li id="src-4">Downey A. <a href="https://allendowney.github.io/ThinkStats/" target="_blank" rel="noopener">Think Stats</a>, 3rd ed., 2025. Статистика через вычисления и&nbsp;симуляцию на&nbsp;Python.</li>
+          <li id="src-5">SciPy. <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chi2_contingency.html" target="_blank" rel="noopener">scipy.stats.chi2_contingency</a>. Ожидаемая таблица, статистика хи-квадрат и&nbsp;p-значение.</li>
+          <li id="src-6">pandas. <a href="https://pandas.pydata.org/docs/reference/api/pandas.crosstab.html" target="_blank" rel="noopener">pandas.crosstab</a>. Итоги margins и&nbsp;доли normalize по&nbsp;строкам, столбцам или&nbsp;всей таблице.</li>
+        </ol>
+      </section>

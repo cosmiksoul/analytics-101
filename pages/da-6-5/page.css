@@ -1,0 +1,60 @@
+/* ===== Сцена: облако, Энскомб, третья переменная ===== */
+.scene .cc-sc { position: relative; flex: 1; align-self: stretch; min-width: 0; min-height: 0; }
+.scene .cc-svg { position: absolute; inset: 0; display: block; overflow: visible; font-family: var(--ui); }
+.scene .cc-calls { position: absolute; inset: 0; pointer-events: none; }
+.scene .cc-call { position: absolute; max-width: 260px; background: #141b2b; border: 1px solid var(--s-acc); color: var(--s-ink); font: 500 12.5px/1.35 var(--ui); padding: 6px 10px; border-radius: 8px; box-shadow: 0 8px 22px rgba(0, 0, 0, .35); white-space: nowrap; }
+/* табло справа наезжает на счётчики */
+@container (max-width: 1100px) { .scene .sc-info { display: none; } }
+@container (max-width: 860px) { .scene .sc-stage { height: 500px; } }
+@container (max-width: 560px) {
+  .scene .sc-stage { height: 500px; }
+  .scene .sc-html { padding-top: 78px; padding-bottom: 50px; }
+  .scene .hb small { display: block; margin: 2px 0 0; font-size: 9.5px; }
+  .scene .hb b { font-size: 16px; }
+  .scene .cc-call { font-size: 11px; padding: 5px 8px; max-width: 220px; white-space: normal; }
+}
+.scene .sc-leg span { white-space: nowrap; }
+
+/* ===== Таблицы статьи ===== */
+.cc-lad td:first-child, .cc-map td:first-child { font-weight: 600; }
+.cc-map td:last-child { white-space: nowrap; }
+@media (max-width: 640px) {
+  .formula .f { white-space: normal; }
+  .cc-lad td:first-child, .cc-map td:first-child { white-space: normal; }
+  .cc-lad table, .cc-map table { font-size: 13px; }
+  .cc-lad, .cc-map { overflow-x: auto; }
+}
+
+/* ===== Интерактив «Угадай корреляцию» ===== */
+.cg-do { padding: 10px 16px 0; margin: 0 !important; }
+.cg-plot { padding: 12px; min-width: 0; display: flex; justify-content: center; }
+.cg-plot svg { display: block; max-width: 100%; height: auto; font-family: var(--ui); }
+.cg-in { display: grid; grid-template-columns: minmax(0, 1fr) 76px; gap: 10px; align-items: center; margin: 4px 0 10px; }
+.cg-in input[type="range"] { width: 100%; accent-color: var(--accent); }
+.cg-in input[type="text"] { width: 76px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); padding: 6px 8px; font: 500 15px/1.2 var(--mono); text-align: right; }
+.cg-in input[type="text"]:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.cg-ro { margin: 12px 0 6px; gap: 12px 22px; }
+.cg-ro .big { font-size: 22px; }
+.cg-hist { list-style: none; margin: 4px 0 0 !important; padding: 0 !important; display: grid; gap: 4px; }
+.cg-hist li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 6px; align-items: baseline; margin: 0 !important; font: 12px/1.35 var(--mono) !important; color: var(--ink-2); border-bottom: 1px solid var(--line); padding: 3px 0; }
+.cg-hist li b { color: var(--muted); font-weight: 500; }
+.cg-hist li em { font-style: normal; color: var(--ink); font-weight: 600; }
+.cg-leg { list-style: none; margin: 8px 0 0 !important; padding: 0 !important; display: grid; gap: 4px; }
+.cg-leg li { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 8px; align-items: center; margin: 0 !important; font: 13px/1.35 var(--ui) !important; color: var(--ink-2); }
+.cg-leg li b { font: 600 13px/1 var(--mono); color: var(--ink); }
+.cg-leg svg { display: block; }
+#cg-color[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* ===== Тепловая карта под кодом ===== */
+.cc-hm { margin: 4px auto 22px; max-width: 420px; text-align: center; }
+.cc-hm figcaption { font: 600 14px/1.4 var(--ui); color: var(--ink); margin-bottom: 8px; text-align: left; }
+.cc-hm svg { display: block; max-width: 100%; height: auto; margin: 0 auto; font-family: var(--ui); }
+/* на телефоне таблицы лестницы и карты — карточки с подписями полей */
+@media (max-width: 560px) {
+  .cc-lad table, .cc-lad tbody, .cc-lad tr, .cc-lad td, .cc-map table, .cc-map tbody, .cc-map tr, .cc-map td { display: block; width: 100%; }
+  .cc-lad thead, .cc-map thead { display: none; }
+  .cc-lad tr, .cc-map tr { border-bottom: 1px solid var(--line-2); padding: 8px 0 6px; }
+  .cc-lad td, .cc-map td { border: 0; padding: 2px 0 6px; white-space: normal !important; }
+  .cc-lad td:first-child, .cc-map td:first-child { font-size: 15px; padding-bottom: 6px; }
+  .cc-lad td:not(:first-child)::before, .cc-map td:not(:first-child)::before { content: attr(data-l); display: block; font: 500 10.5px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+}

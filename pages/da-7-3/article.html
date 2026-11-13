@@ -1,0 +1,161 @@
+      <p class="eyebrow">Дата аналитика · Тема 07 · <b>Разведочный анализ</b></p>
+      <h1>Связи между переменными и&nbsp;вопросы к&nbsp;данным</h1>
+      <p class="lead">Первый взгляд на&nbsp;данные заканчивается списком вопросов. После страницы вы пройдёте по&nbsp;всем парам переменных подходящими графиками, отличите связь от&nbsp;совпадения во&nbsp;времени и&nbsp;запишете гипотезы так, чтобы завтра продолжить с&nbsp;того&nbsp;же места.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;10&nbsp;шагов</span><span class="pill">1 интерактив</span><span class="pill">7 блоков кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: от&nbsp;пар графиков к&nbsp;списку гипотез</h2>
+        <p><span class="term" tabindex="0" data-g="eda">Разведочный анализ</span> (EDA) ищет в&nbsp;данных вопросы, а&nbsp;не&nbsp;ответы. Связь двух переменных видна на&nbsp;графике, а&nbsp;какой график строить, решают их&nbsp;типы: два числа — <span class="term" tabindex="0" data-g="scatter">облако точек</span>, число и&nbsp;категория — <span class="term" tabindex="0" data-g="boxgroups">ящики по&nbsp;группам</span>, две категории — <span class="term" tabindex="0" data-g="shares">тепловая карта долей</span>, а&nbsp;дата превращает метрику в&nbsp;ряд. <span class="term" tabindex="0" data-g="pairplot">Матрица парных графиков</span> за&nbsp;полчаса показывает, где что-то есть, но&nbsp;каждая находка — только гипотеза: перебор пар находит связи и&nbsp;в&nbsp;шуме, а&nbsp;общий <span class="term" tabindex="0" data-g="trend">тренд</span> связывает ряды, которые друг на&nbsp;друга не&nbsp;влияют. Поэтому работа идёт циклом «вопрос → график → вывод → следующий вопрос», а&nbsp;сделанное записывают в&nbsp;<span class="term" tabindex="0" data-g="diary">дневник анализа</span>.</p>
+        <div class="scene" id="scene" aria-label="Анимация: матрица парных графиков для 11 701 учебного клиента заполняется ячейка за ячейкой — гистограммы на диагонали, облака точек для пар чисел, ящики по группам для числа и категории, таблица долей для канала и уровня; вспыхивает ячейка «уровень × визиты», из неё получается гипотеза и запись в дневник"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Парные графики: тип пары решает</h3>
+        <p>Типы переменных вы определили на&nbsp;первом взгляде (7.1): число, категория, дата. У&nbsp;каждой пары типов свой график<a class="ref" href="#src-2" data-ref="src-2">2</a>, а&nbsp;матрица раскладывает их&nbsp;по&nbsp;сетке: строка — одна переменная, столбец — другая, на&nbsp;диагонали — распределение каждой (7.2).</p>
+        <div class="tbl rv-types">
+          <table>
+            <thead><tr><th>Пара</th><th>График</th><th>Что искать</th></tr></thead>
+            <tbody>
+              <tr><td>число × число</td><td>диаграмма рассеяния</td><td>наклон, изгиб, отдельные облака</td></tr>
+              <tr><td>число × категория</td><td>ящики по&nbsp;группам</td><td>сдвиг медиан, разный разброс</td></tr>
+              <tr><td>категория × категория</td><td>тепловая карта долей</td><td>столбцы с&nbsp;разными долями</td></tr>
+              <tr><td>дата × число</td><td>ряд по&nbsp;дням</td><td>тренд, повторы, дыры</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Уровень лояльности записан цифрами 1–5, но&nbsp;это <span class="term" tabindex="0" data-g="ordinal">порядковая переменная</span>: расстояние между уровнями не&nbsp;обязано быть одинаковым, поэтому ему нужны ящики, а&nbsp;не&nbsp;облако. В&nbsp;seaborn матрицу строит <code>pairplot</code>: он берёт числовые столбцы, а&nbsp;категорию можно передать цветом<a class="ref" href="#src-4" data-ref="src-4">4</a>.</p>
+
+        <h3 class="sub-h">Матрица корреляций и&nbsp;её&nbsp;ловушки</h3>
+        <p>Пирсона и&nbsp;Спирмена вы знаете по&nbsp;6.5. <span class="term" tabindex="0" data-g="corrmatrix">Матрица корреляций</span> считает их&nbsp;для&nbsp;всех пар чисел сразу и&nbsp;годится как&nbsp;оглавление, но&nbsp;ловушки у&nbsp;неё свои.</p>
+        <ul>
+          <li>Категорий в&nbsp;ней нет: канал выпадает целиком, а&nbsp;уровень считается числом, будто от&nbsp;1 до&nbsp;2 столько&nbsp;же, сколько от&nbsp;4 до&nbsp;5.</li>
+          <li>Каждую пару pandas считает по&nbsp;своим строкам<a class="ref" href="#src-3" data-ref="src-3">3</a>: у&nbsp;визитов 11&nbsp;701 клиент, у&nbsp;среднего чека — 10&nbsp;035, только те, у&nbsp;кого были заказы.</li>
+          <li>Одно число не&nbsp;видит хвостов: r = −0,09 между заказами и&nbsp;чеком держат 330 клиентов с&nbsp;чеком выше 12&nbsp;000&nbsp;₽, без&nbsp;них r = +0,03.</li>
+        </ul>
+        <p>Поэтому матрицу читают вместе с&nbsp;графиками и&nbsp;сверяют Пирсона со&nbsp;Спирменом: где они расходятся, там хвост или изгиб.</p>
+
+        <h3 class="sub-h">Группы и&nbsp;сегменты</h3>
+        <p><span class="term" tabindex="0" data-g="segment">Сегмент</span> — группа клиентов с&nbsp;общим признаком: канал привлечения, уровень лояльности, страна. Сегменты сравнивают по&nbsp;распределениям, а&nbsp;не&nbsp;по&nbsp;одному среднему: медиана, квартили, размер группы. Медиана среднего чека у&nbsp;рассылки на&nbsp;16,5% выше общей, у&nbsp;рекламы на&nbsp;12,6% ниже, и&nbsp;этот порядок держится на&nbsp;каждом уровне лояльности. Разверни он знак внутри уровней, это был&nbsp;бы парадокс Симпсона из&nbsp;6.5.</p>
+
+        <h3 class="sub-h">Время — особая ось</h3>
+        <p>Строка дневной таблицы — день, и&nbsp;у&nbsp;дней есть порядок. В&nbsp;ряду ищут четыре вещи.</p>
+        <ul>
+          <li><b>Тренд</b> — общий рост или спад: установки приложения прибавляют около двух в&nbsp;день.</li>
+          <li><b><span class="term" tabindex="0" data-g="season">Сезонность</span></b> — повторяющийся рисунок: выручка в&nbsp;субботу и&nbsp;воскресенье на&nbsp;четверть выше будней.</li>
+          <li><b><span class="term" tabindex="0" data-g="gap">Разрыв в&nbsp;данных</span></b> — пропавшие дни: 10–13 февраля выгрузки нет, и&nbsp;строки 9 и&nbsp;14 февраля стоят рядом, будто между ними одни сутки.</li>
+          <li><b><span class="term" tabindex="0" data-g="incomplete">Неполный период</span></b> — день или месяц, собранный не&nbsp;целиком: за&nbsp;31 марта в&nbsp;выгрузке около 40% обычных значений.</li>
+        </ul>
+        <p>Тренд опасен для&nbsp;корреляций: два ряда, которые просто растут, дают высокое r без&nbsp;всякой связи, как&nbsp;в&nbsp;6.5. Поэтому ряды сравнивают по&nbsp;изменениям за&nbsp;день, а&nbsp;дыры и&nbsp;обрывы размечают до&nbsp;расчётов.</p>
+
+        <h3 class="sub-h">Проверка здравого смысла</h3>
+        <p><span class="term" tabindex="0" data-g="sanity">Проверка здравого смысла</span> — сверка с&nbsp;тем, что известно без&nbsp;этих данных. Последний из&nbsp;вопросов, которые Хафф советует задавать любой цифре, — «есть&nbsp;ли в&nbsp;этом смысл?»<a class="ref" href="#src-6" data-ref="src-6">6</a> На&nbsp;учебных выгрузках он даёт три проверки.</p>
+        <ul>
+          <li>Календарь: в&nbsp;I квартале 2026 года 90 дней, в&nbsp;файле 86 строк.</li>
+          <li>Арифметика: заказов больше, чем визитов, нет ни&nbsp;у&nbsp;кого, а&nbsp;траты без&nbsp;заказов — одна строка, 1&nbsp;000&nbsp;₽.</li>
+          <li>Второй источник: траты клиентов за&nbsp;квартал — 92,9&nbsp;млн&nbsp;₽, выручка по&nbsp;дням — 39,1&nbsp;млн&nbsp;₽.</li>
+        </ul>
+        <p>Учебные файлы сгенерированы независимо и&nbsp;не&nbsp;обязаны сходиться. В&nbsp;живых данных расхождение в&nbsp;2,4 раза — первый вопрос владельцу: что входит в&nbsp;каждое число.</p>
+
+        <h3 class="sub-h">Дневник и&nbsp;ноутбук: вопрос → график → вывод</h3>
+        <p>В&nbsp;R for Data Science вопросы названы главным инструментом разведки: ответ на&nbsp;один подсказывает следующий<a class="ref" href="#src-2" data-ref="src-2">2</a>. Ноутбук удобно строить тем&nbsp;же ритмом: заголовок с&nbsp;вопросом, ячейка с&nbsp;графиком, строка вывода, ссылка на&nbsp;следующий вопрос.</p>
+        <p>Отдельно ведут дневник: когда, что сделал, что увидел, что дальше. Он нужен, чтобы через неделю не&nbsp;проверять возраст заново и&nbsp;помнить, сколько пар уже перебрано: от&nbsp;этого числа зависит, чему верить. Итог часа работы — список гипотез: что видно, на&nbsp;каком графике и&nbsp;как это проверить.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: час до&nbsp;списка гипотез</h2>
+        <p>Руководитель продукта прислал две учебные выгрузки за&nbsp;I квартал: клиентов из&nbsp;CRM, уже очищенных на&nbsp;7.1 и&nbsp;7.2, и&nbsp;дневные метрики. Вопрос: «Что в&nbsp;данных интересного и&nbsp;что проверять дальше?»</p>
+        <p>Ответ — список гипотез с&nbsp;графиком-основанием и&nbsp;способом проверки плюс дневник: что уже просмотрено и&nbsp;отброшено.</p>
+      </section>
+
+      <section data-sec="story" data-title="Найди историю">
+        <h2 id="story"><span class="sn">03</span>Найди историю: три связи среди 21 пары</h2>
+        <p>В&nbsp;интерактиве десять переменных из&nbsp;двух учебных таблиц темы: шесть про&nbsp;клиентов и&nbsp;четыре про&nbsp;дни. Пары строятся только внутри таблицы, у&nbsp;клиента и&nbsp;дня разная <span class="term" tabindex="0" data-g="unit">единица наблюдения</span>. Остаётся 21 пара, и&nbsp;в&nbsp;них заложены три истории: линейная связь, различие по&nbsp;группам и&nbsp;ложная связь через время.</p>
+        <p>Правду знает генератор данных <code>gen.py</code>. История найдена, если пара отправлена в&nbsp;гипотезы с&nbsp;подходящим графиком, а&nbsp;ложная — помечена «общий тренд» на&nbsp;ряде по&nbsp;дням. <span class="term" tabindex="0" data-g="falsealarm">Ложная тревога</span> — в&nbsp;гипотезы ушла пара, где связи нет или её создаёт третья сила: время, хвост, канал. Настоящая связь с&nbsp;вердиктом «нет» — пропуск. Числа посчитаны pandas по&nbsp;всем строкам, облако показывает 300 случайных клиентов.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="story"></div>
+
+        <h3 class="sub-h">Что ушло в&nbsp;список гипотез</h3>
+        <div class="tbl rv-hyp">
+          <table>
+            <thead><tr><th>Гипотеза</th><th>Основание</th><th>Как проверить</th></tr></thead>
+            <tbody>
+              <tr><td data-l="Гипотеза">Канал влияет на&nbsp;средний чек</td><td data-l="Основание">ящики: 2&nbsp;607, 3&nbsp;058 и&nbsp;3&nbsp;475&nbsp;₽ в&nbsp;медиане</td><td data-l="Как проверить">данные II квартала; что продаёт каждый канал</td></tr>
+              <tr><td data-l="Гипотеза">Уровень лояльности поднимает визиты</td><td data-l="Основание">ящики: медианы от&nbsp;7 до&nbsp;11</td><td data-l="Как проверить">визиты до&nbsp;и&nbsp;после повышения уровня</td></tr>
+              <tr><td data-l="Гипотеза">Заказ — каждый четвёртый визит</td><td data-l="Основание">рассеяние, r = 0,56</td><td data-l="Как проверить">та&nbsp;же доля по&nbsp;месяцам и&nbsp;каналам</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Установки и&nbsp;обращения в&nbsp;список не&nbsp;попали: их&nbsp;r = 0,82 объясняет общий рост, и&nbsp;это запись в&nbsp;дневник, а&nbsp;не&nbsp;гипотеза.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: перебор, агрегация и&nbsp;хвост ряда</h2>
+        <div class="callout"><p><b>Перебор всех пар находит связи в&nbsp;шуме.</b> Это <span class="term" tabindex="0" data-g="multiple">множественные сравнения</span> из&nbsp;6.3: при&nbsp;пороге p &lt; 0,05 каждая двадцатая пара без&nbsp;связи выглядит «значимой». Двадцать метрик из&nbsp;чистого шума за&nbsp;86 дней дают 190 пар и&nbsp;9 таких находок, а&nbsp;на&nbsp;следующих 86 днях не&nbsp;повторяется ни&nbsp;одна. Автоотчёты вроде fg-data-profiling, бывшего ydata-profiling, показывают корреляции всех пар сразу<a class="ref" href="#src-5" data-ref="src-5">5</a>, поэтому в&nbsp;дневник пишут, сколько пар просмотрено. Как с&nbsp;этим жить в&nbsp;A/B-тестах — на&nbsp;странице 11.4.</p></div>
+        <div class="block wide" data-code="noise"></div>
+        <div class="callout"><p><b>Агрегация меняет картину.</b> В&nbsp;6.5 средние по&nbsp;группам завышали корреляцию, а&nbsp;у&nbsp;рядов <span class="term" tabindex="0" data-g="aggregation">агрегация</span> подводит из-за пустых дней. По&nbsp;сумме за&nbsp;месяц февраль на&nbsp;17% хуже января, хотя в&nbsp;среднем за&nbsp;день на&nbsp;7% лучше: в&nbsp;феврале 28 дней, и&nbsp;4 из&nbsp;них потеряны. Неделя с&nbsp;разрывом по&nbsp;сумме вдвое ниже соседних. Перед суммированием проверяют, сколько дней в&nbsp;каждом периоде.</p></div>
+        <div class="block wide" data-code="agg"></div>
+        <div class="callout"><p><b>Последний день или месяц неполон.</b> Выгрузку сняли днём 31 марта, и&nbsp;за&nbsp;этот день в&nbsp;ней 42% выручки обычного вторника. Наивное сравнение с&nbsp;понедельником показывает падение на&nbsp;56%, а&nbsp;корреляция изменений установок и&nbsp;обращений из-за одной строки растёт с&nbsp;0,17 до&nbsp;0,37. Незакрытый период помечают или отрезают, а&nbsp;месяц к&nbsp;месяцу сравнивают по&nbsp;одинаковому числу дней.</p></div>
+        <div class="block wide" data-code="tail"></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: разведка порождает гипотезы, но&nbsp;не&nbsp;проверяет их</h2>
+        <p>Тьюки называл разведочный анализ детективной работой и&nbsp;отделял его от&nbsp;<span class="term" tabindex="0" data-g="confirm">подтверждающего</span>, где гипотезу проверяют по&nbsp;заранее заданным правилам<a class="ref" href="#src-1" data-ref="src-1">1</a>. Находку EDA выбрали из&nbsp;многих пар именно потому, что&nbsp;она выглядела сильной, и&nbsp;её&nbsp;p на&nbsp;тех&nbsp;же данных ничего не&nbsp;доказывает: это множественные сравнения из&nbsp;нюансов.</p>
+        <p>Проверяют двумя способами. Первый — <span class="term" tabindex="0" data-g="holdout">отложенные данные</span>: часть клиентов или следующий квартал не&nbsp;смотрят до&nbsp;конца разведки и&nbsp;проверяют на&nbsp;них только записанные гипотезы. Второй — эксперимент, если нужна причина: разница в&nbsp;чеке может идти не&nbsp;от&nbsp;канала, а&nbsp;от&nbsp;того, кого каждый канал привлекает (6.5), и&nbsp;ответит на&nbsp;это A/B-тест из&nbsp;темы 11.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: пары, сегменты, ряд и&nbsp;шаблон ноутбука</h2>
+        <p>Код запущен в&nbsp;Python 3.13 с&nbsp;pandas 3.0.5, NumPy 2.5.3, SciPy 1.18.1 и&nbsp;seaborn 0.13.2 на&nbsp;учебных <code>clients_export.csv</code> и&nbsp;<code>daily_metrics.csv</code>, вывод вставлен без&nbsp;правок. Блоки идут подряд, как ячейки одного ноутбука: первый чистит выгрузку по&nbsp;7.1 и&nbsp;сохраняет её для&nbsp;остальных.</p>
+        <div class="block wide" data-code="pairplot"></div>
+        <figure class="rv-fig rv-hmf" id="rv-hm"></figure>
+        <p>Второй блок сравнивает сегменты. Средние выше медиан на&nbsp;треть и&nbsp;больше, их&nbsp;тянут оптовики из&nbsp;7.2, поэтому каналы сравнивают по&nbsp;медианам, а&nbsp;сводная таблица проверяет порядок внутри каждого уровня.</p>
+        <div class="block wide" data-code="segments"></div>
+        <p>Третий размечает ряд: сверяет даты с&nbsp;календарём через <code>reindex</code>, ставит флаги разрыва и&nbsp;неполного дня и&nbsp;считает профиль недели только по&nbsp;полным дням<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+        <div class="block wide" data-code="series"></div>
+        <figure class="rv-fig" id="rv-ts"></figure>
+        <p>Четвёртый — шаблон ноутбука в&nbsp;формате ячеек <code># %%</code>, который открывают VS Code и&nbsp;Jupytext: вопрос, график, вывод, следующий вопрос, в&nbsp;конце дневник и&nbsp;список гипотез. Готовый файл — в&nbsp;материалах: <code>eda_template.ipynb</code>.</p>
+        <div class="block wide" data-code="template"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Разведочный анализ» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Tukey J.&nbsp;W. Exploratory Data Analysis. Addison-Wesley, 1977. Книга, с&nbsp;которой началось слово EDA: разведка как детективная работа и&nbsp;её&nbsp;отличие от&nbsp;подтверждающего анализа.</li>
+          <li id="src-2">Wickham H., Çetinkaya-Rundel M., Grolemund G. <a href="https://r4ds.hadley.nz/EDA.html" target="_blank" rel="noopener">R for Data Science</a>, 2nd ed., 2023, глава Exploratory data analysis. Вопросы как инструмент разведки и&nbsp;графики для&nbsp;пар разных типов; код на&nbsp;R, идеи универсальны.</li>
+          <li id="src-3">pandas. <a href="https://pandas.pydata.org/docs/user_guide/basics.html" target="_blank" rel="noopener">Essential basic functionality</a>, <a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.corr.html" target="_blank" rel="noopener">DataFrame.corr</a> и&nbsp;<a href="https://pandas.pydata.org/docs/user_guide/timeseries.html" target="_blank" rel="noopener">Time series</a>. Попарное исключение пропусков в&nbsp;corr, reindex, asfreq и&nbsp;resample.</li>
+          <li id="src-4">seaborn. <a href="https://seaborn.pydata.org/tutorial.html" target="_blank" rel="noopener">User guide and tutorial</a> и&nbsp;<a href="https://seaborn.pydata.org/generated/seaborn.pairplot.html" target="_blank" rel="noopener">seaborn.pairplot</a>. Матрица парных графиков, параметры hue и&nbsp;corner, категориальные графики.</li>
+          <li id="src-5"><a href="https://docs.profiling.ydata.ai/" target="_blank" rel="noopener">fg-data-profiling</a> (прежнее имя — ydata-profiling). Автоматический отчёт с&nbsp;корреляциями всех пар — черновик, а&nbsp;не&nbsp;ответ.</li>
+          <li id="src-6">Huff D. How to Lie with Statistics. W. W. Norton, 1954. Глава How to Talk Back to a Statistic: пять вопросов к&nbsp;любой цифре, последний — «есть&nbsp;ли в&nbsp;этом смысл».</li>
+        </ol>
+      </section>

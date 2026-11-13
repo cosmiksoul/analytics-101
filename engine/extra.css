@@ -1,0 +1,58 @@
+/* ===== Дополнения движка к стилям прототипа ===== */
+/* Сцена из HTML-элементов вместо SVG: та же тёмная сцена, но содержимое — разметка страницы */
+.sc-html { position: absolute; inset: 0; padding: 74px 22px 64px; display: flex; align-items: center; justify-content: center; min-width: 0; }
+.sc-html > * { min-width: 0; }
+@container (max-width: 760px) { .sc-html { padding: 60px 10px 58px; } }
+.sc-foot .sc-leg i.sq { border-radius: 3px; }
+
+/* Код: одна колонка вывода */
+.out.one { grid-template-columns: 1fr; }
+.out .olbl { display: block; padding: 8px 16px 0; font: 500 10.5px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.out pre { min-height: 0; }
+pre.code .dec { color: var(--c5); }
+.code-note { padding: 9px 16px; border-top: 1px solid var(--line); font: 12.5px/1.45 var(--ui); color: var(--muted); }
+
+/* Материалы */
+.matlist { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 6px 18px 12px; margin: 8px auto 18px; }
+.matlist .files li { grid-template-columns: minmax(0, 1fr) auto; }
+.matlist .soon { font: 500 11px/1 var(--mono); color: var(--muted); border: 1px solid var(--line-2); border-radius: 6px; padding: 4px 7px; white-space: nowrap; }
+.matlist .acts { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); margin-top: 4px; }
+
+/* Кнопки внутри интерактивов */
+.wbtns { display: flex; flex-wrap: wrap; gap: 8px; }
+.kbd { font: 500 11.5px/1 var(--mono); border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 5px; padding: 2px 5px; background: var(--surface); }
+
+/* Код в строке текста */
+.article p code, .article li code, .callout code, .tbl code { font: 500 .84em/1 var(--mono); background: var(--sunk); border-radius: 4px; padding: 2px 5px; white-space: nowrap; }
+
+/* Моноширинный шрифт без лигатур: == и -> остаются двумя знаками */
+pre, code, .mono, .ow-code, .nb-code, .out pre, pre.code { font-variant-ligatures: none !important; }
+/* На узком экране код в строке переносится, а не распирает колонку */
+@media (max-width: 640px) { .article p code, .article li code, .callout code, .tbl code { white-space: normal; overflow-wrap: anywhere; } }
+/* соседние сноски не сливаются в одно число; моноширинный текст сцен и интерактивов без лигатур */
+.ref-sep { font: 500 12px/1 var(--mono); vertical-align: super; color: var(--muted); margin: 0 1px; }
+.scene *, .block * { font-variant-ligatures: none !important; }
+/* греческие буквы и индексы в заголовках, которые переводятся в верхний регистр */
+.nocase { text-transform: none !important; }
+/* длинная легенда сцены переносится, а не выталкивает кнопки скорости за край */
+.sc-leg { flex-wrap: wrap; row-gap: 6px; min-width: 0; }
+.sc-foot > :last-child { flex-shrink: 0; }
+
+/* ===== Аналитика 101: навигация по курсу, меню ИИ, ссылки на материалы ===== */
+.blocks a { font-size: 12.5px; border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 9px; color: var(--muted); text-decoration: none; }
+.blocks a:hover { border-color: var(--accent); color: var(--accent); }
+.toc > li > a:hover { background: var(--sunk); color: var(--ink); }
+.toc ul li a { color: inherit; text-decoration: none; }
+.toc ul li a:hover { color: var(--accent); }
+.toc ul li.done > a::after, .toc ul li.done.here::after { content: "✓"; margin-left: 6px; color: var(--good); font-weight: 600; }
+.toc-all { display: inline-block; margin: 12px 8px 0; font-size: 13px; font-weight: 600; text-decoration: none; }
+.toc-all::after { content: " →"; }
+.toc-all:hover { text-decoration: underline; }
+a.mi { color: var(--ink); text-decoration: none; }
+.mi.off { cursor: default; opacity: .62; }
+.mi.off:hover { background: transparent; }
+.mi b em { font: 500 10.5px/1 var(--mono); font-style: normal; letter-spacing: .04em; margin-left: 8px; color: var(--muted); }
+.files .dl { font: 500 12px/1.2 var(--mono); white-space: nowrap; text-decoration: none; }
+.files .dl:hover { text-decoration: underline; }
+.mat-all { margin: 4px 0 12px; }
+.nlm-open a { font-weight: 600; }

@@ -1,0 +1,104 @@
+/* ===== Сцена: фигура Plotly на тёмной сцене, потом письмо ===== */
+.scene .d83-sc { position: relative; width: 100%; height: 100%; align-self: stretch; }
+.scene .d83-svg { position: absolute; inset: 0; display: block; overflow: visible; }
+.scene .d83-svg text { font-family: "Open Sans", Verdana, Arial, sans-serif; }
+.scene .d83-svg text.d83-mono { font-family: var(--mono); }
+.scene .d83-svg text.d83-pre { white-space: pre; }
+.scene .d83-calls { position: absolute; inset: 0; pointer-events: none; }
+.scene .d83-call { position: absolute; background: #141b2b; border: 1px solid var(--s-acc); color: var(--s-ink); font: 500 12.5px/1.4 var(--ui); padding: 7px 10px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .35); }
+.scene .d83-call b { color: var(--s-acc); font-weight: 600; }
+.scene .d83-call.bad { border-color: #f2756a; }
+@container (max-width: 860px) { .scene .sc-stage { height: clamp(470px, 80cqw, 540px); } }
+@container (max-width: 1000px) { .scene .sc-info { display: none; } }
+@container (max-width: 560px) {
+  .scene .sc-html { padding-top: 64px; }
+  .scene .d83-call { font-size: 11.5px; padding: 5px 8px; }
+}
+
+/* ===== Таблица px / go и рисунок под кодом ===== */
+.d83-tbl td:first-child { white-space: normal; min-width: 150px; }
+.d83-tbl code { white-space: normal !important; overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+  .d83-tbl table { font-size: 13px; table-layout: fixed; }
+  .d83-tbl th { letter-spacing: .02em; font-size: 10px; overflow-wrap: anywhere; }
+  .d83-tbl td:first-child { min-width: 0; width: 32%; }
+  .d83-tbl td { padding-right: 8px; }
+}
+.d83-fig { margin: 4px auto 26px; }
+.d83-fig img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.d83-fig figcaption { font: 12.5px/1.5 var(--ui); color: var(--muted); margin-top: 8px; }
+.d83-fig figcaption b { color: var(--ink); font-weight: 600; }
+
+/* ===== Интерактив «Статика или интерактив» ===== */
+.article .block .vs-do { padding: 10px 16px 0; }
+.vs-tabs { border-bottom: 0; padding-bottom: 6px; }
+.vs-tabs button { display: inline-flex; align-items: center; gap: 6px; }
+.vs-mk { font: 600 11px/1 var(--mono); color: var(--good); min-width: 0; }
+.vs-mk:empty { display: none; }
+.vs-tabs button[aria-pressed="true"] .vs-mk { color: var(--paper); }
+.article .block .vs-sit { margin: 0; padding: 4px 16px 12px; color: var(--ink-2); border-bottom: 1px solid var(--line); }
+.vs-duo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.vs-pane { min-width: 0; padding: 12px 14px 12px; display: flex; flex-direction: column; gap: 6px; }
+.vs-pane + .vs-pane { border-left: 1px solid var(--line); }
+.vs-ph { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font: 13px/1.3 var(--ui); }
+.vs-ph b { font-weight: 650; }
+.vs-ph span { font: 500 11.5px/1.3 var(--mono); color: var(--muted); }
+.vs-badge { font: 500 11.5px/1.2 var(--ui); font-style: normal; border-radius: 999px; padding: 3px 8px; margin-left: auto; }
+.vs-badge.vs-good { background: var(--good-soft); color: var(--good); }
+.vs-badge.vs-ok { background: var(--warn-soft); color: var(--warn); }
+.vs-badge.vs-bad { background: var(--bad-soft); color: var(--bad); }
+.article .block .vs-ttl { font: 600 13.5px/1.35 var(--ui); color: var(--ink); margin: 2px 0 0; }
+.vs-lgd { display: flex; flex-wrap: wrap; gap: 4px; }
+.vs-li { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 3px 9px; font: 12.5px/1.2 var(--ui); cursor: pointer; user-select: none; }
+.vs-li:hover { border-color: var(--accent); }
+.vs-li[aria-pressed="false"] { opacity: .45; text-decoration: line-through; }
+.vs-sw { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.vs-plot { position: relative; min-width: 0; }
+.vs-svg { display: block; width: 100%; height: auto; touch-action: pan-y; user-select: none; }
+#vs-lsvg { cursor: crosshair; }
+.vs-svg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.vs-svg text { font-family: var(--ui); }
+.vs-bg { fill: var(--sunk); }
+.vs-grid { stroke: var(--surface); stroke-width: 1; }
+.vs-tk { font-size: 10.5px; fill: var(--muted); }
+.vs-ln { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.vs-s0 { stroke: var(--c1); background: var(--c1); } .vs-s1 { stroke: var(--c4); background: var(--c4); } .vs-s2 { stroke: var(--c3); background: var(--c3); } .vs-s3 { stroke: var(--c5); background: var(--c5); } .vs-s4 { stroke: var(--c2); background: var(--c2); }
+.vs-f0 { fill: var(--c1); } .vs-f1 { fill: var(--c4); } .vs-f2 { fill: var(--c3); } .vs-f3 { fill: var(--c5); } .vs-f4 { fill: var(--c2); }
+.vs-dot { stroke: var(--surface); stroke-width: 1.5; }
+.vs-shade { fill: var(--ink); fill-opacity: .12; }
+.vs-box { fill: none; stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 3 3; }
+.vs-tip { position: absolute; pointer-events: none; font: 12px/1.4 var(--ui); color: var(--surface); padding: 5px 8px; border-radius: 4px; white-space: nowrap; box-shadow: 0 4px 14px rgba(0, 0, 0, .18); }
+.vs-tip b { font-weight: 700; }
+.vs-t0 { background: var(--c1); } .vs-t1 { background: var(--c4); } .vs-t2 { background: var(--c3); } .vs-t3 { background: var(--c5); } .vs-t4 { background: var(--c2); }
+.vs-dl { font-size: 11px; font-weight: 600; }
+@media (max-width: 640px) { .vs-dl { font-size: 10px; } }
+.vs-ann { stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.vs-annt { font-size: 10.5px; fill: var(--ink-2); }
+.vs-vl { font-size: 11px; font-weight: 700; fill: var(--c3); }
+.vs-still .vs-plot { cursor: not-allowed; }
+.vs-nope { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); background: var(--ink); color: var(--paper); font: 500 12.5px/1.35 var(--ui); padding: 7px 11px; border-radius: 8px; pointer-events: none; text-align: center; max-width: 86%; }
+.vs-zoom { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.vs-zh { font: 12px/1.3 var(--ui); color: var(--muted); }
+.article .block .vs-cap { font: 12px/1.4 var(--ui); color: var(--muted); margin: 0; }
+.vs-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.vs-q { font: 600 14px/1.35 var(--ui); }
+.vs-pick .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.vs-verd { padding: 0 16px 14px; min-height: 64px; }
+.article .block .vs-verd p { font: 14px/1.55 var(--ui); color: var(--ink-2); padding: 10px 12px; border-radius: 10px; background: var(--sunk); }
+.article .block .vs-verd.vs-good p { background: var(--good-soft); }
+.article .block .vs-verd.vs-ok p { background: var(--warn-soft); }
+.article .block .vs-verd.vs-bad p { background: var(--bad-soft); }
+.vs-verd p b { color: var(--ink); }
+.vs-good p b { color: var(--good); } .vs-ok p b { color: var(--warn); } .vs-bad p b { color: var(--bad); }
+.vs-best { color: var(--ink); font-weight: 500; }
+@media (max-width: 760px) {
+  .vs-duo { grid-template-columns: 1fr; }
+  .vs-pane + .vs-pane { border-left: 0; border-top: 1px solid var(--line); }
+}
+@media (max-width: 640px) {
+  .vs-tabs button { padding: 5px 10px; font-size: 12.5px; }
+  .vs-pane { padding: 10px 12px; }
+  .vs-zh { display: none; }
+  .vs-pick { padding: 12px; }
+  .vs-verd { padding: 0 12px 12px; }
+}

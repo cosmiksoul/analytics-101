@@ -1,0 +1,41 @@
+/* ===== Сцена: шарик на карте ошибки ===== */
+.scene .dg-sc { position: relative; flex: 1; align-self: stretch; min-width: 0; min-height: 0; }
+.scene .dg-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* на телефоне сцене нужно место под карту и выноски */
+@container (max-width: 560px) { .sc-stage { height: 450px; } }
+
+/* ===== Формулы: на узком экране длинная формула переносится, а не прокручивается ===== */
+@media (max-width: 640px) { .formula .f { white-space: normal; } }
+
+/* ===== Интерактив «Спуск по холму» ===== */
+.dh-do { padding: 10px 16px 0; margin: 0 !important; }
+.dh-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 10px 16px 12px; }
+.dh-grp { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.dh-lb { font: 500 12px/1 var(--mono); color: var(--muted); }
+.dh-eta input { width: 160px; max-width: 46vw; accent-color: var(--accent); }
+.dh-eta b { font: 600 14px/1 var(--mono); min-width: 46px; color: var(--ink); }
+.dh-stage { display: grid; grid-template-columns: minmax(0, 1fr) 300px; border-top: 1px solid var(--line); }
+.dh-map { position: relative; aspect-ratio: 5 / 3; min-width: 0; }
+.dh-map canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: manipulation; }
+.dh-side { border-left: 1px solid var(--line); padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.article .block .dh-cap { font: 600 14px/1.35 var(--ui); margin: 0; color: var(--ink); min-height: 2.7em; }
+.dh-chart { position: relative; height: 170px; }
+.dh-chart canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.article .block .dh-tasks { margin: 4px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+.article .block .dh-tasks li { position: relative; margin: 0; padding-left: 23px; font: 13px/1.4 var(--ui); color: var(--ink-2); }
+.dh-tasks li::before { content: ""; position: absolute; left: 0; top: 1px; width: 15px; height: 15px; box-sizing: border-box; border: 1.5px solid var(--line-2); border-radius: 4px; }
+.article .block .dh-tasks li.dh-ok { color: var(--ink); }
+.dh-tasks li.dh-ok::before { content: "✓"; border-color: var(--good); background: var(--good-soft); color: var(--good); font: 700 11px/12px var(--ui); text-align: center; }
+.article .block .dh-verdict { margin: 0; padding: 10px 16px; border-top: 1px solid var(--line); font: 14px/1.5 var(--ui); color: var(--ink-2); min-height: 3.2em; }
+@media (max-width: 860px) {
+  .dh-stage { grid-template-columns: 1fr; }
+  .dh-side { border-left: 0; border-top: 1px solid var(--line); }
+  .dh-chart { height: 150px; }
+}
+@media (max-width: 420px) {
+  .dh-ctl { gap: 10px 12px; padding: 10px 12px 12px; }
+  .dh-eta input { width: 150px; }
+}
+
+/* подписи легенды сцены не переносятся */
+.scene .sc-leg span { white-space: nowrap; }

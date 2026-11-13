@@ -1,0 +1,5 @@
+{
+  "title": "Оконные функции",
+  "description": "Страница 3.5 курса «Аналитика 101»: OVER, PARTITION BY, ORDER BY и рамка ROWS или RANGE, ранги, LAG и LEAD, нарастающие итоги и скользящие средние на учебной базе магазина в PostgreSQL 16.",
+  "file": "da-3-5-window-functions"
+}

@@ -1,0 +1,142 @@
+/* ===== Сцена: один столбец четырьмя способами ===== */
+.scene .d72-sc { position: relative; flex: 1; align-self: stretch; min-width: 0; min-height: 0; }
+.scene .d72-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
+.scene .d72-cv text { font-family: var(--mono); }
+.scene .d72-ax { stroke: #3a4766; stroke-width: 1; }
+.scene .d72-tl { stroke: #3a4766; }
+.scene .d72-tk { fill: #8d95aa; font-size: 11px; }
+.scene .d72-brk { fill: #8d95aa; font-size: 12px; }
+.scene .d72-bar { fill: #6fa2ea; }
+.scene .d72-bar.z { fill: #e3c04d; }
+.scene .d72-bar.p { fill: #f06ba5; }
+.scene .d72-bar.o { fill: #36b8a6; }
+.scene .d72-bar.e { fill: #f2756a; }
+.scene .d72-bar.dim { opacity: .32; }
+.scene .d72-dots { stroke: #8fb4ee; stroke-width: 3.2; stroke-linecap: round; opacity: .75; fill: none; }
+.scene .d72-errdot { fill: #f2756a; }
+.scene .d72-wh { stroke: #b7c0d2; stroke-width: 1.6; }
+.scene .d72-box { fill: rgba(111, 162, 234, .2); stroke: #b7c0d2; stroke-width: 1.6; }
+.scene .d72-med { stroke: #e8ecf4; stroke-width: 2.6; }
+.scene .d72-big { fill: #e8ecf4; font-weight: 600; letter-spacing: -.02em; }
+.scene .d72-sm { fill: #8d95aa; font-size: 12px; }
+.scene .d72-mid { fill: #6fa2ea; font-weight: 600; }
+.scene .d72-row { stroke: #1c2436; }
+.scene .d72-key { fill: #b7c0d2; font-size: 13.5px; }
+.scene .d72-val { fill: #e8ecf4; font-size: 14px; font-weight: 600; }
+.scene .d72-val.bad { fill: #f2756a; }
+.scene .d72-val.good { fill: #45c48f; }
+.scene .d72-cl line { stroke: #36b8a6; stroke-width: 1.2; }
+.scene .d72-cl circle { fill: #36b8a6; }
+.scene .d72-cl rect { fill: #141b2b; stroke: #36b8a6; stroke-width: 1; }
+.scene .d72-cl text { fill: #e8ecf4; font-family: var(--ui); font-weight: 500; }
+.scene .d72-cl.bad line, .scene .d72-cl.bad rect { stroke: #f2756a; }
+.scene .d72-cl.bad circle { fill: #f2756a; }
+.scene .d72-cl.warn line, .scene .d72-cl.warn rect { stroke: #e3c04d; }
+.scene .d72-cl.warn circle { fill: #e3c04d; }
+.scene .d72-cl.pink line, .scene .d72-cl.pink rect { stroke: #f06ba5; }
+.scene .d72-cl.pink circle { fill: #f06ba5; }
+.scene .d72-ib { fill: rgba(14, 19, 32, .94); stroke: #2a3550; }
+.scene .d72-iz { fill: rgba(54, 184, 166, .05); }
+.scene .d72-iz.on { fill: rgba(54, 184, 166, .16); }
+.scene .d72-it { fill: #b7c0d2; font-size: 10.5px; }
+.scene .d72-itk { fill: #6f7a91; font-size: 9.5px; }
+.scene .sc-leg span { white-space: nowrap; }
+.scene .d72-dt { fill: #e8ecf4; font-family: var(--ui); font-size: 11.5px; }
+.scene .d72-dd.warn { fill: #e3c04d; }
+.scene .d72-dd.pink { fill: #f06ba5; }
+.scene .d72-dd.acc { fill: #36b8a6; }
+.scene .d72-dd.bad { fill: #f2756a; }
+@container (max-width: 1100px) { .scene .sc-info { display: none; } }
+@container (max-width: 560px) {
+  .sc-stage { height: 470px; }
+  .scene .sc-html { padding-top: 70px; }
+  .scene .hb small { display: block; margin: 2px 0 0; font-size: 9.5px; }
+  .scene .hb b { font-size: 16px; }
+}
+
+/* ===== Таблицы и рисунки статьи ===== */
+.d72-t td, .d72-t th { font-variant-numeric: tabular-nums; }
+.d72-t td:first-child { white-space: normal; min-width: 8em; }
+@media (max-width: 640px) {
+  .formula .f { white-space: normal; }
+  .d72-t table { font-size: 13.5px; }
+  .d72-t td:first-child { min-width: 6.5em; }
+}
+.d72-fig { margin: 14px auto 26px; }
+.d72-fgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.d72-fgrid > div, .d72-hgrid > svg { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px; min-width: 0; }
+.d72-fsvg, .d72-hsvg { display: block; width: 100%; height: auto; max-width: 440px; margin: 0 auto; }
+.d72-hgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.d72-fig figcaption { font: 13.5px/1.5 var(--ui); color: var(--muted); margin-top: 10px; }
+.d72-fig figcaption b { color: var(--ink); font-weight: 600; }
+.d72-fig svg text { font-family: var(--mono); }
+.d72-ft { font: 600 12.5px var(--ui); fill: var(--ink); }
+.d72-fs { font-size: 10.5px; fill: var(--muted); }
+.d72-fa { font-size: 10px; fill: var(--muted); }
+.d72-fl { font-size: 10.5px; fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.d72-fl.d72-fbad { fill: var(--bad); }
+.d72-fg { stroke: var(--line); stroke-width: 1; }
+.d72-fb { stroke: var(--line-2); stroke-width: 1; }
+.d72-fk { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; }
+.d72-fneg { fill: var(--bad); opacity: .28; }
+.d72-fm { stroke: var(--c4); stroke-width: 1.4; stroke-dasharray: 4 3; }
+.d72-fm.d72-fbadl { stroke: var(--bad); stroke-width: 1; stroke-dasharray: none; }
+.d72-fe { fill: none; stroke: var(--c1); stroke-width: 2; stroke-linejoin: round; }
+.d72-fdot { fill: var(--c4); }
+.d72-hb { fill: var(--c1); }
+@media (max-width: 860px) { .d72-hgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) {
+  .d72-fgrid { grid-template-columns: 1fr; }
+  .d72-hgrid { grid-template-columns: 1fr; }
+  .d72-hsvg { max-width: 330px; }
+}
+
+/* ===== Интерактив «Ширина корзины» ===== */
+.bw-do { padding: 10px 16px 0; margin: 0 !important; }
+.bw-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px; padding: 10px 16px 12px; }
+.bw-grp { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.bw-lb { font: 500 12px/1 var(--mono); color: var(--muted); }
+.bw-range input { width: 200px; max-width: 52vw; }
+.bw-range b { min-width: 2.2em; color: var(--ink); }
+.bw-grp .btn b { font-weight: 600; }
+.bw-stage { border-top: 1px solid var(--line); }
+.bw-main { min-width: 0; padding: 8px 4px 6px; }
+.bw-plot svg, .bw-tail svg, .bw-box svg { display: block; max-width: 100%; height: auto; }
+.bw-tail { border-top: 1px dashed var(--line); margin-top: 2px; padding-top: 4px; }
+.bw-stage svg text { font-family: var(--mono); }
+.bw-gl { stroke: var(--line); stroke-width: 1; }
+.bw-ax { stroke: var(--line-2); stroke-width: 1; }
+.bw-tk { font-size: 10.5px; fill: var(--muted); }
+.bw-b { fill: var(--c1); }
+.bw-b.z { fill: var(--c6); }
+.bw-b.p { fill: var(--c4); }
+.bw-lab { font-size: 11px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.bw-lab.z { fill: var(--c6); }
+.bw-lab.p { fill: var(--c4); }
+.bw-zone { fill: var(--sunk); }
+.bw-zone.on { fill: var(--accent-soft); }
+.bw-zl { font-size: 10.5px; fill: var(--muted); }
+.bw-zl.on { fill: var(--accent); font-weight: 600; }
+.bw-tt { font-size: 11px; fill: var(--ink-2); }
+.bw-dots { stroke: var(--c1); stroke-width: 2.6; stroke-linecap: round; opacity: .55; fill: none; }
+.bw-wh { stroke: var(--ink-2); stroke-width: 1.4; }
+.bw-bx { fill: var(--accent-soft); stroke: var(--ink-2); stroke-width: 1.4; }
+.bw-md { stroke: var(--ink); stroke-width: 2.4; }
+.article .block .bw-five { font: 12px/1.45 var(--mono); color: var(--ink-2); margin: 2px 0 0; }
+.article .block .bw-see, .article .block .bw-tasks { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+.article .block .bw-see li, .article .block .bw-tasks li { font: 13px/1.4 var(--ui); color: var(--ink-2); display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 4px; margin: 0; }
+.bw-see li b, .bw-tasks li b { font: 600 12px/1.4 var(--mono); }
+.bw-see li.y b { color: var(--good); }
+.bw-see li.n b { color: var(--bad); }
+.bw-see li.na b { color: var(--muted); }
+.article .block .bw-tasks li.on { color: var(--ink); }
+.bw-tasks li.on b { color: var(--good); }
+.bw-stage .narr { gap: 8px; }
+.bw-stage .narr-text { font-size: 13.5px; flex: 0 0 auto; }
+@media (max-width: 420px) {
+  .bw-ctl { gap: 10px 12px; padding: 10px 12px 12px; }
+  .bw-grp .btn.small { padding: 5px 8px; font-size: 12px; }
+}
+
+/* ===== Вывод кода: таблицы не переносятся, а прокручиваются ===== */
+.block[data-code] .out pre { white-space: pre; overflow-x: auto; }

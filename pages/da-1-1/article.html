@@ -1,0 +1,131 @@
+      <p class="eyebrow">Дата аналитика · Тема 01 · <b>Python для анализа</b></p>
+      <h1>Среда: Jupyter, Colab и&nbsp;состояние ядра</h1>
+      <p class="lead"><span class="term" tabindex="0" data-g="notebook">Ноутбук</span> — документ, в&nbsp;котором код разбит на&nbsp;ячейки, а&nbsp;результат каждой виден прямо под ней. Код хранится в&nbsp;файле, а&nbsp;результаты живут в&nbsp;памяти <span class="term" tabindex="0" data-g="kernel">ядра</span>. На&nbsp;этой странице вы&nbsp;увидите, почему ноутбук «работает у&nbsp;меня» и&nbsp;падает у&nbsp;коллеги, и&nbsp;научитесь проверять его с&nbsp;чистого листа.</p>
+      <div class="meta-row"><span class="pill">≈ 25 минут</span><span class="pill">анимация из 10 шагов</span><span class="pill">1 интерактив</span><span class="pill">3 блока кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: файл с&nbsp;кодом и&nbsp;ядро с&nbsp;памятью</h2>
+        <p>Ноутбук хранит код, а&nbsp;считает ядро — отдельный процесс Python, в&nbsp;памяти которого живут все переменные. Ядро выполняет ячейки в&nbsp;том порядке, в&nbsp;каком их&nbsp;запускали, а&nbsp;не&nbsp;в&nbsp;том, в&nbsp;каком они стоят в&nbsp;файле. Поэтому ноутбук может работать у&nbsp;автора и&nbsp;падать с&nbsp;чистого листа: часть того, что нужно для расчёта, есть только в&nbsp;памяти, а&nbsp;не&nbsp;в&nbsp;коде.</p>
+        <div class="scene" id="scene" aria-label="Анимация: как ноутбук теряет состояние после перезапуска ядра"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+        <p>Ноутбук — интерактивный документ, где код чередуется с&nbsp;пояснениями и&nbsp;результатами. Он&nbsp;собран из&nbsp;<span class="term" tabindex="0" data-g="cell">ячеек</span>. В&nbsp;кодовой ячейке лежит код, под ней — вывод: напечатанный текст, таблица, график или сообщение об&nbsp;ошибке. В&nbsp;текстовой — заголовки, пояснения и&nbsp;формулы. Код запускают по&nbsp;кусочку и&nbsp;сразу видят, что получилось, поэтому ноутбук стал рабочим столом аналитика.</p>
+        <p>На&nbsp;диске ноутбук хранится как файл с&nbsp;расширением <span class="term" tabindex="0" data-g="ipynb">.ipynb</span>. Сам файл ничего не&nbsp;вычисляет: в&nbsp;нём только текст ячеек и&nbsp;сохранённые выводы.</p>
+        <p>Вычисляет <span class="term" tabindex="0" data-g="kernel">ядро</span> — отдельный процесс Python, к&nbsp;которому подключён ноутбук. Когда вы&nbsp;запускаете ячейку, её&nbsp;текст уходит в&nbsp;ядро, ядро выполняет код и&nbsp;присылает вывод обратно. Все переменные, импортированные библиотеки и&nbsp;загруженные таблицы живут в&nbsp;памяти ядра, а&nbsp;не&nbsp;в&nbsp;файле<a class="ref" href="#src-1" data-ref="src-1">1</a>. Всё это вместе называют <span class="term" tabindex="0" data-g="state">состоянием</span> ядра.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Где</th><th>Что там лежит</th><th>Что с&nbsp;этим после перезапуска ядра</th></tr></thead>
+            <tbody>
+              <tr><td>Файл .ipynb</td><td>Код ячеек, выводы последнего запуска, номера In&nbsp;[n]</td><td>Остаётся как есть</td></tr>
+              <tr><td>Память ядра</td><td>Переменные, импортированные модули, загруженные данные</td><td>Исчезает целиком</td></tr>
+              <tr><td>Нигде</td><td>Порядок, в&nbsp;котором вы&nbsp;запускали ячейки</td><td>Его можно только угадать по&nbsp;номерам In</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub-h">Порядок выполнения — не&nbsp;порядок ячеек</h3>
+        <p>Ядру всё равно, где ячейка стоит в&nbsp;ноутбуке. Оно выполняет то, что ему прислали, и&nbsp;в&nbsp;тот момент, когда прислали. Номер в&nbsp;скобках слева от&nbsp;ячейки — <span class="term" tabindex="0" data-g="execcount">счётчик выполнения</span>: In&nbsp;[5] значит «пятая команда, которую ядро получило с&nbsp;момента запуска». Если номера сверху вниз идут не&nbsp;подряд, ячейки запускали не&nbsp;в&nbsp;том порядке, в&nbsp;каком они записаны.</p>
+        <p>Отсюда главная ловушка. Ячейка может пользоваться переменной, которую создаёт ячейка ниже. У&nbsp;автора это работает: он&nbsp;запустил нижнюю ячейку раньше. С&nbsp;чистой памятью Python дойдёт до&nbsp;неизвестного имени и&nbsp;остановится с&nbsp;ошибкой <span class="term" tabindex="0" data-g="nameerror">NameError</span>.</p>
+
+        <h3 class="sub-h">Colab — та&nbsp;же схема на&nbsp;чужой машине с&nbsp;таймером</h3>
+        <p>Google Colab — это Jupyter в&nbsp;браузере, где ядро работает не&nbsp;на&nbsp;вашем компьютере, а&nbsp;на&nbsp;<span class="term" tabindex="0" data-g="runtime">виртуальной машине</span> Google. Сам ноутбук хранится в&nbsp;Google Drive, а&nbsp;машина живёт ограниченное время. По&nbsp;данным Colab, виртуальные машины удаляются после простоя, а&nbsp;в&nbsp;бесплатной версии ноутбук работает не&nbsp;больше 12&nbsp;часов, причём лимиты меняются и&nbsp;не&nbsp;гарантированы<a class="ref" href="#src-4" data-ref="src-4">4</a>.</p>
+        <p>Вместе с&nbsp;машиной пропадает всё, что на&nbsp;ней было: переменные, установленные пакеты и&nbsp;файлы, загруженные в&nbsp;файловую панель. Поэтому в&nbsp;Colab данные держат в&nbsp;Google Drive или скачивают кодом прямо в&nbsp;ноутбуке, а&nbsp;установку пакетов оставляют отдельной ячейкой в&nbsp;начале. Тогда новая машина за&nbsp;минуту получает всё, что нужно.</p>
+
+        <h3 class="sub-h">«Перезапустить и&nbsp;выполнить всё» как проверка</h3>
+        <p>Единственный надёжный способ узнать, <span class="term" tabindex="0" data-g="reproducible">воспроизводится</span>&nbsp;ли ноутбук, — дать ему то, что получит коллега: пустую память и&nbsp;запуск сверху вниз. В&nbsp;JupyterLab это пункт меню Kernel → Restart Kernel and Run All Cells, в&nbsp;Colab похожий пункт есть в&nbsp;меню Runtime («Среда выполнения»). <span class="term" tabindex="0" data-g="restart">Перезапуск ядра</span> стирает память, а&nbsp;запуск всех ячеек подряд показывает, хватает&nbsp;ли кода в&nbsp;файле, чтобы получить результат.</p>
+        <p>Если ноутбук прошёл такую проверку, номера In идут подряд от&nbsp;1 и&nbsp;до&nbsp;конца, и&nbsp;это видно любому, кто откроет файл. Если нет — ошибка всплывёт у&nbsp;вас, а&nbsp;не&nbsp;у&nbsp;коллеги.</p>
+
+        <h3 class="sub-h">.ipynb и&nbsp;.py — когда что</h3>
+        <p>Ноутбук хорош там, где нужен разговор с&nbsp;данными: посмотреть таблицу, построить график, показать ход рассуждений вместе с&nbsp;результатами. <span class="term" tabindex="0" data-g="script">Скрипт</span> .py — обычный текстовый файл с&nbsp;кодом, который Python выполняет строка за&nbsp;строкой от&nbsp;начала до&nbsp;конца<a class="ref" href="#src-2" data-ref="src-2">2</a>. У&nbsp;скрипта нет скрытого состояния: порядок строк и&nbsp;есть порядок выполнения. Поэтому всё, что запускается регулярно или нужно другим программам, со&nbsp;временем переезжает в&nbsp;.py.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: «работает у&nbsp;меня»</h2>
+        <p>Аналитик собирает расчёт в&nbsp;ноутбуке Jupyter: кусок кода, результат, следующий кусок. Для исследования это удобно. Можно запустить одну строку, посмотреть на&nbsp;данные, поправить и&nbsp;двигаться дальше, не&nbsp;пересчитывая всё с&nbsp;начала.</p>
+        <p>Через неделю коллега открывает тот&nbsp;же файл, нажимает «Запустить всё» и&nbsp;получает ошибку во&nbsp;второй ячейке. Код за&nbsp;неделю не&nbsp;менялся. Изменилось другое: у&nbsp;автора в&nbsp;памяти лежали переменные, созданные в&nbsp;разное время и&nbsp;в&nbsp;разном порядке, а&nbsp;у&nbsp;коллеги память пустая.</p>
+        <p>Задача этой страницы — понять, где живёт состояние ноутбука, чем порядок запуска отличается от&nbsp;порядка ячеек и&nbsp;как одной командой проверить, что расчёт воспроизводится у&nbsp;любого человека.</p>
+      </section>
+
+      <section data-sec="order" data-title="Порядок выполнения">
+        <h2 id="order"><span class="sn">03</span>Порядок выполнения руками</h2>
+        <p>Ниже — ноутбук из&nbsp;пяти ячеек, который считает выручку по&nbsp;заказам со&nbsp;скидкой. В&nbsp;нём есть ячейка, которая дописывает заказ из&nbsp;вчерашней выгрузки в&nbsp;список. Запускайте ячейки кнопкой ▶ в&nbsp;любом порядке и&nbsp;следите за&nbsp;памятью ядра справа. Перед этим ответьте на&nbsp;вопрос.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="order"></div>
+        <p>Ячейка 3 устроена не&nbsp;так, как остальные. Присваивание вроде <code>discount = 0.1</code> можно повторять сколько угодно, результат один. А&nbsp;<code>orders.append(990)</code> меняет список, который уже лежит в&nbsp;памяти: каждый лишний запуск добавляет ещё один заказ. Такую ячейку называют <span class="term" tabindex="0" data-g="idempotent">неидемпотентной</span>, и&nbsp;случайный повторный запуск незаметно портит данные.</p>
+        <p>Вторая ловушка — устаревший вывод. Ячейка 5 печатает <code>total</code>, который посчитан в&nbsp;момент последнего запуска ячейки 4. Если после этого изменить список и&nbsp;не&nbsp;пересчитать ячейку 4, отчёт покажет новое число заказов и&nbsp;старую выручку. На&nbsp;экране оба числа выглядят одинаково достоверными.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: скрытое состояние, магические команды и&nbsp;справка</h2>
+        <div class="callout"><p><b>Удалённая ячейка продолжает работать.</b> Удаление ячейки меняет файл, но&nbsp;не&nbsp;трогает ядро. Переменная, которую эта ячейка создала, остаётся в&nbsp;памяти, и&nbsp;код ниже продолжает считать. То&nbsp;же после переименования: вы&nbsp;заменили <code>df</code> на&nbsp;<code>orders</code>, а&nbsp;старое имя по-прежнему доступно, и&nbsp;опечатка в&nbsp;одной из&nbsp;ячеек не&nbsp;даёт ошибки. Всё это вскрывается только после перезапуска ядра.</p></div>
+        <div class="callout"><p><b>Магические команды.</b> Строки, которые начинаются с&nbsp;<code>%</code> или <code>%%</code>, — не&nbsp;Python, а&nbsp;<span class="term" tabindex="0" data-g="magic">магические команды</span> оболочки IPython, на&nbsp;которой работает ядро Jupyter. <code>%time</code> замеряет один запуск строки, <code>%%timeit</code> запускает всю ячейку много раз и&nbsp;показывает среднее время. Восклицательный знак передаёт команду системе: <code>!pip install pandas</code>. Для установки пакетов надёжнее <code>%pip install pandas</code>: эта команда ставит пакет именно в&nbsp;то окружение, где работает текущее ядро<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p></div>
+        <div class="callout"><p><b>Справка без поиска.</b> Знак вопроса после имени показывает описание объекта: <code>len?</code> или <code>orders.append?</code>. Два знака, <code>??</code>, показывают ещё и&nbsp;исходный код, если он&nbsp;написан на&nbsp;Python<a class="ref" href="#src-3" data-ref="src-3">3</a>. Это быстрее, чем искать документацию, когда нужно вспомнить порядок аргументов.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: ноутбук не&nbsp;заменяет скрипт</h2>
+        <p>Ноутбук удобен для исследования, но&nbsp;плохо подходит для кода, который должен работать сам. Ежедневный отчёт, загрузку данных, общую функцию очистки выносят в&nbsp;файлы .py. Подробно о&nbsp;переходе от&nbsp;ноутбука к&nbsp;скрипту, Git и&nbsp;тестам — в&nbsp;блоке «Дата инженерия», тема 14.</p>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Задача</th><th>Ноутбук .ipynb</th><th>Скрипт .py</th></tr></thead>
+            <tbody>
+              <tr><td>Посмотреть данные, найти идею</td><td>Удобно: вывод сразу под кодом</td><td>Неудобно: каждый раз запуск целиком</td></tr>
+              <tr><td>Показать расчёт с&nbsp;графиками</td><td>Удобно: код и&nbsp;результат в&nbsp;одном файле</td><td>Нужен отдельный отчёт</td></tr>
+              <tr><td>Запуск по&nbsp;расписанию</td><td>Возможно, но&nbsp;с&nbsp;дополнительными инструментами</td><td>Штатно: <code>python report.py</code></td></tr>
+              <tr><td>Импорт функции в&nbsp;другой код</td><td>Неудобно</td><td>Штатно: <code>import report</code></td></tr>
+              <tr><td>Ревью изменений в&nbsp;Git</td><td>Тяжело: файл — JSON с&nbsp;выводами</td><td>Легко: построчный дифф</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: три привычки</h2>
+        <p>Первая привычка — начинать ноутбук с&nbsp;ячейки импортов, которая печатает версии. Через полгода по&nbsp;ней видно, на&nbsp;чём считался результат, а&nbsp;коллега сразу понимает, какие библиотеки ему нужны.</p>
+        <div class="block wide" data-code="first"></div>
+        <p>Вторая привычка — проверять ноутбук с&nbsp;чистого листа. Кроме пункта меню, это можно сделать из&nbsp;терминала: <code>jupyter nbconvert --execute</code> запускает ноутбук с&nbsp;новым ядром сверху вниз, ровно как коллега, и&nbsp;останавливается на&nbsp;первой ошибке<a class="ref" href="#src-5" data-ref="src-5">5</a>. Ниже — ноутбук из&nbsp;анимации до&nbsp;и&nbsp;после исправления порядка ячеек.</p>
+        <div class="block wide" data-code="check"></div>
+        <p>Третья привычка — выносить готовый расчёт в&nbsp;скрипт. Тот&nbsp;же код в&nbsp;файле .py запускается одной командой, и&nbsp;порядок строк в&nbsp;нём не&nbsp;зависит от&nbsp;того, в&nbsp;какой последовательности вы&nbsp;его писали.</p>
+        <div class="block wide" data-code="script"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Python для анализа» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Project Jupyter. <a href="https://docs.jupyter.org/" target="_blank" rel="noopener">Jupyter Documentation</a>. Что такое ноутбук и&nbsp;ядро, как они связаны.</li>
+          <li id="src-2">Python Software Foundation. <a href="https://docs.python.org/3/tutorial/interpreter.html" target="_blank" rel="noopener">The Python Tutorial: Using the Python Interpreter</a>. Как интерпретатор выполняет скрипт и&nbsp;команды из&nbsp;терминала.</li>
+          <li id="src-3">IPython. <a href="https://ipython.readthedocs.io/en/stable/interactive/magics.html" target="_blank" rel="noopener">Built-in magic commands</a>. Описание %time, %%timeit, %pip и&nbsp;справки через ? и&nbsp;??.</li>
+          <li id="src-4">Google. <a href="https://research.google.com/colaboratory/faq.html" target="_blank" rel="noopener">Google Colab: Frequently Asked Questions</a>. Где выполняется код, время жизни виртуальных машин и&nbsp;лимиты бесплатной версии.</li>
+          <li id="src-5">Project Jupyter. <a href="https://nbconvert.readthedocs.io/" target="_blank" rel="noopener">nbconvert documentation</a>. Запуск ноутбука из&nbsp;командной строки с&nbsp;флагом --execute.</li>
+        </ol>
+      </section>

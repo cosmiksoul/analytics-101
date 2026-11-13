@@ -1,0 +1,143 @@
+      <p class="eyebrow">Дата аналитика · Тема 11 · <b>A/B-тестирование</b></p>
+      <h1>Ускорение: CUPED и&nbsp;последовательные тесты</h1>
+      <p class="lead">Тест можно сократить или сделать чувствительнее, не&nbsp;теряя честности. После этой страницы вы сможете снизить <span class="term" tabindex="0" data-g="variance">дисперсию метрики</span> приёмом <span class="term" tabindex="0" data-g="cuped">CUPED</span>, смотреть в&nbsp;тест по&nbsp;ходу по&nbsp;заранее рассчитанным границам и&nbsp;прочитать <span class="term" tabindex="0" data-g="bayes">байесовский</span> отчёт «B лучше с&nbsp;вероятностью 92%».</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;10&nbsp;шагов</span><span class="pill">1&nbsp;интерактив, 2&nbsp;режима</span><span class="pill">3&nbsp;блока кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: вычесть предсказуемое</h2>
+        <p>Тест идёт долго, потому что метрика шумная: траты людей различаются в&nbsp;тысячи раз, и&nbsp;эффект в&nbsp;несколько процентов тонет в&nbsp;этом разбросе. Часть разброса можно предсказать заранее&nbsp;— по&nbsp;тому, как тот&nbsp;же человек тратил до&nbsp;теста. CUPED вычитает эту предсказуемую часть, и&nbsp;для той&nbsp;же точности нужно меньше людей и&nbsp;дней. Второй способ ускориться&nbsp;— <span class="term" tabindex="0" data-g="seq">последовательный тест</span>: смотреть на&nbsp;результат по&nbsp;ходу, но&nbsp;по&nbsp;границам, при которых ложных побед остаётся 5%.</p>
+        <div class="scene" id="scene" aria-label="Анимация: облако трат участников до теста и в тесте; CUPED вычитает предсказуемую часть, облако теряет наклон, интервал эффекта сужается, счётчик дней теста падает с 28 до 22"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже&nbsp;— та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Дисперсия&nbsp;— главный враг теста</h3>
+        <p>Дисперсия&nbsp;— средний квадрат отклонения от&nbsp;среднего, а&nbsp;её корень σ показывает типичный разброс. Из&nbsp;11.2&nbsp;мы знаем: нужная выборка растёт пропорционально дисперсии и&nbsp;обратно пропорционально квадрату эффекта. У&nbsp;выручки в&nbsp;checkout_v2&nbsp;среднее 1&nbsp;038&nbsp;₽ на&nbsp;человека, а&nbsp;σ = 6&nbsp;989&nbsp;₽, в&nbsp;6,7&nbsp;раза больше. Поэтому прибавка +77,9&nbsp;₽ (+7,8%) за&nbsp;28&nbsp;дней неотличима от&nbsp;нуля: интервал [−37,1; 192,8] ₽, z&nbsp;= 1,33.</p>
+        <p>Разброс снижают тремя способами<a class="ref" href="#src-1" data-ref="src-1">1</a>. На&nbsp;тех&nbsp;же данных они дают очень разное:</p>
+        <div class="tbl cu-tbl">
+          <table>
+            <thead><tr><th>Способ</th><th>Что&nbsp;делает</th><th>Дисперсия</th><th>z</th></tr></thead>
+            <tbody>
+              <tr><td>ничего</td><td>выручка на&nbsp;человека как есть</td><td>—</td><td>1,33</td></tr>
+              <tr><td>изменить метрику</td><td><span class="term" tabindex="0" data-g="winsor">обрезка хвоста</span> на&nbsp;99-м перцентиле, 14&nbsp;950&nbsp;₽</td><td>−88%</td><td>3,41</td></tr>
+              <tr><td>стратификация</td><td>слои: новички, без покупок, покупатели</td><td>−2,1%</td><td>1,29</td></tr>
+              <tr><td>ковариата до&nbsp;теста</td><td>CUPED по&nbsp;тратам за&nbsp;4&nbsp;недели до&nbsp;теста</td><td>−21,4%</td><td>1,66</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Обрезка выигрывает больше всех, потому что почти весь разброс&nbsp;— у&nbsp;1% самых крупных покупателей: на&nbsp;них приходится 92% дисперсии. Но&nbsp;она меняет вопрос: «помогло&nbsp;ли оформление обычным покупателям» вместо «выросла&nbsp;ли выручка» (цену обрезки разбирали в&nbsp;11.3). CUPED вопрос не&nbsp;меняет.</p>
+
+        <h3 class="sub-h">CUPED: вычесть то, что знали заранее</h3>
+        <p>Метод CUPED (Controlled-experiment Using Pre-Experiment Data) предложили в&nbsp;Microsoft в&nbsp;2013&nbsp;году<a class="ref" href="#src-2" data-ref="src-2">2</a>. Берём <span class="term" tabindex="0" data-g="covariate">ковариату</span> X&nbsp;— число про&nbsp;человека, измеренное до&nbsp;теста, обычно ту&nbsp;же метрику за&nbsp;прошлые недели. И&nbsp;заменяем метрику Y на&nbsp;скорректированную:</p>
+        <div class="formula"><span class="f">Y′ = Y − θ · (X − X̄)</span><br><span class="f">θ&nbsp;= cov(X, Y) / var(X)</span><small><span class="term" tabindex="0" data-g="theta">Коэффициент θ</span>&nbsp;— наклон прямой Y по&nbsp;X, как в&nbsp;регрессии; он один на&nbsp;обе группы. X̄&nbsp;— среднее X по&nbsp;всем участникам. В&nbsp;checkout_v2 θ&nbsp;= 0,665, X̄ = 760&nbsp;₽.</small></div>
+        <p>Дисперсия новой метрики равна var(Y) · (1 − ρ²), где ρ&nbsp;— <span class="term" tabindex="0" data-g="corr">корреляция</span> X и&nbsp;Y. В&nbsp;checkout_v2 ρ&nbsp;= 0,463, и&nbsp;дисперсия падает на&nbsp;0,463² = 21,4%. Эффект становится +86,0&nbsp;₽ [−15,8; 187,9], z&nbsp;= 1,66: интервал уже на&nbsp;11%, но&nbsp;всё ещё задевает ноль.</p>
+        <p>Оценка эффекта остаётся <span class="term" tabindex="0" data-g="unbiased">несмещённой</span>. X измерили до&nbsp;деления на&nbsp;группы, и&nbsp;рандомизация делает его в&nbsp;среднем одинаковым в&nbsp;A и&nbsp;B. Поправка θ · (X − X̄) в&nbsp;разнице средних в&nbsp;среднем сокращается: меняется шум, а&nbsp;не&nbsp;эффект. Отсюда главное правило&nbsp;— ковариата только из&nbsp;периода до&nbsp;теста. Число, измеренное во&nbsp;время теста, может зависеть от&nbsp;самого изменения.</p>
+        <p>На&nbsp;выручке почти всю корреляцию дают крупные покупатели: 50&nbsp;человек отвечают за&nbsp;83% ковариации X и&nbsp;Y, без них ρ&nbsp;= 0,16. CUPED выигрывает за&nbsp;счёт тех, кто стабильно много покупает.</p>
+
+        <h3 class="sub-h">Из&nbsp;дисперсии&nbsp;— в&nbsp;дни</h3>
+        <p>Если участники приходят ровным потоком, дни сокращаются так же, как дисперсия: 28 × (1 − 0,214) ≈ 22&nbsp;дня. Не&nbsp;17, как обещают примеры с&nbsp;метриками посильнее: 17&nbsp;дней получились&nbsp;бы при ρ ≈ 0,63. У&nbsp;числа сессий ρ&nbsp;= 0,73&nbsp;— хватило&nbsp;бы 13&nbsp;дней, у&nbsp;конверсии ρ&nbsp;= 0,27&nbsp;— 26. Проверка на&nbsp;самих данных: если урезать checkout_v2, относительная точность с&nbsp;CUPED догоняет 28-дневную без поправки к&nbsp;19–21-му дню.</p>
+
+        <h3 class="sub-h">Стратификация</h3>
+        <p><span class="term" tabindex="0" data-g="strat">Стратификация</span> делит людей на&nbsp;слои по&nbsp;признаку, известному до&nbsp;теста: новичок, покупатель, платформа. Эффект считают в&nbsp;каждом слое и&nbsp;складывают с&nbsp;весами долей слоёв. Из&nbsp;дисперсии уходит разница между слоями, остаётся разброс внутри них. В&nbsp;checkout_v2&nbsp;слои объясняют лишь 2,1% дисперсии, платформа&nbsp;— ноль. По&nbsp;сути это тот&nbsp;же CUPED, где ковариаты&nbsp;— признаки слоёв.</p>
+
+        <h3 class="sub-h">Последовательные тесты: смотреть по&nbsp;правилам</h3>
+        <p>Подглядывание без поправки, как в&nbsp;11.4, при ежедневных взглядах даёт 28% ложных побед вместо 5%. Последовательный тест<a class="ref" href="#src-4" data-ref="src-4">4</a> разрешает смотреть, но&nbsp;заранее решает, сколько раз и&nbsp;с&nbsp;какой строгостью. <span class="term" tabindex="0" data-g="gst">Групповые последовательные проверки</span> пришли из&nbsp;клинических испытаний: K взглядов в&nbsp;назначенные моменты, у&nbsp;каждого своя граница для |z|. Границы подбирают так, чтобы в&nbsp;A/A-тесте вероятность хоть раз её пересечь была ровно α = 5%.</p>
+        <ul>
+          <li><span class="term" tabindex="0" data-g="pocock">Граница Pocock</span><a class="ref" href="#src-5" data-ref="src-5">5</a> одинакова на&nbsp;всех взглядах: при четырёх&nbsp;— 2,36&nbsp;вместо 1,96. Остановиться рано легко, но&nbsp;и&nbsp;в&nbsp;конце нужен z больше обычного.</li>
+          <li><span class="term" tabindex="0" data-g="obf">Граница O’Brien&nbsp;— Fleming</span><a class="ref" href="#src-6" data-ref="src-6">6</a> строгая в&nbsp;начале и&nbsp;мягкая в&nbsp;конце: при четырёх взглядах 4,05, 2,86, 2,34&nbsp;и&nbsp;2,02. Рано останавливаются только огромные эффекты.</li>
+        </ul>
+        <p><span class="term" tabindex="0" data-g="spending">Функция расходования α</span><a class="ref" href="#src-7" data-ref="src-7">7</a> обобщает обе. α&nbsp;— бюджет ложных побед, а&nbsp;функция α(t) говорит, сколько его потрачено к <span class="term" tabindex="0" data-g="info">доле информации</span> t&nbsp;— доле собранных данных. Тогда взгляды не&nbsp;обязаны идти по&nbsp;расписанию: граница пересчитывается по&nbsp;фактической доле.</p>
+
+        <h3 class="sub-h">Always-valid: смотреть когда угодно</h3>
+        <p><span class="term" tabindex="0" data-g="avp">Always-valid p-value</span>, «всегда честное» p-value, идёт дальше: оно&nbsp;остаётся валидным, когда&nbsp;бы вы ни&nbsp;остановились, хоть после каждого посетителя. Johari и&nbsp;соавторы построили его на&nbsp;смешанном последовательном тесте отношения правдоподобия (mSPRT) и&nbsp;встроили в&nbsp;платформу Optimizely<a class="ref" href="#src-3" data-ref="src-3">3</a>. Плата&nbsp;— высокая граница: в&nbsp;нашей симуляции z должен превысить 3,0&nbsp;даже на&nbsp;28-й день.</p>
+
+        <h3 class="sub-h">Байесовский A/B: вероятность, что B лучше</h3>
+        <p>Байесовский тест отвечает на&nbsp;другой вопрос: не&nbsp;«насколько удивительны данные, если эффекта нет», а&nbsp;«насколько вероятно, что B лучше». Для&nbsp;конверсии удобно <span class="term" tabindex="0" data-g="beta">бета-распределение</span>&nbsp;— распределение доли на&nbsp;отрезке от&nbsp;0&nbsp;до&nbsp;1. Начинаем с <span class="term" tabindex="0" data-g="prior">априорного</span> Beta(1, 1), где все конверсии равновероятны. После s покупателей из&nbsp;n человек получаем <span class="term" tabindex="0" data-g="posterior">апостериорное</span> Beta(1 + s, 1 + n − s).</p>
+        <p>Из&nbsp;двух апостериорных считают <span class="term" tabindex="0" data-g="psup">вероятность превосходства</span> P(B > A) и <span class="term" tabindex="0" data-g="loss">ожидаемые потери</span>&nbsp;— сколько конверсии мы в&nbsp;среднем потеряем, выбрав B, если лучше окажется A. В&nbsp;checkout_v2 P(B > A) = 0,99995, а&nbsp;потери от&nbsp;B меньше 0,0001&nbsp;п.&nbsp;п. В&nbsp;A/A-тесте aa_check P(B > A) = 0,098: «A лучше с&nbsp;вероятностью 90%» там, где разницы нет по&nbsp;построению.</p>
+        <p>Байесовский подход даёт понятную менеджеру формулировку и&nbsp;решение через потери. Но&nbsp;он не&nbsp;защищает от&nbsp;подглядывания и&nbsp;не&nbsp;гарантирует долю ложных побед. При&nbsp;равномерном априорном и&nbsp;тысячах людей он почти повторяет обычный тест: интервал разницы конверсий тот&nbsp;же, [0,59; 1,75] п.&nbsp;п.</p>
+
+        <h3 class="sub-h">Регрессия с&nbsp;ковариатами&nbsp;— общий случай</h3>
+        <p>CUPED&nbsp;— частный случай <span class="term" tabindex="0" data-g="ancova">регрессии с&nbsp;ковариатами</span>: Y = a + τ · B + θ · X + ε, где B равно 1&nbsp;в&nbsp;группе B и&nbsp;0&nbsp;в&nbsp;A. Коэффициент τ&nbsp;— оценка эффекта, а&nbsp;ковариаты забирают объяснимый разброс. С&nbsp;одной ковариатой регрессия даёт те&nbsp;же +86,0&nbsp;₽ со&nbsp;стандартной ошибкой 52,0&nbsp;₽. Пять ковариат (траты, заказы и&nbsp;сессии до&nbsp;теста, новичок, платформа) снижают дисперсию на&nbsp;22,3%&nbsp;— почти столько&nbsp;же: главное уже взяли траты.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: быстрее, но&nbsp;честно</h2>
+        <p>checkout_v2&nbsp;шёл четыре недели, и&nbsp;по&nbsp;выручке результат незначим. Продукт спрашивает, можно&nbsp;ли было узнать раньше и&nbsp;как не&nbsp;ждать месяц в&nbsp;следующий раз.</p>
+        <p>Задача&nbsp;— сократить тест или увидеть меньший эффект, не&nbsp;теряя честности: без смещения оценки, без лишних ложных побед и&nbsp;с&nbsp;понятной ценой каждого приёма. Данные&nbsp;— учебные, из <code>data/ab</code>: участники checkout_v2, их траты в&nbsp;тесте и&nbsp;за&nbsp;четыре недели до&nbsp;него. Боты исключены, группа&nbsp;— по <code>exposures.csv</code>.</p>
+      </section>
+
+      <section data-sec="method" data-title="Сожми дисперсию">
+        <h2 id="method"><span class="sn">03</span>Метод: сожми дисперсию</h2>
+        <p>CUPED на&nbsp;практике: до&nbsp;запуска выбрать ковариату&nbsp;— ту&nbsp;же метрику за&nbsp;2–4&nbsp;недели до&nbsp;теста; пропуски X заполнить нулём; θ посчитать по&nbsp;всем участникам сразу; Y − θ · (X − X̄) анализировать обычным тестом из&nbsp;11.3. Для последовательного теста до&nbsp;запуска записывают число взглядов, функцию расходования α и&nbsp;минимальный срок, а&nbsp;останавливаются на&nbsp;первом пересечении границы или в&nbsp;конце.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="squeeze"></div>
+        <p>У&nbsp;выручки ρ&nbsp;= 0,46&nbsp;— тест сжимается до&nbsp;22&nbsp;дней, 17&nbsp;дней даёт только ρ от&nbsp;0,63. Во&nbsp;втором режиме при ежедневных взглядах в&nbsp;ста A/A-тестах без поправки 30&nbsp;ложных побед, у&nbsp;Pocock&nbsp;— 4, у&nbsp;O’Brien&nbsp;— Fleming&nbsp;— 4, у&nbsp;always-valid&nbsp;— 2. Это те&nbsp;же сто тестов, что на&nbsp;11.4. На&nbsp;20&nbsp;000 прогонов границы дают 5,1–5,5% вместо ровно пяти: набор один, и&nbsp;его шум сдвигает все доли в&nbsp;одну сторону; на&nbsp;двадцати других наборах среднее&nbsp;— 5,0%. Включите A/B, чтобы увидеть цену гибкости.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы</h2>
+        <div class="callout"><p><b>CUPED не&nbsp;работает для новых пользователей.</b> 19% участников checkout_v2&nbsp;зарегистрировались во&nbsp;время теста: у&nbsp;них X = 0, и&nbsp;поправка сдвигает всех на&nbsp;одни и&nbsp;те&nbsp;же 505&nbsp;₽. Их&nbsp;дисперсия не&nbsp;меняется, у&nbsp;остальных падает на&nbsp;24,8%. Ещё&nbsp;10% старых не&nbsp;заходили в&nbsp;предпериод&nbsp;— у&nbsp;них X тоже 0. Чем&nbsp;больше новичков (акция, запуск в&nbsp;новой стране), тем меньше выигрыш. Помогают признаки, известные и&nbsp;о&nbsp;новичке: платформа, канал, страна, но&nbsp;они слабее.</p></div>
+        <div class="callout"><p><b>Последовательные тесты платят мощностью за&nbsp;гибкость.</b> Эффект +0,82&nbsp;п.&nbsp;п. тест с&nbsp;одним взглядом на&nbsp;28-й день находит в&nbsp;79,3% случаев. При&nbsp;четырёх взглядах O’Brien&nbsp;— Fleming находит в&nbsp;78,4%, Pocock&nbsp;— в&nbsp;70,7%, always-valid&nbsp;— в&nbsp;43,5%. Зато в&nbsp;среднем тест заканчивается раньше: за&nbsp;23,0&nbsp;и&nbsp;20,3&nbsp;дня. Чтобы вернуть 80%, Pocock нужно на&nbsp;20% больше людей, O’Brien&nbsp;— Fleming&nbsp;— на&nbsp;3%.</p></div>
+        <div class="callout"><p><b>Байесовский подход не&nbsp;отменяет подглядывание сам по&nbsp;себе.</b> Правило «стоп, когда P(B > A) больше 95%» на&nbsp;одном взгляде объявляет B победителем в&nbsp;5,0% A/A-тестов, при ежедневных взглядах&nbsp;— в&nbsp;24,3%. Апостериорная вероятность верна в&nbsp;каждый момент, но&nbsp;остановка на&nbsp;первом&nbsp;же пересечении порога&nbsp;— то&nbsp;же подглядывание. Порог, минимальный срок и&nbsp;правило остановки задают до&nbsp;запуска.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: платформа экспериментов</h2>
+        <p>В&nbsp;компании эти приёмы живут не&nbsp;в&nbsp;ноутбуке аналитика, а&nbsp;в&nbsp;<span class="term" tabindex="0" data-g="platform">платформе экспериментов</span>: назначение групп по&nbsp;хешу, журнал показов, метрики на&nbsp;человека с&nbsp;предпериодом для CUPED, автоматические проверки дисбаланса групп и&nbsp;A/A-тесты, отчёт с&nbsp;интервалами и&nbsp;последовательными границами, реестр тестов с&nbsp;документами дизайна.</p>
+        <p>Устройство и&nbsp;культура такой системы&nbsp;— глава&nbsp;4 книги Кохави, Тан и&nbsp;Сюй<a class="ref" href="#src-1" data-ref="src-1">1</a>. Как Google разводит сотни одновременных тестов по&nbsp;слоям<a class="ref" href="#src-8" data-ref="src-8">8</a> и&nbsp;как платформа ловит дисбаланс групп<a class="ref" href="#src-9" data-ref="src-9">9</a>&nbsp;— в&nbsp;отдельных статьях. Строить платформу&nbsp;— задача инженеров данных, здесь только обзор. Выборку и&nbsp;длительность теста заранее можно прикинуть в&nbsp;stat·plan&nbsp;— открытом планировщике A/B-тестов автора учебника<a class="ref" href="#src-10" data-ref="src-10">10</a>.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: CUPED, групповые проверки, бета-распределение</h2>
+        <p>CUPED на&nbsp;выручке checkout_v2&nbsp;с&nbsp;замером снижения дисперсии и&nbsp;проверкой регрессией. Код запускается из&nbsp;корня папки материалов.</p>
+        <div class="block wide" data-code="cuped"></div>
+        <p>Последовательный тест с&nbsp;групповыми проверками раз в&nbsp;неделю: границы по&nbsp;функции расходования α для фактической доли пришедших и&nbsp;z конверсии на&nbsp;каждом взгляде.</p>
+        <div class="block wide" data-code="seq"></div>
+        <p>Байесовская оценка конверсии: апостериорные бета-распределения, вероятность превосходства и&nbsp;ожидаемые потери для checkout_v2&nbsp;и&nbsp;A/A-теста aa_check.</p>
+        <div class="block wide" data-code="bayes"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «A/B-тестирование» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Kohavi R., Tang D., Xu Y. <a href="https://doi.org/10.1017/9781108653985" target="_blank" rel="noopener">Trustworthy Online Controlled Experiments</a>. Cambridge University Press, 2020. Настольная книга темы: глава 18&nbsp;— снижение дисперсии, глава 4&nbsp;— платформа экспериментов.</li>
+          <li id="src-2">Deng A., Xu Y., Kohavi R., Walker T. <a href="https://doi.org/10.1145/2433396.2433413" target="_blank" rel="noopener">Improving the Sensitivity of Online Controlled Experiments by Utilizing Pre-Experiment Data</a>. WSDM, 2013. Статья, где предложен CUPED: формула, θ и&nbsp;выигрыш 1 − ρ².</li>
+          <li id="src-3">Johari R., Koomen P., Pekelis L., Walsh D. <a href="https://doi.org/10.1145/3097983.3097992" target="_blank" rel="noopener">Peeking at A/B Tests</a>. KDD, 2017. Always-valid p-value на&nbsp;mSPRT и&nbsp;почему подглядывание раздувает ошибку.</li>
+          <li id="src-4">Georgiev G. Statistical Methods in Online A/B Testing. 2019. Последовательные тесты в&nbsp;онлайн-экспериментах на&nbsp;практике: глава 10&nbsp;о&nbsp;непрерывном наблюдении за&nbsp;данными.</li>
+          <li id="src-5">Pocock S. J. <a href="https://doi.org/10.1093/biomet/64.2.191" target="_blank" rel="noopener">Group Sequential Methods in the Design and Analysis of Clinical Trials</a>. Biometrika, 1977, 64(2). Первоисточник границы Pocock.</li>
+          <li id="src-6">O’Brien P. C., Fleming T. R. <a href="https://doi.org/10.2307/2530245" target="_blank" rel="noopener">A Multiple Testing Procedure for Clinical Trials</a>. Biometrics, 1979, 35(3). Первоисточник границы O’Brien&nbsp;— Fleming.</li>
+          <li id="src-7">Lan K. K. G., DeMets D. L. <a href="https://doi.org/10.1093/biomet/70.3.659" target="_blank" rel="noopener">Discrete Sequential Boundaries for Clinical Trials</a>. Biometrika, 1983, 70(3). Функция расходования α: взгляды не&nbsp;по&nbsp;расписанию.</li>
+          <li id="src-8">Tang D., Agarwal A., O’Brien D., Meyer M. <a href="https://doi.org/10.1145/1835804.1835810" target="_blank" rel="noopener">Overlapping Experiment Infrastructure: More, Better, Faster Experimentation</a>. KDD, 2010. Платформа Google: слои и&nbsp;пересекающиеся тесты.</li>
+          <li id="src-9">Fabijan A. et al. <a href="https://doi.org/10.1145/3292500.3330722" target="_blank" rel="noopener">Diagnosing Sample Ratio Mismatch in Online Controlled Experiments</a>. KDD, 2019. Как платформа автоматически ловит дисбаланс групп.</li>
+          <li id="src-10">stat·plan. <a href="https://cosmiksoul.github.io/stat-plan" target="_blank" rel="noopener">Открытый планировщик A/B-тестов</a>. Размер выборки и&nbsp;длительность теста до&nbsp;запуска.</li>
+        </ol>
+      </section>

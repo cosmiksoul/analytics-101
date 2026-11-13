@@ -1,0 +1,5 @@
+{
+  "title": "DataFrame изнутри",
+  "description": "Страница 2.1 курса «Аналитика 101»: DataFrame как столбцы-массивы с общим индексом, типы данных и почему object медленный, выборка через loc, iloc и маски, Copy-on-Write в pandas 3 и векторизация вместо циклов.",
+  "file": "da-2-1-dataframe-inside"
+}

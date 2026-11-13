@@ -1,0 +1,184 @@
+      <p class="eyebrow">Дата аналитика · Тема 07 · <b>Разведочный анализ</b></p>
+      <h1>Первый взгляд: формы, типы, пропуски</h1>
+      <p class="lead">Первые десять минут <span class="term" tabindex="0" data-g="eda">разведочного анализа</span> — не графики, а паспорт таблицы. После страницы вы поймёте, что описывает одна строка, как pandas прочитал каждый столбец, где пропуски явные и где скрытые, и составите для владельца данных список вопросов до начала анализа.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;11&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">6&nbsp;блоков кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: сначала паспорт, потом выводы</h2>
+        <p>Первый взгляд на&nbsp;незнакомую таблицу — это паспорт: что описывает одна строка (<span class="term" tabindex="0" data-g="unit">единица наблюдения</span>), сколько строк и&nbsp;столбцов, какой <span class="term" tabindex="0" data-g="dtype">тип</span> pandas дал каждому столбцу и&nbsp;какой у&nbsp;него тип по&nbsp;смыслу, где пропуски и&nbsp;сколько разных значений. Расхождение смысла и&nbsp;типа — первое подозрение: ключ клиента, ставший дробным числом, выдаёт пропуски в&nbsp;ключе, а&nbsp;дата-строка — смесь форматов. Пропуски бывают явными и&nbsp;<span class="term" tabindex="0" data-g="hiddenna">скрытыми</span>: прочерк, −1 или 99 pandas считает обычными данными. Подозрения превращаются в&nbsp;вопросы к&nbsp;<span class="term" tabindex="0" data-g="owner">владельцу данных</span>, и&nbsp;задают их до&nbsp;анализа, а&nbsp;не&nbsp;после.</p>
+        <div class="scene" id="scene" aria-label="Анимация: сырой CSV разворачивается в карту из десяти плиток-столбцов; плитки красятся по dtype и по смыслу, получают полоску пропусков, мини-гистограмму и число разных значений; client_id — float64 с пропусками и повторами, даты — строки в двух форматах и двух поясах, карта подсвечивает это красным и собирает семь подозрений"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Что описывает строка: единица наблюдения и&nbsp;ключ</h3>
+        <p>От&nbsp;единицы наблюдения зависит каждая будущая цифра: «среднее на&nbsp;строку» в&nbsp;таблице заказов и&nbsp;в&nbsp;таблице клиентов — разные метрики. В&nbsp;аккуратной таблице одна строка — одно наблюдение, один столбец — одна переменная<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <p>Единицу наблюдения задаёт <span class="term" tabindex="0" data-g="key">ключ</span> — столбец или набор столбцов без повторов. В&nbsp;выгрузке кандидат — <code>client_id</code>, и&nbsp;проверить его стоит первым: <code>df["client_id"].is_unique</code>. Ответ — False: ключ повторяется и&nbsp;бывает пустым, значит, «одна строка — один клиент» пока гипотеза.</p>
+
+        <h3 class="sub-h">Шесть типов переменных</h3>
+        <p>dtype — то, как pandas хранит столбец: int64, float64, str, bool, datetime64. Смысл — то, что с&nbsp;переменной можно делать. Шкалы измерений классифицировал психолог Стэнли Стивенс в&nbsp;1946 году<a class="ref" href="#src-2" data-ref="src-2">2</a>; для первого взгляда хватит шести типов.</p>
+        <div class="tbl fl-types">
+          <table>
+            <thead><tr><th>Тип</th><th>В&nbsp;выгрузке</th><th>Что можно делать</th><th>dtype после read_csv</th></tr></thead>
+            <tbody>
+              <tr><td data-l="Тип"><span class="term" tabindex="0" data-g="numeric">Числовой</span></td><td data-l="В выгрузке">visits_q1, spend_q1</td><td data-l="Что можно">складывать, усреднять</td><td data-l="dtype">int64, float64</td></tr>
+              <tr><td data-l="Тип"><span class="term" tabindex="0" data-g="categorical">Категориальный</span></td><td data-l="В выгрузке">country, channel</td><td data-l="Что можно">считать доли, группировать</td><td data-l="dtype">str</td></tr>
+              <tr><td data-l="Тип"><span class="term" tabindex="0" data-g="ordinal">Порядковый</span></td><td data-l="В выгрузке">tier, уровни 1–5</td><td data-l="Что можно">сравнивать «выше — ниже», брать медиану</td><td data-l="dtype">int64</td></tr>
+              <tr><td data-l="Тип">Дата и&nbsp;время</td><td data-l="В выгрузке">signup_date, last_order_at</td><td data-l="Что можно">диапазоны, интервалы, группировка по&nbsp;дням</td><td data-l="dtype">str, пока не&nbsp;разобрать</td></tr>
+              <tr><td data-l="Тип">Текст</td><td data-l="В выгрузке">здесь нет: адрес, комментарий</td><td data-l="Что можно">искать слова</td><td data-l="dtype">str</td></tr>
+              <tr><td data-l="Тип"><span class="term" tabindex="0" data-g="identifier">Идентификатор</span></td><td data-l="В выгрузке">client_id</td><td data-l="Что можно">соединять таблицы, проверять уникальность</td><td data-l="dtype">int64, float64, str</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Числа бывают категориями: коды регионов, уровни лояльности, оценки 1–10. Признак — мало разных значений и&nbsp;бессмысленная арифметика: «средний tier 2,18» ничего не&nbsp;говорит, а&nbsp;«у&nbsp;40% клиентов tier&nbsp;1» — говорит.</p>
+
+        <h3 class="sub-h">Размер и&nbsp;память</h3>
+        <p><code>df.shape</code> даёт строки и&nbsp;столбцы, <code>df.memory_usage(deep=True)</code> — байты в&nbsp;памяти<a class="ref" href="#src-3" data-ref="src-3">3</a>. Без&nbsp;<code>deep=True</code> pandas не&nbsp;заглядывает внутрь строк и&nbsp;занижает объём. Выгрузка занимает 977&nbsp;КБ на&nbsp;диске и&nbsp;1,54&nbsp;МБ в&nbsp;pandas: строки в&nbsp;pandas&nbsp;3 хранит библиотека pyarrow — байты текста плюс 8&nbsp;байт на&nbsp;ячейку.</p>
+
+        <h3 class="sub-h">Карта пропусков и&nbsp;их&nbsp;механизм</h3>
+        <p><span class="term" tabindex="0" data-g="missmap">Карта пропусков</span> показывает, где пусто: в&nbsp;каких столбцах, сколько и&nbsp;вместе&nbsp;ли. Явный пропуск — пустая ячейка или строка из&nbsp;списка pandas: «N/A», «NULL», «NaN» и&nbsp;ещё полтора десятка<a class="ref" href="#src-4" data-ref="src-4">4</a>. Скрытый — значение, которым система обозначила «нет данных». Для&nbsp;pandas это обычные данные, и&nbsp;они молча портят средние.</p>
+        <p>Дальше — почему пусто. <span class="term" tabindex="0" data-g="mechanism">Механизм пропусков</span> разобран в&nbsp;2.3: случайно, в&nbsp;зависимости от&nbsp;другого столбца или от&nbsp;самого значения<a class="ref" href="#src-5" data-ref="src-5">5</a>. Первый взгляд часто отвечает сам: 1&nbsp;718 пустых <code>last_order_at</code> — это все 1&nbsp;691 клиент с&nbsp;нулём заказов и&nbsp;ещё 27 с&nbsp;кодом −1. Такой пропуск — по&nbsp;смыслу: у&nbsp;клиента без&nbsp;заказов нет даты последнего заказа, заполнять её нечем и&nbsp;незачем.</p>
+        <p>Пропуски меняют и&nbsp;тип: NaN — значение типа float, поэтому столбец целых с&nbsp;одним пропуском pandas делает float64<a class="ref" href="#src-6" data-ref="src-6">6</a>. Отсюда <code>102869.0</code> в&nbsp;client_id. Сохранить целые помогает тип с&nbsp;заглавной буквы: <code>dtype={"client_id": "Int64"}</code>.</p>
+
+        <h3 class="sub-h">Уникальные значения и&nbsp;кардинальность</h3>
+        <p><span class="term" tabindex="0" data-g="cardinality">Кардинальность</span> — число разных значений в&nbsp;столбце. У&nbsp;ключа она равна числу строк, у&nbsp;категории — единицы и&nbsp;десятки, у&nbsp;суммы — тысячи. Отклонения говорят больше среднего: 11&nbsp;975 разных id на&nbsp;12&nbsp;015 заполненных — это 40 повторов, а&nbsp;600 разных дат при&nbsp;300 днях — два способа записи одной даты.</p>
+
+        <h3 class="sub-h">Диапазоны дат</h3>
+        <p>Дата в&nbsp;CSV — всегда строка: read_csv не&nbsp;разбирает даты, пока не&nbsp;попросить<a class="ref" href="#src-4" data-ref="src-4">4</a>. У&nbsp;каждой даты три вопроса: в&nbsp;каком формате, в&nbsp;каком <span class="term" tabindex="0" data-g="tz">часовом поясе</span> и&nbsp;в&nbsp;каком диапазоне. Стандартная запись — ГГГГ-ММ-ДД по&nbsp;<span class="term" tabindex="0" data-g="iso">ISO 8601</span><a class="ref" href="#src-7" data-ref="src-7">7</a>, остальные — повод спросить. Регистрации идут с&nbsp;1&nbsp;июня 2025 по&nbsp;27&nbsp;марта 2026, последние заказы — с&nbsp;1&nbsp;января по&nbsp;31&nbsp;марта 2026: выгрузка действительно за&nbsp;I квартал. Дата вне ожидаемого диапазона — 1900-01-01, будущее, день выгрузки — почти всегда код или ошибка.</p>
+
+        <h3 class="sub-h">Вопросы владельцу данных</h3>
+        <p>Разведочный анализ — цикл: задать вопрос, поискать ответ в&nbsp;данных, уточнить вопрос<a class="ref" href="#src-8" data-ref="src-8">8</a>. На&nbsp;первом круге часть ответов есть только у&nbsp;того, кто выгружал данные. Хорошо, если он пришлёт <span class="term" tabindex="0" data-g="datadict">словарь данных</span>; если нет, первые вопросы почти всегда одни:</p>
+        <ul>
+          <li>что описывает строка и&nbsp;какой столбец — ключ; почему он повторяется и&nbsp;бывает пустым;</li>
+          <li>за&nbsp;какой период выгрузка и&nbsp;кто в&nbsp;неё попал: все клиенты или только активные;</li>
+          <li>какие значения означают «нет данных»: 99, −1, «-», пустая строка;</li>
+          <li>в&nbsp;каком поясе время и&nbsp;откуда записи с&nbsp;другим поясом;</li>
+          <li>собрана&nbsp;ли выгрузка из&nbsp;одной системы или склеена из&nbsp;нескольких.</li>
+        </ul>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: десять минут до&nbsp;звонка</h2>
+        <p>Маркетинг прислал учебную выгрузку <code>clients_export.csv</code>: клиенты интернет-магазина за&nbsp;I квартал 2026 года, как их отдаёт CRM. Нужен отчёт по&nbsp;сегментам, а&nbsp;через десять минут — звонок с&nbsp;владельцем CRM.</p>
+        <p>Задача — за&nbsp;эти десять минут понять структуру данных, назвать единицу наблюдения и&nbsp;унести на&nbsp;звонок список подозрений. В&nbsp;выгрузку подложены семь проблем — ровно столько нашла карта в&nbsp;анимации.</p>
+      </section>
+
+      <section data-sec="passport" data-title="Паспорт датасета">
+        <h2 id="passport"><span class="sn">03</span>Паспорт датасета: поля и&nbsp;эвристики</h2>
+        <p>Паспорт — одна таблица, где строка — столбец датасета, а&nbsp;поля — проверки первого взгляда: dtype, смысл, пропуски, кардинальность, диапазон или частые значения, мини-гистограмма. В&nbsp;pandas это десять строк из&nbsp;раздела «Код», ниже — то&nbsp;же в&nbsp;браузере.</p>
+        <p>Подозрительные ячейки паспорт помечает по&nbsp;<span class="term" tabindex="0" data-g="heuristic">эвристикам</span>. Они ловят типичные ошибки выгрузок, но&nbsp;смысла столбца не&nbsp;знают.</p>
+        <div class="tbl fl-rules">
+          <table>
+            <thead><tr><th>Правило</th><th>Что ловит</th><th>Когда ошибается</th></tr></thead>
+            <tbody>
+              <tr><td data-l="Правило">Похоже на&nbsp;ключ: имя с&nbsp;id или почти все значения разные</td><td data-l="Что ловит">пропуски в&nbsp;ключе, float64 у&nbsp;id, повторы ключа</td><td data-l="Когда ошибается">ключ составной: клиент и&nbsp;месяц</td></tr>
+              <tr><td data-l="Правило">90% значений похожи на&nbsp;даты, а&nbsp;dtype&nbsp;— str</td><td data-l="Что ловит">дату строкой</td><td data-l="Когда ошибается">почти никогда: даты в&nbsp;CSV всегда строки</td></tr>
+              <tr><td data-l="Правило">У&nbsp;дат больше одного формата или пояса</td><td data-l="Что ловит">ДД.ММ.ГГГГ рядом с&nbsp;ГГГГ-ММ-ДД, Z рядом с&nbsp;+03:00</td><td data-l="Когда ошибается">формат один, но&nbsp;день и&nbsp;месяц переставлены</td></tr>
+              <tr><td data-l="Правило">−1, −99 у&nbsp;неотрицательного числа; 99, 999 — максимум, оторванный от&nbsp;остальных</td><td data-l="Что ловит">коды «нет данных»</td><td data-l="Когда ошибается">настоящие 99 баллов из&nbsp;100</td></tr>
+              <tr><td data-l="Правило">«-», «?», «нет» среди строк</td><td data-l="Что ловит">пропуски, которых pandas не&nbsp;узнает</td><td data-l="Когда ошибается">прочерк как осмысленное значение</td></tr>
+              <tr><td data-l="Правило">Число, у&nbsp;которого десять разных значений или меньше</td><td data-l="Что ловит">категорию в&nbsp;числах</td><td data-l="Когда ошибается">счётчики: заказов 0–9</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Пороги — 90%, десять значений, три повтора кода — подобраны на&nbsp;глаз, а&nbsp;не&nbsp;выведены. Пометка — повод посмотреть, а&nbsp;не&nbsp;вывод. Встроенный пример — 300 строк учебной выгрузки: 288 случайных, четыре с&nbsp;пустым client_id и&nbsp;четыре пары повторов, иначе редкие проблемы в&nbsp;выборку не&nbsp;попадут. Сначала предскажите.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="passport"></div>
+        <p>На&nbsp;встроенном примере пометки ловят все семь проблем. Есть и&nbsp;ложная тревога: в&nbsp;orders_q1 примера всего девять разных значений, и&nbsp;сработало правило «мало значений — категория?». В&nbsp;полной выгрузке их&nbsp;двенадцать.</p>
+
+        <h3 class="sub-h">Что умеет разбор CSV на&nbsp;странице</h3>
+        <p>Разбор упрощённый: файл читается в&nbsp;браузере, без&nbsp;сети, по&nbsp;основным правилам read_csv.</p>
+        <ul>
+          <li><b>Поддерживается:</b> разделители «,», «;», табуляция и&nbsp;«|» — берётся тот, что даёт одинаковое число полей в&nbsp;первых строках; значения в&nbsp;двойных кавычках, кавычка внутри как&nbsp;«""», перевод строки внутри кавычек; UTF-8, а&nbsp;если буквы побились — повторное чтение как Windows-1251; пропуски по&nbsp;списку pandas; типы int64, float64, str, bool.</li>
+          <li><b>Не&nbsp;поддерживается:</b> другие кодировки, комментарии, заголовок не&nbsp;в&nbsp;первой строке, экранирование обратной косой чертой, десятичная запятая — такие числа останутся строками, как и&nbsp;у&nbsp;pandas без&nbsp;<code>decimal=","</code>.</li>
+          <li><b>Предел — 20&nbsp;МБ:</b> файл целиком разбирается в&nbsp;памяти страницы. Больше — работа для pandas.</li>
+        </ul>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: N/A, дубли и&nbsp;часовые пояса</h2>
+        <div class="callout"><p><b>«N/A» pandas превращает в&nbsp;NaN сам, «-» и&nbsp;−1&nbsp;— нет.</b> 181 «N/A» в&nbsp;country стали пропусками ещё при чтении: эта строка есть в&nbsp;списке read_csv. Прочерка там нет, и&nbsp;120 «-» стали четвёртым каналом. −1 в&nbsp;orders_q1 и&nbsp;99 в&nbsp;age — числа: средний возраст с&nbsp;ними 38,3 года, без&nbsp;них 36,4. Все коды сразу снимает <code>na_values</code> со&nbsp;словарём по&nbsp;столбцам<a class="ref" href="#src-4" data-ref="src-4">4</a>.</p></div>
+        <div class="block wide" data-code="na"></div>
+        <div class="callout"><p><b>Дубли ключа, которых «не&nbsp;может быть».</b> Полных дублей строк нет, а&nbsp;повторов client_id — 40: копии различаются только visits_q1 на&nbsp;единицу, похоже на&nbsp;две выгрузки в&nbsp;разные дни. Ловушка в&nbsp;подсчёте: <code>duplicated()</code><a class="ref" href="#src-9" data-ref="src-9">9</a> считает пустые id равными друг другу и&nbsp;даёт 64 — это видно в&nbsp;выводе ниже. Какую копию оставить, решает владелец данных, а&nbsp;не&nbsp;<code>keep="first"</code>.</p></div>
+        <div class="block wide" data-code="dups"></div>
+        <div class="callout"><p><b>Часовые пояса в&nbsp;датах.</b> В&nbsp;last_order_at 8&nbsp;816 строк со&nbsp;смещением +03:00 и&nbsp;1&nbsp;506 с&nbsp;Z, то&nbsp;есть в&nbsp;UTC. pandas&nbsp;3 такую смесь сам не&nbsp;разбирает и&nbsp;просит <code>utc=True</code><a class="ref" href="#src-10" data-ref="src-10">10</a>. Хуже, если отрезать окончания: 1&nbsp;506 моментов сдвинутся на&nbsp;3&nbsp;часа, а&nbsp;209 заказов уедут в&nbsp;другой день. С&nbsp;форматами то&nbsp;же: <code>format="mixed"</code> с&nbsp;<code>dayfirst=True</code> переставил день и&nbsp;месяц и&nbsp;растянул регистрации до&nbsp;декабря 2026.</p></div>
+        <div class="block wide" data-code="dates"></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: отчёт показывает всё и&nbsp;ничего</h2>
+        <p><span class="term" tabindex="0" data-g="profiling">Профилирование данных</span> — автоматический отчёт по&nbsp;всем столбцам: типы, пропуски, распределения, корреляции, предупреждения. В&nbsp;Python самый известный — ydata-profiling, теперь fg-data-profiling<a class="ref" href="#src-11" data-ref="src-11">11</a>. Но&nbsp;на&nbsp;учебной выгрузке из&nbsp;девяти его предупреждений подложенной проблемы касается одно — пропуски в&nbsp;country, и&nbsp;то потому, что «N/A» pandas превратил в&nbsp;NaN ещё при чтении.</p>
+        <div class="tbl fl-yd">
+          <table>
+            <thead><tr><th>Проблема</th><th>Что в&nbsp;отчёте</th></tr></thead>
+            <tbody>
+              <tr><td data-l="Проблема">1. Ключ — число с&nbsp;пропусками</td><td data-l="В отчёте">тип Numeric, 25 пропусков в&nbsp;цифрах, без&nbsp;предупреждения</td></tr>
+              <tr><td data-l="Проблема">2. Даты в&nbsp;двух форматах</td><td data-l="В отчёте">столбец признан датой, но&nbsp;диапазон 2025-01-06 — 2026-12-03: день и&nbsp;месяц перепутаны молча</td></tr>
+              <tr><td data-l="Проблема">3. Смесь поясов</td><td data-l="В отчёте">дата распознана, о&nbsp;поясах ни&nbsp;слова</td></tr>
+              <tr><td data-l="Проблема">4. age = 99</td><td data-l="В отчёте">максимум 99 в&nbsp;цифрах, без&nbsp;предупреждения</td></tr>
+              <tr><td data-l="Проблема">5. «N/A» и&nbsp;«-»</td><td data-l="В отчёте">о&nbsp;181 пропуске в&nbsp;country — предупреждение; «-» — только в&nbsp;таблице частот</td></tr>
+              <tr><td data-l="Проблема">6. orders_q1 = −1</td><td data-l="В отчёте">150 отрицательных в&nbsp;цифрах, предупреждение только о&nbsp;нулях</td></tr>
+              <tr><td data-l="Проблема">7. Повторы ключа</td><td data-l="В отчёте">11&nbsp;975 разных на&nbsp;12&nbsp;015, предупреждение «распределён равномерно»</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Отчёт видит всё и&nbsp;не&nbsp;знает ничего: что 99 — это «не&nbsp;указан», что ключ обязан быть уникальным, какая из&nbsp;копий клиента верная. Тьюки, который придумал разведочный анализ, сравнивал его с&nbsp;работой детектива<a class="ref" href="#src-12" data-ref="src-12">12</a>: улики собирает метод, вопросы задаёт человек. Отчёт хорош, чтобы не&nbsp;пропустить столбец, а&nbsp;не&nbsp;чтобы решить, что в&nbsp;нём не&nbsp;так.</p>
+        <p>Пакет переименован: на&nbsp;PyPI ydata-profiling сменился на&nbsp;fg-data-profiling, импорт теперь <code>data_profiling</code><a class="ref" href="#src-11" data-ref="src-11">11</a>; код ниже написан под новое имя. Обе версии пока требуют pandas ниже 3.0.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: чек-лист, карта пропусков и&nbsp;черновик отчёта</h2>
+        <p>Блоки читают учебную выгрузку <code>clients_export.csv</code>, вывод вставлен без&nbsp;правок. Первые два запущены в&nbsp;Python 3.13 с&nbsp;pandas 3.0.5, третий — в&nbsp;отдельном окружении: fg-data-profiling требует pandas ниже 3.0. Сначала чек-лист: семь подозрений видны уже в&nbsp;его выводе.</p>
+        <div class="block wide" data-code="checklist"></div>
+        <p>Карта пропусков. Скрытые пропуски сначала превращаем в&nbsp;NaN, строки сортируем по&nbsp;orders_q1 и&nbsp;режем на&nbsp;40 полос по&nbsp;301 строке. Доля пропусков в&nbsp;каждой клетке — цвет <span class="term" tabindex="0" data-g="heatmap">тепловой карты</span>. Без&nbsp;сортировки полосы были&nbsp;бы одинаковыми: строки выгрузки перемешаны.</p>
+        <div class="block wide" data-code="missmap"></div>
+        <figure class="fp-hm" id="fp-hm"></figure>
+        <p>Черновик отчёта fg-data-profiling: сохраняем HTML-отчёт, печатаем предупреждения, а&nbsp;рядом — цифры отчёта, о&nbsp;которых он промолчал.</p>
+        <div class="block wide" data-code="ydata"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Разведочный анализ» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Wickham H. <a href="https://doi.org/10.18637/jss.v059.i10" target="_blank" rel="noopener">Tidy Data</a>. Journal of Statistical Software, 2014. Правило «одна строка — одно наблюдение».</li>
+          <li id="src-2">Stevens S. S. <a href="https://doi.org/10.1126/science.103.2684.677" target="_blank" rel="noopener">On the Theory of Scales of Measurement</a>. Science, 1946. Первоисточник деления шкал на&nbsp;номинальные, порядковые и&nbsp;количественные.</li>
+          <li id="src-3">pandas. <a href="https://pandas.pydata.org/docs/user_guide/basics.html" target="_blank" rel="noopener">Essential basic functionality</a> и&nbsp;<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.memory_usage.html" target="_blank" rel="noopener">DataFrame.memory_usage</a>. dtypes, value_counts, память с&nbsp;deep=True.</li>
+          <li id="src-4">pandas. <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html" target="_blank" rel="noopener">pandas.read_csv</a>. Строки, которые читаются как пропуск, na_values, разбор дат только по&nbsp;запросу.</li>
+          <li id="src-5">Rubin D. B. <a href="https://doi.org/10.1093/biomet/63.3.581" target="_blank" rel="noopener">Inference and missing data</a>. Biometrika, 1976. Первоисточник механизмов пропусков, подробно — в&nbsp;2.3.</li>
+          <li id="src-6">pandas. <a href="https://pandas.pydata.org/docs/user_guide/missing_data.html" target="_blank" rel="noopener">Working with missing data</a>. Почему целые с&nbsp;NaN становятся float64.</li>
+          <li id="src-7">ISO. <a href="https://www.iso.org/iso-8601-date-and-time-format.html" target="_blank" rel="noopener">ISO 8601 — Date and time format</a>. Стандарт записи дат, времени и&nbsp;смещения от&nbsp;UTC.</li>
+          <li id="src-8">Wickham H., Çetinkaya-Rundel M., Grolemund G. <a href="https://r4ds.hadley.nz/EDA.html" target="_blank" rel="noopener">R for Data Science, 2nd ed., глава Exploratory data analysis</a>, 2023. Разведочный анализ как цикл вопросов.</li>
+          <li id="src-9">pandas. <a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.duplicated.html" target="_blank" rel="noopener">pandas.Series.duplicated</a>. Параметр keep и&nbsp;поиск повторов в&nbsp;одном столбце.</li>
+          <li id="src-10">pandas. <a href="https://pandas.pydata.org/docs/reference/api/pandas.to_datetime.html" target="_blank" rel="noopener">pandas.to_datetime</a>. Параметры utc, format и&nbsp;dayfirst, разбор смешанных поясов.</li>
+          <li id="src-11"><a href="https://docs.profiling.ydata.ai/" target="_blank" rel="noopener">ydata-profiling: документация</a> и&nbsp;страница <a href="https://pypi.org/project/fg-data-profiling/" target="_blank" rel="noopener">fg-data-profiling на&nbsp;PyPI</a>. Автоматический отчёт как черновик; новое имя пакета и&nbsp;импорта.</li>
+          <li id="src-12">Tukey J. W. Exploratory Data Analysis. Addison-Wesley, 1977. Книга, с&nbsp;которой началось слово EDA.</li>
+        </ol>
+      </section>

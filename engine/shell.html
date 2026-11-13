@@ -1,0 +1,45 @@
+<header class="top">
+  <div class="top-in">
+    <button type="button" class="btn ghost small menu-btn" id="menuBtn" aria-controls="side" aria-expanded="false">Содержание</button>
+    <a class="brand" href="index.html">Аналитика 101</a>
+    <span class="crumbs">{{CRUMBS}}</span>
+    <span class="spacer"></span>
+    <span class="qprog" id="qprog">Вопросы: 0 из {{QN}}</span>
+    <a class="btn ghost small dl-link" href="#materials">Материалы</a>
+    <div class="aimenu">
+      <button type="button" class="btn accent small" id="aiBtn" aria-haspopup="true" aria-controls="aiMenu" aria-expanded="false"><span class="lg">Обсудить с ИИ</span><span class="sm">ИИ</span><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <div class="menu" id="aiMenu" hidden>
+        <p class="menu-hd">Кнопки «Обсудить» копируют готовый промпт с текстом страницы — вставьте его в любой чат.</p>
+        <button type="button" class="mi" data-ai="sec"><b>Обсудить текущий раздел</b><small id="aiSecName">Раздел</small></button>
+        <button type="button" class="mi" data-ai="chapter"><b>Обсудить всю страницу</b><small>Текст страницы, глоссарий и ваши ответы на вопросы</small></button>
+        {{NLM_ITEM}}
+        <div class="menu-links"><span>Открыть:</span><a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a><a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="side" id="side" aria-label="Оглавление">
+    <h4>Блоки</h4>
+    <div class="blocks">{{BLOCKS}}</div>
+    <h4>Темы блока {{BLOCK_GEN}}</h4>
+    <ul class="toc">
+{{TOC}}
+    </ul>
+    <a class="toc-all" href="course.html#{{TOC_ANCHOR}}">Оглавление курса</a>
+    <h4>На этой странице</h4>
+    <ul class="onpage" id="onpage"></ul>
+  </nav>
+
+  <main class="main" id="top">
+    <article class="article" id="article">
+{{ARTICLE}}
+    </article>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<button type="button" class="ask selask" id="selAsk" hidden>Спросить ИИ об этом</button>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>

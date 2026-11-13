@@ -1,0 +1,124 @@
+/* ===== Сцена: сетка с облаком клиентов, базисные и собственные стрелки ===== */
+.scene .mt-sc { position: absolute; inset: 0; }
+.scene .mt-svg { position: absolute; inset: 0; display: block; }
+.mt-svg line { stroke-linecap: round; }
+.mt-svg polygon.hd { stroke-dasharray: none; stroke-linejoin: round; stroke-width: 1; }
+.mt-g0 { stroke: #161e30; stroke-width: 1; }
+.mt-g1 { stroke: rgba(111, 162, 234, .25); stroke-width: 1; }
+.mt-ax { stroke: rgba(111, 162, 234, .6); stroke-width: 1.4; }
+.mt-cell { fill: rgba(227, 192, 77, .15); stroke: #e3c04d; stroke-width: 1.6; }
+.mt-cell.ghost { fill: none; stroke-dasharray: 5 4; opacity: .8; }
+.mt-pt { fill: #e8ecf4; }
+.mt-pt.on { fill: #fff; stroke: #36b8a6; stroke-width: 2; }
+.mt-o { fill: #e8ecf4; }
+.mt-bi { stroke: #f0a247; fill: #f0a247; stroke-width: 2.6; }
+.mt-bj { stroke: #a48af0; fill: #a48af0; stroke-width: 2.6; }
+.mt-bi.em, .mt-bj.em { stroke-width: 3.8; }
+.mt-fg { stroke: #6f7a91; fill: #6f7a91; stroke-width: 1.2; stroke-dasharray: 3 3; opacity: .75; }
+.mt-fa { stroke: #b7c0d2; fill: #b7c0d2; stroke-width: 1.7; }
+.mt-fa.hi { stroke: #36b8a6; fill: #36b8a6; stroke-width: 3; }
+.mt-el { stroke-width: 1.2; stroke-dasharray: 6 5; opacity: .5; }
+.mt-eg { stroke-width: 1.4; stroke-dasharray: 3 3; opacity: .5; }
+.mt-ea { stroke-width: 3.4; }
+.mt-el.e1, .mt-eg.e1, .mt-ea.e1 { stroke: #36b8a6; fill: #36b8a6; }
+.mt-el.e2, .mt-eg.e2, .mt-ea.e2 { stroke: #f06ba5; fill: #f06ba5; }
+.mt-el.e0, .mt-eg.e0, .mt-ea.e0 { stroke: #f2756a; fill: #f2756a; }
+.mt-img { stroke: #e3c04d; stroke-width: 3; opacity: .75; }
+.mt-null { stroke: #f2756a; stroke-width: 1.6; stroke-dasharray: 6 5; }
+.mt-oval { fill: rgba(54, 184, 166, .08); stroke: #36b8a6; stroke-width: 1.4; stroke-dasharray: 6 4; }
+.mt-mk { fill: #0b0f19; stroke: #f2756a; stroke-width: 2; }
+.mt-mk.on { fill: #f2756a; }
+.mt-mk-l { stroke: #f2756a; stroke-width: 1.3; stroke-dasharray: 3 3; }
+
+/* карточка матрицы: первый столбец в цвете î, второй — в цвете ĵ */
+.scene .mt-mx { position: absolute; right: 16px; top: 78px; display: flex; align-items: center; gap: 9px; background: rgba(14, 19, 32, .92); border: 1px solid var(--s-line); border-radius: 10px; padding: 7px 11px; pointer-events: none; }
+.scene .mt-mn { font: italic 600 17px/1 var(--read); color: var(--s-ink); white-space: nowrap; }
+.scene .mt-mb { display: grid; grid-template-columns: auto auto; gap: 2px 12px; padding: 3px 8px; border-left: 1.5px solid var(--s-ink2); border-right: 1.5px solid var(--s-ink2); border-radius: 5px; font: 500 13px/1.25 var(--mono); font-variant-numeric: tabular-nums; }
+.scene .mt-mb i { font-style: normal; text-align: right; }
+.scene .mt-mb i.c1 { color: #f0a247; }
+.scene .mt-mb i.c2 { color: #a48af0; }
+
+/* выноски к объектам */
+.scene .mt-call { position: absolute; max-width: 220px; background: #141b2b; border: 1px solid var(--s-acc); color: var(--s-ink); font: 500 12px/1.3 var(--ui); padding: 5px 9px; border-radius: 7px; box-shadow: 0 6px 18px rgba(0, 0, 0, .35); pointer-events: none; }
+
+/* табло справа сверху и счётчики не должны сталкиваться на средней ширине */
+@container (max-width: 1000px) { .sc-info { display: none; } .scene .mt-mx { top: 14px; } }
+@container (max-width: 860px) { .sc-stage { height: 520px; } }
+@container (max-width: 560px) {
+  .sc-stage { height: 470px; }
+  .hb small { display: none; }
+  .scene .mt-mx { top: auto; bottom: 48px; left: 10px; right: auto; padding: 5px 8px; gap: 7px; }
+  .scene .mt-mn { font-size: 14px; }
+  .scene .mt-mb { font-size: 11px; gap: 1px 8px; padding: 2px 6px; }
+  .scene .mt-call { font-size: 11px; max-width: 170px; padding: 4px 7px; }
+}
+
+/* ===== Интерактив «Матрица как деформация» ===== */
+.mw-do { padding: 10px 16px 0; margin: 0 !important; }
+.mw-pre { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 10px 16px 12px; border-bottom: 1px solid var(--line); }
+.mw-l { font: 12.5px/1.3 var(--ui); color: var(--muted); }
+.mw-seg { flex-wrap: wrap; }
+.mw-left { padding: 10px 12px 12px; min-width: 0; }
+.mw-plot { min-height: 260px; }
+.mw-plot svg { display: block; }
+.mw-plot line { stroke-linecap: round; }
+.mw-plot polygon.hd { stroke-dasharray: none; stroke-width: 1; stroke-linejoin: round; }
+.mw-g0 { stroke: var(--line); stroke-width: 1; }
+.mw-g1 { stroke: var(--c1); stroke-opacity: .3; stroke-width: 1; }
+.mw-ax { stroke: var(--c1); stroke-opacity: .75; stroke-width: 1.4; }
+.mw-cell { fill: var(--c6); fill-opacity: .16; stroke: var(--c6); stroke-width: 1.6; }
+.mw-cell.neg { fill: var(--bad); stroke: var(--bad); }
+.mw-pt { fill: var(--ink-2); fill-opacity: .72; }
+.mw-o { fill: var(--ink); }
+.mw-bi { stroke: var(--c2); fill: var(--c2); stroke-width: 2.6; }
+.mw-bj { stroke: var(--c5); fill: var(--c5); stroke-width: 2.6; }
+.mw-el { stroke: var(--accent); stroke-opacity: .45; stroke-width: 1.2; stroke-dasharray: 6 5; }
+.mw-eg { stroke-width: 1.4; stroke-dasharray: 3 3; opacity: .45; }
+.mw-ea { stroke-width: 3.2; }
+.mw-eg.e1, .mw-ea.e1 { stroke: var(--accent); fill: var(--accent); }
+.mw-eg.e2, .mw-ea.e2 { stroke: var(--c4); fill: var(--c4); }
+.mw-lt { font-size: 11.5px; font-weight: 600; }
+.mw-lt.e1 { fill: var(--accent); }
+.mw-lt.e2 { fill: var(--c4); }
+.mw-img { stroke: var(--c6); stroke-width: 3; stroke-opacity: .8; }
+.mw-null { stroke: var(--bad); stroke-width: 1.6; stroke-dasharray: 6 5; }
+.mw-leg { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; font: 12px/1.4 var(--ui); color: var(--ink-2); }
+.mw-leg span { display: inline-flex; align-items: center; gap: 6px; }
+.mw-leg i { display: inline-block; width: 16px; height: 0; border-top: 3px solid; }
+.mw-leg i.bi { border-color: var(--c2); }
+.mw-leg i.bj { border-color: var(--c5); }
+.mw-leg i.cell { width: 10px; height: 10px; border: 1.5px solid var(--c6); background: color-mix(in srgb, var(--c6) 18%, transparent); }
+.mw-leg i.e1 { border-color: var(--accent); }
+.mw-leg i.e2 { border-color: var(--c4); }
+.mw-leg i.nl { border-top: 2px dashed var(--bad); }
+
+/* матрица из четырёх ползунков: стоят там же, где элементы в записи матрицы */
+.mw-mat { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 14px; padding: 8px 12px; border-left: 2px solid var(--ink-2); border-right: 2px solid var(--ink-2); border-radius: 10px; }
+.mw-s { display: grid; gap: 3px; min-width: 0; cursor: pointer; }
+.mw-sn { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.mw-sn b { font: italic 600 16px/1 var(--read); }
+.mw-s.c1 .mw-sn b { color: var(--c2); }
+.mw-s.c2 .mw-sn b { color: var(--c5); }
+.mw-sn em { font: 600 13.5px/1 var(--mono); font-style: normal; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mw-s input { width: 100%; min-width: 0; margin: 0; accent-color: var(--accent); }
+.mw-read { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px 14px; }
+.mw-r { display: grid; gap: 1px; border-bottom: 1px dotted var(--line-2); padding-bottom: 5px; min-width: 0; }
+.mw-r.wide { grid-column: 1 / -1; }
+.mw-r span { font: 12px/1.3 var(--ui); color: var(--muted); }
+.mw-r b { font: 600 16px/1.25 var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+.mw-r b.zero { color: var(--bad); }
+.mw-r b.neg { color: var(--warn); }
+.narr-text b { font-weight: 600; }
+.mw-tasks { margin: 0 !important; padding: 0 !important; list-style: none; display: grid; gap: 6px; }
+.mw-tasks li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 6px; margin: 0 !important; color: var(--ink-2); }
+.mw-tasks li b { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-2); display: inline-grid; place-items: center; font: 600 11px/1 var(--mono); }
+.mw-tasks li.on { color: var(--ink); }
+.mw-tasks li.on b { background: var(--good); border-color: var(--good); color: var(--surface); }
+@media (max-width: 1180px) { .mw-mat { max-width: 420px; } .mw-read { grid-template-columns: repeat(4, minmax(0, 1fr)); } .mw-r.wide { grid-column: auto; } }
+@media (max-width: 640px) {
+  .mw-pre { padding: 10px 12px 12px; }
+  .mw-left { padding: 8px 6px 10px; }
+  .mw-read { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .mw-r.wide { grid-column: 1 / -1; }
+  .mw-leg { font-size: 11.5px; gap: 3px 10px; }
+}

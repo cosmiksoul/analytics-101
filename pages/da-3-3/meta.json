@@ -1,0 +1,5 @@
+{
+  "title": "Агрегаты и группировка",
+  "description": "Страница 3.3 курса «Аналитика 101»: COUNT, SUM и AVG с NULL внутри, GROUP BY по нескольким столбцам, HAVING, условные агрегаты через CASE и FILTER, среднее от средних против общего среднего, ROLLUP и GROUPING SETS на учебной базе shop.",
+  "file": "da-3-3-aggregates"
+}

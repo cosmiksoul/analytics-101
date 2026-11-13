@@ -1,0 +1,5 @@
+{
+  "title": "Подзапросы, CTE и NULL",
+  "description": "Страница 3.4 курса «Аналитика 101»: подзапросы в WHERE, FROM и SELECT, коррелированные подзапросы и EXISTS, цепочки шагов WITH, троичная логика с UNKNOWN, COALESCE и NULLIF, приведение типов и функции дат DATE_TRUNC и EXTRACT на учебной базе магазина.",
+  "file": "da-3-4-cte-null-types"
+}

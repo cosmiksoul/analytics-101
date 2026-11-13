@@ -1,0 +1,151 @@
+      <p class="eyebrow">Дата аналитика · Тема 06 · <b>Статистический вывод</b></p>
+      <h1>Доверительные интервалы и&nbsp;бутстрэп</h1>
+      <p class="lead">После страницы вы поставите честный «плюс-минус» — <span class="term" tabindex="0" data-g="ci">доверительный интервал</span> — к&nbsp;среднему, доле и&nbsp;медиане из&nbsp;отчёта и&nbsp;прочитаете его без&nbsp;самой частой ошибки. Для&nbsp;среднего и&nbsp;доли хватит формул, для&nbsp;медианы и&nbsp;всего остального — <span class="term" tabindex="0" data-g="bootstrap">бутстрэпа</span>.</p>
+      <div class="meta-row"><span class="pill">≈&nbsp;30&nbsp;минут</span><span class="pill">анимация из&nbsp;12&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">6&nbsp;блоков кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: 95% — про&nbsp;процедуру, а&nbsp;не&nbsp;про&nbsp;отрезок</h2>
+        <p>Доверительный интервал — отрезок вокруг оценки, который строят по&nbsp;выборке, чтобы накрыть неизвестное истинное значение. Его <span class="term" tabindex="0" data-g="level">уровень доверия</span>, например 95%, — свойство процедуры: если раз за&nbsp;разом брать новые выборки, примерно 95&nbsp;отрезков из&nbsp;100 накроют истину, а&nbsp;про&nbsp;один готовый отрезок нельзя сказать, попал ли&nbsp;он. Для&nbsp;среднего и&nbsp;доли интервал дают формулы на&nbsp;основе центральной предельной теоремы, а&nbsp;для&nbsp;медианы, квантилей и&nbsp;отношений — бутстрэп: <span class="term" tabindex="0" data-g="resample">перевыборки с&nbsp;возвращением</span> из&nbsp;той&nbsp;же выборки. Ширина интервала падает как&nbsp;1/√n: чтобы сузить его вдвое, нужно вчетверо больше данных.</p>
+        <div class="scene" id="scene" aria-label="Анимация: из 5 000 интервалов между заказами берутся 100 выборок по 40 значений, по каждой строится доверительный интервал; пять отрезков не задевают линию истинного среднего и краснеют; при 99% отрезки длиннее, при n = 160 вдвое короче; затем бутстрэп перевыбирает первую выборку с возвращением и строит интервал для среднего и медианы без формул"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Что значит 95%</h3>
+        <p>До&nbsp;того как&nbsp;взята выборка, границы интервала L и&nbsp;U — случайные величины: они зависят от&nbsp;того, какие наблюдения попадутся. Уровень доверия — вероятность, что&nbsp;процедура накроет истинное значение θ<a class="ref" href="#src-1" data-ref="src-1">1</a>:</p>
+        <div class="formula"><span class="f">P(L ≤ θ ≤ U) = 1 − α = 0,95</span><small>θ — истинное значение, например среднее совокупности μ · L и&nbsp;U — границы, посчитанные по&nbsp;выборке · α = 0,05 — доля промахов, на&nbsp;которую мы согласны</small></div>
+        <p>Когда выборка взята, L и&nbsp;U стали числами, и&nbsp;случайности не&nbsp;осталось: μ = 11,92&nbsp;дня либо внутри отрезка 9,22–16,35, либо нет. Долю интервалов, которые на&nbsp;деле накрывают истину, называют <span class="term" tabindex="0" data-g="coverage">покрытием</span>. У&nbsp;хорошей процедуры оно близко к&nbsp;уровню доверия. В&nbsp;сцене оно 92,7% вместо обещанных 95%, почему — видно в&nbsp;интерактиве.</p>
+
+        <h3 class="sub-h">Интервал для&nbsp;среднего: ЦПТ и&nbsp;t</h3>
+        <p>По&nbsp;ЦПТ из&nbsp;5.3 среднее x̄ почти нормально вокруг μ, а&nbsp;его стандартная ошибка — σ/√n. У&nbsp;нормального распределения 95% значений лежат в&nbsp;пределах 1,96 стандартного отклонения от&nbsp;центра, а&nbsp;стандартное отклонение x̄ и&nbsp;есть стандартная ошибка. Отсюда x̄ ± 1,96·σ/√n. Но&nbsp;σ неизвестна, её заменяют выборочным s, а&nbsp;s тоже случайно и&nbsp;на&nbsp;малых выборках часто занижено. Поправку нашёл Уильям Госсет, писавший под&nbsp;псевдонимом Student<a class="ref" href="#src-2" data-ref="src-2">2</a>: отношение (x̄ − μ)/(s/√n) подчиняется <span class="term" tabindex="0" data-g="tdist">t-распределению</span> с&nbsp;n − 1 <span class="term" tabindex="0" data-g="df">степенями свободы</span>. Хвосты у&nbsp;него тяжелее, и&nbsp;множитель больше 1,96.</p>
+        <div class="formula"><span class="f">x̄ ± t<sub>n−1; 0,975</sub> · s/√n</span><small>x̄ — среднее выборки · s — её стандартное отклонение с&nbsp;делителем n − 1 · s/√n — оценка стандартной ошибки · t<sub>n−1; 0,975</sub> — квантиль t-распределения уровня 0,975; для&nbsp;99% берут 0,995</small></div>
+        <div class="tbl d62-t"><table>
+          <thead><tr><th>n</th><th>t для&nbsp;95%</th><th>t для&nbsp;99%</th></tr></thead>
+          <tbody>
+            <tr><td>10</td><td>2,262</td><td>3,250</td></tr>
+            <tr><td>40</td><td>2,023</td><td>2,708</td></tr>
+            <tr><td>100</td><td>1,984</td><td>2,626</td></tr>
+            <tr><td>400</td><td>1,966</td><td>2,588</td></tr>
+            <tr><td>∞, нормальное</td><td>1,960</td><td>2,576</td></tr>
+          </tbody>
+        </table></div>
+        <p>Поправка лечит только незнание σ. Если сами данные перекошены, ЦПТ нужно больше наблюдений, чем кажется (нюанс 5.3), и&nbsp;покрытие проседает.</p>
+
+        <h3 class="sub-h">Интервал для&nbsp;доли: Вилсон вместо нормального</h3>
+        <p>Конверсия — среднее нулей и&nbsp;единиц, и&nbsp;тот&nbsp;же рецепт даёт <span class="term" tabindex="0" data-g="wald">нормальный интервал</span>, его ещё называют интервалом Вальда<a class="ref" href="#src-1" data-ref="src-1">1</a>:</p>
+        <div class="formula"><span class="f">p̂ ± z · √(p̂(1 − p̂) / n)</span><small>p̂ — доля в&nbsp;выборке · n — число визитов · z = 1,96 для&nbsp;95%</small></div>
+        <p>При&nbsp;малых p и&nbsp;n он ломается: 2&nbsp;покупки из&nbsp;100 визитов дают от&nbsp;−0,74 до&nbsp;4,74%, хотя отрицательной конверсии не&nbsp;бывает, а&nbsp;0&nbsp;покупок — интервал нулевой ширины, «конверсия точно ноль». Беда в&nbsp;том, что&nbsp;разброс считают по&nbsp;самой p̂, а&nbsp;она и&nbsp;неточна. <span class="term" tabindex="0" data-g="wilson">Интервал Вилсона</span> собирает все p, от&nbsp;которых p̂ отстоит меньше чем на&nbsp;z их&nbsp;собственных стандартных ошибок<a class="ref" href="#src-3" data-ref="src-3">3</a>:</p>
+        <div class="formula"><span class="f">(p̂ + z²/2n ± z·√(p̂(1 − p̂)/n + z²/4n²)) / (1 + z²/n)</span><small>те&nbsp;же p̂, n и&nbsp;z · центр сдвинут от&nbsp;p̂ к&nbsp;1/2 · границы не&nbsp;выходят из&nbsp;[0; 1]</small></div>
+        <p>Для&nbsp;2 из&nbsp;100 Вилсон даёт 0,55–7,00%. В&nbsp;симуляции раздела «Код» при&nbsp;p = 3,4% и&nbsp;n = 100 нормальный интервал накрывает истину в&nbsp;85,0% выборок, Вилсон — в&nbsp;94,4%. В&nbsp;обзоре Брауна, Кая и&nbsp;Дасгупты Вилсон — среди рекомендованных замен нормальному интервалу<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+
+        <h3 class="sub-h">Бутстрэп: разброс из&nbsp;самой выборки</h3>
+        <p>Для&nbsp;медианы, квантилей и&nbsp;<span class="term" tabindex="0" data-g="ratio">метрик-отношений</span> вроде «выручки на&nbsp;визит» формула стандартной ошибки сложна или&nbsp;неизвестна. Бутстрэп Брэдли Эфрона обходится без&nbsp;неё<a class="ref" href="#src-4" data-ref="src-4">4</a>. Выборка — лучшее, что&nbsp;мы знаем о&nbsp;совокупности, поэтому новые выборки берут из&nbsp;неё&nbsp;самой:</p>
+        <ol>
+          <li>Из&nbsp;выборки размера n взять n значений с&nbsp;возвращением: одно попадёт несколько раз, другое ни&nbsp;разу.</li>
+          <li>Посчитать на&nbsp;этой перевыборке нужную статистику: среднее, медиану, 90-й перцентиль.</li>
+          <li>Повторить B раз, обычно B = 1&nbsp;000–10&nbsp;000.</li>
+          <li>Взять 2,5-й и&nbsp;97,5-й перцентили B значений — это <span class="term" tabindex="0" data-g="pctl">процентильный интервал</span> 95%.</li>
+        </ol>
+        <p>Разброс B значений оценивает стандартную ошибку, а&nbsp;их&nbsp;гистограмма — всё распределение статистики вместе с&nbsp;несимметричностью<a class="ref" href="#src-5" data-ref="src-5">5</a>. В&nbsp;сцене бутстрэп среднего дал 9,57–16,26&nbsp;дня против 9,22–16,35 по&nbsp;формуле, а&nbsp;интервал медианы вышел несимметричным: 5,59–13,19 вокруг 8,02. Для&nbsp;метрики-отношения перевыбирают целые единицы — визиты или&nbsp;пользователей вместе с&nbsp;их&nbsp;выручкой — и&nbsp;в&nbsp;каждой перевыборке делят сумму на&nbsp;сумму<a class="ref" href="#src-6" data-ref="src-6">6</a>.</p>
+
+        <h3 class="sub-h">Ширина и&nbsp;размер выборки</h3>
+        <p>Полуширину интервала называют <span class="term" tabindex="0" data-g="moe">погрешностью</span>: в&nbsp;записи «4&nbsp;485 ± 667&nbsp;₽» это 667. Она пропорциональна 1/√n: вчетверо больше данных — вдвое уже интервал. Отсюда размер выборки под&nbsp;нужную погрешность E:</p>
+        <div class="formula"><span class="f">n = (z·σ / E)²,&nbsp;&nbsp;для&nbsp;доли&nbsp;&nbsp;n = z²·p(1 − p) / E²</span><small>σ и&nbsp;p берут из&nbsp;прошлых данных · E — допустимая погрешность · z = 1,96 для&nbsp;95%</small></div>
+        <p>Средний чек с&nbsp;погрешностью ±200&nbsp;₽ при&nbsp;σ ≈ 5&nbsp;400&nbsp;₽ требует (1,96 · 5&nbsp;400 / 200)² ≈ 2&nbsp;800 чеков — около 10&nbsp;недель продаж. Конверсия 3,4% с&nbsp;погрешностью ±0,5&nbsp;п.&nbsp;п. — около 5&nbsp;050&nbsp;визитов.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: плюс-минус к&nbsp;недельному отчёту</h2>
+        <p>В&nbsp;недельном отчёте учебного магазина четыре цифры. Средний чек 4&nbsp;485&nbsp;₽ и&nbsp;медиана 3&nbsp;195&nbsp;₽ — по&nbsp;270 чекам, первым строкам <code>checks.csv</code>. Конверсия 3,24% — по&nbsp;8&nbsp;000 визитов, первым строкам <code>visits.csv</code>. И&nbsp;конверсия маленького канала: 2&nbsp;покупки из&nbsp;100 визитов, первых визитов органики.</p>
+        <p>Руководитель спрашивает, насколько каждой цифре можно верить, и&nbsp;просит фразу для&nbsp;отчёта. Нужно поставить к&nbsp;каждой цифре интервал подходящим способом и&nbsp;сказать, что&nbsp;он значит. Ответ — в&nbsp;конце следующего раздела.</p>
+      </section>
+
+      <section data-sec="hundred" data-title="Сто интервалов">
+        <h2 id="hundred"><span class="sn">03</span>Сто интервалов: счётчик промахов и&nbsp;номинал</h2>
+        <p>Интерактив повторяет сцену с&nbsp;любыми уровнем и&nbsp;n. Совокупностей две: интервалы между заказами из <code>order_gaps.csv</code> (μ = 11,92&nbsp;дня, хвост вправо) и&nbsp;чеки из <code>checks.csv</code> (μ = 4&nbsp;334&nbsp;₽, тяжёлый хвост оптовых заказов). «Новая сотня» берёт ещё сто выборок, счётчик «всего» копит промахи. В&nbsp;режиме «Бутстрэп» каждый отрезок строится по&nbsp;1&nbsp;000 перевыборок, и&nbsp;их&nbsp;можно смотреть одну за&nbsp;другой.</p>
+        <p>Выборки делает свой генератор с&nbsp;зерном, как&nbsp;в&nbsp;5.3: одинаковые нажатия дают одинаковые сотни. Поэтому числа интерактива немного отличаются от&nbsp;чисел раздела «Код», где выборки делает NumPy. Так&nbsp;же устроена демонстрация интервалов в&nbsp;Seeing Theory<a class="ref" href="#src-7" data-ref="src-7">7</a>. Сначала предскажите.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="hundred"></div>
+
+        <h3 class="sub-h">Что видно в&nbsp;интерактиве</h3>
+        <p><b>Число промахов в&nbsp;сотне само случайно.</b> В&nbsp;первой сотне интерактива при&nbsp;n = 40 промахов 9, в&nbsp;сцене было 5: у&nbsp;счётчика разброс около ±2 на&nbsp;сотню. Зерно сцены, 6202, — третье из&nbsp;перебранных: с&nbsp;ним промахов ровно пять и&nbsp;в&nbsp;сотне по&nbsp;40, и&nbsp;в&nbsp;сотне по&nbsp;160. У&nbsp;соседних зёрен бывает и&nbsp;9, и&nbsp;12. За&nbsp;20&nbsp;сотен доля промахов 7,0%, при&nbsp;n = 400 — 5,8%: перекос данных лечится объёмом. Уровень 99% удлиняет те&nbsp;же отрезки на&nbsp;треть, и&nbsp;промахов около 2%.</p>
+        <p><b>Чеки.</b> При&nbsp;n = 10 и&nbsp;40 промахиваются 19,7 и&nbsp;18,1% отрезков, почти все — ниже μ. В&nbsp;маленькую выборку редко попадает оптовый чек, и&nbsp;x̄ с&nbsp;s занижены вместе. Даже при&nbsp;n = 400 промахов 8,1%, номинал возвращается к&nbsp;тысяче чеков.</p>
+        <p><b>Бутстрэп.</b> При&nbsp;n от&nbsp;40 его отрезки почти совпадают с&nbsp;формулой, а&nbsp;при&nbsp;n = 10 они короче и&nbsp;промахиваются чаще: 14,0% против 10,1% у&nbsp;t.</p>
+
+        <h3 class="sub-h">Ответ на&nbsp;задачу</h3>
+        <p>Средний чек — 4&nbsp;485&nbsp;₽, 95-процентный интервал 3&nbsp;818–5&nbsp;152&nbsp;₽. Медиана — 3&nbsp;195&nbsp;₽, бутстрэп-интервал 3&nbsp;000–3&nbsp;450&nbsp;₽ втрое уже: медиана не&nbsp;чувствует оптового хвоста. Конверсия недели — 3,24%, интервал 2,87–3,65%, Вилсон и&nbsp;нормальный почти совпали. Конверсия малого канала — 2%, но&nbsp;интервал Вилсона 0,55–7,00%: по&nbsp;100 визитам нельзя сказать даже, хуже ли канал средних 3,4%.</p>
+        <p>В&nbsp;отчёт: «Средний чек — 4&nbsp;485&nbsp;₽ (95%&nbsp;ДИ: 3&nbsp;818–5&nbsp;152&nbsp;₽)», где ДИ — доверительный интервал. Расшифровка для&nbsp;руководителя — «так построенный интервал накрывает истинный средний чек в&nbsp;95% выборок». И&nbsp;честная оговорка в&nbsp;методику: на&nbsp;чеках с&nbsp;оптом при&nbsp;270 наблюдениях это покрытие около 92%.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: формулировка, пересечение, малые выборки</h2>
+        <div class="callout"><p><b>«С&nbsp;вероятностью 95% истина в&nbsp;интервале» — неверно.</b> Истинный средний чек не&nbsp;случаен: он либо в&nbsp;отрезке 3&nbsp;818–5&nbsp;152&nbsp;₽, либо нет. 95% относятся к&nbsp;процедуре до&nbsp;того, как&nbsp;взята выборка. Верно так: «интервал построен способом, который накрывает истину в&nbsp;95% выборок». В&nbsp;опросе Хукстры и&nbsp;соавторов почти все студенты и&nbsp;исследователи согласились хотя&nbsp;бы с&nbsp;одним неверным толкованием интервала, включая это<a class="ref" href="#src-9" data-ref="src-9">9</a>. Вероятность «истина в&nbsp;отрезке» даёт байесовский интервал, о&nbsp;нём в&nbsp;ограничениях.</p></div>
+        <div class="callout"><p><b>Пересекающиеся интервалы не&nbsp;значат «разницы нет».</b> По&nbsp;1&nbsp;500 визитов у&nbsp;рассылки 5,67% (4,61–6,95%), у&nbsp;рекламы 3,93% (3,06–5,04%): отрезки пересекаются. А&nbsp;интервал разницы — 0,20–3,29&nbsp;п.&nbsp;п., и&nbsp;ноль в&nbsp;него не&nbsp;попал. Его полуширина — примерно корень из&nbsp;суммы квадратов полуширин, 1,54&nbsp;п.&nbsp;п., а&nbsp;не&nbsp;их&nbsp;сумма, 2,16&nbsp;п.&nbsp;п. Поэтому два 95-процентных отрезка могут перекрываться при&nbsp;значимой разнице<a class="ref" href="#src-10" data-ref="src-10">10</a>. Сравнивают интервал разницы; о&nbsp;значимости подробно — в&nbsp;6.3.</p></div>
+        <div class="block wide" data-code="overlap"></div>
+        <div class="callout"><p><b>Бутстрэп не&nbsp;лечит малую выборку и&nbsp;смещение.</b> Перевыборки не&nbsp;знают ничего сверх выборки. В&nbsp;10&nbsp;значениях мало хвоста, и&nbsp;бутстрэп-интервал выходит короче t-интервала — 12,6&nbsp;дня против 15,6 — и&nbsp;накрывает μ в&nbsp;85,6% выборок вместо 89,5%. При&nbsp;n = 40 разница почти исчезает. А&nbsp;если выгрузка потеряла чеки дороже 15&nbsp;000&nbsp;₽, бутстрэп уверенно построит узкий интервал 3&nbsp;251–3&nbsp;803&nbsp;₽, и&nbsp;μ = 4&nbsp;334&nbsp;₽ в&nbsp;него не&nbsp;попадёт<a class="ref" href="#src-5" data-ref="src-5">5</a>.</p></div>
+        <div class="block wide" data-code="boot_small"></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: байесовские интервалы и&nbsp;зависимые данные</h2>
+        <p>Интервалы этой страницы частотные: вероятность в&nbsp;них относится к&nbsp;процедуре. <span class="term" tabindex="0" data-g="credible">Байесовский интервал</span> отвечает на&nbsp;вопрос, который обычно и&nbsp;задают, — где истина с&nbsp;вероятностью 95% при&nbsp;этих данных, — но&nbsp;требует априорного распределения. Это страница 11.5, в&nbsp;теме A/B-тестов.</p>
+        <p>Формулы и&nbsp;бутстрэп считают наблюдения независимыми. Если у&nbsp;пользователя десяток сессий, перевыбирают пользователей, а&nbsp;не&nbsp;сессии, иначе интервал выйдет слишком узким: об&nbsp;этом страница 6.4.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: statsmodels, бутстрэп и&nbsp;проверка покрытия</h2>
+        <p>Код запущен в&nbsp;Python 3.13 с&nbsp;NumPy 2.5.3, pandas 3.0.5, SciPy 1.18.1 и&nbsp;statsmodels 0.15.0, вывод вставлен без&nbsp;правок. Первый блок — интервал для&nbsp;среднего чека недели: вручную через <code>stats.t</code> и&nbsp;через <code>DescrStatsW</code> из&nbsp;statsmodels<a class="ref" href="#src-8" data-ref="src-8">8</a>.</p>
+        <div class="block wide" data-code="mean_ci"></div>
+        <p>Второй — интервалы для&nbsp;конверсии функцией <code>proportion_confint</code><a class="ref" href="#src-8" data-ref="src-8">8</a> нормальным методом и&nbsp;Вилсоном.</p>
+        <div class="block wide" data-code="prop_ci"></div>
+        <p>Третий — бутстрэп медианы в&nbsp;десять строк. <code>rng.integers</code> сразу даёт номера чеков для&nbsp;всех B перевыборок, <code>x[idx]</code> — таблицу B × n, медиана по&nbsp;строкам — B бутстрэп-медиан. Для&nbsp;сравнения — <code>scipy.stats.bootstrap</code> с&nbsp;процентильным методом и&nbsp;<span class="term" tabindex="0" data-g="bca">BCa</span><a class="ref" href="#src-11" data-ref="src-11">11</a>.</p>
+        <div class="block wide" data-code="boot_median"></div>
+        <p>Четвёртый проверяет покрытие симуляцией: тысячи выборок из&nbsp;совокупности, где истина известна, и&nbsp;доля интервалов, которые её накрыли. Так проверяют любую процедуру.</p>
+        <div class="block wide" data-code="coverage"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Статистический вывод» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Diez D., Çetinkaya-Rundel M., Barr C. <a href="https://www.openintro.org/book/os/" target="_blank" rel="noopener">OpenIntro Statistics</a>, 4th ed., 2019. Интервалы для&nbsp;среднего и&nbsp;доли и&nbsp;их&nbsp;толкование.</li>
+          <li id="src-2">Student. <a href="https://doi.org/10.2307/2331554" target="_blank" rel="noopener">The Probable Error of a Mean</a>. Biometrika, 1908, т.&nbsp;6, № 1, с.&nbsp;1–25. Статья, где появилось t-распределение.</li>
+          <li id="src-3">Wilson E. B. <a href="https://doi.org/10.1080/01621459.1927.10502953" target="_blank" rel="noopener">Probable Inference, the Law of Succession, and Statistical Inference</a>. JASA, 1927; Brown L., Cai T., DasGupta A. <a href="https://doi.org/10.1214/ss/1009213286" target="_blank" rel="noopener">Interval Estimation for a Binomial Proportion</a>. Statistical Science, 2001. Интервал Вилсона и&nbsp;почему нормальный промахивается.</li>
+          <li id="src-4">Efron B. <a href="https://doi.org/10.1214/aos/1176344552" target="_blank" rel="noopener">Bootstrap Methods: Another Look at the Jackknife</a>. The Annals of Statistics, 1979, т.&nbsp;7, № 1, с.&nbsp;1–26. Первая статья о&nbsp;бутстрэпе.</li>
+          <li id="src-5">Efron B., Tibshirani R. An Introduction to the Bootstrap. Chapman &amp; Hall, 1993. Процентильный и&nbsp;BCa-интервалы, пределы бутстрэпа.</li>
+          <li id="src-6">Bruce P., Bruce A., Gedeck P. Practical Statistics for Data Scientists, 2nd ed. O'Reilly, 2020. Бутстрэп в&nbsp;работе аналитика.</li>
+          <li id="src-7"><a href="https://seeing-theory.brown.edu/frequentist-inference/index.html" target="_blank" rel="noopener">Seeing Theory: Frequentist Inference</a>. Brown University. Образец интерактива со&nbsp;ста интервалами.</li>
+          <li id="src-8">statsmodels. <a href="https://www.statsmodels.org/stable/stats.html" target="_blank" rel="noopener">Statistics</a>. Интервалы для&nbsp;долей и&nbsp;<code>DescrStatsW</code>.</li>
+          <li id="src-9">Hoekstra R., Morey R., Rouder J., Wagenmakers E.-J. <a href="https://doi.org/10.3758/s13423-013-0572-3" target="_blank" rel="noopener">Robust Misinterpretation of Confidence Intervals</a>. Psychonomic Bulletin &amp; Review, 2014, т.&nbsp;21, с.&nbsp;1157–1164. Опрос о&nbsp;толковании интервалов.</li>
+          <li id="src-10">Schenker N., Gentleman J. <a href="https://doi.org/10.1198/000313001317097960" target="_blank" rel="noopener">On Judging the Significance of Differences by Examining the Overlap Between Confidence Intervals</a>. The American Statistician, 2001, т.&nbsp;55, № 3, с.&nbsp;182–186. Почему пересечение — плохой тест.</li>
+          <li id="src-11">SciPy. <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bootstrap.html" target="_blank" rel="noopener">scipy.stats.bootstrap</a>. Методы percentile и&nbsp;BCa.</li>
+        </ol>
+      </section>

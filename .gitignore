@@ -1,0 +1,12 @@
+# Сборка: страницы и сайт пересобираются из исходников (python build.py --all, python tools/build_site.py)
+dist/standalone/
+dist/artifact/
+site/
+# dist/materials/ коммитится: материалы собраны заранее, в CI их не пересобрать (нужны PostgreSQL, Jupyter и данные)
+
+__pycache__/
+*.pyc
+node_modules/
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db

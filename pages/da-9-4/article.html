@@ -1,0 +1,166 @@
+      <p class="eyebrow">Дата аналитика · Тема 09 · <b>Продуктовые метрики и&nbsp;события</b></p>
+      <h1>Метрики роста и&nbsp;дерево метрик</h1>
+      <p class="lead">Выручка&nbsp;— произведение нескольких множителей, и&nbsp;каждый можно разложить дальше. На&nbsp;этой странице вы&nbsp;соберёте <span class="term" tabindex="0" data-g="tree">дерево метрик</span> учебного магазина, посчитаете <span class="term" tabindex="0" data-g="dau">DAU</span>, <span class="term" tabindex="0" data-g="wau">WAU</span>, <span class="term" tabindex="0" data-g="mau">MAU</span> и&nbsp;<span class="term" tabindex="0" data-g="balance">баланс активных</span> и&nbsp;найдёте лист, из-за которого выручка недели упала на&nbsp;13%.</p>
+      <div class="meta-row"><span class="pill">≈ 30 минут</span><span class="pill">анимация из 11 шагов</span><span class="pill">1 интерактив</span><span class="pill">4 блока кода</span><span class="pill">7 вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: выручка как произведение</h2>
+        <p>Одно число на&nbsp;дашборде не&nbsp;говорит, почему оно изменилось. Выручку магазина можно записать как произведение: <span class="term" tabindex="0" data-g="active">активные</span> × <span class="term" tabindex="0" data-g="payshare">доля платящих</span> × заказов на&nbsp;платящего × <span class="term" tabindex="0" data-g="aov">средний чек</span>, а&nbsp;каждый множитель разложить дальше: активных&nbsp;— на&nbsp;<span class="term" tabindex="0" data-g="newu">новых</span>, <span class="term" tabindex="0" data-g="back">вернувшихся</span> и&nbsp;<span class="term" tabindex="0" data-g="kept">удержанных</span>, долю платящих&nbsp;— на&nbsp;платформы. Такое дерево превращает вопрос «почему упала выручка» в&nbsp;поиск листа, который сдвинулся сильнее обычного. <span class="term" tabindex="0" data-g="decomp">Декомпозиция изменения</span> считает, сколько рублей падения приходится на&nbsp;каждый множитель, и&nbsp;вклады в&nbsp;сумме дают ровно изменение выручки.</p>
+        <div class="scene" id="scene" aria-label="Анимация: выручка распадается на множители, лист «доля платящих в Android» краснеет, и краснота поднимается к выручке"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже&nbsp;— та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Активные: DAU, WAU, MAU и&nbsp;липкость</h3>
+        <p>Дерево почти всегда начинается с&nbsp;активных&nbsp;— людей, у&nbsp;которых за&nbsp;период было хотя&nbsp;бы одно событие. Считаем по&nbsp;соглашениям темы: человек&nbsp;— аккаунт со&nbsp;склейкой устройств, без дублей и&nbsp;ботов, день минский. DAU&nbsp;— активные за&nbsp;день, WAU&nbsp;— за&nbsp;неделю, MAU&nbsp;— за&nbsp;месяц. Это не&nbsp;сумма дней: человек, который заходил пять раз за&nbsp;неделю, в&nbsp;WAU один.</p>
+        <p>Отношение среднего DAU к&nbsp;MAU называют <span class="term" tabindex="0" data-g="sticky">липкостью</span>. Липкость 0,07 значит, что в&nbsp;обычный день заходят 7% месячной аудитории, или что средний активный человек бывает в&nbsp;магазине около двух дней в&nbsp;месяц. Для товаров для дома это нормально: за&nbsp;пледом не&nbsp;ходят каждый день. Сравнивают липкость с&nbsp;ней&nbsp;же во&nbsp;времени, а&nbsp;не&nbsp;с&nbsp;соцсетями.</p>
+        <div class="tbl mt-tbl">
+          <table>
+            <thead><tr><th>Месяц 2026</th><th>DAU, среднее</th><th>MAU</th><th>DAU/MAU</th></tr></thead>
+            <tbody>
+              <tr><td>Январь</td><td>134</td><td>1&nbsp;807</td><td>0,074</td></tr>
+              <tr><td>Февраль</td><td>172</td><td>2&nbsp;377</td><td>0,072</td></tr>
+              <tr><td>Март</td><td>207</td><td>3&nbsp;057</td><td>0,068</td></tr>
+              <tr><td>Апрель</td><td>302</td><td>4&nbsp;592</td><td>0,066</td></tr>
+              <tr><td>Май</td><td>339</td><td>4&nbsp;919</td><td>0,069</td></tr>
+              <tr><td>Июнь</td><td>386</td><td>5&nbsp;239</td><td>0,074</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>В&nbsp;апреле MAU вырос в&nbsp;полтора раза, а&nbsp;липкость упала до&nbsp;минимума: шла рекламная кампания, и&nbsp;месячную аудиторию раздули новички, которые зашли раз-другой.</p>
+
+        <h3 class="sub-h">Баланс активных</h3>
+        <p>WAU&nbsp;— итог, а&nbsp;баланс активных раскладывает его на&nbsp;потоки. Активные недели делятся на&nbsp;три группы: новые впервые появились в&nbsp;журнале, удержанные были и&nbsp;на&nbsp;прошлой неделе, вернувшиеся бывали раньше, но&nbsp;не&nbsp;на&nbsp;прошлой. Четвёртая группа&nbsp;— <span class="term" tabindex="0" data-g="gone">ушедшие</span>: на&nbsp;прошлой неделе были, на&nbsp;этой нет.</p>
+        <div class="formula"><span class="f">WAU<sub>t</sub> = WAU<sub>t−1</sub> − ушедшие + новые + вернувшиеся</span><small>Удержанные = WAU<sub>t−1</sub> − ушедшие, поэтому WAU<sub>t</sub> = новые + удержанные + вернувшиеся. Если равенство не&nbsp;сходится, ошибка в&nbsp;расчёте.</small></div>
+        <div class="tbl mt-tbl">
+          <table>
+            <thead><tr><th>Неделя</th><th>Было</th><th>Ушли</th><th>Новые</th><th>Вернулись</th><th>Стало</th></tr></thead>
+            <tbody>
+              <tr><td>18–24 мая</td><td>1&nbsp;766</td><td>−1&nbsp;127</td><td>+359</td><td>+873</td><td>1&nbsp;871</td></tr>
+              <tr><td>25–31 мая</td><td>1&nbsp;871</td><td>−1&nbsp;190</td><td>+354</td><td>+816</td><td>1&nbsp;851</td></tr>
+              <tr><td>1–7 июня</td><td>1&nbsp;851</td><td>−1&nbsp;188</td><td>+377</td><td>+936</td><td>1&nbsp;976</td></tr>
+              <tr><td>8–14 июня</td><td>1&nbsp;976</td><td>−1&nbsp;286</td><td>+368</td><td>+962</td><td>2&nbsp;020</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Ушедших каждую неделю больше тысячи, но&nbsp;это не&nbsp;отток из&nbsp;9.3: «ушёл» значит только «не&nbsp;заходил на&nbsp;этой неделе», и&nbsp;многие вернутся. Старые аккаунты, зарегистрированные до&nbsp;января, новыми не&nbsp;считаем, даже когда они впервые появляются в&nbsp;журнале.</p>
+
+        <h3 class="sub-h">Северная звезда и&nbsp;входные метрики</h3>
+        <p><span class="term" tabindex="0" data-g="nsm">Северная звезда</span>&nbsp;— одна метрика, которая отражает ценность для пользователя и&nbsp;предсказывает выручку. У&nbsp;магазина хороший кандидат&nbsp;— оплаченные заказы за&nbsp;неделю: каждый значит, что человек нашёл и&nbsp;купил нужную вещь. Выручка&nbsp;— следствие: северная звезда × средний чек.</p>
+        <p>Северная звезда показывает результат, когда он уже случился. Поэтому её раскладывают на&nbsp;<span class="term" tabindex="0" data-g="input">входные метрики</span>&nbsp;— рычаги, которые команды двигают напрямую<a class="ref" href="#src-2" data-ref="src-2">2</a>: новых и&nbsp;вернувшихся активных (реклама, рассылки, пуши), долю платящих (оформление и&nbsp;оплата), заказов на&nbsp;платящего (повторные покупки). Северная звезда = активные × доля платящих × заказов на&nbsp;платящего. В&nbsp;неделю 1–7 июня она упала с&nbsp;535 до&nbsp;452 заказов, на&nbsp;15,5%.</p>
+
+        <h3 class="sub-h">Дерево метрик и&nbsp;декомпозиция изменения</h3>
+        <p>Дерево метрик&nbsp;— схема, где каждый узел выражен через узлы ниже: произведением, суммой или разрезом по&nbsp;сегментам. Множители выручки&nbsp;— дроби, которые сокращаются, поэтому произведение равно выручке точно, а&nbsp;не&nbsp;примерно.</p>
+        <div class="formula"><span class="f">Выручка = активные × <span class="mt-frac">платящие / активные</span> × <span class="mt-frac">заказы / платящие</span> × <span class="mt-frac">выручка / заказы</span></span><small>25–31 мая: 1&nbsp;851 × 0,245 × 1,178 × 3&nbsp;744&nbsp;₽ = 2&nbsp;003&nbsp;150&nbsp;₽ (множители округлены, произведение точное).</small></div>
+        <p>Как делить изменение выручки между множителями, разбираем в&nbsp;разделе 03.</p>
+
+        <h3 class="sub-h">Защитные метрики</h3>
+        <p>Дерево показывает, куда двигаться, но&nbsp;не&nbsp;что сломалось по&nbsp;дороге. <span class="term" tabindex="0" data-g="guard">Защитная метрика</span>&nbsp;— показатель, который не&nbsp;должен ухудшиться, пока команда растит целевой. Балфур советует следить за&nbsp;такими парами: улучшаешь одну метрику — может просесть другая<a class="ref" href="#src-2" data-ref="src-2">2</a>. Для оплаты это доля неудачных оплат: <code>payment_failed</code> среди всех попыток. В&nbsp;Android она была 5,3% в&nbsp;неделю 25–31 мая и&nbsp;58,9% в&nbsp;неделю 1–7 июня, а&nbsp;уже 2 июня&nbsp;— 52%. Защитная метрика с&nbsp;порогом подняла&nbsp;бы тревогу на&nbsp;второй день, а&nbsp;не&nbsp;через неделю по&nbsp;выручке.</p>
+
+        <h3 class="sub-h">Тщеславные метрики и&nbsp;закон Гудхарта</h3>
+        <p><span class="term" tabindex="0" data-g="vanity">Тщеславная метрика</span> радует глаз, но&nbsp;не&nbsp;помогает решать: растёт сама, легко накручивается, не&nbsp;подсказывает действие<a class="ref" href="#src-1" data-ref="src-1">1</a><a class="ref" href="#src-7" data-ref="src-7">7</a>. В&nbsp;журнале магазина два примера. Всего аккаунтов к&nbsp;31 мая было 5&nbsp;883, к&nbsp;7 июня&nbsp;— 6&nbsp;114: накопительный счётчик растёт даже в&nbsp;неделю, когда оплата сломана. Просмотры карточек с&nbsp;ботами и&nbsp;дублями за&nbsp;ту&nbsp;же неделю выросли на&nbsp;6%, а&nbsp;оплаченных заказов стало на&nbsp;16% меньше.</p>
+        <p><span class="term" tabindex="0" data-g="goodhart">Закон Гудхарта</span> объясняет, почему любую метрику опасно делать целью. Экономист Чарльз Гудхарт в&nbsp;1975 году писал о&nbsp;денежной политике: «любая наблюдаемая статистическая закономерность склонна разрушаться, как только на&nbsp;неё начинают давить ради управления»<a class="ref" href="#src-4" data-ref="src-4">4</a>. Формулировку, которую обычно цитируют,&nbsp;— «когда мера становится целью, она перестаёт быть хорошей мерой»&nbsp;— дала антрополог Мэрилин Стратерн в&nbsp;1997 году: это её пересказ идеи Гудхарта вслед за&nbsp;Китом Хоскином<a class="ref" href="#src-5" data-ref="src-5">5</a>. Переводы наши. Поэтому рядом с&nbsp;целевой метрикой всегда держат защитные.</p>
+
+        <h3 class="sub-h">Карточка метрики</h3>
+        <p>Чтобы число значило одно и&nbsp;то&nbsp;же для всех, на&nbsp;каждую метрику заводят <span class="term" tabindex="0" data-g="card">карточку</span>. Вот карточка доли платящих по&nbsp;соглашениям темы; пустой шаблон&nbsp;— в&nbsp;разделе «Код».</p>
+        <div class="tbl mt-tbl mt-card">
+          <table>
+            <tbody>
+              <tr><td>Название</td><td>Доля платящих за&nbsp;неделю</td></tr>
+              <tr><td>Определение</td><td>Доля активных за&nbsp;неделю, у&nbsp;кого была хотя&nbsp;бы одна успешная оплата</td></tr>
+              <tr><td>Формула</td><td>Люди с&nbsp;<code>order_paid</code> / люди с&nbsp;любым событием</td></tr>
+              <tr><td>Источник</td><td>Журнал <code>events</code>; оплата&nbsp;— только серверный <code>order_paid</code>, клиентский <code>purchase</code> не&nbsp;берём</td></tr>
+              <tr><td>Единица</td><td>Человек: аккаунт, устройства склеены по&nbsp;<code>user_id</code>; без входа человек&nbsp;— устройство</td></tr>
+              <tr><td>Время</td><td>Неделя с&nbsp;понедельника, день минский (UTC+3)</td></tr>
+              <tr><td>Исключения</td><td>Дубли <code>event_id</code>; устройства с&nbsp;более чем 100 клиентскими событиями за&nbsp;сутки (боты)</td></tr>
+              <tr><td>Владелец</td><td>Аналитик команды оформления и&nbsp;оплаты</td></tr>
+              <tr><td>Значения</td><td>25–31 мая&nbsp;— 0,245; 1–7 июня&nbsp;— 0,209</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: почему упала выручка</h2>
+        <p>Понедельник, 8 июня. Выручка учебного магазина за&nbsp;неделю 1–7 июня&nbsp;— 1&nbsp;740&nbsp;490&nbsp;₽, на&nbsp;13,1% меньше, чем 25–31 мая. Продакт спрашивает, что случилось, и&nbsp;ждёт не&nbsp;«меньше покупали», а&nbsp;место, где сломалось.</p>
+        <p>Задача&nbsp;— выбрать метрики, которые отражают ценность для пользователя, связать их&nbsp;в&nbsp;дерево, где видно, что на&nbsp;что влияет, и&nbsp;по&nbsp;дереву найти причину. Важно не&nbsp;найти лишнего: за&nbsp;ту&nbsp;же пару недель выручка iOS выросла на&nbsp;12%, а&nbsp;сайта упала на&nbsp;2%, и&nbsp;ни&nbsp;то, ни&nbsp;другое не&nbsp;причина.</p>
+      </section>
+
+      <section data-sec="method" data-title="Почему упала выручка">
+        <h2 id="method"><span class="sn">03</span>Вклад множителей и&nbsp;поиск листа</h2>
+        <p>Множители меняются одновременно, и&nbsp;делить изменение произведения между ними можно по-разному. Самый очевидный способ&nbsp;— <span class="term" tabindex="0" data-g="chain">последовательная подстановка</span>: заменить первый множитель значением новой недели и&nbsp;посмотреть, на&nbsp;сколько изменилась выручка, потом второй и&nbsp;так далее. Вклады в&nbsp;сумме дают изменение выручки, но&nbsp;зависят от&nbsp;порядка: по&nbsp;всем 24 порядкам вклад доли платящих гуляет от&nbsp;−329&nbsp;702 до&nbsp;−279&nbsp;583&nbsp;₽.</p>
+        <p>Поэтому выбираем <span class="term" tabindex="0" data-g="lmdi">логарифмическую декомпозицию</span><a class="ref" href="#src-3" data-ref="src-3">3</a>. Логарифм произведения равен сумме логарифмов, и&nbsp;относительное изменение выручки распадается на&nbsp;сумму изменений множителей. Чтобы перевести их в&nbsp;рубли, каждое слагаемое умножают на&nbsp;одно и&nbsp;то&nbsp;же число&nbsp;L&nbsp;— логарифмическое среднее двух выручек. Вклады в&nbsp;сумме дают ровно изменение выручки, остатка нет, порядок множителей не&nbsp;важен.</p>
+        <div class="formula"><span class="f">вклад<sub>i</sub> = L · ln(x<sub>i,1</sub> / x<sub>i,0</sub>),&nbsp;&nbsp; L = (R<sub>1</sub> − R<sub>0</sub>) / ln(R<sub>1</sub> / R<sub>0</sub>)</span><small>x<sub>i,0</sub> и&nbsp;x<sub>i,1</sub>&nbsp;— множитель в&nbsp;первую и&nbsp;вторую неделю, R<sub>0</sub> и&nbsp;R<sub>1</sub>&nbsp;— выручка. Для нашей пары недель L&nbsp;≈ 1&nbsp;868&nbsp;745&nbsp;₽: число между двумя выручками.</small></div>
+        <p>Вклад не&nbsp;отличает сбой от&nbsp;шума. Поэтому у&nbsp;каждого узла в&nbsp;интерактиве есть <span class="term" tabindex="0" data-g="corridor">коридор</span>: среднее ± два стандартных отклонения его недельных изменений за&nbsp;12 недель до&nbsp;сравнения. Это грубый ориентир, а&nbsp;не&nbsp;тест: 12 точек мало, и&nbsp;примерно одна нормальная неделя из&nbsp;двадцати выходит за&nbsp;коридор случайно. У&nbsp;листьев есть ещё «если вернуть»: выручка, если&nbsp;бы только этот лист остался на&nbsp;уровне прошлой недели.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="tree"></div>
+        <p>Лист, который объясняет падение,&nbsp;— доля платящих в&nbsp;Android: 0,223 → 0,122, на&nbsp;45% ниже, хотя за&nbsp;12 недель до&nbsp;этого лист не&nbsp;падал за&nbsp;неделю больше чем на&nbsp;17%. Верните его&nbsp;— и&nbsp;выручка 1–7 июня была&nbsp;бы 2&nbsp;091&nbsp;500&nbsp;₽, больше, чем неделей раньше: рост активных и&nbsp;среднего чека часть потерь прикрыл. Причину подтверждает защитная метрика: 142 неудачные оплаты в&nbsp;Android против 10. Это баг оплаты в&nbsp;версии 3.2.</p>
+        <p>Остальные движения&nbsp;— шум. Выручка iOS выросла на&nbsp;12%, но&nbsp;и&nbsp;раньше прыгала от&nbsp;−28 до&nbsp;+55% в&nbsp;неделю. Заказов на&nbsp;платящего на&nbsp;сайте стало на&nbsp;9% меньше, и&nbsp;вернуть этот лист&nbsp;— плюс 86&nbsp;718&nbsp;₽, треть падения, но&nbsp;такие колебания у&nbsp;сайта бывали и&nbsp;без бага. Без коридора легко объявить причиной всё, что сдвинулось.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: знаменатель, медиана, одно определение</h2>
+        <div class="callout"><p><b>Метрика-отношение зависит от&nbsp;знаменателя.</b> Доля платящих&nbsp;— <span class="term" tabindex="0" data-g="ratio">метрика-отношение</span>. Платящих стало меньше на&nbsp;9,3% (454 → 412), а&nbsp;доля упала на&nbsp;15,0%: остальное дал знаменатель, активных в&nbsp;неделю бага стало на&nbsp;6,8% больше. Приведи реклама тысячу случайных людей, доля упала&nbsp;бы и&nbsp;без бага. Поэтому рядом с&nbsp;долей всегда смотрят числитель и&nbsp;знаменатель.</p></div>
+        <div class="callout"><p><b>Среднее по&nbsp;пользователям против медианы.</b> Множители дерева&nbsp;— средние: только они перемножаются в&nbsp;выручку. Но&nbsp;среднее тянут крупные заказы. Средний чек вырос на&nbsp;2,8% (3&nbsp;744 → 3&nbsp;851&nbsp;₽), а&nbsp;медианный упал на&nbsp;1,2% (2&nbsp;920 → 2&nbsp;885&nbsp;₽). Медиана заказов на&nbsp;платящего&nbsp;— 1 в&nbsp;обе недели, хотя среднее упало с&nbsp;1,178 до&nbsp;1,097. В&nbsp;дерево кладут средние, а&nbsp;медианы держат рядом, чтобы видеть, не&nbsp;выбросы&nbsp;ли двигают узел.</p></div>
+        <div class="callout"><p><b>Одна метрика&nbsp;— одно определение на&nbsp;всю компанию.</b> DAU, посчитанный только по&nbsp;событиям с&nbsp;<code>user_id</code>, без склейки и&nbsp;анонимов,&nbsp;— 0,70 от&nbsp;DAU по&nbsp;соглашениям темы. Если маркетинг считает так, а&nbsp;продукт иначе, на&nbsp;одной встрече окажутся два DAU, и&nbsp;время уйдёт на&nbsp;спор о&nbsp;30%, а&nbsp;не&nbsp;на&nbsp;решение. Определение фиксируют в&nbsp;карточке, а&nbsp;все дашборды берут метрику из&nbsp;одной витрины.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения</h2>
+        <p>Как выбрать стратегию метрик для компании и&nbsp;связать северную звезду с&nbsp;целями и&nbsp;OKR, в&nbsp;учебнике не&nbsp;разбираем. Дашборд, который строит дерево метрик и&nbsp;обновляет его каждый день,&nbsp;— тема BI&nbsp;08.</p>
+        <p>Декомпозиция объясняет арифметику изменения, а&nbsp;не&nbsp;его причину. Что доля платящих в&nbsp;Android упала из-за бага, сказали защитная метрика и&nbsp;версия приложения, а&nbsp;не&nbsp;логарифмы.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: активные, баланс, вклады, карточка</h2>
+        <p>Сначала таблица «человек&nbsp;— день» по&nbsp;соглашениям темы и&nbsp;из&nbsp;неё DAU, MAU и&nbsp;липкость. Запросы активности по&nbsp;периодам устроены так&nbsp;же, как когорты в&nbsp;SQL<a class="ref" href="#src-6" data-ref="src-6">6</a>.</p>
+        <div class="block wide" data-code="dau"></div>
+        <p>Баланс активных: для каждого человека и&nbsp;недели отмечаем, первая&nbsp;ли это его неделя и&nbsp;был&nbsp;ли он&nbsp;активен на&nbsp;прошлой.</p>
+        <div class="block wide" data-code="balance"></div>
+        <p>Декомпозиция падения выручки в&nbsp;pandas: логарифмический способ и&nbsp;подстановка в&nbsp;двух порядках, потом доля платящих по&nbsp;платформам.</p>
+        <div class="block wide" data-code="decompose"></div>
+        <p>Шаблон карточки метрики. Поля те&nbsp;же, что в&nbsp;карточке доли платящих выше, плюс вопрос, связи и&nbsp;история изменений.</p>
+        <div class="block wide" data-code="card"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Продуктовые метрики и события» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Croll A., Yoskovitz B. Lean Analytics. O'Reilly, 2013. Тщеславные метрики и&nbsp;метрики, на&nbsp;которые можно действовать, выбор главной метрики по&nbsp;стадии продукта.</li>
+          <li id="src-2">Balfour B. <a href="https://www.reforge.com/blog/north-star-metric-growth" target="_blank" rel="noopener">Don't Let Your North Star Metric Deceive You</a>. Reforge, 2018. Северная звезда как выходная метрика, входные метрики как рычаги и&nbsp;метрики, которые конфликтуют с&nbsp;главной.</li>
+          <li id="src-3">Ang B.&nbsp;W. <a href="https://doi.org/10.1016/j.enpol.2003.10.010" target="_blank" rel="noopener">The LMDI approach to decomposition analysis: a practical guide</a>. Energy Policy, 2005, 33(7), 867–871. Логарифмическое разложение: вклады без остатка и&nbsp;без зависимости от&nbsp;порядка.</li>
+          <li id="src-4">Goodhart C.&nbsp;A.&nbsp;E. Problems of Monetary Management: The U.K. Experience // Papers in Monetary Economics, vol.&nbsp;1. Reserve Bank of Australia, 1975; перепечатано в&nbsp;<a href="https://link.springer.com/chapter/10.1007/978-1-349-17295-5_4" target="_blank" rel="noopener">Monetary Theory and Practice</a>, Macmillan, 1984. Исходная формулировка закона Гудхарта.</li>
+          <li id="src-5">Strathern M. <a href="https://www.cambridge.org/core/journals/european-review/article/improving-ratings-audit-in-the-british-university-system/FC2EE640C0C44E3DB87C29FB666E9AAB" target="_blank" rel="noopener">'Improving ratings': audit in the British University system</a>. European Review, 1997, 5(3), 305–321. Короткая формулировка закона на&nbsp;с.&nbsp;308, со&nbsp;ссылкой на&nbsp;Хоскина.</li>
+          <li id="src-6">Tanimura C. SQL for Data Analysis. O'Reilly, 2021. Активность по&nbsp;периодам и&nbsp;когорты на&nbsp;SQL.</li>
+          <li id="src-7">Ries E. The Lean Startup. Crown, 2011. Тщеславные метрики против когортных и&nbsp;метрик, на&nbsp;которые можно действовать.</li>
+        </ol>
+      </section>

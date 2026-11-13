@@ -1,0 +1,168 @@
+      <p class="eyebrow">Дата аналитика · Тема 06 · <b>Статистический вывод</b></p>
+      <h1>Выборка, оценка и&nbsp;стандартная ошибка</h1>
+      <p class="lead">По <span class="term" tabindex="0" data-g="sample">выборке</span> судят обо&nbsp;всех пользователях, и&nbsp;у&nbsp;такого суждения две разные ошибки: <span class="term" tabindex="0" data-g="randomerr">случайная</span>, которая тает с&nbsp;ростом выборки, и <span class="term" tabindex="0" data-g="bias">смещение</span>, которое не&nbsp;тает. После страницы вы&nbsp;отличите <span class="term" tabindex="0" data-g="parameter">параметр</span> от <span class="term" tabindex="0" data-g="estimate">оценки</span>, посчитаете <span class="term" tabindex="0" data-g="se">стандартную ошибку</span> среднего и <span class="term" tabindex="0" data-g="proportion">доли</span> и&nbsp;узнаете смещённую выборку раньше, чем она&nbsp;попадёт в&nbsp;отчёт.</p>
+      <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;12&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">4&nbsp;блока кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: случайная ошибка тает, смещение — нет</h2>
+        <p>Число, которое хотят знать про&nbsp;всю <span class="term" tabindex="0" data-g="population">генеральную совокупность</span>, — параметр, а&nbsp;число, посчитанное вместо него по&nbsp;выборке, — оценка. Оценка почти всегда промахивается, и&nbsp;у&nbsp;промаха две части. Если выборка <span class="term" tabindex="0" data-g="randomsample">случайная</span>, промахи ложатся по&nbsp;обе стороны от&nbsp;параметра и&nbsp;сжимаются с&nbsp;ростом выборки как&nbsp;σ/√n, где σ — <span class="term" tabindex="0" data-g="sd">стандартное отклонение</span> данных: это&nbsp;стандартная ошибка. Если&nbsp;же в&nbsp;выборку чаще попадают определённые люди, например самые активные, оценка бьёт мимо в&nbsp;одну сторону, и&nbsp;такое смещение не&nbsp;убирает никакой размер выборки.</p>
+        <div class="scene" id="scene" aria-label="Анимация: из 100 000 учебных пользователей берутся выборки по 100, их средние траты падают на шкалу оценок; случайные ложатся вокруг скрытого среднего, выборки из зашедших сегодня — правее на 53%, и при выборках по 400 обе кучи сужаются, но вторая остаётся на месте"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+
+        <h3 class="sub-h">Совокупность и&nbsp;выборка, параметр и&nbsp;оценка</h3>
+        <p>Генеральная совокупность страницы — 100&nbsp;000&nbsp;учебных пользователей магазина за&nbsp;январь–март 2026&nbsp;года, файл <code>users.csv</code>: сколько дней каждый заходил, сколько заказал и&nbsp;потратил. Её&nbsp;параметры — средние траты за&nbsp;квартал μ = 4&nbsp;378&nbsp;₽ и&nbsp;доля покупателей p = 61,6%. В&nbsp;жизни параметры неизвестны, а&nbsp;в&nbsp;учебнике совокупность видна целиком, и&nbsp;любую оценку можно сверить с&nbsp;правдой.</p>
+        <p>Выборка — n пользователей, её&nbsp;среднее x̄ и&nbsp;доля покупателей p̂ — оценки μ и&nbsp;p. Оценкой называют и&nbsp;правило («взять среднее выборки»), и&nbsp;число, которое оно дало<a class="ref" href="#src-3" data-ref="src-3">3</a>. Правило одно, а&nbsp;числа разные: в&nbsp;сцене десять случайных сотен дали оценки от&nbsp;3&nbsp;025&nbsp;до&nbsp;5&nbsp;486&nbsp;₽. Зерно сцены, 6111, выбрано из&nbsp;двадцати соседних как&nbsp;типичное: пять оценок из&nbsp;десяти выше μ и&nbsp;пять ниже. С&nbsp;другими зёрнами бывает и&nbsp;девять из&nbsp;десяти, и&nbsp;ни&nbsp;одной.</p>
+        <div class="tbl sb-t">
+          <table>
+            <thead><tr><th></th><th>Параметр</th><th>Оценка</th></tr></thead>
+            <tbody>
+              <tr><td>Про&nbsp;что</td><td>Вся совокупность</td><td>Одна выборка</td></tr>
+              <tr><td>Обозначения</td><td>μ, p, σ</td><td>x̄, p̂, s</td></tr>
+              <tr><td>Известно&nbsp;ли</td><td>Обычно нет</td><td>Да, его&nbsp;посчитали</td></tr>
+              <tr><td>Меняется&nbsp;ли</td><td>Нет, это&nbsp;одно число</td><td>От&nbsp;выборки к&nbsp;выборке</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub-h">Случайный отбор</h3>
+        <p>Случайная выборка — отбор, при&nbsp;котором у&nbsp;каждого из&nbsp;100&nbsp;000&nbsp;одинаковый шанс, не&nbsp;зависящий от&nbsp;его&nbsp;трат и&nbsp;активности. В&nbsp;коде это <code>rng.choice(N, n, replace=False)</code>: номера выбирает генератор, а&nbsp;не&nbsp;аналитик. Первые сто зашедших или&nbsp;подписчики канала — это <span class="term" tabindex="0" data-g="convenience">удобная выборка</span>: кого проще достать, тот и&nbsp;попал. Она&nbsp;почти всегда смещена<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+
+        <h3 class="sub-h">Три вида смещения</h3>
+        <p>Когда шанс попасть в&nbsp;выборку связан с&nbsp;изучаемой величиной, возникает <span class="term" tabindex="0" data-g="selbias">смещение отбора</span>. В&nbsp;продуктовой аналитике его&nbsp;чаще всего встречают в&nbsp;трёх видах<a class="ref" href="#src-1" data-ref="src-1">1</a><a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+        <div class="tbl sb-t sb-wide">
+          <table>
+            <thead><tr><th>Вид</th><th>Кто выпадает</th><th>Пример в&nbsp;магазине</th></tr></thead>
+            <tbody>
+              <tr><td><span class="term" tabindex="0" data-g="survivor">Смещение выжившего</span></td><td>Кто отсеялся раньше</td><td>Траты считают по&nbsp;тем, кто ещё заходит, а&nbsp;7&nbsp;500&nbsp;ушедших с&nbsp;нулевыми тратами не&nbsp;видны</td></tr>
+              <tr><td><span class="term" tabindex="0" data-g="selfsel">Смещение самоотбора</span></td><td>Кто не&nbsp;вызвался сам</td><td>Баннер «оцените нас» и&nbsp;отзывы: пишет, кто захотел</td></tr>
+              <tr><td><span class="term" tabindex="0" data-g="nonresp">Смещение неответа</span></td><td>Кто не&nbsp;ответил</td><td>Опрос отправили случайным 10&nbsp;000, ответила пятая часть, и&nbsp;ответившие активнее молчавших</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Классический пример смещения выжившего — работа Абраама Вальда во&nbsp;Вторую мировую: он&nbsp;оценивал уязвимость самолётов по&nbsp;повреждениям вернувшихся машин с&nbsp;поправкой на&nbsp;сбитые<a class="ref" href="#src-7" data-ref="src-7">7</a>.</p>
+        <p>Опрос в&nbsp;учебном приложении собирает два смещения сразу: его&nbsp;видит только тот, кто заходит, а&nbsp;отвечают охотнее вовлечённые. Из&nbsp;заходивших 1–3&nbsp;дня за&nbsp;квартал отвечают 10,6%, из&nbsp;заходивших больше 30&nbsp;дней — 46%, из&nbsp;ушедших — никто.</p>
+
+        <h3 class="sub-h">Свойства оценки: несмещённость и&nbsp;разброс</h3>
+        <p>Оценку судят по&nbsp;всем выборкам, которые могли&nbsp;бы выпасть. Она <span class="term" tabindex="0" data-g="unbiased">несмещённая</span>, если в&nbsp;среднем по&nbsp;ним равна параметру. Выборочное среднее при&nbsp;случайном отборе несмещённое: в&nbsp;сцене среднее ста оценок — 4&nbsp;360&nbsp;₽ при&nbsp;μ = 4&nbsp;378&nbsp;₽. У&nbsp;выборок из&nbsp;зашедших сегодня среднее оценок 6&nbsp;704&nbsp;₽, и&nbsp;эта разница не&nbsp;исчезает — это&nbsp;смещение.</p>
+        <p>Вторая характеристика — разброс оценки вокруг её&nbsp;собственного среднего, или&nbsp;случайная ошибка. Вместе они&nbsp;дают полную ошибку:</p>
+        <div class="formula"><span class="f">MSE = E[(θ̂ − θ)<sup>2</sup>] = (E[θ̂] − θ)<sup>2</sup> + SE<sup>2</sup> = смещение<sup>2</sup> + разброс<sup>2</sup></span><small>θ — параметр (μ) · θ̂ — оценка (x̄) · E[…] — среднее по&nbsp;всем выборкам · SE<sup>2</sup> — <span class="term" tabindex="0" data-g="variance">дисперсия</span> оценки · MSE — <span class="term" tabindex="0" data-g="mse">среднеквадратичная ошибка</span></small></div>
+        <p>Первое слагаемое от&nbsp;n не&nbsp;зависит, второе падает как&nbsp;1/n: рост выборки лечит разброс и&nbsp;не&nbsp;трогает смещение.</p>
+
+        <h3 class="sub-h">Стандартное отклонение и&nbsp;стандартная ошибка</h3>
+        <p>В&nbsp;жизни σ неизвестна, её&nbsp;заменяют стандартным отклонением выборки s, и&nbsp;стандартная ошибка — тоже оценка:</p>
+        <div class="formula"><span class="f">SE(x̄) ≈ s / √n,&nbsp;&nbsp;s = √( Σ (x<sub>i</sub> − x̄)<sup>2</sup> / (n − 1) )</span><small>s — стандартное отклонение выборки · x<sub>i</sub> — траты i-го пользователя · Σ — сумма по&nbsp;n пользователям</small></div>
+        <p>Одна случайная выборка из&nbsp;400&nbsp;пользователей дала x̄ = 4&nbsp;805&nbsp;₽ и&nbsp;s = 6&nbsp;558&nbsp;₽, стандартная ошибка — 328&nbsp;₽. Настоящая, σ/√400, — 282&nbsp;₽: в&nbsp;выборку попали несколько крупных покупателей. Стандартное отклонение говорит, насколько различаются люди, и&nbsp;от&nbsp;n не&nbsp;зависит. Стандартная ошибка — насколько промахивается среднее, и&nbsp;падает как&nbsp;1/√n<a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+
+        <h3 class="sub-h">Почему в&nbsp;дисперсии n − 1</h3>
+        <p>В&nbsp;формуле s делят на&nbsp;n − 1, потому что&nbsp;отклонения меряют от&nbsp;x̄, а&nbsp;не&nbsp;от&nbsp;неизвестного μ. Среднее выборки — точка, ближайшая к&nbsp;её&nbsp;же данным, и&nbsp;сумма квадратов отклонений от&nbsp;x̄ меньше, чем от&nbsp;μ:</p>
+        <div class="formula"><span class="f">Σ (x<sub>i</sub> − x̄)<sup>2</sup> = Σ (x<sub>i</sub> − μ)<sup>2</sup> − n (x̄ − μ)<sup>2</sup>&nbsp;&nbsp;→&nbsp;&nbsp;в&nbsp;среднем nσ<sup>2</sup> − σ<sup>2</sup> = (n − 1) σ<sup>2</sup></span><small>каждое (x<sub>i</sub> − μ)<sup>2</sup> в&nbsp;среднем σ<sup>2</sup>, их&nbsp;сумма — nσ<sup>2</sup> · n(x̄ − μ)<sup>2</sup> в&nbsp;среднем n·σ<sup>2</sup>/n = σ<sup>2</sup> · итог (n − 1)σ<sup>2</sup> делят на&nbsp;n − 1</small></div>
+        <p>Деление на&nbsp;n − 1&nbsp;называют <span class="term" tabindex="0" data-g="bessel">поправкой Бесселя</span>. При&nbsp;n = 5&nbsp;деление на&nbsp;n занижает дисперсию на&nbsp;20%, при&nbsp;n = 400 — на&nbsp;0,25%. NumPy по&nbsp;умолчанию делит на&nbsp;n (<code>ddof=0</code>), pandas — на&nbsp;n − 1 (<code>ddof=1</code>)<a class="ref" href="#src-6" data-ref="src-6">6</a>. Поправка делает несмещённой дисперсию, но&nbsp;не&nbsp;стандартное отклонение: s в&nbsp;среднем чуть меньше σ.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: три числа про&nbsp;одних и&nbsp;тех&nbsp;же пользователей</h2>
+        <p>В&nbsp;квартальном отчёте три числа про&nbsp;средние траты пользователя. Продакт принёс опрос в&nbsp;приложении: 5&nbsp;783&nbsp;₽ по&nbsp;22&nbsp;493&nbsp;ответам. Маркетинг в&nbsp;понедельник выгрузил первых сто зашедших: 6&nbsp;826&nbsp;₽. Аналитик взял из&nbsp;базы 400&nbsp;случайных пользователей: 4&nbsp;805 ± 328&nbsp;₽.</p>
+        <p>Представим, что&nbsp;траты видны только по&nbsp;выборкам, как&nbsp;доход или&nbsp;удовлетворённость, о&nbsp;которых узнают из&nbsp;опросов. Задача — для&nbsp;каждого числа сказать, параметр это&nbsp;или&nbsp;оценка, есть&nbsp;ли у&nbsp;него смещение и&nbsp;можно&nbsp;ли верить его&nbsp;«плюс-минус».</p>
+      </section>
+
+      <section data-sec="target" data-title="Мишень">
+        <h2 id="target"><span class="sn">03</span>Смещение против разброса: мишень</h2>
+        <p>Мишень повторяет сцену для&nbsp;трёх способов отбора и&nbsp;любого n. Каждая выборка даёт две оценки, и&nbsp;точка ставится по&nbsp;их&nbsp;ошибкам в&nbsp;процентах: по&nbsp;горизонтали — средних трат, по&nbsp;вертикали — доли покупателей. Центр — истина, μ = 4&nbsp;378&nbsp;₽ и&nbsp;p = 61,6%, кольца — 25, 50, 75&nbsp;и&nbsp;100% ошибки. Способы отбора:</p>
+        <ul>
+          <li>«случайно» — у&nbsp;всех одинаковый шанс;</li>
+          <li>«кто ответил» — опрос в&nbsp;приложении, пользователь отвечает с&nbsp;вероятностью <code>p_answer</code>;</li>
+          <li>«первые сто» — первые n из&nbsp;зашедших сегодня, заходят с&nbsp;вероятностью «дни с&nbsp;заходами / 90».</li>
+        </ul>
+        <p>Крест — центр облака, стрелка к&nbsp;нему — смещение, пунктирный эллипс — два разброса по&nbsp;каждой оси, цветные эллипсы — прошлые прогоны. Выборки делает <span class="term" tabindex="0" data-g="prng">генератор псевдослучайных чисел</span> с&nbsp;зерном. Он&nbsp;тянет пользователей не&nbsp;из&nbsp;самого файла, а&nbsp;из&nbsp;распределений, посчитанных по&nbsp;всем 100&nbsp;000 с&nbsp;весами отбора. Поэтому числа мишени немного отличаются от&nbsp;чисел раздела «Код» — в&nbsp;пределах случайного шума. Сначала предскажите.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="target"></div>
+
+        <h3 class="sub-h">Что&nbsp;видно на&nbsp;мишени</h3>
+        <p>Теория по&nbsp;всем 100&nbsp;000&nbsp;пользователям, в&nbsp;процентах от&nbsp;μ и&nbsp;p:</p>
+        <div class="tbl sb-t">
+          <table>
+            <thead><tr><th>Отбор</th><th>Смещение трат</th><th>Смещение доли</th><th>Разброс трат, n = 25</th><th>n = 1&nbsp;600</th></tr></thead>
+            <tbody>
+              <tr><td>Случайно</td><td>0</td><td>0</td><td>25,7%</td><td>3,2%</td></tr>
+              <tr><td>Кто ответил</td><td>+31,3%</td><td>+18,6%</td><td>29,2%</td><td>3,6%</td></tr>
+              <tr><td>Первые n</td><td>+53,1%</td><td>+26,0%</td><td>32,2%</td><td>4,0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>У&nbsp;случайного отбора облако при&nbsp;любом n стоит в&nbsp;центре и&nbsp;только сжимается: вчетверо больше выборка — вдвое уже облако. Два других сжимаются так&nbsp;же, но&nbsp;вокруг своих точек: 5&nbsp;749&nbsp;₽ у&nbsp;опроса, 6&nbsp;705&nbsp;₽ у&nbsp;первых зашедших. При&nbsp;n = 1&nbsp;600&nbsp;смещение опроса почти в&nbsp;девять раз больше разброса. Оба способа отбирают по&nbsp;активности, а&nbsp;она&nbsp;связана с&nbsp;тратами: у&nbsp;заходивших 1–3&nbsp;дня за&nbsp;квартал средние траты 1&nbsp;442&nbsp;₽, у&nbsp;заходивших больше 30&nbsp;дней — 13&nbsp;529&nbsp;₽.</p>
+
+        <h3 class="sub-h">Ответ на&nbsp;задачу</h3>
+        <p>Все три числа — оценки, параметр μ не&nbsp;видел никто. <b>4&nbsp;805 ± 328&nbsp;₽</b> — несмещённая оценка по&nbsp;случайной выборке. От&nbsp;μ она&nbsp;отличается на&nbsp;1,3&nbsp;стандартной ошибки — обычный шум. Только её&nbsp;можно ставить в&nbsp;отчёт с&nbsp;«плюс-минус».</p>
+        <p><b>5&nbsp;783&nbsp;₽</b> — оценка по&nbsp;опросу. Стандартная ошибка по&nbsp;22&nbsp;493&nbsp;ответам — около 43&nbsp;₽, а&nbsp;промах +1&nbsp;405&nbsp;₽ в&nbsp;33&nbsp;раза больше, и&nbsp;почти весь он — смещение. Весами его&nbsp;можно частично исправить, об&nbsp;этом — в&nbsp;нюансах.</p>
+        <p><b>6&nbsp;826&nbsp;₽</b> — удобная выборка первых зашедших. По&nbsp;одной сотне смещение от&nbsp;шума не&nbsp;отличить: стандартная ошибка 838&nbsp;₽, промах 2&nbsp;448&nbsp;₽. Мишень отвечает за&nbsp;неё: смещение способа +53%.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: размер, веса и&nbsp;доли</h2>
+        <div class="callout"><p><b>Большая выборка не&nbsp;спасает от&nbsp;смещения.</b> Опрос с&nbsp;1&nbsp;600&nbsp;ответами промахивается на&nbsp;√(31,3² + 3,6²) ≈ 31,5%, а&nbsp;25&nbsp;случайных пользователей — на&nbsp;25,7%. Исторический пример — опрос журнала Literary Digest перед выборами президента США 1936&nbsp;года: около 2,4&nbsp;млн анкет предсказали победу Лэндона, а&nbsp;Рузвельт выиграл с&nbsp;большим отрывом. Ответили далеко не&nbsp;все, и&nbsp;ответившие отличались от&nbsp;остальных избирателей<a class="ref" href="#src-8" data-ref="src-8">8</a>.</p></div>
+        <div class="callout"><p><b>Взвешивание — частичное лекарство.</b> Активность известна по&nbsp;логам у&nbsp;всех, поэтому каждому ответу можно дать вес: доля его&nbsp;группы активности в&nbsp;совокупности, делённая на&nbsp;её&nbsp;долю в&nbsp;ответах. Ответ из&nbsp;группы «1–3&nbsp;дня» весит около 2, из&nbsp;группы «31+» — около половины. Такое <span class="term" tabindex="0" data-g="weighting">взвешивание</span> срезает смещение опроса вдвое, но&nbsp;не&nbsp;до&nbsp;нуля.</p></div>
+        <div class="block wide" data-code="weights"></div>
+        <p>Осталось смещение +14,5%. В&nbsp;группе «0» нет ни&nbsp;одного ответа: веса восстанавливают недопредставленных, но&nbsp;не&nbsp;отсутствующих, а&nbsp;средние траты без&nbsp;ушедших — 4&nbsp;733&nbsp;₽, на&nbsp;8% выше μ. Остальное — вовлечённость: внутри группы отвечают те, кто тратит больше, а&nbsp;вовлечённости в&nbsp;логах нет.</p>
+        <div class="callout"><p><b>Стандартная ошибка доли — √(p(1 − p)/n).</b> Доля — среднее нулей и&nbsp;единиц, а&nbsp;стандартное отклонение одной такой монетки — √(p(1 − p)) (страница 5.2), так что&nbsp;σ отдельно знать не&nbsp;нужно. Больше всего ошибка при&nbsp;p = 0,5: 0,5/√n, не&nbsp;больше 2,5&nbsp;процентного пункта при&nbsp;n = 400. В&nbsp;выборке из&nbsp;400&nbsp;доля покупателей — 0,620, стандартная ошибка 0,0243, симуляция дала 0,0242. Для&nbsp;редких событий вроде конверсии 3% интервалы строят иначе, это&nbsp;страница 6.2.</p></div>
+        <div class="formula"><span class="f">SE(p̂) = √( p̂ (1 − p̂) / n )</span><small>p̂ — доля в&nbsp;выборке, например доля покупателей · n — размер выборки · по&nbsp;совокупности та&nbsp;же формула с&nbsp;p вместо p̂ даёт точную стандартную ошибку</small></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: другие схемы отбора</h2>
+        <p>Формулы страницы — для&nbsp;простой случайной выборки. Другие схемы отбора требуют своих формул стандартной ошибки<a class="ref" href="#src-1" data-ref="src-1">1</a>. <span class="term" tabindex="0" data-g="stratified">Стратифицированная выборка</span> отбирает отдельно внутри групп, например по&nbsp;200&nbsp;человек из&nbsp;каждой группы активности, и&nbsp;при&nbsp;сильно различающихся группах даёт оценку точнее простой случайной выборки того&nbsp;же размера. <span class="term" tabindex="0" data-g="cluster">Кластерная выборка</span> берёт целые группы — города, дни, точки продаж — со&nbsp;всеми их&nbsp;объектами. Это&nbsp;дешевле, но&nbsp;объекты внутри кластера похожи, и&nbsp;стандартная ошибка выходит больше σ/√n.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: смещённый отбор, стандартные ошибки и&nbsp;n − 1</h2>
+        <p>Код запущен в&nbsp;Python 3.13&nbsp;с&nbsp;NumPy 2.5.3, pandas 3.0.5, SciPy 1.18.1&nbsp;и&nbsp;statsmodels 0.15.0, вывод вставлен без&nbsp;правок. Первый блок — 1&nbsp;000&nbsp;выборок на&nbsp;каждый способ отбора и&nbsp;размер: сначала случай решает, кто ответил или&nbsp;зашёл, потом из&nbsp;них берут n.</p>
+        <div class="block wide" data-code="selection"></div>
+        <p>Второй блок работает с&nbsp;одной выборкой, как&nbsp;аналитик в&nbsp;жизни: считает s, стандартную ошибку среднего тремя способами — формулой, <code>scipy.stats.sem</code><a class="ref" href="#src-5" data-ref="src-5">5</a> и <code>DescrStatsW</code> из&nbsp;statsmodels<a class="ref" href="#src-4" data-ref="src-4">4</a> — и&nbsp;стандартную ошибку доли. В&nbsp;конце формулы сверяются с&nbsp;разбросом 10&nbsp;000&nbsp;выборок.</p>
+        <div class="block wide" data-code="se"></div>
+        <p>Третий проверяет n − 1: для&nbsp;каждого n берёт 200&nbsp;000&nbsp;выборок и&nbsp;сравнивает с&nbsp;σ² среднюю дисперсию при&nbsp;делении на&nbsp;n и&nbsp;на&nbsp;n − 1. Последний столбец — среднее s, делённое на&nbsp;σ: стандартное отклонение смещено вниз и&nbsp;с&nbsp;поправкой.</p>
+        <div class="block wide" data-code="ddof"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «Статистический вывод» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Diez D., Çetinkaya-Rundel M., Barr C. <a href="https://www.openintro.org/book/os/" target="_blank" rel="noopener">OpenIntro Statistics</a>, 4th ed., 2019. Удобная выборка и&nbsp;неответ, схемы отбора, стандартная ошибка доли.</li>
+          <li id="src-2">Bruce P., Bruce A., Gedeck P. Practical Statistics for Data Scientists, 2nd ed. O’Reilly, 2020. Смещение отбора, стандартная ошибка и&nbsp;«n или&nbsp;n − 1» глазами аналитика данных.</li>
+          <li id="src-3"><a href="https://seeing-theory.brown.edu/frequentist-inference/index.html" target="_blank" rel="noopener">Seeing Theory: Frequentist Inference</a>. Brown University. Оценка как&nbsp;функция от&nbsp;выборки, интерактивно.</li>
+          <li id="src-4">statsmodels. <a href="https://www.statsmodels.org/stable/stats.html" target="_blank" rel="noopener">Statistics</a>. DescrStatsW: взвешенное среднее и&nbsp;стандартная ошибка.</li>
+          <li id="src-5">SciPy. <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.sem.html" target="_blank" rel="noopener">scipy.stats.sem</a>. Стандартная ошибка среднего, по&nbsp;умолчанию ddof=1.</li>
+          <li id="src-6">NumPy. <a href="https://numpy.org/doc/stable/reference/generated/numpy.var.html" target="_blank" rel="noopener">numpy.var</a>; pandas. <a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.std.html" target="_blank" rel="noopener">pandas.Series.std</a>. ddof по&nbsp;умолчанию: в&nbsp;NumPy 0, в&nbsp;pandas 1.</li>
+          <li id="src-7">Mangel M., Samaniego F. J. <a href="https://doi.org/10.1080/01621459.1984.10478038" target="_blank" rel="noopener">Abraham Wald’s Work on Aircraft Survivability</a>. Journal of the American Statistical Association, 79 (386), 1984, 259–267. Вальд и&nbsp;поправка на&nbsp;сбитые самолёты.</li>
+          <li id="src-8">Squire P. <a href="https://doi.org/10.1086/269085" target="_blank" rel="noopener">Why the 1936 Literary Digest Poll Failed</a>. Public Opinion Quarterly, 52 (1), 1988. Почему миллионы ответов не&nbsp;спасли опрос.</li>
+        </ol>
+      </section>

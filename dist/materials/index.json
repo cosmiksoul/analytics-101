@@ -1,0 +1,2028 @@
+{
+ "pages": {
+  "da-1-1": {
+   "file": "da-1-1-jupyter-kernel",
+   "zip": "materials/da-1-1-jupyter-kernel.zip",
+   "zipBytes": 10865,
+   "files": [
+    {
+     "path": "materials/da-1-1-jupyter-kernel/README.md",
+     "name": "README.md",
+     "bytes": 1064,
+     "about": ""
+    },
+    {
+     "path": "materials/da-1-1-jupyter-kernel/da-1-1-jupyter-kernel.md",
+     "name": "da-1-1-jupyter-kernel.md",
+     "bytes": 28338,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-1-1-jupyter-kernel/orders_report.ipynb",
+     "name": "orders_report.ipynb",
+     "bytes": 1097,
+     "about": "Ноутбук из анимации: ячейка со скидкой стоит ниже расчёта"
+    },
+    {
+     "path": "materials/da-1-1-jupyter-kernel/orders_report_fixed.ipynb",
+     "name": "orders_report_fixed.ipynb",
+     "bytes": 1097,
+     "about": "Тот же ноутбук после исправления"
+    },
+    {
+     "path": "materials/da-1-1-jupyter-kernel/report.py",
+     "name": "report.py",
+     "bytes": 442,
+     "about": "Расчёт в виде скрипта для запуска из терминала"
+    }
+   ],
+   "shared": []
+  },
+  "da-1-2": {
+   "file": "da-1-2-types-collections",
+   "zip": "materials/da-1-2-types-collections.zip",
+   "zipBytes": 26016,
+   "files": [
+    {
+     "path": "materials/da-1-2-types-collections/README.md",
+     "name": "README.md",
+     "bytes": 1147,
+     "about": ""
+    },
+    {
+     "path": "materials/da-1-2-types-collections/da-1-2-types-collections.md",
+     "name": "da-1-2-types-collections.md",
+     "bytes": 38669,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-1-2-types-collections/orders_api.json",
+     "name": "orders_api.json",
+     "bytes": 777,
+     "about": "Учебный ответ API: пять заказов из блоков кода"
+    },
+    {
+     "path": "materials/da-1-2-types-collections/refs_demo.py",
+     "name": "refs_demo.py",
+     "bytes": 2980,
+     "about": "Опыт «ссылка или копия» скриптом"
+    },
+    {
+     "path": "materials/da-1-2-types-collections/speed.py",
+     "name": "speed.py",
+     "bytes": 2791,
+     "about": "Замеры скорости со страницы"
+    },
+    {
+     "path": "materials/da-1-2-types-collections/types_collections.ipynb",
+     "name": "types_collections.ipynb",
+     "bytes": 16743,
+     "about": "Код страницы и пять упражнений"
+    },
+    {
+     "path": "materials/da-1-2-types-collections/types_collections_solutions.ipynb",
+     "name": "types_collections_solutions.ipynb",
+     "bytes": 21082,
+     "about": "Решения упражнений"
+    }
+   ],
+   "shared": []
+  },
+  "da-1-3": {
+   "file": "da-1-3-loops-functions",
+   "zip": "materials/da-1-3-loops-functions.zip",
+   "zipBytes": 41117,
+   "files": [
+    {
+     "path": "materials/da-1-3-loops-functions/README.md",
+     "name": "README.md",
+     "bytes": 1358,
+     "about": ""
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/da-1-3-loops-functions.md",
+     "name": "da-1-3-loops-functions.md",
+     "bytes": 43197,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/exports/README.txt",
+     "name": "exports/README.txt",
+     "bytes": 835,
+     "about": "Учебная папка из семи файлов для блока про список файлов"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/exports/orders_2026-11-01.csv",
+     "name": "exports/orders_2026-11-01.csv",
+     "bytes": 87,
+     "about": "Учебная папка из семи файлов для блока про список файлов"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/exports/orders_2026-11-02.csv",
+     "name": "exports/orders_2026-11-02.csv",
+     "bytes": 85,
+     "about": "Учебная папка из семи файлов для блока про список файлов"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/exports/orders_2026-11-03.csv",
+     "name": "exports/orders_2026-11-03.csv",
+     "bytes": 64,
+     "about": "Учебная папка из семи файлов для блока про список файлов"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/exports/orders_2026-11-03.xlsx",
+     "name": "exports/orders_2026-11-03.xlsx",
+     "bytes": 4957,
+     "about": "Учебная папка из семи файлов для блока про список файлов"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/exports/returns_2026-11-02.csv",
+     "name": "exports/returns_2026-11-02.csv",
+     "bytes": 75,
+     "about": "Учебная папка из семи файлов для блока про список файлов"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/exports/~$orders_2026-11-03.xlsx",
+     "name": "exports/~$orders_2026-11-03.xlsx",
+     "bytes": 165,
+     "about": "Учебная папка из семи файлов для блока про список файлов"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/loops_functions.ipynb",
+     "name": "loops_functions.ipynb",
+     "bytes": 29385,
+     "about": "Код страницы и пять упражнений"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/loops_functions_solutions.ipynb",
+     "name": "loops_functions_solutions.ipynb",
+     "bytes": 33668,
+     "about": "Решения упражнений"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/make_orders_big.py",
+     "name": "make_orders_big.py",
+     "bytes": 1034,
+     "about": "Сборка учебного файла на миллион строк"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/orders_sample.csv",
+     "name": "orders_sample.csv",
+     "bytes": 153,
+     "about": "Учебная выгрузка из восьми заказов: бренд, сумма, статус"
+    },
+    {
+     "path": "materials/da-1-3-loops-functions/trace_paid_brands.py",
+     "name": "trace_paid_brands.py",
+     "bytes": 11671,
+     "about": "Скрипт, которым записана трасса интерактива"
+    }
+   ],
+   "shared": []
+  },
+  "da-1-4": {
+   "file": "da-1-4-files-exceptions",
+   "zip": "materials/da-1-4-files-exceptions.zip",
+   "zipBytes": 25726,
+   "files": [
+    {
+     "path": "materials/da-1-4-files-exceptions/README.md",
+     "name": "README.md",
+     "bytes": 1179,
+     "about": ""
+    },
+    {
+     "path": "materials/da-1-4-files-exceptions/da-1-4-files-exceptions.md",
+     "name": "da-1-4-files-exceptions.md",
+     "bytes": 41406,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-1-4-files-exceptions/data/orders.csv",
+     "name": "data/orders.csv",
+     "bytes": 42887,
+     "about": "Учебная выгрузка: 1 200 заказов, строка 1 000 в cp1251"
+    },
+    {
+     "path": "materials/da-1-4-files-exceptions/gen_orders.py",
+     "name": "gen_orders.py",
+     "bytes": 1666,
+     "about": "Генератор учебной выгрузки"
+    },
+    {
+     "path": "materials/da-1-4-files-exceptions/log_line.py",
+     "name": "log_line.py",
+     "bytes": 848,
+     "about": "dataclass для строки журнала и запись errors.log"
+    },
+    {
+     "path": "materials/da-1-4-files-exceptions/read_orders.py",
+     "name": "read_orders.py",
+     "bytes": 742,
+     "about": "Чтение с try"
+    },
+    {
+     "path": "materials/da-1-4-files-exceptions/read_orders_v0.py",
+     "name": "read_orders_v0.py",
+     "bytes": 659,
+     "about": "Чтение без try"
+    },
+    {
+     "path": "materials/da-1-4-files-exceptions/report.py",
+     "name": "report.py",
+     "bytes": 2124,
+     "about": "Класс Report и исключение ReportError"
+    }
+   ],
+   "shared": []
+  },
+  "da-10-1": {
+   "file": "da-10-1-cac-arpu-margin",
+   "zip": "materials/da-10-1-cac-arpu-margin.zip",
+   "zipBytes": 16934,
+   "files": [
+    {
+     "path": "materials/da-10-1-cac-arpu-margin/README.md",
+     "name": "README.md",
+     "bytes": 1814,
+     "about": ""
+    },
+    {
+     "path": "materials/da-10-1-cac-arpu-margin/arpu.sql",
+     "name": "arpu.sql",
+     "bytes": 1587,
+     "about": "ARPU и ARPPU по месяцам для PostgreSQL 16"
+    },
+    {
+     "path": "materials/da-10-1-cac-arpu-margin/cac.sql",
+     "name": "cac.sql",
+     "bytes": 1729,
+     "about": "CAC по каналам и смешанный CAC для PostgreSQL 16"
+    },
+    {
+     "path": "materials/da-10-1-cac-arpu-margin/da-10-1-cac-arpu-margin.md",
+     "name": "da-10-1-cac-arpu-margin.md",
+     "bytes": 41272,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-10-1-cac-arpu-margin/unit_summary.py",
+     "name": "unit_summary.py",
+     "bytes": 3301,
+     "about": "Сводка юнит-экономики по каналам и средний клиент по месяцам жизни"
+    }
+   ],
+   "shared": [
+    "unit"
+   ]
+  },
+  "da-10-2": {
+   "file": "da-10-2-ltv-retention",
+   "zip": "materials/da-10-2-ltv-retention.zip",
+   "zipBytes": 73484,
+   "files": [
+    {
+     "path": "materials/da-10-2-ltv-retention/README.md",
+     "name": "README.md",
+     "bytes": 1858,
+     "about": ""
+    },
+    {
+     "path": "materials/da-10-2-ltv-retention/da-10-2-ltv-retention.md",
+     "name": "da-10-2-ltv-retention.md",
+     "bytes": 45003,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-10-2-ltv-retention/ltv_cohorts.sql",
+     "name": "ltv_cohorts.sql",
+     "bytes": 2399,
+     "about": "LTV когорт из таблицы заказов для PostgreSQL 16"
+    },
+    {
+     "path": "materials/da-10-2-ltv-retention/ltv_tail.ipynb",
+     "name": "ltv_tail.ipynb",
+     "bytes": 82614,
+     "about": "Удержание, три хвоста через curve_fit, рисунок и бутстрэп по когортам"
+    }
+   ],
+   "shared": [
+    "unit"
+   ]
+  },
+  "da-10-3": {
+   "file": "da-10-3-cohort-payback",
+   "zip": "materials/da-10-3-cohort-payback.zip",
+   "zipBytes": 26794,
+   "files": [
+    {
+     "path": "materials/da-10-3-cohort-payback/README.md",
+     "name": "README.md",
+     "bytes": 1901,
+     "about": ""
+    },
+    {
+     "path": "materials/da-10-3-cohort-payback/da-10-3-cohort-payback.md",
+     "name": "da-10-3-cohort-payback.md",
+     "bytes": 49130,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-10-3-cohort-payback/payback.ipynb",
+     "name": "payback.ipynb",
+     "bytes": 34960,
+     "about": "Сценарный калькулятор, денежный поток и график для маркетинга на pandas и Matplotlib"
+    },
+    {
+     "path": "materials/da-10-3-cohort-payback/payback.sql",
+     "name": "payback.sql",
+     "bytes": 4085,
+     "about": "Кривые окупаемости по каналам и когортам для PostgreSQL 16"
+    }
+   ],
+   "shared": [
+    "unit"
+   ]
+  },
+  "da-11-1": {
+   "file": "da-11-1-why-experiment",
+   "zip": "materials/da-11-1-why-experiment.zip",
+   "zipBytes": 22732,
+   "files": [
+    {
+     "path": "materials/da-11-1-why-experiment/README.md",
+     "name": "README.md",
+     "bytes": 1993,
+     "about": ""
+    },
+    {
+     "path": "materials/da-11-1-why-experiment/da-11-1-why-experiment.md",
+     "name": "da-11-1-why-experiment.md",
+     "bytes": 45877,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-11-1-why-experiment/hash_balance.sql",
+     "name": "hash_balance.sql",
+     "bytes": 2638,
+     "about": "Разбиение по хешу и проверка баланса групп на учебных экспериментах data/ab в PostgreSQL"
+    },
+    {
+     "path": "materials/da-11-1-why-experiment/runs.py",
+     "name": "runs.py",
+     "bytes": 8253,
+     "about": "Тысяча прогонов «до и после» против A/B; симуляция из simulate.py уже внутри"
+    },
+    {
+     "path": "materials/da-11-1-why-experiment/simulate.py",
+     "name": "simulate.py",
+     "bytes": 4224,
+     "about": "Учебная симуляция магазина со слоями помех"
+    }
+   ],
+   "shared": [
+    "ab"
+   ]
+  },
+  "da-11-2": {
+   "file": "da-11-2-test-design",
+   "zip": "materials/da-11-2-test-design.zip",
+   "zipBytes": 21989,
+   "files": [
+    {
+     "path": "materials/da-11-2-test-design/README.md",
+     "name": "README.md",
+     "bytes": 1581,
+     "about": ""
+    },
+    {
+     "path": "materials/da-11-2-test-design/da-11-2-test-design.md",
+     "name": "da-11-2-test-design.md",
+     "bytes": 43226,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-11-2-test-design/sample_size.ipynb",
+     "name": "sample_size.ipynb",
+     "bytes": 16403,
+     "about": "Размер выборки вручную и в statsmodels, MDE из денег, проверка мощности симуляцией"
+    },
+    {
+     "path": "materials/da-11-2-test-design/test_design_template.md",
+     "name": "test_design_template.md",
+     "bytes": 4814,
+     "about": "Шаблон документа дизайна теста: пустой и заполненный для checkout_v2"
+    }
+   ],
+   "shared": [
+    "ab"
+   ]
+  },
+  "da-11-3": {
+   "file": "da-11-3-analysis",
+   "zip": "materials/da-11-3-analysis.zip",
+   "zipBytes": 23435,
+   "files": [
+    {
+     "path": "materials/da-11-3-analysis/README.md",
+     "name": "README.md",
+     "bytes": 2028,
+     "about": ""
+    },
+    {
+     "path": "materials/da-11-3-analysis/ab_analysis.ipynb",
+     "name": "ab_analysis.ipynb",
+     "bytes": 17990,
+     "about": "Баланс, тесты, интервалы, дельта-метод, бутстрэп по пользователям и отчёт"
+    },
+    {
+     "path": "materials/da-11-3-analysis/checkout_v2_users.sql",
+     "name": "checkout_v2_users.sql",
+     "bytes": 1727,
+     "about": "Строка на пользователя и сводка по группам для PostgreSQL 16"
+    },
+    {
+     "path": "materials/da-11-3-analysis/da-11-3-analysis.md",
+     "name": "da-11-3-analysis.md",
+     "bytes": 45173,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-11-3-analysis/report_template.md",
+     "name": "report_template.md",
+     "bytes": 2861,
+     "about": "Шаблон отчёта об эксперименте на одну страницу"
+    }
+   ],
+   "shared": [
+    "ab"
+   ]
+  },
+  "da-11-4": {
+   "file": "da-11-4-pitfalls",
+   "zip": "materials/da-11-4-pitfalls.zip",
+   "zipBytes": 29894,
+   "files": [
+    {
+     "path": "materials/da-11-4-pitfalls/README.md",
+     "name": "README.md",
+     "bytes": 1982,
+     "about": ""
+    },
+    {
+     "path": "materials/da-11-4-pitfalls/da-11-4-pitfalls.md",
+     "name": "da-11-4-pitfalls.md",
+     "bytes": 45815,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-11-4-pitfalls/pitfalls.ipynb",
+     "name": "pitfalls.ipynb",
+     "bytes": 41915,
+     "about": "Симуляция подглядывания, поправки на множественность, SRM и график новизны на pandas, SciPy и statsmodels"
+    },
+    {
+     "path": "materials/da-11-4-pitfalls/sim.py",
+     "name": "sim.py",
+     "bytes": 7778,
+     "about": "Сто показанных тестов и доли ложных побед на общем наборе A/A-тестов data/ab/aa_sim.py"
+    }
+   ],
+   "shared": [
+    "ab"
+   ]
+  },
+  "da-11-5": {
+   "file": "da-11-5-cuped-sequential",
+   "zip": "materials/da-11-5-cuped-sequential.zip",
+   "zipBytes": 22235,
+   "files": [
+    {
+     "path": "materials/da-11-5-cuped-sequential/README.md",
+     "name": "README.md",
+     "bytes": 2180,
+     "about": ""
+    },
+    {
+     "path": "materials/da-11-5-cuped-sequential/bayes.py",
+     "name": "bayes.py",
+     "bytes": 1153,
+     "about": "Байесовская оценка конверсии: вероятность превосходства и ожидаемые потери"
+    },
+    {
+     "path": "materials/da-11-5-cuped-sequential/cuped.py",
+     "name": "cuped.py",
+     "bytes": 1773,
+     "about": "CUPED на выручке checkout_v2 и проверка регрессией"
+    },
+    {
+     "path": "materials/da-11-5-cuped-sequential/da-11-5-cuped-sequential.md",
+     "name": "da-11-5-cuped-sequential.md",
+     "bytes": 39923,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-11-5-cuped-sequential/sequential.py",
+     "name": "sequential.py",
+     "bytes": 2546,
+     "about": "Групповые проверки раз в неделю с границами по функции расходования α"
+    },
+    {
+     "path": "materials/da-11-5-cuped-sequential/sequential_sim.py",
+     "name": "sequential_sim.py",
+     "bytes": 12869,
+     "about": "Границы и симуляция последовательных тестов на 20 000 A/A и A/B; A/A — общий набор data/ab/aa_sim.py"
+    }
+   ],
+   "shared": [
+    "ab"
+   ]
+  },
+  "da-2-1": {
+   "file": "da-2-1-dataframe-inside",
+   "zip": "materials/da-2-1-dataframe-inside.zip",
+   "zipBytes": 836353,
+   "files": [
+    {
+     "path": "materials/da-2-1-dataframe-inside/README.md",
+     "name": "README.md",
+     "bytes": 1190,
+     "about": ""
+    },
+    {
+     "path": "materials/da-2-1-dataframe-inside/da-2-1-dataframe-inside.md",
+     "name": "da-2-1-dataframe-inside.md",
+     "bytes": 43811,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-2-1-dataframe-inside/dataframe_inside.ipynb",
+     "name": "dataframe_inside.ipynb",
+     "bytes": 25699,
+     "about": "Блоки кода страницы и упражнения на loc, iloc, маски и типы"
+    },
+    {
+     "path": "materials/da-2-1-dataframe-inside/dataframe_inside_solutions.ipynb",
+     "name": "dataframe_inside_solutions.ipynb",
+     "bytes": 30207,
+     "about": "Решения упражнений"
+    },
+    {
+     "path": "materials/da-2-1-dataframe-inside/loc_iloc_drill.py",
+     "name": "loc_iloc_drill.py",
+     "bytes": 6680,
+     "about": "Тридцать выражений выборки к таблице из интерактива с ответами pandas 3"
+    },
+    {
+     "path": "materials/da-2-1-dataframe-inside/orders_2026q1.csv",
+     "name": "orders_2026q1.csv",
+     "bytes": 5543449,
+     "about": "Учебная выгрузка: 100 000 заказов января–марта 2026"
+    }
+   ],
+   "shared": []
+  },
+  "da-2-2": {
+   "file": "da-2-2-loading",
+   "zip": "materials/da-2-2-loading.zip",
+   "zipBytes": 32121,
+   "files": [
+    {
+     "path": "materials/da-2-2-loading/README.md",
+     "name": "README.md",
+     "bytes": 3047,
+     "about": ""
+    },
+    {
+     "path": "materials/da-2-2-loading/api_server.py",
+     "name": "api_server.py",
+     "bytes": 2357,
+     "about": "Учебный API: страницы, ключ, лимит"
+    },
+    {
+     "path": "materials/da-2-2-loading/da-2-2-loading.md",
+     "name": "da-2-2-loading.md",
+     "bytes": 44398,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-2-2-loading/data/app_orders.json",
+     "name": "data/app_orders.json",
+     "bytes": 2672,
+     "about": "10 заказов приложения для учебного сервера"
+    },
+    {
+     "path": "materials/da-2-2-loading/data/crm_by_month.xlsx",
+     "name": "data/crm_by_month.xlsx",
+     "bytes": 6929,
+     "about": "Те же заказы CRM по листам «Январь», «Февраль», «Март»"
+    },
+    {
+     "path": "materials/da-2-2-loading/data/orders_crm.csv",
+     "name": "data/orders_crm.csv",
+     "bytes": 474,
+     "about": "Учебная выгрузка CRM: 8 заказов, cp1251, «;»"
+    },
+    {
+     "path": "materials/da-2-2-loading/data/shop.db",
+     "name": "data/shop.db",
+     "bytes": 8192,
+     "about": "SQLite с таблицей orders: 15 заказов сайта"
+    },
+    {
+     "path": "materials/da-2-2-loading/gen_data.py",
+     "name": "gen_data.py",
+     "bytes": 5007,
+     "about": "Генератор учебных данных с зерном 22"
+    },
+    {
+     "path": "materials/da-2-2-loading/load_api.py",
+     "name": "load_api.py",
+     "bytes": 2351,
+     "about": "Обход API по страницам"
+    },
+    {
+     "path": "materials/da-2-2-loading/load_csv.py",
+     "name": "load_csv.py",
+     "bytes": 1457,
+     "about": "Чтение файла CRM с явными типами"
+    },
+    {
+     "path": "materials/da-2-2-loading/load_db.py",
+     "name": "load_db.py",
+     "bytes": 1336,
+     "about": "Запрос к базе с параметрами"
+    },
+    {
+     "path": "materials/da-2-2-loading/read_excel.py",
+     "name": "read_excel.py",
+     "bytes": 590,
+     "about": "Чтение книги Excel"
+    },
+    {
+     "path": "materials/da-2-2-loading/save_parquet.py",
+     "name": "save_parquet.py",
+     "bytes": 944,
+     "about": "Склейка и сохранение в parquet"
+    }
+   ],
+   "shared": []
+  },
+  "da-2-3": {
+   "file": "da-2-3-cleaning",
+   "zip": "materials/da-2-3-cleaning.zip",
+   "zipBytes": 29198,
+   "files": [
+    {
+     "path": "materials/da-2-3-cleaning/README.md",
+     "name": "README.md",
+     "bytes": 1259,
+     "about": ""
+    },
+    {
+     "path": "materials/da-2-3-cleaning/clean_orders.ipynb",
+     "name": "clean_orders.ipynb",
+     "bytes": 13252,
+     "about": "Четыре ячейки раздела «Код»"
+    },
+    {
+     "path": "materials/da-2-3-cleaning/cost_of_missing.py",
+     "name": "cost_of_missing.py",
+     "bytes": 4019,
+     "about": "Расчёт интерактива «Цена пропуска» на pandas"
+    },
+    {
+     "path": "materials/da-2-3-cleaning/da-2-3-cleaning.md",
+     "name": "da-2-3-cleaning.md",
+     "bytes": 43146,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-2-3-cleaning/data/orders_raw.csv",
+     "name": "data/orders_raw.csv",
+     "bytes": 14800,
+     "about": "Учебная выгрузка на 207 строк со всей грязью страницы"
+    },
+    {
+     "path": "materials/da-2-3-cleaning/data/orders_true.csv",
+     "name": "data/orders_true.csv",
+     "bytes": 14696,
+     "about": "Те же 200 заказов без порчи, «правда» интерактива"
+    },
+    {
+     "path": "materials/da-2-3-cleaning/gen_data.py",
+     "name": "gen_data.py",
+     "bytes": 5384,
+     "about": "Генератор обеих выгрузок, зёрна 23 и 230"
+    }
+   ],
+   "shared": []
+  },
+  "da-2-4": {
+   "file": "da-2-4-groupby-pivot-merge",
+   "zip": "materials/da-2-4-groupby-pivot-merge.zip",
+   "zipBytes": 53073,
+   "files": [
+    {
+     "path": "materials/da-2-4-groupby-pivot-merge/README.md",
+     "name": "README.md",
+     "bytes": 1280,
+     "about": ""
+    },
+    {
+     "path": "materials/da-2-4-groupby-pivot-merge/da-2-4-groupby-pivot-merge.md",
+     "name": "da-2-4-groupby-pivot-merge.md",
+     "bytes": 38956,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-2-4-groupby-pivot-merge/data/countries.csv",
+     "name": "data/countries.csv",
+     "bytes": 114,
+     "about": "Учебный справочник стран: BY, RU, KZ, AM"
+    },
+    {
+     "path": "materials/da-2-4-groupby-pivot-merge/data/gen.py",
+     "name": "data/gen.py",
+     "bytes": 3416,
+     "about": "Генератор учебных данных, seed 186"
+    },
+    {
+     "path": "materials/da-2-4-groupby-pivot-merge/data/managers.csv",
+     "name": "data/managers.csv",
+     "bytes": 165,
+     "about": "Учебная таблица менеджеров по стране и каналу из интерактива"
+    },
+    {
+     "path": "materials/da-2-4-groupby-pivot-merge/data/orders.csv",
+     "name": "data/orders.csv",
+     "bytes": 1937,
+     "about": "Учебная выгрузка: 32 заказа за январь–март 2026"
+    },
+    {
+     "path": "materials/da-2-4-groupby-pivot-merge/report.ipynb",
+     "name": "report.ipynb",
+     "bytes": 55087,
+     "about": "Четыре блока кода: когорты, сводная, соединение, melt"
+    }
+   ],
+   "shared": []
+  },
+  "da-3-1": {
+   "file": "da-3-1-select-order",
+   "zip": "materials/da-3-1-select-order.zip",
+   "zipBytes": 15354,
+   "files": [
+    {
+     "path": "materials/da-3-1-select-order/README.md",
+     "name": "README.md",
+     "bytes": 1446,
+     "about": ""
+    },
+    {
+     "path": "materials/da-3-1-select-order/da-3-1-select-order.md",
+     "name": "da-3-1-select-order.md",
+     "bytes": 37574,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-3-1-select-order/dialects.py",
+     "name": "dialects.py",
+     "bytes": 1664,
+     "about": "Сравнение PostgreSQL, SQLite и DuckDB"
+    },
+    {
+     "path": "materials/da-3-1-select-order/queries/q1.sql",
+     "name": "queries/q1.sql",
+     "bytes": 294,
+     "about": "Пять запросов из раздела «Код»: q1.sql–q5.sql"
+    },
+    {
+     "path": "materials/da-3-1-select-order/queries/q2.sql",
+     "name": "queries/q2.sql",
+     "bytes": 320,
+     "about": "Пять запросов из раздела «Код»: q1.sql–q5.sql"
+    },
+    {
+     "path": "materials/da-3-1-select-order/queries/q3.sql",
+     "name": "queries/q3.sql",
+     "bytes": 211,
+     "about": "Пять запросов из раздела «Код»: q1.sql–q5.sql"
+    },
+    {
+     "path": "materials/da-3-1-select-order/queries/q4.sql",
+     "name": "queries/q4.sql",
+     "bytes": 624,
+     "about": "Пять запросов из раздела «Код»: q1.sql–q5.sql"
+    },
+    {
+     "path": "materials/da-3-1-select-order/queries/q5.sql",
+     "name": "queries/q5.sql",
+     "bytes": 594,
+     "about": "Пять запросов из раздела «Код»: q1.sql–q5.sql"
+    }
+   ],
+   "shared": [
+    "shop"
+   ]
+  },
+  "da-3-2": {
+   "file": "da-3-2-join",
+   "zip": "materials/da-3-2-join.zip",
+   "zipBytes": 18600,
+   "files": [
+    {
+     "path": "materials/da-3-2-join/README.md",
+     "name": "README.md",
+     "bytes": 1375,
+     "about": ""
+    },
+    {
+     "path": "materials/da-3-2-join/da-3-2-join.md",
+     "name": "da-3-2-join.md",
+     "bytes": 40391,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-3-2-join/exercises.sql",
+     "name": "exercises.sql",
+     "bytes": 6561,
+     "about": "Упражнения: предсказать число строк, найти размножение, переписать NOT IN"
+    },
+    {
+     "path": "materials/da-3-2-join/exercises_solutions.sql",
+     "name": "exercises_solutions.sql",
+     "bytes": 8174,
+     "about": "Решения упражнений"
+    },
+    {
+     "path": "materials/da-3-2-join/joins.sql",
+     "name": "joins.sql",
+     "bytes": 5274,
+     "about": "Четыре блока кода страницы одним файлом, начиная с выборки во временных таблицах"
+    }
+   ],
+   "shared": [
+    "shop"
+   ]
+  },
+  "da-3-3": {
+   "file": "da-3-3-aggregates",
+   "zip": "materials/da-3-3-aggregates.zip",
+   "zipBytes": 15373,
+   "files": [
+    {
+     "path": "materials/da-3-3-aggregates/README.md",
+     "name": "README.md",
+     "bytes": 1381,
+     "about": ""
+    },
+    {
+     "path": "materials/da-3-3-aggregates/avg_of_avgs.csv",
+     "name": "avg_of_avgs.csv",
+     "bytes": 3662,
+     "about": "Выборка интерактива: оплаченные заказы четырёх стран с отметкой промокода"
+    },
+    {
+     "path": "materials/da-3-3-aggregates/da-3-3-aggregates.md",
+     "name": "da-3-3-aggregates.md",
+     "bytes": 38710,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-3-3-aggregates/dialects.py",
+     "name": "dialects.py",
+     "bytes": 1214,
+     "about": "Сравнение PostgreSQL, SQLite и DuckDB из пятого блока"
+    },
+    {
+     "path": "materials/da-3-3-aggregates/queries.sql",
+     "name": "queries.sql",
+     "bytes": 3641,
+     "about": "Четыре блока запросов из раздела «Код»"
+    }
+   ],
+   "shared": [
+    "shop"
+   ]
+  },
+  "da-3-4": {
+   "file": "da-3-4-cte-null-types",
+   "zip": "materials/da-3-4-cte-null-types.zip",
+   "zipBytes": 16720,
+   "files": [
+    {
+     "path": "materials/da-3-4-cte-null-types/README.md",
+     "name": "README.md",
+     "bytes": 1352,
+     "about": ""
+    },
+    {
+     "path": "materials/da-3-4-cte-null-types/da-3-4-cte-null-types.md",
+     "name": "da-3-4-cte-null-types.md",
+     "bytes": 40139,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-3-4-cte-null-types/dialects.py",
+     "name": "dialects.py",
+     "bytes": 1310,
+     "about": "Неделя и сравнение дат в SQLite и DuckDB из Python"
+    },
+    {
+     "path": "materials/da-3-4-cte-null-types/queries.sql",
+     "name": "queries.sql",
+     "bytes": 5265,
+     "about": "Все запросы страницы в порядке разделов"
+    },
+    {
+     "path": "materials/da-3-4-cte-null-types/three_valued.sql",
+     "name": "three_valued.sql",
+     "bytes": 1863,
+     "about": "Сверка интерактива: 14 условий на всех 24 сочетаниях значений"
+    }
+   ],
+   "shared": [
+    "shop"
+   ]
+  },
+  "da-3-5": {
+   "file": "da-3-5-window-functions",
+   "zip": "materials/da-3-5-window-functions.zip",
+   "zipBytes": 16335,
+   "files": [
+    {
+     "path": "materials/da-3-5-window-functions/README.md",
+     "name": "README.md",
+     "bytes": 1367,
+     "about": ""
+    },
+    {
+     "path": "materials/da-3-5-window-functions/da-3-5-window-functions.md",
+     "name": "da-3-5-window-functions.md",
+     "bytes": 41497,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-3-5-window-functions/qualify.py",
+     "name": "qualify.py",
+     "bytes": 539,
+     "about": "QUALIFY в DuckDB и ответ PostgreSQL на тот же запрос"
+    },
+    {
+     "path": "materials/da-3-5-window-functions/sova_week.csv",
+     "name": "sova_week.csv",
+     "bytes": 442,
+     "about": "Выборка интерактива: 11 оплаченных заказов «Сова» за 1–7 марта"
+    },
+    {
+     "path": "materials/da-3-5-window-functions/window_functions.sql",
+     "name": "window_functions.sql",
+     "bytes": 6372,
+     "about": "Все запросы страницы: нюансы и четыре отчёта"
+    }
+   ],
+   "shared": [
+    "shop"
+   ]
+  },
+  "da-4-1": {
+   "file": "da-4-1-vectors-numpy",
+   "zip": "materials/da-4-1-vectors-numpy.zip",
+   "zipBytes": 31709,
+   "files": [
+    {
+     "path": "materials/da-4-1-vectors-numpy/README.md",
+     "name": "README.md",
+     "bytes": 1619,
+     "about": ""
+    },
+    {
+     "path": "materials/da-4-1-vectors-numpy/curse.py",
+     "name": "curse.py",
+     "bytes": 1940,
+     "about": "Расчёт из «Ограничений»: расстояния в 2–500 измерениях, seed 4"
+    },
+    {
+     "path": "materials/da-4-1-vectors-numpy/da-4-1-vectors-numpy.md",
+     "name": "da-4-1-vectors-numpy.md",
+     "bytes": 40489,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-4-1-vectors-numpy/vectors_numpy.ipynb",
+     "name": "vectors_numpy.ipynb",
+     "bytes": 28465,
+     "about": "Код страницы и упражнения на формы массивов"
+    },
+    {
+     "path": "materials/da-4-1-vectors-numpy/vectors_numpy_solutions.ipynb",
+     "name": "vectors_numpy_solutions.ipynb",
+     "bytes": 34088,
+     "about": "Решения упражнений"
+    }
+   ],
+   "shared": [
+    "clients",
+    "shop"
+   ]
+  },
+  "da-4-2": {
+   "file": "da-4-2-matrix-transforms",
+   "zip": "materials/da-4-2-matrix-transforms.zip",
+   "zipBytes": 22706,
+   "files": [
+    {
+     "path": "materials/da-4-2-matrix-transforms/README.md",
+     "name": "README.md",
+     "bytes": 1359,
+     "about": ""
+    },
+    {
+     "path": "materials/da-4-2-matrix-transforms/da-4-2-matrix-transforms.md",
+     "name": "da-4-2-matrix-transforms.md",
+     "bytes": 44998,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-4-2-matrix-transforms/deform.py",
+     "name": "deform.py",
+     "bytes": 6203,
+     "about": "Расчёт интерактива на NumPy: определитель, ранг, собственные векторы"
+    },
+    {
+     "path": "materials/da-4-2-matrix-transforms/matrix_transforms.ipynb",
+     "name": "matrix_transforms.ipynb",
+     "bytes": 18919,
+     "about": "Ячейки разделов «Нюансы» и «Код»"
+    }
+   ],
+   "shared": [
+    "clients"
+   ]
+  },
+  "da-4-3": {
+   "file": "da-4-3-derivative-gradient",
+   "zip": "materials/da-4-3-derivative-gradient.zip",
+   "zipBytes": 17975,
+   "files": [
+    {
+     "path": "materials/da-4-3-derivative-gradient/README.md",
+     "name": "README.md",
+     "bytes": 1273,
+     "about": ""
+    },
+    {
+     "path": "materials/da-4-3-derivative-gradient/da-4-3-derivative-gradient.md",
+     "name": "da-4-3-derivative-gradient.md",
+     "bytes": 44292,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-4-3-derivative-gradient/integral.py",
+     "name": "integral.py",
+     "bytes": 1083,
+     "about": "Сумма прямоугольников и гистограмма с density=True"
+    },
+    {
+     "path": "materials/da-4-3-derivative-gradient/regression_gd.py",
+     "name": "regression_gd.py",
+     "bytes": 2953,
+     "about": "Регрессия спуском, сравнение с lstsq, опыт с масштабом"
+    },
+    {
+     "path": "materials/da-4-3-derivative-gradient/surface.py",
+     "name": "surface.py",
+     "bytes": 3061,
+     "about": "Поверхность сцены: градиент, численная производная, спуск; парабола"
+    }
+   ],
+   "shared": [
+    "clients"
+   ]
+  },
+  "da-5-1": {
+   "file": "da-5-1-conditional-bayes",
+   "zip": "materials/da-5-1-conditional-bayes.zip",
+   "zipBytes": 19889,
+   "files": [
+    {
+     "path": "materials/da-5-1-conditional-bayes/README.md",
+     "name": "README.md",
+     "bytes": 1456,
+     "about": ""
+    },
+    {
+     "path": "materials/da-5-1-conditional-bayes/conditional_bayes.ipynb",
+     "name": "conditional_bayes.ipynb",
+     "bytes": 13571,
+     "about": "Три блока кода страницы: симуляция, таблица сопряжённости, хи-квадрат"
+    },
+    {
+     "path": "materials/da-5-1-conditional-bayes/da-5-1-conditional-bayes.md",
+     "name": "da-5-1-conditional-bayes.md",
+     "bytes": 37778,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-5-1-conditional-bayes/scene_points.py",
+     "name": "scene_points.py",
+     "bytes": 7955,
+     "about": "Пропорциональная тысяча визитов для анимации и интерактива, seed 505"
+    }
+   ],
+   "shared": [
+    "probability"
+   ]
+  },
+  "da-5-2": {
+   "file": "da-5-2-distributions",
+   "zip": "materials/da-5-2-distributions.zip",
+   "zipBytes": 17040,
+   "files": [
+    {
+     "path": "materials/da-5-2-distributions/README.md",
+     "name": "README.md",
+     "bytes": 1373,
+     "about": ""
+    },
+    {
+     "path": "materials/da-5-2-distributions/da-5-2-distributions.md",
+     "name": "da-5-2-distributions.md",
+     "bytes": 42973,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-5-2-distributions/distributions.py",
+     "name": "distributions.py",
+     "bytes": 3695,
+     "about": "Блоки кода страницы: scipy.stats, Пуассон для заказов, подбор логнормального и точки Q–Q-графика"
+    },
+    {
+     "path": "materials/da-5-2-distributions/nuances.py",
+     "name": "nuances.py",
+     "bytes": 3709,
+     "about": "Четыре нюанса запуском: плотность и единицы, дисперсия суммы, логарифм, среднее против медианы"
+    }
+   ],
+   "shared": [
+    "probability"
+   ]
+  },
+  "da-5-3": {
+   "file": "da-5-3-lln-clt",
+   "zip": "materials/da-5-3-lln-clt.zip",
+   "zipBytes": 17571,
+   "files": [
+    {
+     "path": "materials/da-5-3-lln-clt/README.md",
+     "name": "README.md",
+     "bytes": 1227,
+     "about": ""
+    },
+    {
+     "path": "materials/da-5-3-lln-clt/clt_simulations.py",
+     "name": "clt_simulations.py",
+     "bytes": 7505,
+     "about": "Шесть блоков кода страницы одним скриптом: средние, σ/√n, конверсия, нюансы"
+    },
+    {
+     "path": "materials/da-5-3-lln-clt/da-5-3-lln-clt.md",
+     "name": "da-5-3-lln-clt.md",
+     "bytes": 43626,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-5-3-lln-clt/gen_scene.py",
+     "name": "gen_scene.py",
+     "bytes": 3177,
+     "about": "Выборки сцены: зерно 5300, средние и их разброс"
+    }
+   ],
+   "shared": [
+    "probability"
+   ]
+  },
+  "da-6-1": {
+   "file": "da-6-1-sampling-bias",
+   "zip": "materials/da-6-1-sampling-bias.zip",
+   "zipBytes": 20707,
+   "files": [
+    {
+     "path": "materials/da-6-1-sampling-bias/README.md",
+     "name": "README.md",
+     "bytes": 1210,
+     "about": ""
+    },
+    {
+     "path": "materials/da-6-1-sampling-bias/da-6-1-sampling-bias.md",
+     "name": "da-6-1-sampling-bias.md",
+     "bytes": 42233,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-6-1-sampling-bias/gen_page.py",
+     "name": "gen_page.py",
+     "bytes": 12020,
+     "about": "Выборки сцены и перебор двадцати зёрен"
+    },
+    {
+     "path": "materials/da-6-1-sampling-bias/sampling.py",
+     "name": "sampling.py",
+     "bytes": 6614,
+     "about": "Четыре блока кода страницы одним скриптом"
+    }
+   ],
+   "shared": [
+    "inference"
+   ]
+  },
+  "da-6-2": {
+   "file": "da-6-2-intervals-bootstrap",
+   "zip": "materials/da-6-2-intervals-bootstrap.zip",
+   "zipBytes": 21924,
+   "files": [
+    {
+     "path": "materials/da-6-2-intervals-bootstrap/README.md",
+     "name": "README.md",
+     "bytes": 1248,
+     "about": ""
+    },
+    {
+     "path": "materials/da-6-2-intervals-bootstrap/da-6-2-intervals-bootstrap.md",
+     "name": "da-6-2-intervals-bootstrap.md",
+     "bytes": 43849,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-6-2-intervals-bootstrap/gen_scene.py",
+     "name": "gen_scene.py",
+     "bytes": 9978,
+     "about": "Выборки, интервалы и перевыборки сцены, перебор зёрен"
+    },
+    {
+     "path": "materials/da-6-2-intervals-bootstrap/intervals_bootstrap.py",
+     "name": "intervals_bootstrap.py",
+     "bytes": 8595,
+     "about": "Шесть блоков кода страницы одним скриптом"
+    }
+   ],
+   "shared": [
+    "probability"
+   ]
+  },
+  "da-6-3": {
+   "file": "da-6-3-p-value",
+   "zip": "materials/da-6-3-p-value.zip",
+   "zipBytes": 18331,
+   "files": [
+    {
+     "path": "materials/da-6-3-p-value/README.md",
+     "name": "README.md",
+     "bytes": 1228,
+     "about": ""
+    },
+    {
+     "path": "materials/da-6-3-p-value/da-6-3-p-value.md",
+     "name": "da-6-3-p-value.md",
+     "bytes": 41616,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-6-3-p-value/gen_scene.py",
+     "name": "gen_scene.py",
+     "bytes": 5814,
+     "about": "Два мира анимации: без разницы и с эффектом"
+    },
+    {
+     "path": "materials/da-6-3-p-value/hypothesis_tests.py",
+     "name": "hypothesis_tests.py",
+     "bytes": 6074,
+     "about": "Четыре блока кода страницы одним скриптом"
+    }
+   ],
+   "shared": [
+    "inference"
+   ]
+  },
+  "da-6-4": {
+   "file": "da-6-4-which-test",
+   "zip": "materials/da-6-4-which-test.zip",
+   "zipBytes": 20190,
+   "files": [
+    {
+     "path": "materials/da-6-4-which-test/README.md",
+     "name": "README.md",
+     "bytes": 1558,
+     "about": ""
+    },
+    {
+     "path": "materials/da-6-4-which-test/da-6-4-which-test.md",
+     "name": "da-6-4-which-test.md",
+     "bytes": 44505,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-6-4-which-test/grid.py",
+     "name": "grid.py",
+     "bytes": 6948,
+     "about": "Сетка интерактива: 125 клеток по 10 000 повторов, зерно 6040, около 10 минут"
+    },
+    {
+     "path": "materials/da-6-4-which-test/which_test.py",
+     "name": "which_test.py",
+     "bytes": 9382,
+     "about": "Семь блоков кода страницы одним скриптом"
+    }
+   ],
+   "shared": [
+    "inference",
+    "probability"
+   ]
+  },
+  "da-6-5": {
+   "file": "da-6-5-correlation-causation",
+   "zip": "materials/da-6-5-correlation-causation.zip",
+   "zipBytes": 28120,
+   "files": [
+    {
+     "path": "materials/da-6-5-correlation-causation/README.md",
+     "name": "README.md",
+     "bytes": 1795,
+     "about": ""
+    },
+    {
+     "path": "materials/da-6-5-correlation-causation/anscombe.csv",
+     "name": "anscombe.csv",
+     "bytes": 464,
+     "about": "Квартет Энскомба: четыре набора по 11 точек из статьи 1973 года"
+    },
+    {
+     "path": "materials/da-6-5-correlation-causation/correlation.ipynb",
+     "name": "correlation.ipynb",
+     "bytes": 58592,
+     "about": "Код страницы: матрица корреляций, Пирсон и Спирмен, парадокс Симпсона, три нюанса"
+    },
+    {
+     "path": "materials/da-6-5-correlation-causation/da-6-5-correlation-causation.md",
+     "name": "da-6-5-correlation-causation.md",
+     "bytes": 42487,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    }
+   ],
+   "shared": [
+    "clients",
+    "inference"
+   ]
+  },
+  "da-7-1": {
+   "file": "da-7-1-first-look",
+   "zip": "materials/da-7-1-first-look.zip",
+   "zipBytes": 38162,
+   "files": [
+    {
+     "path": "materials/da-7-1-first-look/README.md",
+     "name": "README.md",
+     "bytes": 1841,
+     "about": ""
+    },
+    {
+     "path": "materials/da-7-1-first-look/da-7-1-first-look.md",
+     "name": "da-7-1-first-look.md",
+     "bytes": 45943,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-7-1-first-look/first_look.ipynb",
+     "name": "first_look.ipynb",
+     "bytes": 63414,
+     "about": "Пять блоков кода страницы: чек-лист первого взгляда, карта пропусков и три нюанса"
+    },
+    {
+     "path": "materials/da-7-1-first-look/passport_sample.csv",
+     "name": "passport_sample.csv",
+     "bytes": 24058,
+     "about": "300 строк выгрузки — встроенный пример паспорта; загрузите полную выгрузку, чтобы сравнить"
+    },
+    {
+     "path": "materials/da-7-1-first-look/profile_report.py",
+     "name": "profile_report.py",
+     "bytes": 2432,
+     "about": "Черновик отчёта fg-data-profiling — для отдельного окружения с pandas ниже 3.0"
+    }
+   ],
+   "shared": [
+    "eda"
+   ]
+  },
+  "da-7-2": {
+   "file": "da-7-2-distributions-outliers",
+   "zip": "materials/da-7-2-distributions-outliers.zip",
+   "zipBytes": 62909,
+   "files": [
+    {
+     "path": "materials/da-7-2-distributions-outliers/README.md",
+     "name": "README.md",
+     "bytes": 1452,
+     "about": ""
+    },
+    {
+     "path": "materials/da-7-2-distributions-outliers/bin_width.py",
+     "name": "bin_width.py",
+     "bytes": 8473,
+     "about": "Гистограммы интерактива «Ширина корзины» на NumPy при любом числе корзин"
+    },
+    {
+     "path": "materials/da-7-2-distributions-outliers/da-7-2-distributions-outliers.md",
+     "name": "da-7-2-distributions-outliers.md",
+     "bytes": 41978,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-7-2-distributions-outliers/distributions_outliers.ipynb",
+     "name": "distributions_outliers.ipynb",
+     "bytes": 72372,
+     "about": "Ячейки раздела «Код» и три проверки из «Нюансов»"
+    }
+   ],
+   "shared": [
+    "eda"
+   ]
+  },
+  "da-7-3": {
+   "file": "da-7-3-relationships",
+   "zip": "materials/da-7-3-relationships.zip",
+   "zipBytes": 164674,
+   "files": [
+    {
+     "path": "materials/da-7-3-relationships/README.md",
+     "name": "README.md",
+     "bytes": 1577,
+     "about": ""
+    },
+    {
+     "path": "materials/da-7-3-relationships/da-7-3-relationships.md",
+     "name": "da-7-3-relationships.md",
+     "bytes": 40921,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-7-3-relationships/eda_template.ipynb",
+     "name": "eda_template.ipynb",
+     "bytes": 2761,
+     "about": "Шаблон ноутбука: вопрос → график → вывод → следующий вопрос, дневник и список гипотез"
+    },
+    {
+     "path": "materials/da-7-3-relationships/relationships.ipynb",
+     "name": "relationships.ipynb",
+     "bytes": 209076,
+     "about": "Шесть блоков кода страницы: матрица пар, сегменты, разметка ряда, три нюанса"
+    }
+   ],
+   "shared": [
+    "eda"
+   ]
+  },
+  "da-8-1": {
+   "file": "da-8-1-matplotlib-anatomy",
+   "zip": "materials/da-8-1-matplotlib-anatomy.zip",
+   "zipBytes": 435187,
+   "files": [
+    {
+     "path": "materials/da-8-1-matplotlib-anatomy/README.md",
+     "name": "README.md",
+     "bytes": 1677,
+     "about": ""
+    },
+    {
+     "path": "materials/da-8-1-matplotlib-anatomy/da-8-1-matplotlib-anatomy.md",
+     "name": "da-8-1-matplotlib-anatomy.md",
+     "bytes": 46597,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-8-1-matplotlib-anatomy/matplotlib_anatomy.ipynb",
+     "name": "matplotlib_anatomy.ipynb",
+     "bytes": 598289,
+     "about": "Ноутбук: оба кода «Анатомии», блоки раздела «Код» и нюансы по ячейкам"
+    }
+   ],
+   "shared": [
+    "eda",
+    "viz"
+   ]
+  },
+  "da-8-2": {
+   "file": "da-8-2-chart-types",
+   "zip": "materials/da-8-2-chart-types.zip",
+   "zipBytes": 132160,
+   "files": [
+    {
+     "path": "materials/da-8-2-chart-types/README.md",
+     "name": "README.md",
+     "bytes": 1535,
+     "about": ""
+    },
+    {
+     "path": "materials/da-8-2-chart-types/chart_types.ipynb",
+     "name": "chart_types.ipynb",
+     "bytes": 159105,
+     "about": "Три блока кода страницы с рисунками: вопрос → график, FacetGrid, круг в столбцы"
+    },
+    {
+     "path": "materials/da-8-2-chart-types/da-8-2-chart-types.md",
+     "name": "da-8-2-chart-types.md",
+     "bytes": 41244,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-8-2-chart-types/nuances.py",
+     "name": "nuances.py",
+     "bytes": 7808,
+     "about": "Четыре рисунка нюансов: ось с нуля, сортировка, число категорий, две оси Y"
+    }
+   ],
+   "shared": [
+    "viz"
+   ]
+  },
+  "da-8-3": {
+   "file": "da-8-3-plotly",
+   "zip": "materials/da-8-3-plotly.zip",
+   "zipBytes": 35250,
+   "files": [
+    {
+     "path": "materials/da-8-3-plotly/README.md",
+     "name": "README.md",
+     "bytes": 1368,
+     "about": ""
+    },
+    {
+     "path": "materials/da-8-3-plotly/da-8-3-plotly.md",
+     "name": "da-8-3-plotly.md",
+     "bytes": 42759,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-8-3-plotly/plotly_channels.ipynb",
+     "name": "plotly_channels.ipynb",
+     "bytes": 200142,
+     "about": "Ноутбук с блоками кода страницы: px, подсказка, анимация, экспорт и нюансы"
+    }
+   ],
+   "shared": [
+    "viz"
+   ]
+  },
+  "da-8-4": {
+   "file": "da-8-4-chart-argument",
+   "zip": "materials/da-8-4-chart-argument.zip",
+   "zipBytes": 190594,
+   "files": [
+    {
+     "path": "materials/da-8-4-chart-argument/README.md",
+     "name": "README.md",
+     "bytes": 1529,
+     "about": ""
+    },
+    {
+     "path": "materials/da-8-4-chart-argument/chart_argument.ipynb",
+     "name": "chart_argument.ipynb",
+     "bytes": 240002,
+     "about": "Блоки кода страницы одним ноутбуком: выделение серии, подписи, аннотация, стиль, проверка палитры"
+    },
+    {
+     "path": "materials/da-8-4-chart-argument/da-8-4-chart-argument.md",
+     "name": "da-8-4-chart-argument.md",
+     "bytes": 42523,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-8-4-chart-argument/textbook.mplstyle",
+     "name": "textbook.mplstyle",
+     "bytes": 895,
+     "about": "Стиль учебника: шрифт, рамки, сетка и палитра Окабе — Ито"
+    }
+   ],
+   "shared": [
+    "viz"
+   ]
+  },
+  "da-9-1": {
+   "file": "da-9-1-event-model",
+   "zip": "materials/da-9-1-event-model.zip",
+   "zipBytes": 21264,
+   "files": [
+    {
+     "path": "materials/da-9-1-event-model/README.md",
+     "name": "README.md",
+     "bytes": 1990,
+     "about": ""
+    },
+    {
+     "path": "materials/da-9-1-event-model/da-9-1-event-model.md",
+     "name": "da-9-1-event-model.md",
+     "bytes": 44463,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-9-1-event-model/hero_12_15_may.csv",
+     "name": "hero_12_15_may.csv",
+     "bytes": 2165,
+     "about": "21 строка героя за 12–15 мая — лента интерактива"
+    },
+    {
+     "path": "materials/da-9-1-event-model/sessions.ipynb",
+     "name": "sessions.ipynb",
+     "bytes": 15235,
+     "about": "Сессии, склейка и витрина «пользователь — день» в pandas; пересчёт состояний интерактива"
+    },
+    {
+     "path": "materials/da-9-1-event-model/sessions.sql",
+     "name": "sessions.sql",
+     "bytes": 2564,
+     "about": "Очищенный слой и сессионизация из раздела «Код»"
+    }
+   ],
+   "shared": [
+    "events"
+   ]
+  },
+  "da-9-2": {
+   "file": "da-9-2-funnels",
+   "zip": "materials/da-9-2-funnels.zip",
+   "zipBytes": 44352,
+   "files": [
+    {
+     "path": "materials/da-9-2-funnels/README.md",
+     "name": "README.md",
+     "bytes": 1802,
+     "about": ""
+    },
+    {
+     "path": "materials/da-9-2-funnels/da-9-2-funnels.md",
+     "name": "da-9-2-funnels.md",
+     "bytes": 41067,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-9-2-funnels/funnel.sql",
+     "name": "funnel.sql",
+     "bytes": 4509,
+     "about": "Запрос воронки из раздела «Код»: окно и порядок через MIN(event_time)"
+    },
+    {
+     "path": "materials/da-9-2-funnels/funnel_segments.ipynb",
+     "name": "funnel_segments.ipynb",
+     "bytes": 44505,
+     "about": "Ноутбук: та же воронка по сегментам, Симпсон и график"
+    }
+   ],
+   "shared": [
+    "events"
+   ]
+  },
+  "da-9-3": {
+   "file": "da-9-3-retention-cohorts",
+   "zip": "materials/da-9-3-retention-cohorts.zip",
+   "zipBytes": 33829,
+   "files": [
+    {
+     "path": "materials/da-9-3-retention-cohorts/README.md",
+     "name": "README.md",
+     "bytes": 1850,
+     "about": ""
+    },
+    {
+     "path": "materials/da-9-3-retention-cohorts/cohorts.sql",
+     "name": "cohorts.sql",
+     "bytes": 4099,
+     "about": "Таблица «пользователь — день» и таблица когорт для PostgreSQL 16"
+    },
+    {
+     "path": "materials/da-9-3-retention-cohorts/da-9-3-retention-cohorts.md",
+     "name": "da-9-3-retention-cohorts.md",
+     "bytes": 48755,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-9-3-retention-cohorts/retention.ipynb",
+     "name": "retention.ipynb",
+     "bytes": 88251,
+     "about": "Три вида удержания, тепловая карта и кривые на pandas и Matplotlib"
+    }
+   ],
+   "shared": [
+    "events"
+   ]
+  },
+  "da-9-4": {
+   "file": "da-9-4-metric-tree",
+   "zip": "materials/da-9-4-metric-tree.zip",
+   "zipBytes": 18770,
+   "files": [
+    {
+     "path": "materials/da-9-4-metric-tree/README.md",
+     "name": "README.md",
+     "bytes": 1811,
+     "about": ""
+    },
+    {
+     "path": "materials/da-9-4-metric-tree/active.sql",
+     "name": "active.sql",
+     "bytes": 3506,
+     "about": "DAU, WAU, MAU, липкость и баланс активных в PostgreSQL"
+    },
+    {
+     "path": "materials/da-9-4-metric-tree/da-9-4-metric-tree.md",
+     "name": "da-9-4-metric-tree.md",
+     "bytes": 42976,
+     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+    },
+    {
+     "path": "materials/da-9-4-metric-tree/decompose.py",
+     "name": "decompose.py",
+     "bytes": 3350,
+     "about": "Вклад множителей в изменение выручки: логарифмы и подстановка"
+    },
+    {
+     "path": "materials/da-9-4-metric-tree/metric_card_template.md",
+     "name": "metric_card_template.md",
+     "bytes": 1626,
+     "about": "Шаблон карточки метрики для своих метрик"
+    }
+   ],
+   "shared": [
+    "events"
+   ]
+  }
+ },
+ "data": {
+  "ab": {
+   "zip": "materials/data-ab.zip",
+   "zipBytes": 14386627,
+   "files": [
+    {
+     "path": "materials/data/ab/README.md",
+     "bytes": 9860
+    },
+    {
+     "path": "materials/data/ab/aa_sim.py",
+     "bytes": 3989
+    },
+    {
+     "path": "materials/data/ab/exposures.csv",
+     "bytes": 6939844
+    },
+    {
+     "path": "materials/data/ab/gen.py",
+     "bytes": 9643
+    },
+    {
+     "path": "materials/data/ab/load_pg.sql",
+     "bytes": 2323
+    },
+    {
+     "path": "materials/data/ab/pre_period.csv",
+     "bytes": 770346
+    },
+    {
+     "path": "materials/data/ab/sessions.csv.gz",
+     "bytes": 6127723
+    },
+    {
+     "path": "materials/data/ab/sessions.parquet",
+     "bytes": 8682714
+    },
+    {
+     "path": "materials/data/ab/users.csv",
+     "bytes": 2891687
+    }
+   ]
+  },
+  "clients": {
+   "zip": "materials/data-clients.zip",
+   "zipBytes": 10441,
+   "files": [
+    {
+     "path": "materials/data/clients/README.md",
+     "bytes": 2728
+    },
+    {
+     "path": "materials/data/clients/clients.csv",
+     "bytes": 20715
+    },
+    {
+     "path": "materials/data/clients/gen.py",
+     "bytes": 1063
+    }
+   ]
+  },
+  "eda": {
+   "zip": "materials/data-eda.zip",
+   "zipBytes": 234094,
+   "files": [
+    {
+     "path": "materials/data/eda/README.md",
+     "bytes": 4188
+    },
+    {
+     "path": "materials/data/eda/clients_export.csv",
+     "bytes": 977179
+    },
+    {
+     "path": "materials/data/eda/daily_metrics.csv",
+     "bytes": 2364
+    },
+    {
+     "path": "materials/data/eda/gen.py",
+     "bytes": 6157
+    }
+   ]
+  },
+  "events": {
+   "zip": "materials/data-events.zip",
+   "zipBytes": 8896626,
+   "files": [
+    {
+     "path": "materials/data/events/README.md",
+     "bytes": 10504
+    },
+    {
+     "path": "materials/data/events/events.csv.gz",
+     "bytes": 4090654
+    },
+    {
+     "path": "materials/data/events/events.parquet",
+     "bytes": 6065688
+    },
+    {
+     "path": "materials/data/events/gen.py",
+     "bytes": 20692
+    },
+    {
+     "path": "materials/data/events/load_pg.sql",
+     "bytes": 2096
+    },
+    {
+     "path": "materials/data/events/users.csv",
+     "bytes": 371137
+    }
+   ]
+  },
+  "inference": {
+   "zip": "materials/data-inference.zip",
+   "zipBytes": 841463,
+   "files": [
+    {
+     "path": "materials/data/inference/README.md",
+     "bytes": 5661
+    },
+    {
+     "path": "materials/data/inference/ab.csv",
+     "bytes": 434634
+    },
+    {
+     "path": "materials/data/inference/discounts.csv",
+     "bytes": 2888
+    },
+    {
+     "path": "materials/data/inference/gen_ab.py",
+     "bytes": 9026
+    },
+    {
+     "path": "materials/data/inference/gen_discounts.py",
+     "bytes": 2352
+    },
+    {
+     "path": "materials/data/inference/gen_pilot.py",
+     "bytes": 3858
+    },
+    {
+     "path": "materials/data/inference/gen_users.py",
+     "bytes": 3668
+    },
+    {
+     "path": "materials/data/inference/paired.csv",
+     "bytes": 403
+    },
+    {
+     "path": "materials/data/inference/pilot.csv",
+     "bytes": 1377
+    },
+    {
+     "path": "materials/data/inference/users.csv",
+     "bytes": 2105077
+    }
+   ]
+  },
+  "probability": {
+   "zip": "materials/data-probability.zip",
+   "zipBytes": 395612,
+   "files": [
+    {
+     "path": "materials/data/probability/README.md",
+     "bytes": 3009
+    },
+    {
+     "path": "materials/data/probability/checks.csv",
+     "bytes": 209290
+    },
+    {
+     "path": "materials/data/probability/daily_orders.csv",
+     "bytes": 1272
+    },
+    {
+     "path": "materials/data/probability/gen.py",
+     "bytes": 2334
+    },
+    {
+     "path": "materials/data/probability/order_gaps.csv",
+     "bytes": 26664
+    },
+    {
+     "path": "materials/data/probability/visits.csv",
+     "bytes": 2429222
+    }
+   ]
+  },
+  "shop": {
+   "zip": "materials/data-shop.zip",
+   "zipBytes": 63671,
+   "files": [
+    {
+     "path": "materials/data/shop/README.md",
+     "bytes": 3383
+    },
+    {
+     "path": "materials/data/shop/gen.py",
+     "bytes": 7891
+    },
+    {
+     "path": "materials/data/shop/shop.duckdb",
+     "bytes": 3158016
+    },
+    {
+     "path": "materials/data/shop/shop.sql",
+     "bytes": 61170
+    },
+    {
+     "path": "materials/data/shop/shop.sqlite",
+     "bytes": 94208
+    }
+   ]
+  },
+  "unit": {
+   "zip": "materials/data-unit.zip",
+   "zipBytes": 2130400,
+   "files": [
+    {
+     "path": "materials/data/unit/README.md",
+     "bytes": 9524
+    },
+    {
+     "path": "materials/data/unit/activity.csv",
+     "bytes": 3218984
+    },
+    {
+     "path": "materials/data/unit/clients.csv",
+     "bytes": 2309042
+    },
+    {
+     "path": "materials/data/unit/gen.py",
+     "bytes": 8695
+    },
+    {
+     "path": "materials/data/unit/load_pg.sql",
+     "bytes": 2313
+    },
+    {
+     "path": "materials/data/unit/marketing_spend.csv",
+     "bytes": 2155
+    },
+    {
+     "path": "materials/data/unit/orders.csv",
+     "bytes": 6846585
+    }
+   ]
+  },
+  "viz": {
+   "zip": "materials/data-viz.zip",
+   "zipBytes": 8167,
+   "files": [
+    {
+     "path": "materials/data/viz/README.md",
+     "bytes": 3104
+    },
+    {
+     "path": "materials/data/viz/gen.py",
+     "bytes": 2353
+    },
+    {
+     "path": "materials/data/viz/sales_monthly.csv",
+     "bytes": 37222
+    }
+   ]
+  }
+ }
+}

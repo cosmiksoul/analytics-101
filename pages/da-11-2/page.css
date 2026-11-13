@@ -1,0 +1,64 @@
+/* ---------- Сцена: два колокола (SVG в пикселях контейнера) ---------- */
+.scene .dz-sv { display: block; width: 100%; height: 100%; overflow: visible; }
+.scene .dz-sv text { font-family: var(--ui); font-variant-numeric: tabular-nums; }
+/* табло шага в правом углу наезжает на четыре счётчика — прячем, пока это не исправлено в движке */
+.scene .sc-info { display: none; }
+@container (max-width: 860px) { .scene .sc-stage { height: 440px; } }
+@container (max-width: 560px) {
+  .scene .sc-hud .hb:nth-child(2) { display: none; }
+  .scene .sc-html { padding-top: 62px; }
+}
+
+/* ---------- Интерактив «Калькулятор теста» ---------- */
+.dz-do { padding: 10px 16px 0; margin: 0 !important; }
+.dz-main { padding: 6px 16px 10px; min-width: 0; }
+.dz-cap { font: 600 15.5px/1.4 var(--ui) !important; color: var(--ink); margin: 6px 0 10px !important; }
+.dz-ro { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 18px; padding-bottom: 6px; }
+.dz-ro .big { font-size: 24px; white-space: nowrap; }
+.dz-chart { min-width: 0; margin-top: 6px; }
+.dz-chart svg { display: block; }
+.dz-chart text { font-family: var(--ui); }
+.dz-ax { font: 10.5px var(--mono); fill: var(--muted); }
+.dz-grid { stroke: var(--line); }
+.dz-base { stroke: var(--ink-2); stroke-width: 1.1; }
+.dz-h0 { fill: none; stroke: var(--muted); stroke-width: 2.2; }
+.dz-h1 { fill: none; stroke: var(--accent); stroke-width: 2.4; }
+.dz-fa { fill: var(--bad); fill-opacity: .32; }
+.dz-fb { fill: var(--warn); fill-opacity: .32; }
+.dz-thr { stroke: var(--ink); stroke-width: 1.3; stroke-dasharray: 4 4; }
+.dz-lb { font: 600 11.5px var(--ui); fill: var(--ink-2); }
+.dz-l0 { fill: var(--muted); }
+.dz-l1 { fill: var(--accent); }
+.dz-leg { font: 12.5px/1.5 var(--ui) !important; color: var(--ink-2); margin: 6px 0 10px !important; }
+.dz-leg i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin: 0 5px 0 0; }
+.dz-leg i + * , .dz-leg .dz-sb { margin-left: 10px; }
+.dz-sa { background: var(--bad); opacity: .55; }
+.dz-sb { background: var(--warn); opacity: .55; }
+.dz-wk { display: grid; grid-template-columns: repeat(52, minmax(0, 1fr)); gap: 2px; margin-top: 4px; }
+.dz-wk i { display: block; height: 12px; border-radius: 2px; background: var(--sunk); border: 1px solid var(--line); }
+.dz-wk i.on { background: var(--accent); border-color: var(--accent); }
+.dz-wk i:nth-child(4n) { margin-right: 1px; }
+.dz-wkl { font: 12px/1.4 var(--mono) !important; color: var(--muted); margin: 5px 0 0 !important; }
+.dz-cmp { font: 13.5px/1.45 var(--ui) !important; color: var(--ink-2); margin: 10px 0 2px !important; padding: 8px 11px; border: 1px dashed var(--line-2); border-radius: 8px; }
+.dz-ctrls { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px 24px; padding: 12px 16px 14px; border-top: 1px solid var(--line); }
+.dz-c { min-width: 0; }
+.dz-c label, .dz-c .dz-l { display: flex; justify-content: space-between; gap: 8px; font: 13px/1.35 var(--ui); color: var(--ink-2); }
+.dz-c label b { font: 600 12.5px/1.35 var(--mono); color: var(--accent); white-space: nowrap; }
+.dz-c input[type="range"] { width: 100%; margin: 6px 0 2px; accent-color: var(--accent); }
+.dz-c .seg { margin: 6px 0 2px; flex-wrap: wrap; }
+.dz-c small { display: block; font: 11.5px/1.35 var(--ui); color: var(--muted); }
+@media (max-width: 760px) {
+  .dz-main { padding: 6px 12px 10px; }
+  .dz-ro { gap: 8px 10px; }
+  .dz-ro .big { font-size: 16px; }
+  .dz-ro .lbl { font-size: 11.5px; }
+  .dz-ctrls { grid-template-columns: 1fr; padding: 12px 12px 14px; }
+  .dz-c label b { font-size: 12px; }
+}
+
+/* ---------- Таблицы и код ---------- */
+.dz-tbl table { font-size: 14px; }
+.dz-tbl td:first-child { white-space: normal; }
+.article [data-code] .out pre { white-space: pre; overflow-x: auto; max-height: 520px; }
+.article [data-code="doc"] pre.code { white-space: pre; overflow-x: auto; }
+@media (max-width: 640px) { .dz-tbl table { font-size: 13px; } }

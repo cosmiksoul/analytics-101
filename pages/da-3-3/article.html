@@ -1,0 +1,166 @@
+      <p class="eyebrow">Дата аналитика · Тема 03 · <b>SQL для&nbsp;анализа</b></p>
+      <h1>Агрегаты и&nbsp;группировка</h1>
+      <p class="lead">Метрики по&nbsp;<span class="term" tabindex="0" data-g="segment">сегментам</span> — число заказов, выручка и&nbsp;<span class="term" tabindex="0" data-g="aov">средний чек</span> по&nbsp;каналам, брендам, странам — в&nbsp;SQL считаются одним запросом. После этой страницы вы напишете такой запрос с&nbsp;условными агрегатами и&nbsp;итоговой строкой, отфильтруете группы и&nbsp;не&nbsp;попадёте в&nbsp;ловушки средних: среднее от&nbsp;средних, NULL внутри AVG и&nbsp;целочисленное деление.</p>
+      <div class="meta-row"><span class="pill">≈&nbsp;30&nbsp;минут</span><span class="pill">анимация из&nbsp;10&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">5&nbsp;блоков кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: стопки строк и&nbsp;одно число на&nbsp;стопку</h2>
+        <p><span class="term" tabindex="0" data-g="agg">Агрегатная функция</span> сворачивает много строк в&nbsp;одно число: COUNT считает строки, SUM складывает значения, AVG их усредняет. <span class="term" tabindex="0" data-g="groupby">GROUP BY</span> сначала раскладывает строки по&nbsp;группам, и&nbsp;агрегат считается в&nbsp;каждой группе отдельно: одна группа — одна строка результата. WHERE отбрасывает строки до&nbsp;группировки, а&nbsp;<span class="term" tabindex="0" data-g="having">HAVING</span> — целые группы после неё, по&nbsp;значению агрегата. Среднее зависит от&nbsp;того, что именно усредняют: средний чек по&nbsp;всем заказам и&nbsp;среднее из&nbsp;средних чеков групп — разные числа.</p>
+        <div class="scene" id="scene" aria-label="Анимация: заказы недели складываются в стопки по брендам, над стопками вырастают COUNT, SUM и AVG, HAVING убирает стопку меньше порога"></div>
+        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже — та же мысль подробно.</p>
+
+        <h3 class="sub-h">Пять агрегатов и&nbsp;NULL внутри них</h3>
+        <p>Основных агрегатов пять: COUNT, SUM, AVG, MIN и&nbsp;MAX<a class="ref" href="#src-1" data-ref="src-1">1</a>. Все они, кроме COUNT(*), пропускают <span class="term" tabindex="0" data-g="null">NULL</span> — отметку «значения нет»: пустые ячейки не&nbsp;складываются, не&nbsp;усредняются и&nbsp;не&nbsp;попадают в&nbsp;минимум. COUNT(*) считает строки целиком, а&nbsp;COUNT(rating) — только строки, где rating не&nbsp;NULL<a class="ref" href="#src-2" data-ref="src-2">2</a>. В&nbsp;учебной базе за&nbsp;195&nbsp;оплаченных заказов поставили 104&nbsp;оценки, и&nbsp;AVG(rating) делит сумму оценок на&nbsp;104, а&nbsp;не&nbsp;на&nbsp;195.</p>
+        <div class="tbl da33-tbl">
+          <table>
+            <thead><tr><th>Агрегат</th><th>Что считает</th><th>NULL</th><th>Нет строк</th></tr></thead>
+            <tbody>
+              <tr><td>COUNT(*)</td><td>строки</td><td>считает</td><td>0</td></tr>
+              <tr><td>COUNT(столбец)</td><td>непустые значения</td><td>пропускает</td><td>0</td></tr>
+              <tr><td>COUNT(DISTINCT столбец)</td><td>разные непустые значения</td><td>пропускает</td><td>0</td></tr>
+              <tr><td>SUM, AVG</td><td>сумму и&nbsp;среднее</td><td>пропускают</td><td>NULL</td></tr>
+              <tr><td>MIN, MAX</td><td>наименьшее и&nbsp;наибольшее</td><td>пропускают</td><td>NULL</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Последний столбец удивляет чаще всего: сумма по&nbsp;пустому набору строк — NULL, а&nbsp;не&nbsp;ноль<a class="ref" href="#src-1" data-ref="src-1">1</a>. <span class="term" tabindex="0" data-g="distinct">COUNT(DISTINCT customer_id)</span> считает разных покупателей: клиент с&nbsp;пятью заказами учитывается один раз.</p>
+
+        <h3 class="sub-h">Группа — сочетание значений</h3>
+        <p>В&nbsp;GROUP BY можно перечислить несколько столбцов, и&nbsp;тогда группа — каждое встретившееся сочетание: три канала и&nbsp;четыре бренда дают 12&nbsp;групп «канал, бренд». Отсюда правило: после группировки в&nbsp;SELECT остаются только столбцы из&nbsp;GROUP BY и&nbsp;агрегаты<a class="ref" href="#src-3" data-ref="src-3">3</a>. У&nbsp;Совы из&nbsp;сцены одно значение brand, но&nbsp;восемь разных amount, и&nbsp;база не&nbsp;знает, какое показать, пока вы не&nbsp;скажете SUM, MAX или AVG.</p>
+        <p>Это та же схема «разделить, применить, собрать», что и&nbsp;groupby в&nbsp;pandas на&nbsp;странице 2.4<a class="ref" href="#src-4" data-ref="src-4">4</a>. Разница в&nbsp;том, что считает база, а&nbsp;в&nbsp;Python приходит готовый результат.</p>
+        <div class="tbl da33-tbl">
+          <table>
+            <thead><tr><th>pandas</th><th>SQL</th></tr></thead>
+            <tbody>
+              <tr><td><code>groupby("channel")</code></td><td><code>GROUP BY channel</code></td></tr>
+              <tr><td><code>size()</code> и&nbsp;<code>count()</code></td><td><code>COUNT(*)</code> и&nbsp;<code>COUNT(столбец)</code></td></tr>
+              <tr><td><code>nunique()</code></td><td><code>COUNT(DISTINCT столбец)</code></td></tr>
+              <tr><td>фильтр по&nbsp;результату <code>agg</code></td><td><code>HAVING</code></td></tr>
+              <tr><td><code>pivot_table(margins=True)</code></td><td>условные агрегаты и&nbsp;<code>ROLLUP</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub-h">HAVING — фильтр для&nbsp;групп</h3>
+        <p>В&nbsp;логическом порядке выполнения со&nbsp;страницы 3.1 WHERE стоит до&nbsp;GROUP BY, а&nbsp;HAVING — после: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. Когда работает WHERE, групп ещё нет, и&nbsp;<code>WHERE COUNT(*) &gt;= 4</code> — ошибка. HAVING видит группу целиком и&nbsp;может проверять любой агрегат, даже тот, которого нет в&nbsp;SELECT<a class="ref" href="#src-3" data-ref="src-3">3</a>. В&nbsp;сцене HAVING убрал Кедр: его средний чек по&nbsp;трём заказам держится на&nbsp;одном заказе за&nbsp;18&nbsp;390&nbsp;₽.</p>
+        <p>Условие про&nbsp;отдельную строку пишут в&nbsp;WHERE: тогда группировать приходится меньше строк. Псевдоним из&nbsp;SELECT в&nbsp;HAVING PostgreSQL не&nbsp;принимает, ведь HAVING выполняется раньше. SQLite и&nbsp;DuckDB такую запись прощают.</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: отчёт по&nbsp;каналам, которому можно верить</h2>
+        <p>Маркетологу нужна таблица по&nbsp;каналам заказа за&nbsp;квартал из&nbsp;учебной базы shop: заказы, покупатели, выручка, доля отмен, выручка по&nbsp;месяцам, средний чек и&nbsp;итоговая строка. По&nbsp;привычке её собирают из&nbsp;нескольких запросов, сводят руками, а&nbsp;итог считают как среднее столбца — и&nbsp;получают числа, которые не&nbsp;сходятся между собой.</p>
+        <p>Задача страницы — считать метрики по&nbsp;сегментам одним запросом и&nbsp;не&nbsp;попадать в&nbsp;ловушки средних. Их три: среднее от&nbsp;средних вместо общего среднего, AVG по&nbsp;столбцу с&nbsp;NULL и&nbsp;целочисленное деление, которое молча отбрасывает дробную часть. Больше таких запросов на&nbsp;практических задачах — у&nbsp;Танимуры<a class="ref" href="#src-5" data-ref="src-5">5</a> и&nbsp;Болье<a class="ref" href="#src-6" data-ref="src-6">6</a>.</p>
+      </section>
+
+      <section data-sec="cond" data-title="Условные агрегаты">
+        <h2 id="cond"><span class="sn">03</span>Условные агрегаты: несколько метрик за&nbsp;один проход</h2>
+        <p>Для&nbsp;доли отмен по&nbsp;каналу нужны два числа: все заказы и&nbsp;отменённые. Можно написать два запроса и&nbsp;соединить их, но&nbsp;проще посчитать оба числа в&nbsp;одной группе. Для&nbsp;этого служит <span class="term" tabindex="0" data-g="condagg">условный агрегат</span> — агрегат, который учитывает только строки, подходящие под&nbsp;условие.</p>
+        <p>Классическая запись — через выражение <span class="term" tabindex="0" data-g="case">CASE</span>. <code>CASE WHEN условие THEN значение ELSE другое END</code> возвращает значение в&nbsp;зависимости от&nbsp;условия, как if в&nbsp;Python. <code>SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END)</code> складывает единицы отменённых заказов и&nbsp;нули остальных, то есть считает отмены. Если убрать ELSE, для&nbsp;остальных строк CASE вернёт NULL, и&nbsp;SUM их пропустит.</p>
+        <div class="formula da33-f"><span class="f">SUM(CASE WHEN <b>условие</b> THEN 1 ELSE 0 END) = COUNT(*) FILTER (WHERE <b>условие</b>)</span><small>Обе записи считают строки группы, для&nbsp;которых условие истинно. У&nbsp;органики в&nbsp;учебной базе 15&nbsp;отменённых заказов из&nbsp;94: так дают оба выражения.</small></div>
+        <p>Правая запись короче: <span class="term" tabindex="0" data-g="filter">FILTER</span> пришёл из&nbsp;стандарта SQL:2003, общего описания языка для&nbsp;всех СУБД,&nbsp;и&nbsp;передаёт агрегату только строки, где условие истинно<a class="ref" href="#src-2" data-ref="src-2">2</a>. Его понимают PostgreSQL, SQLite и&nbsp;DuckDB, а&nbsp;там, где FILTER нет, его заменяют через CASE<a class="ref" href="#src-7" data-ref="src-7">7</a>. Тем же приёмом строки разворачивают в&nbsp;столбцы: три агрегата <code>SUM(amount) FILTER (WHERE …)</code> по&nbsp;январю, февралю и&nbsp;марту дают сводную «канал × месяц», как pivot_table в&nbsp;pandas<a class="ref" href="#src-8" data-ref="src-8">8</a>.</p>
+      </section>
+
+      <section data-sec="avg" data-title="Среднее от средних">
+        <h2 id="avg"><span class="sn">04</span>Среднее от&nbsp;средних против общего среднего</h2>
+        <p>Средний чек — выручка, делённая на&nbsp;число заказов. Если в&nbsp;отчёте уже есть средние чеки групп, кажется естественным получить общий средний чек как их среднее. Так можно, только если группы одного размера или их&nbsp;средние совпадают.</p>
+        <p>Общее среднее даёт вес каждому заказу, а&nbsp;<span class="term" tabindex="0" data-g="aoa">среднее от&nbsp;средних</span> — каждой группе: маленькая группа с&nbsp;необычным чеком тянет результат так же сильно, как большая. Собрать общее среднее из&nbsp;средних групп можно через <span class="term" tabindex="0" data-g="wavg">взвешенное среднее</span>: умножить каждое среднее на&nbsp;число заказов в&nbsp;группе и&nbsp;разделить на&nbsp;общее число заказов.</p>
+        <div class="formula da33-f"><span class="f">(n₁·<span class="da33-o">x</span>₁ + n₂·<span class="da33-o">x</span>₂) / (n₁ + n₂) &nbsp;<b>против</b>&nbsp; (<span class="da33-o">x</span>₁ + <span class="da33-o">x</span>₂) / 2</span><small><span class="da33-o">x</span>₁ и&nbsp;<span class="da33-o">x</span>₂ — средние чеки групп, n₁ и&nbsp;n₂ — число заказов в&nbsp;них. Слева общее среднее, то же, что SUM(amount) / COUNT(*) по&nbsp;всем строкам, справа — среднее от&nbsp;средних. Разница между ними равна (½ − n₁ / (n₁ + n₂)) · (<span class="da33-o">x</span>₁ − <span class="da33-o">x</span>₂): она пропадает, если группы одного размера или их средние совпадают.</small></div>
+        <p>Ниже — оплаченные заказы четырёх стран из&nbsp;учебной базы, в&nbsp;каждой две группы: без&nbsp;промокода и&nbsp;с&nbsp;промокодом. Пустая строка в&nbsp;promo_code тоже считается отсутствием промокода. Сначала предскажите.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="avg"></div>
+        <p>Весы в&nbsp;интерактиве — буквальная картина среднего: это точка, где уравновешиваются все значения. Вес группы задаёт способ расчёта: в&nbsp;общем среднем он&nbsp;равен числу заказов, в&nbsp;среднем от&nbsp;средних — единице. В&nbsp;Беларуси группы различаются в&nbsp;пять раз, но&nbsp;их средние почти равны, и&nbsp;оба способа дают почти одно число. В&nbsp;Казахстане четыре заказа с&nbsp;промокодом в&nbsp;среднем на&nbsp;1&nbsp;854&nbsp;₽ дороже остальных, и&nbsp;среднее от&nbsp;средних завышает чек на&nbsp;590&nbsp;₽, или на&nbsp;10%.</p>
+        <p>Та же ловушка в&nbsp;отчёте по&nbsp;странам: средний чек по&nbsp;всем заказам с&nbsp;известной страной — 4&nbsp;671,20&nbsp;₽, а&nbsp;среднее четырёх средних чеков стран — 4&nbsp;808,70&nbsp;₽. Итог считают по&nbsp;исходным строкам, а&nbsp;не&nbsp;по&nbsp;строкам отчёта. ROLLUP ниже так и&nbsp;делает.</p>
+      </section>
+
+      <section data-sec="totals" data-title="Итоги">
+        <h2 id="totals"><span class="sn">05</span>Итоги: ROLLUP и&nbsp;GROUPING SETS</h2>
+        <p>Итоговая строка под&nbsp;таблицей — та же группировка, только по&nbsp;пустому набору столбцов: все строки в&nbsp;одной группе. <span class="term" tabindex="0" data-g="gsets">GROUPING SETS</span> перечисляет несколько наборов группировки в&nbsp;одном запросе: <code>GROUP BY GROUPING SETS ((channel), (brand), ())</code> даёт строки по&nbsp;каналам, строки по&nbsp;брендам и&nbsp;общий итог<a class="ref" href="#src-9" data-ref="src-9">9</a>.</p>
+        <p><span class="term" tabindex="0" data-g="rollup">ROLLUP</span> — сокращение для&nbsp;иерархии: <code>ROLLUP (channel, brand)</code> означает наборы (channel, brand), (channel) и&nbsp;(), то есть пары, подытоги по&nbsp;каналу и&nbsp;общий итог<a class="ref" href="#src-9" data-ref="src-9">9</a>. Агрегаты итоговых строк считаются по&nbsp;исходным строкам, поэтому средний чек в&nbsp;строке «итого» — 4&nbsp;677,33&nbsp;₽, общее среднее, а&nbsp;не&nbsp;среднее трёх средних по&nbsp;каналам, 4&nbsp;673,59&nbsp;₽.</p>
+        <p>В&nbsp;итоговой строке столбец channel пуст, там NULL. Отличить его от&nbsp;настоящего пропуска в&nbsp;данных помогает функция GROUPING(channel): она возвращает 1&nbsp;в&nbsp;строках, где channel не&nbsp;участвовал в&nbsp;группировке<a class="ref" href="#src-1" data-ref="src-1">1</a>. По&nbsp;ней подписывают строку «итого» и&nbsp;ставят её в&nbsp;конец.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">06</span>Нюансы: столбцы вне GROUP BY, NULL в&nbsp;AVG, деление целых</h2>
+        <div class="callout"><p><b>Столбцы вне GROUP BY.</b> Запрос <code>SELECT brand, channel, COUNT(*) … GROUP BY brand</code> просит один канал у&nbsp;группы, где их три. PostgreSQL и&nbsp;DuckDB отвечают ошибкой «column must appear in the GROUP BY clause»<a class="ref" href="#src-3" data-ref="src-3">3</a>. SQLite запрос выполняет и&nbsp;берёт channel из&nbsp;какой-то строки группы, какой именно — не&nbsp;определено<a class="ref" href="#src-10" data-ref="src-10">10</a>: в&nbsp;учебной базе тот же запрос с&nbsp;MAX(amount) и&nbsp;без&nbsp;него показывает Бризу разные каналы. Нужен один канал на&nbsp;группу — скажите какой, например MIN(channel), или добавьте channel в&nbsp;GROUP BY.</p></div>
+        <div class="callout"><p><b>AVG игнорирует NULL, а&nbsp;COUNT(*) нет.</b> AVG(rating) по&nbsp;оплаченным заказам — 4,03: сумма 419&nbsp;поделена на&nbsp;104&nbsp;оценённых заказа. Если считать пустую оценку нулём, выйдет 419 / 195 = 2,15 — другая метрика, «средний балл на&nbsp;заказ». Решите, какая нужна, и&nbsp;пишите её явно: AVG(rating) или SUM(rating) / COUNT(*). В&nbsp;группе, где оценок нет совсем, COUNT(rating) = 0, а&nbsp;SUM и&nbsp;AVG — NULL.</p></div>
+        <div class="callout"><p><b>Целочисленное деление в&nbsp;некоторых <span class="term" tabindex="0" data-g="dialect">диалектах SQL</span>.</b> В&nbsp;PostgreSQL и&nbsp;SQLite целое, делённое на&nbsp;целое, — тоже целое: <span class="term" tabindex="0" data-g="intdiv">целочисленное деление</span> отбрасывает дробь, и&nbsp;SUM(amount) / COUNT(*) даёт 4&nbsp;677&nbsp;вместо 4&nbsp;677,33<a class="ref" href="#src-11" data-ref="src-11">11</a>. В&nbsp;DuckDB оператор / всегда делит с&nbsp;дробью, а&nbsp;целочисленное деление записывают как //<a class="ref" href="#src-12" data-ref="src-12">12</a>. С&nbsp;долями хуже: 15 / 94&nbsp;в&nbsp;целых — ноль. Переносимо пишут <code>100.0 * COUNT(*) FILTER (…) / COUNT(*)</code> или переводят числитель в&nbsp;дробный тип: <code>SUM(amount)::numeric / COUNT(*)</code>.</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">07</span>Ограничения: группа не&nbsp;помнит порядок событий</h2>
+        <p>GROUP BY отвечает на&nbsp;вопросы «сколько» и&nbsp;«на&nbsp;какую сумму» внутри группы, но&nbsp;не&nbsp;видит последовательности. <span class="term" tabindex="0" data-g="funnel">Воронка</span> — доля пользователей, прошедших шаги «зашёл → положил в&nbsp;корзину → оплатил» по&nbsp;порядку и&nbsp;за&nbsp;заданное время. Для&nbsp;неё нужны события с&nbsp;временем и&nbsp;условия на&nbsp;порядок шагов у&nbsp;каждого пользователя.</p>
+        <div class="tbl da33-tbl">
+          <table>
+            <thead><tr><th>Вопрос</th><th>Чем отвечать</th><th>Где</th></tr></thead>
+            <tbody>
+              <tr><td>Сколько заказов дошли до&nbsp;каждого статуса</td><td>условные агрегаты, без&nbsp;учёта порядка</td><td>эта страница</td></tr>
+              <tr><td>Какая доля прошла шаги по&nbsp;порядку</td><td>воронка по&nbsp;событиям</td><td>тема 09</td></tr>
+              <tr><td>Как менялась метрика от&nbsp;строки к&nbsp;строке</td><td>оконные функции</td><td>страница 3.5</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">08</span>Код: каналы, условия, итоги, NULL, диалекты</h2>
+        <p>Запросы выполнены в&nbsp;PostgreSQL 16&nbsp;на&nbsp;учебной базе shop, вывод — как в&nbsp;psql. Первый блок считает метрики по&nbsp;каналам и&nbsp;показывает группы из&nbsp;двух столбцов с&nbsp;HAVING.</p>
+        <div class="block wide" data-code="channels"></div>
+        <p>Второй собирает отмены и&nbsp;выручку по&nbsp;месяцам одним запросом — условными агрегатами через CASE и&nbsp;FILTER.</p>
+        <div class="block wide" data-code="conditional"></div>
+        <p>Третий добавляет итоговую строку через ROLLUP и&nbsp;строит три разреза сразу через GROUPING SETS.</p>
+        <div class="block wide" data-code="rollup"></div>
+        <p>Четвёртый показывает NULL внутри агрегатов на&nbsp;оценках rating.</p>
+        <div class="block wide" data-code="nulls"></div>
+        <p>Пятый запускает из&nbsp;Python два спорных запроса в&nbsp;трёх движках: деление целых и&nbsp;столбец вне GROUP BY. Потренироваться в&nbsp;группировках можно в&nbsp;браузере, в&nbsp;тренажёре SQLBolt<a class="ref" href="#src-13" data-ref="src-13">13</a>.</p>
+        <div class="block wide" data-code="dialects"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">09</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">10</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">11</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «SQL для анализа» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">PostgreSQL Documentation. <a href="https://www.postgresql.org/docs/current/functions-aggregate.html" target="_blank" rel="noopener">Aggregate Functions</a>. Какие агрегаты пропускают NULL, почему сумма пустого набора — NULL, функция GROUPING.</li>
+          <li id="src-2">PostgreSQL Documentation. <a href="https://www.postgresql.org/docs/current/sql-expressions.html#SYNTAX-AGGREGATES" target="_blank" rel="noopener">Aggregate Expressions</a>. Чем count(*) отличается от&nbsp;count(f1) и&nbsp;count(distinct f1), как работает FILTER.</li>
+          <li id="src-3">PostgreSQL Documentation. <a href="https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-GROUP" target="_blank" rel="noopener">The GROUP BY and HAVING Clauses</a>. Какие столбцы можно выбирать после группировки и&nbsp;что проверяет HAVING.</li>
+          <li id="src-4">pandas. <a href="https://pandas.pydata.org/docs/user_guide/groupby.html" target="_blank" rel="noopener">User Guide: Group by: split-apply-combine</a>. Те же операции на&nbsp;стороне Python, для&nbsp;сравнения со&nbsp;страницей 2.4.</li>
+          <li id="src-5">Tanimura C. SQL for Data Analysis. O’Reilly, 2021. Аналитический SQL на&nbsp;практических задачах: группировки, условные агрегаты, когорты.</li>
+          <li id="src-6">Beaulieu A. Learning SQL, 3rd ed. O’Reilly, 2020. Группировки и&nbsp;агрегаты для&nbsp;тех, кто учит SQL с&nbsp;нуля.</li>
+          <li id="src-7">Winand M. <a href="https://modern-sql.com/feature/filter" target="_blank" rel="noopener">Modern SQL: The FILTER clause</a>. FILTER в&nbsp;стандарте SQL:2003&nbsp;и&nbsp;его замена через CASE в&nbsp;СУБД, где FILTER нет.</li>
+          <li id="src-8">Molinaro A., de Graaf R. SQL Cookbook, 2nd ed. O’Reilly, 2020. Рецепты отчётов: разворот строк в&nbsp;столбцы через CASE и&nbsp;итоговые строки.</li>
+          <li id="src-9">PostgreSQL Documentation. <a href="https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-GROUPING-SETS" target="_blank" rel="noopener">GROUPING SETS, CUBE, and ROLLUP</a>. Чему равны ROLLUP и&nbsp;пустой набор группировки.</li>
+          <li id="src-10">SQLite. <a href="https://www.sqlite.org/lang_select.html#bareagg" target="_blank" rel="noopener">SELECT: Bare columns in an aggregate query</a>. Откуда SQLite берёт значение столбца вне GROUP BY и&nbsp;почему оно не&nbsp;определено.</li>
+          <li id="src-11">PostgreSQL Documentation. <a href="https://www.postgresql.org/docs/current/functions-math.html" target="_blank" rel="noopener">Mathematical Functions and Operators</a>. Деление целых типов отбрасывает дробную часть.</li>
+          <li id="src-12">DuckDB. <a href="https://duckdb.org/docs/stable/sql/functions/numeric.html" target="_blank" rel="noopener">Numeric Functions</a>. Оператор / делит с&nbsp;дробью, // — нацело.</li>
+          <li id="src-13"><a href="https://sqlbolt.com/" target="_blank" rel="noopener">SQLBolt</a>. Упражнения на&nbsp;агрегаты и&nbsp;GROUP BY в&nbsp;браузере.</li>
+        </ol>
+      </section>

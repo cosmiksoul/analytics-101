@@ -1,0 +1,132 @@
+      <p class="eyebrow">Дата аналитика · Тема 11 · <b>A/B-тестирование</b></p>
+      <h1>Дизайн теста: метрика, рандомизация, MDE, размер выборки</h1>
+      <p class="lead">Сколько людей и&nbsp;дней нужно A/B-тесту, решают до&nbsp;запуска. После страницы вы выберете <span class="term" tabindex="0" data-g="target">целевую</span> и <span class="term" tabindex="0" data-g="guardrail">защитные</span> метрики, выведете <span class="term" tabindex="0" data-g="mde">минимальный интересный эффект</span> из&nbsp;юнит-экономики, посчитаете размер выборки и&nbsp;срок теста и&nbsp;запишете дизайн в&nbsp;один документ.</p>
+      <div class="meta-row"><span class="pill">≈&nbsp;30&nbsp;минут</span><span class="pill">анимация из&nbsp;10&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">4&nbsp;блока кода</span><span class="pill">7&nbsp;вопросов</span></div>
+
+      <section data-sec="idea" data-title="Идея">
+        <h2 id="idea"><span class="sn">01</span>Идея: сколько людей нужно, решают до&nbsp;запуска</h2>
+        <p>Разница конверсий двух групп в&nbsp;A/B-тесте всегда отчасти случайна. Если изменение ничего не&nbsp;дало, она колеблется вокруг нуля, а&nbsp;если дало эффект размером MDE&nbsp;— наименьший, ради которого изменение стоит внедрять,&nbsp;— вокруг MDE, и&nbsp;оба колокола тем уже, чем больше людей. <span class="term" tabindex="0" data-g="size">Размер выборки</span>&nbsp;— число людей, при&nbsp;котором колокола расходятся настолько, что&nbsp;ложная тревога случается с&nbsp;вероятностью не&nbsp;больше <span class="term" tabindex="0" data-g="alpha">α</span>, а&nbsp;пропуск эффекта&nbsp;— не&nbsp;больше β, то&nbsp;есть <span class="term" tabindex="0" data-g="power">мощность</span> не&nbsp;ниже заданной. Он растёт с <span class="term" tabindex="0" data-g="variance">дисперсией метрики</span> и&nbsp;падает с&nbsp;квадратом MDE, поэтому метрику, эффект, выборку и&nbsp;срок записывают до&nbsp;запуска и&nbsp;потом не&nbsp;меняют.</p>
+        <div class="scene" id="scene" aria-label="Анимация: два колокола распределения разницы конверсий — вокруг нуля и вокруг MDE 0,86 п. п.; по мере набора людей в тест нового оформления заказа они сужаются, красные хвосты α и жёлтая часть β тают до 5 и 20% на 24-й день; при вдвое меньшем MDE нужно вчетверо больше людей и 30 недель"></div>
+        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже&nbsp;— та же мысль подробно.</p>
+
+        <h3 class="sub-h">Три роли метрик</h3>
+        <p>Целевая метрика одна: по&nbsp;ней решают и&nbsp;считают выборку, у&nbsp;Кохави и&nbsp;соавторов это критерий оценки эксперимента, OEC<a class="ref" href="#src-1" data-ref="src-1">1</a>. Здесь это конверсия пользователя&nbsp;— доля участников хотя бы с&nbsp;одной покупкой за&nbsp;время теста. <span class="term" tabindex="0" data-g="secondary">Вторичные метрики</span> объясняют, откуда взялся эффект: конверсия сессии, заказов на&nbsp;покупателя. Защитные не&nbsp;должны ухудшиться: выручка на&nbsp;человека, ошибки оплаты, баланс групп.</p>
+
+        <h3 class="sub-h">Гипотеза с&nbsp;числом</h3>
+        <p>Гипотеза эксперимента называет метрику, направление и&nbsp;размер. «Новое оформление улучшит конверсию» опровергнуть нельзя: подойдёт любой рост. Проверяемая версия: «Новое оформление поднимет долю покупателей за&nbsp;4&nbsp;недели теста с&nbsp;14,1% хотя бы до&nbsp;14,9% и&nbsp;не&nbsp;уронит выручку на&nbsp;человека». Разница 0,86 <span class="term" tabindex="0" data-g="pp">процентного пункта</span> (п.&nbsp;п.) и&nbsp;есть MDE.</p>
+
+        <h3 class="sub-h">MDE из&nbsp;денег, а&nbsp;не&nbsp;из&nbsp;желания</h3>
+        <p>MDE, минимальный обнаружимый эффект (minimum detectable effect),&nbsp;— наименьший эффект, который тест заметит с&nbsp;заданной мощностью. Его берут из&nbsp;денег: это наименьший эффект, ради которого изменение стоит внедрять<a class="ref" href="#src-1" data-ref="src-1">1</a>. Меньший тест вправе пропустить&nbsp;— он всё равно не&nbsp;окупится.</p>
+        <p>За&nbsp;4&nbsp;недели теста оформление увидели 56&nbsp;797&nbsp;человек: +1&nbsp;п.&nbsp;п.&nbsp;— это 568 дополнительных покупателей. Покупатель, которого привело удобное оформление, скорее всего делает обычный розничный заказ, а&nbsp;это 783&nbsp;₽ маржинального дохода (страница 10.1). Пункт конверсии стоит 0,44&nbsp;млн ₽ за&nbsp;4&nbsp;недели и&nbsp;5,78&nbsp;млн ₽ за&nbsp;год, если эффект не&nbsp;угасает (новизна&nbsp;— страница 11.4).</p>
+        <div class="formula"><span class="f">MDE&nbsp;=&nbsp;затраты / цена пункта</span><br><span class="f">= 5 / 5,78 ≈&nbsp;0,86&nbsp;п.&nbsp;п.</span><small>Затраты&nbsp;— разработка и&nbsp;поддержка нового оформления: пусть 5&nbsp;млн ₽ в&nbsp;год, условная цифра для&nbsp;примера. Цена пункта&nbsp;— 5,78&nbsp;млн ₽ маржи в&nbsp;год. Относительно базы 14,08% это +6,1%</small></div>
+
+        <h3 class="sub-h">α, мощность и&nbsp;дисперсия задают выборку</h3>
+        <p>Из&nbsp;темы 06: α&nbsp;— доля ложных тревог без&nbsp;эффекта, обычно 0,05; β&nbsp;— доля пропусков эффекта размером MDE; мощность 1 − β обычно 80%. Ширина колоколов в&nbsp;сцене&nbsp;— <span class="term" tabindex="0" data-g="se">стандартная ошибка</span> разницы, SE. Порог решения стоит в&nbsp;1,96&nbsp;SE от&nbsp;нуля, чтобы α была 5%, и&nbsp;в&nbsp;0,84&nbsp;SE от&nbsp;MDE, чтобы β была 20%. Значит, MDE&nbsp;=&nbsp;2,8&nbsp;SE, отсюда формула:</p>
+        <div class="formula"><span class="f">n&nbsp;=&nbsp;(z<sub>1−α/2</sub> + z<sub>1−β</sub>)²</span><br><span class="f">· (σ²<sub>A</sub> + σ²<sub>B</sub>) / MDE²</span><small>n&nbsp;— людей в&nbsp;каждой группе · z<sub>1−α/2</sub>&nbsp;=&nbsp;1,96 при&nbsp;α&nbsp;=&nbsp;0,05 · z<sub>1−β</sub>&nbsp;=&nbsp;0,84 при&nbsp;мощности 80% · σ²&nbsp;— дисперсия метрики в&nbsp;группе, у&nbsp;доли σ²&nbsp;=&nbsp;p(1 − p). При&nbsp;равных σ это правило Эвана Миллера n ≈&nbsp;16σ²/MDE²<a class="ref" href="#src-2" data-ref="src-2">2</a></small></div>
+        <p>Для&nbsp;checkout_v2: 7,85 · (0,1210 + 0,1271) / 0,0086² ≈&nbsp;26&nbsp;329&nbsp;человек в&nbsp;группе. Вдвое меньший эффект стоит вчетверо больше людей, а&nbsp;строгость дорожает медленнее: α&nbsp;=&nbsp;0,01 требует в&nbsp;1,49&nbsp;раза больше людей, мощность 90%&nbsp;— в&nbsp;1,34&nbsp;раза.</p>
+
+        <h3 class="sub-h">Срок: поток, доля трафика, целые недели</h3>
+        <p><span class="term" tabindex="0" data-g="duration">Длительность теста</span>&nbsp;— 2n, делённое на&nbsp;поток новых участников в&nbsp;день и&nbsp;на <span class="term" tabindex="0" data-g="share">долю трафика в&nbsp;тесте</span>. В&nbsp;checkout_v2 приходило в&nbsp;среднем 2&nbsp;028 новых участников в&nbsp;день: 52,7&nbsp;тыс.&nbsp;— за&nbsp;26&nbsp;дней, при&nbsp;половине трафика&nbsp;— за&nbsp;52.</p>
+        <p>Но&nbsp;поток не&nbsp;постоянный: в&nbsp;первый день пришли 7&nbsp;920&nbsp;человек, в&nbsp;последнюю неделю&nbsp;— по&nbsp;844 в&nbsp;день, потому что&nbsp;постоянные покупатели попадают в&nbsp;тест сразу. Средний поток двух недель A/A-теста, 2&nbsp;863 в&nbsp;день, обещал бы план за&nbsp;19&nbsp;дней, а&nbsp;набрался он на&nbsp;24-й. Поэтому срок считают по&nbsp;кривой набора участников, а&nbsp;базу берут за&nbsp;окно той же длины: за&nbsp;две недели aa_check купили 10,3% участников, за&nbsp;четыре в&nbsp;группе A checkout_v2&nbsp;— 14,1%.</p>
+        <p>Срок округляют вверх до&nbsp;целых недель из-за <span class="term" tabindex="0" data-g="weekly">недельного цикла</span><a class="ref" href="#src-1" data-ref="src-1">1</a>: в&nbsp;учебном магазине в&nbsp;выходные сессий на&nbsp;21% больше, чем в&nbsp;будни, а&nbsp;конверсия сессии на&nbsp;2,5% ниже, и&nbsp;неполная неделя перекосила бы их вес. 26&nbsp;дней превращаются в&nbsp;4&nbsp;недели.</p>
+
+        <h3 class="sub-h">Рандомизация</h3>
+        <p><span class="term" tabindex="0" data-g="rand">Рандомизация</span>&nbsp;— решения со&nbsp;страницы 11.1. Единица&nbsp;— пользователь, как&nbsp;и&nbsp;у&nbsp;метрики. Группа&nbsp;— по&nbsp;хешу md5 строки «chk-0907-3:user_id», 50/50; новая соль не&nbsp;повторяет разбиение aa_check. Вход в&nbsp;тест&nbsp;— первая сессия в&nbsp;окне эксперимента.</p>
+
+        <h3 class="sub-h">A/A-тест: проверка системы</h3>
+        <p><span class="term" tabindex="0" data-g="aa">A/A-тест</span>&nbsp;— эксперимент, где обе группы видят одно и&nbsp;то&nbsp;же. Он проверяет систему: разбиение, логирование, расчёт метрик<a class="ref" href="#src-1" data-ref="src-1">1</a>. Группы должны делиться в&nbsp;заданной пропорции, без <span class="term" tabindex="0" data-g="srm">дисбаланса групп</span><a class="ref" href="#src-3" data-ref="src-3">3</a>, разница целевой метрики&nbsp;— быть незначимой, а&nbsp;на&nbsp;многих повторах «значимых» должно быть около 5%. Один значимый A/A&nbsp;— повод проверить систему, но&nbsp;ещё не&nbsp;поломка.</p>
+        <p>Учебный aa_check шёл две недели до&nbsp;checkout_v2: 19&nbsp;988 и&nbsp;20&nbsp;091&nbsp;человек (χ², p&nbsp;=&nbsp;0,61), конверсия 10,51 и&nbsp;10,12% (p&nbsp;=&nbsp;0,20), выручка на&nbsp;человека 595,6 и&nbsp;611,9&nbsp;₽ (p&nbsp;=&nbsp;0,66). Система исправна, а&nbsp;заодно A/A дал базу, разброс выручки и&nbsp;кривую набора людей.</p>
+
+        <h3 class="sub-h">Предрегистрация: один документ до&nbsp;запуска</h3>
+        <p><span class="term" tabindex="0" data-g="prereg">Предрегистрация</span>&nbsp;— дизайн, записанный до&nbsp;запуска и&nbsp;не&nbsp;меняющийся после<a class="ref" href="#src-4" data-ref="src-4">4</a>. Без&nbsp;неё метрику, срок или&nbsp;сегмент легко подогнать под&nbsp;желаемый ответ, а&nbsp;остановка «когда стало значимо» раздувает долю ложных тревог<a class="ref" href="#src-2" data-ref="src-2">2</a>&nbsp;— это ловушки страницы 11.4. Шаблон документа&nbsp;— в&nbsp;разделе «Код».</p>
+      </section>
+
+      <section data-sec="task" data-title="Задача">
+        <h2 id="task"><span class="sn">02</span>Задача: дизайн нового оформления заказа</h2>
+        <p>Учебный магазин запускает новое оформление заказа 7&nbsp;сентября 2026&nbsp;года, A/A-тест aa_check только что&nbsp;закончился. До&nbsp;запуска нужно записать целевую метрику, гипотезу с&nbsp;числом, MDE и&nbsp;его происхождение, размер выборки и&nbsp;срок&nbsp;— и&nbsp;потом их не&nbsp;менять.</p>
+        <p>Данные учебные: журнал показов <code>exposures.csv</code> и&nbsp;сессии <code>sessions.parquet</code> из <code>data/ab</code>. Трёх ботов из&nbsp;расчётов убираем&nbsp;— как их находят, покажет 11.3; поэтому участников на&nbsp;три меньше, чем на&nbsp;11.1. В&nbsp;конце проверим по&nbsp;факту, хватило ли&nbsp;тесту мощности.</p>
+      </section>
+
+      <section data-sec="method" data-title="Калькулятор теста">
+        <h2 id="method"><span class="sn">03</span>Калькулятор теста</h2>
+        <p>Калькулятор считает по&nbsp;формуле из&nbsp;раздела «Идея». У&nbsp;конверсии дисперсию задаёт сама доля, у&nbsp;выручки на&nbsp;человека&nbsp;— ползунок σ при&nbsp;среднем 999&nbsp;₽. При&nbsp;неравных группах дисперсию каждой группы делят на&nbsp;её долю.</p>
+        <div class="check" data-q="q1"></div>
+        <div class="block wide" data-w="calc"></div>
+
+        <h3 class="sub-h">Ответ на&nbsp;задачу</h3>
+        <p>Целевая метрика&nbsp;— конверсия пользователя, MDE&nbsp;— 0,86&nbsp;п.&nbsp;п. (+6,1%), α&nbsp;=&nbsp;0,05, мощность 80%: 26&nbsp;329&nbsp;человек в&nbsp;группе, 26&nbsp;дней, то&nbsp;есть 4&nbsp;недели при&nbsp;всём трафике. Выручку с&nbsp;тем же MDE пришлось бы тестировать 29&nbsp;недель, поэтому она защитная, а&nbsp;не&nbsp;целевая. Документ дизайна&nbsp;— в&nbsp;разделе «Код».</p>
+
+        <h3 class="sub-h">Проверка по&nbsp;факту: мощности хватило</h3>
+        <p>В&nbsp;checkout_v2 набралось 28&nbsp;439 и&nbsp;28&nbsp;358&nbsp;человек, MDE такой выборки&nbsp;— 0,83&nbsp;п.&nbsp;п. Тест показал +1,17&nbsp;п.&nbsp;п. [0,59; 1,75], p&nbsp;=&nbsp;0,00008: эффект больше MDE, и&nbsp;для&nbsp;него мощность дизайна&nbsp;— 98%. У&nbsp;выручки MDE той же выборки&nbsp;— 163&nbsp;₽, +16%, а&nbsp;её +7,8% [−37; +193&nbsp;₽] накрывают и&nbsp;ноль, и&nbsp;+16%: данных не&nbsp;хватило, а&nbsp;не&nbsp;«эффекта нет».</p>
+        <p>Мощность&nbsp;— свойство дизайна, её считают до&nbsp;теста. Пересчитывать её по&nbsp;полученному эффекту, чтобы толковать результат, бессмысленно: такая «наблюдаемая мощность» однозначно следует из&nbsp;p-value.</p>
+      </section>
+
+      <section data-sec="nuances" data-title="Нюансы">
+        <h2 id="nuances"><span class="sn">04</span>Нюансы: единицы MDE, разбиение, сторона, хвост</h2>
+        <div class="callout"><p><b>MDE в&nbsp;относительных и&nbsp;абсолютных пунктах.</b> «+5% к&nbsp;конверсии 14,1%»&nbsp;— это 14,8% (относительный эффект) или&nbsp;19,1% (абсолютный, +5&nbsp;п.&nbsp;п.)? Выборки различаются в&nbsp;45&nbsp;раз: 39&nbsp;101 и&nbsp;865&nbsp;человек в&nbsp;группе. Поэтому в&nbsp;документ пишут оба числа: «+0,86&nbsp;п.&nbsp;п. (+6,1%)».</p></div>
+        <div class="callout"><p><b>Неравные группы.</b> Рискованное изменение иногда показывают меньшинству: 80/20 или&nbsp;90/10. Людей тогда нужно больше в&nbsp;1/(4w(1 − w)) раз, где w&nbsp;— доля одной группы: в&nbsp;1,56 и&nbsp;в&nbsp;2,78&nbsp;раза. Зато новую версию видят меньше людей; без&nbsp;особого риска делят поровну&nbsp;— 50/50 дешевле всего.</p></div>
+        <div class="callout"><p><b>Односторонний тест как&nbsp;соблазн.</b> <span class="term" tabindex="0" data-g="onesided">Односторонний тест</span> гипотезы «B лучше» экономит 21% выборки: критическое значение 1,645 вместо 1,96. Георгиев считает гипотезу A/B-теста обычно односторонней: внедряют только при&nbsp;улучшении<a class="ref" href="#src-6" data-ref="src-6">6</a>. Но&nbsp;двусторонний тест показывает и&nbsp;вред, а&nbsp;у&nbsp;одностороннего ухудшение неотличимо от&nbsp;«эффекта нет», и&nbsp;сторона, выбранная после взгляда на&nbsp;данные, удваивает долю ложных тревог (страница 6.3). Сторону пишут в&nbsp;документ до&nbsp;запуска или&nbsp;не&nbsp;выбирают; в&nbsp;калькуляторе такой кнопки нет.</p></div>
+        <div class="callout"><p><b>Тяжёлый хвост требует огромных выборок.</b> У&nbsp;выручки на&nbsp;человека в&nbsp;группе A checkout_v2 стандартное отклонение 6&nbsp;912&nbsp;₽ при&nbsp;среднем 999&nbsp;₽, <span class="term" tabindex="0" data-g="cv">коэффициент вариации</span> 6,9. Это <span class="term" tabindex="0" data-g="tail">тяжёлый хвост</span>: 1% участников с&nbsp;выручкой от&nbsp;14&nbsp;990&nbsp;₽ за&nbsp;4&nbsp;недели дают 40% выручки группы и&nbsp;92% дисперсии. При&nbsp;MDE +6,1% нужно 201&nbsp;535&nbsp;человек в&nbsp;группе&nbsp;— в&nbsp;7,7&nbsp;раза больше, чем для&nbsp;конверсии, 29&nbsp;недель вместо четырёх. Средний чек не&nbsp;дешевле: у&nbsp;покупателей коэффициент вариации 2,4, но&nbsp;покупатель&nbsp;— каждый седьмой участник, и&nbsp;нужно 176&nbsp;тыс. человек в&nbsp;группе. Защитная метрика с&nbsp;таким хвостом не&nbsp;заметит небольшого вреда; дисперсию снижают CUPED (страница 11.5) и&nbsp;обрезка хвоста (11.3).</p></div>
+      </section>
+
+      <section data-sec="limits" data-title="Ограничения">
+        <h2 id="limits"><span class="sn">05</span>Ограничения: многорукие бандиты&nbsp;— только сравнение</h2>
+        <p><span class="term" tabindex="0" data-g="bandit">Многорукий бандит</span> по&nbsp;ходу теста переводит трафик на&nbsp;вариант, который пока выглядит лучше,&nbsp;— например, выборкой Томпсона<a class="ref" href="#src-7" data-ref="src-7">7</a>. Он теряет меньше денег на&nbsp;слабом варианте и&nbsp;годится для&nbsp;коротких решений: баннер на&nbsp;неделю, заголовок рассылки. A/B с&nbsp;фиксированным дизайном отвечает на&nbsp;вопрос, насколько B лучше A: даёт несмещённую оценку эффекта с&nbsp;интервалом и&nbsp;следит за&nbsp;защитными метриками. У&nbsp;бандита доли групп меняются вслед за&nbsp;данными, поэтому простая разница средних по&nbsp;нему смещена, а&nbsp;размер выборки и&nbsp;мощность в&nbsp;смысле этой страницы неприменимы.</p>
+      </section>
+
+      <section data-sec="code" data-title="Код">
+        <h2 id="code"><span class="sn">06</span>Код: выборка вручную и&nbsp;в&nbsp;statsmodels, симуляция, шаблон</h2>
+        <p>Код запущен в&nbsp;Python 3.13 с&nbsp;pandas 3.0.5, NumPy 2.5.3, SciPy 1.18.1 и&nbsp;statsmodels 0.15.0, вывод вставлен без&nbsp;правок. Три блока&nbsp;— ячейки одного ноутбука. Первый берёт базу из&nbsp;данных, выводит MDE из&nbsp;денег и&nbsp;считает выборку вручную.</p>
+        <div class="block wide" data-code="manual"></div>
+        <p>Второй повторяет расчёт в&nbsp;statsmodels<a class="ref" href="#src-5" data-ref="src-5">5</a>. Для&nbsp;доли библиотека меряет эффект в&nbsp;арксинусах&nbsp;— это <span class="term" tabindex="0" data-g="cohenh">h Коэна</span><a class="ref" href="#src-8" data-ref="src-8">8</a>,&nbsp;— и&nbsp;выборка отличается от&nbsp;ручной на&nbsp;двух человек. Дальше&nbsp;— MDE выборки, которая набралась, и&nbsp;мощность дизайна для&nbsp;полученных эффектов.</p>
+        <div class="block wide" data-code="sm"></div>
+        <p>Третий проверяет формулу симуляцией: доля значимых среди тысяч тестов с&nbsp;эффектом MDE&nbsp;— мощность, без&nbsp;эффекта&nbsp;— α. Людей для&nbsp;выручки берут из&nbsp;группы A с&nbsp;возвращением, хвост настоящий. Результаты сходятся с&nbsp;расчётом: 81% при&nbsp;плане 80%, 27 и&nbsp;78% против расчётных 27 и&nbsp;80%; на&nbsp;хвостатой выручке t-тест Уэлча даёт 5,9% ложных тревог.</p>
+        <div class="block wide" data-code="sim"></div>
+        <p>Четвёртый блок&nbsp;— не&nbsp;код, а&nbsp;шаблон документа дизайна, заполненный для&nbsp;checkout_v2. Файл для&nbsp;скачивания&nbsp;— в&nbsp;материалах.</p>
+        <div class="block wide" data-code="doc"></div>
+      </section>
+
+      <section data-sec="check" data-title="Проверь себя">
+        <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
+        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <div class="check" data-q="q2"></div>
+        <div class="check" data-q="q3"></div>
+        <div class="check" data-q="q4"></div>
+        <div class="check" data-q="q5"></div>
+        <div class="check" data-q="q6"></div>
+        <div class="check" data-q="q7"></div>
+      </section>
+
+      <section data-sec="glossary" data-title="Глоссарий">
+        <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
+        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <dl class="gloss wide" id="gloss"></dl>
+      </section>
+
+      <section data-sec="materials" data-title="Материалы">
+        <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
+        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <div class="matlist wide" id="mat"></div>
+        <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
+        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «A/B-тестирование» <span class="nlm-state"></span></p>
+        <ol class="nlm-steps">
+          <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
+          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
+          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+        </ol>
+        <div class="prompts wide" id="prompts"></div>
+      </section>
+
+      <section class="sources" data-sec="sources" data-title="Источники">
+        <h2 id="sources">Источники</h2>
+        <ol>
+          <li id="src-1">Kohavi R., Tang D., Xu Y. <a href="https://doi.org/10.1017/9781108653985" target="_blank" rel="noopener">Trustworthy Online Controlled Experiments: A Practical Guide to A/B Testing</a>. Cambridge University Press, 2020. Роли метрик, MDE, недельный цикл, A/A-тесты.</li>
+          <li id="src-2">Miller E. <a href="https://www.evanmiller.org/how-not-to-run-an-ab-test.html" target="_blank" rel="noopener">How Not To Run an A/B Test</a>, 2010, и <a href="https://www.evanmiller.org/ab-testing/sample-size.html" target="_blank" rel="noopener">Sample Size Calculator</a>. Правило n ≈&nbsp;16σ²/δ² и&nbsp;выборка, зафиксированная до&nbsp;запуска.</li>
+          <li id="src-3">Fabijan A. et al. <a href="https://doi.org/10.1145/3292500.3330722" target="_blank" rel="noopener">Diagnosing Sample Ratio Mismatch in Online Controlled Experiments: A Taxonomy and Rules of Thumb for Practitioners</a>. KDD, 2019. Дисбаланс групп как&nbsp;признак поломки.</li>
+          <li id="src-4">Nosek B. A. et al. <a href="https://doi.org/10.1073/pnas.1708274114" target="_blank" rel="noopener">The preregistration revolution</a>. PNAS, 2018, 115(11): 2600–2606. Зачем план анализа фиксируют до&nbsp;данных.</li>
+          <li id="src-5">statsmodels. <a href="https://www.statsmodels.org/stable/generated/statsmodels.stats.power.NormalIndPower.html" target="_blank" rel="noopener">NormalIndPower</a> и <a href="https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportion_effectsize.html" target="_blank" rel="noopener">proportion_effectsize</a>. Расчёт мощности и&nbsp;размер эффекта h в&nbsp;коде страницы.</li>
+          <li id="src-6">Georgiev G. Z. <a href="https://blog.analytics-toolkit.com/2019/statistical-methods-in-online-a-b-testing-the-book/" target="_blank" rel="noopener">Statistical Methods in Online A/B Testing</a>, 2019; глоссарий Analytics Toolkit: <a href="https://www.analytics-toolkit.com/glossary/one-tailed-test/" target="_blank" rel="noopener">One-Tailed Test</a>. Довод за&nbsp;односторонние гипотезы.</li>
+          <li id="src-7">Russo D. J. et al. <a href="https://doi.org/10.1561/2200000070" target="_blank" rel="noopener">A Tutorial on Thompson Sampling</a>. Foundations and Trends in Machine Learning, 2018, 11(1): 1–96. Бандиты и&nbsp;выборка Томпсона.</li>
+          <li id="src-8">Cohen J. Statistical Power Analysis for the Behavioral Sciences, 2nd ed. Lawrence Erlbaum, 1988. Размер эффекта h для&nbsp;долей.</li>
+        </ol>
+      </section>
