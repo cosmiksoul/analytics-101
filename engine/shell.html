@@ -41,6 +41,17 @@
 
 <div class="scrim" id="scrim" hidden></div>
 <aside class="prog" id="prog" aria-label="Мой прогресс" aria-hidden="true"></aside>
-<button type="button" class="ask selask" id="selAsk" hidden>Спросить ИИ об этом</button>
+<div class="seltools" id="selTools" hidden><button type="button" class="ask" id="selAsk">Спросить ИИ об этом</button><button type="button" class="ask quiet" id="selFix">Предложить исправление</button></div>
+<dialog class="fix" id="fixDlg" aria-labelledby="fixTitle">
+  <form method="dialog">
+    <div class="fix-hd"><b id="fixTitle">Предложить исправление</b><button type="button" class="prog-x" id="fixX" aria-label="Закрыть">✕</button></div>
+    <p class="hint" id="fixWhere"></p>
+    <label>Фрагмент<textarea id="fixQuote" rows="3" readonly></textarea></label>
+    <label>Как должно быть<textarea id="fixText" rows="3" placeholder="Исправленный текст или описание ошибки"></textarea></label>
+    <label>Комментарий <small>(необязательно)</small><textarea id="fixNote" rows="2" placeholder="Источник, рассуждение"></textarea></label>
+    <div class="acts"><a class="btn accent small" id="fixGh" href="#" target="_blank" rel="noopener">Открыть issue на GitHub</a><button type="button" class="btn ghost small" id="fixCopy">Скопировать отчёт</button></div>
+    <p class="note">Issue откроется в новой вкладке с заполненными полями, нужен аккаунт GitHub. Без аккаунта скопируйте отчёт и отправьте автору любым способом.</p>
+  </form>
+</dialog>
 <div class="tip" id="tip" role="tooltip" hidden></div>
 <div class="toast" id="toast" role="status" hidden></div>

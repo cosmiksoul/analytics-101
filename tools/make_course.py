@@ -22,6 +22,9 @@ BLOCKS = [("da", "Дата аналитика", "дата аналитики", "
           ("ai", "AI-инженерия", "AI-инженерии", "08 Программа — AI-инженерия.md")]
 
 
+# Репозиторий сайта: сюда ведёт «Предложить исправление» (issue с заполненными полями).
+REPO = "https://github.com/cosmiksoul/analytics-101"
+
 # Лид главной страницы.
 COURSE_LEAD = ("Бесплатный интерактивный курс о работе с данными: от первых строк на Python и SQL "
                "до статистики, A/B-тестов и машинного обучения. Каждая страница разбирает одну идею: сцена показывает её "
@@ -72,7 +75,7 @@ def program(block_file):
 
 def main():
     metas = {p.name: json.loads((p / "meta.json").read_text(encoding="utf-8")) for p in (ROOT / "pages").iterdir() if (p / "meta.json").exists()}
-    course = {"title": "Аналитика 101", "lead": COURSE_LEAD, "storageKey": "a101-done", "blocks": []}
+    course = {"title": "Аналитика 101", "lead": COURSE_LEAD, "storageKey": "a101-done", "repo": REPO, "blocks": []}
     for key, name, gen, prog in BLOCKS:
         topics = program(prog)
         ready = 0

@@ -10,6 +10,7 @@ python3 build.py --all                     все страницы из pages/
 """
 import html
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -118,7 +119,9 @@ def build(pid):
               'topics': [{'n': tp['n'], 'name': tp['name'], 'pages': [brief(p) for p in tp['pages'] if p.get('file')]}
                          for tp in block['topics'] if any(p.get('file') for p in tp['pages'])]}
     a101 = {'storageKey': COURSE['storageKey'], 'materials': materials_map(pid), 'page': brief(page), 'course': course,
-            'prev': brief(ready[pos - 1]) if pos > 0 else None, 'next': brief(ready[pos + 1]) if pos + 1 < len(ready) else None}
+            'prev': brief(ready[pos - 1]) if pos > 0 else None, 'next': brief(ready[pos + 1]) if pos + 1 < len(ready) else None,
+            # «Предложить исправление»: репозиторий для issue и версия сборки (хеш коммита в CI, local — у себя)
+            'repo': COURSE.get('repo', ''), 'build': (os.environ.get('GITHUB_SHA') or '')[:7] or 'local'}
     head = (f'<title>{esc(meta["title"])} · Аналитика 101</title>\n'
             f'<meta name="description" content="{esc(meta["description"])}">\n{FONTS}\n<style>\n{css}</style>')
     tail = (f'<script>window.A101 = {json.dumps(a101, ensure_ascii=False, separators=(",", ":"))};</script>\n'

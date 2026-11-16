@@ -1,0 +1,32 @@
+name: Вычитка — ошибка в тексте
+description: Опечатка, неточность или предложение исправить текст страницы курса
+title: "Вычитка: "
+labels: ["вычитка"]
+body:
+  - type: markdown
+    attributes:
+      value: Поля ниже заполняются со страницы курса кнопкой «Предложить исправление». Если открыли форму вручную, укажите страницу и раздел.
+  - type: textarea
+    id: where
+    attributes:
+      label: Где
+      description: Страница, раздел и ссылка на фрагмент
+    validations:
+      required: true
+  - type: textarea
+    id: quote
+    attributes:
+      label: Фрагмент
+      description: Текст, в котором ошибка
+  - type: textarea
+    id: fix
+    attributes:
+      label: Как должно быть
+      description: Исправленный текст или описание ошибки
+    validations:
+      required: true
+  - type: textarea
+    id: comment
+    attributes:
+      label: Комментарий
+      description: Источник, рассуждение, что угодно по делу

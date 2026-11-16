@@ -255,22 +255,69 @@
       s.appendChild(d);
     });
   }
-  const selAsk = $('selAsk');
+  /* ---------- выделение: спросить ИИ, предложить исправление ---------- */
+  const selTools = $('selTools'), selAsk = $('selAsk'), selFix = $('selFix');
   document.addEventListener('mouseup', e => {
-    if (e.target.closest && (e.target === selAsk || e.target.closest('.menu'))) return;
+    if (e.target.closest && e.target.closest('.seltools, .menu, .fix')) return;
     setTimeout(() => {
       const s = window.getSelection(), t = s ? s.toString().trim() : '';
-      if (!t || t.length < 3 || t.length > 600 || !s.anchorNode || !$('article').contains(s.anchorNode) || (s.anchorNode.parentElement && s.anchorNode.parentElement.closest('.block, textarea, .scene'))) { selAsk.hidden = true; return; }
+      const node = s && s.anchorNode, el = node && (node.nodeType === 1 ? node : node.parentElement);
+      if (!t || t.length < 3 || t.length > 600 || !el || !$('article').contains(el)) { selTools.hidden = true; return; }
+      selAsk.hidden = !!el.closest('.block, textarea, .scene');  // внутри интерактивов и сцены промпт по фрагменту не нужен, правка — нужна
       const r = s.getRangeAt(0).getBoundingClientRect();
-      selAsk.style.left = `${clamp(r.left + window.scrollX, 8, document.documentElement.clientWidth - 190)}px`; selAsk.style.top = `${r.bottom + window.scrollY + 6}px`;
-      selAsk.hidden = false; selAsk.dataset.text = t; selAsk.dataset.sec = (secOf(s.anchorNode.parentElement) || curSec).dataset.sec;
+      selTools.style.left = `${clamp(r.left + window.scrollX, 8, document.documentElement.clientWidth - 340)}px`; selTools.style.top = `${r.bottom + window.scrollY + 6}px`;
+      selTools.hidden = false; selTools.dataset.text = t.replace(/[  ]/g, ' '); selTools.dataset.sec = (secOf(el) || curSec).dataset.sec;
     }, 0);
   });
   selAsk.addEventListener('click', () => {
-    selAsk.hidden = true;
-    const s = document.querySelector(`section[data-sec="${selAsk.dataset.sec}"]`) || curSec;
-    copyPrompt(`${INTRO}\n\n${RULES}\n\nОбъясни этот фрагмент проще и на примере: «${selAsk.dataset.text}»\n\n=== Раздел «${s.dataset.title}», откуда фрагмент ===\n${secText(s)}`, 'с выделенным фрагментом');
+    selTools.hidden = true;
+    const s = document.querySelector(`section[data-sec="${selTools.dataset.sec}"]`) || curSec;
+    copyPrompt(`${INTRO}\n\n${RULES}\n\nОбъясни этот фрагмент проще и на примере: «${selTools.dataset.text}»\n\n=== Раздел «${s.dataset.title}», откуда фрагмент ===\n${secText(s)}`, 'с выделенным фрагментом');
   });
+
+  // «Предложить исправление»: окно с цитатой и полями, из него — issue на GitHub с заполненными полями
+  // (шаблон .github/ISSUE_TEMPLATE/proofread.yml, параметры адреса = id полей) или отчёт в буфер обмена.
+  const fixDlg = $('fixDlg');
+  const cut = (s, n) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
+  const fragLink = q => {
+    const w = q.split(/\s+/);
+    const f = q.length <= 100 ? encodeURIComponent(q) : `${encodeURIComponent(w.slice(0, 5).join(' '))},${encodeURIComponent(w.slice(-5).join(' '))}`;
+    return `${location.href.split('#')[0]}#:~:text=${f}`;
+  };
+  let fixCtx = { quote: '', sec: '' };
+  function fixReport() {
+    const q = $('fixQuote').value.trim(), fx = $('fixText').value.trim(), note = $('fixNote').value.trim();
+    const A1 = window.A101 || {}, pg = A1.page || {};
+    const where = [`Страница ${pg.num || ''} «${H1}» (${P.id})`, fixCtx.sec ? `раздел «${fixCtx.sec}»` : '', q ? fragLink(q) : location.href.split('#')[0], `сборка ${A1.build || '—'}`].filter(Boolean).join('\n');
+    const title = `Вычитка ${pg.num || ''} ${H1}${fixCtx.sec ? `: ${fixCtx.sec}` : ''}`.replace(/\s+/g, ' ').trim();
+    return { title, where, quote: q, fix: fx, comment: note, repo: A1.repo };
+  }
+  function fixUrl() {
+    const r = fixReport();
+    if (!r.repo) return '';
+    const p = new URLSearchParams({ template: 'proofread.yml', title: cut(r.title, 120), where: r.where, quote: cut(r.quote, 400), fix: cut(r.fix, 700), comment: cut(r.comment, 500) });
+    return `${r.repo}/issues/new?${p}`;
+  }
+  const fixText = () => { const r = fixReport(); return [`# ${r.title}`, '', `Где: ${r.where.replace(/\n/g, ' · ')}`, r.quote ? `\nФрагмент:\n«${r.quote}»` : '', `\nКак должно быть:\n${r.fix || '—'}`, r.comment ? `\nКомментарий:\n${r.comment}` : ''].filter(s => s !== '').join('\n'); };
+  function openFix(quote, sec) {
+    if (!fixDlg || !fixDlg.showModal) return;
+    fixCtx = { quote: quote || '', sec: sec || '' };
+    const pg = (window.A101 || {}).page || {};
+    $('fixWhere').textContent = `${pg.num || ''} ${H1}${sec ? ` · раздел «${sec}»` : ''}`.trim();
+    $('fixQuote').value = fixCtx.quote; $('fixQuote').closest('label').hidden = !fixCtx.quote;
+    $('fixText').value = ''; $('fixNote').value = '';
+    $('fixGh').href = fixUrl(); $('fixGh').hidden = !(window.A101 || {}).repo;
+    selTools.hidden = true; closeProg();
+    fixDlg.showModal(); $('fixText').focus();
+  }
+  if (fixDlg) {
+    fixDlg.addEventListener('input', () => { $('fixGh').href = fixUrl(); });
+    $('fixX').addEventListener('click', () => fixDlg.close());
+    fixDlg.addEventListener('click', e => { if (e.target === fixDlg) fixDlg.close(); });
+    $('fixGh').addEventListener('click', e => { if (!$('fixText').value.trim()) { e.preventDefault(); $('fixText').focus(); toast('Напишите, как должно быть, — это обязательное поле'); return; } setTimeout(() => fixDlg.close(), 300); });
+    $('fixCopy').addEventListener('click', () => { copy(fixText(), 'Отчёт скопирован. Отправьте его автору любым способом'); fixDlg.close(); });
+    selFix.addEventListener('click', () => { const s = document.querySelector(`section[data-sec="${selTools.dataset.sec}"]`); openFix(selTools.dataset.text, s ? s.dataset.title : ''); });
+  }
   /* ---------- прогресс, закладки, печать ---------- */
   // Отметки «пройдено» — массив id страниц под ключом из course.json (его же читают главная и оглавление),
   // закладки — под a101-marks, последняя открытая страница — под a101-last. Панель строится из window.A101.course.
@@ -316,7 +363,7 @@
 <section><p class="eyebrow">Программа модуля</p>
 ${CR.topics.map(t => `<details class="prog-t"${t.pages.some(p => p.id === PG.id) ? ' open' : ''}><summary><b class="n">${t.n}</b><span>${esc(t.name)}</span><small data-tcnt="${t.pages.map(p => p.id).join(' ')}"></small></summary><ul class="prog-list">${t.pages.map(row).join('')}</ul></details>`).join('')}
 <p class="hint"><a href="course.html#${CR.key}">Оглавление курса →</a></p></section>
-<section class="prog-tools"><button type="button" class="btn ghost small" id="printBtn">Версия для печати</button><span class="hint">Текст, код и вопросы страницы без сцены и интерактивов.</span></section>
+<section class="prog-tools"><div class="acts"><button type="button" class="btn ghost small" id="printBtn">Версия для печати</button><button type="button" class="btn ghost small" id="fixBtn">Сообщить об ошибке</button></div><span class="hint">Печать: текст, код и вопросы без сцены и интерактивов. Нашли опечатку в тексте? Выделите её и нажмите «Предложить исправление».</span></section>
 <p class="note">Отметки и закладки хранятся только в этом браузере.</p>
 </div>`;
     const nav = document.createElement('nav'); nav.className = 'page-end'; nav.setAttribute('aria-label', 'Соседние страницы');
@@ -327,6 +374,7 @@ ${A.next ? `<a class="pe next" href="${A.next.file}.html"><small>Следующ�
     progBtn.addEventListener('click', () => (prog.classList.contains('open') ? closeProg() : openProg()));
     $('progX').addEventListener('click', closeProg);
     $('printBtn').addEventListener('click', () => { closeProg(); window.print(); });
+    $('fixBtn').addEventListener('click', () => openFix('', curSec ? curSec.dataset.title : ''));
     document.addEventListener('click', e => {
       const d = e.target.closest('[data-done]'), m = e.target.closest('[data-mark]');
       if (d) { const s = getDone(); if (s.has(d.dataset.done)) s.delete(d.dataset.done); else s.add(d.dataset.done); store.set(DONE_KEY, [...s]); renderProgress(); toast(s.has(d.dataset.done) ? 'Страница отмечена пройденной' : 'Отметка снята'); }

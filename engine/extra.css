@@ -124,6 +124,24 @@ html.sc-lock .top { padding-right: var(--sbw, 0px); }
   .page-end .done-btn { grid-column: 1 / -1; order: -1; justify-content: center; }
 }
 
+/* ===== Выделение: «Спросить ИИ» и «Предложить исправление»; окно с формой правки ===== */
+.seltools { position: absolute; z-index: 40; display: flex; gap: 6px; }
+.seltools .ask { box-shadow: var(--shadow); background: var(--surface); }
+.seltools .ask:not(.quiet) { background: var(--accent-soft); }
+dialog.fix { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); padding: 0; width: min(540px, calc(100% - 32px)); max-height: calc(100vh - 32px); box-shadow: 0 24px 70px rgba(0, 0, 0, .45); }
+dialog.fix::backdrop { background: rgba(0, 0, 0, .45); }
+.fix form { display: grid; gap: 12px; padding: 16px 18px 18px; margin: 0; }
+.fix-hd { display: flex; justify-content: space-between; align-items: center; font-size: 15px; }
+.fix .hint { margin: -6px 0 0; }
+.fix label { display: grid; gap: 5px; font: 500 12.5px/1.4 var(--ui); color: var(--muted); }
+.fix label small { font-weight: 400; }
+.fix textarea { width: 100%; border: 1px solid var(--line-2); border-radius: 9px; background: var(--paper); color: var(--ink); padding: 8px 10px; font: 14px/1.5 var(--ui); resize: vertical; }
+.fix textarea[readonly] { color: var(--ink-2); font: 14.5px/1.5 var(--read); }
+.fix textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.fix .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.fix .note { margin: 0; }
+@media (max-width: 640px) { .seltools { flex-direction: column; align-items: flex-start; } }
+
 /* ===== Аналитика 101: навигация по курсу, меню ИИ, ссылки на материалы ===== */
 .blocks a { font-size: 12.5px; border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 9px; color: var(--muted); text-decoration: none; }
 .blocks a:hover { border-color: var(--accent); color: var(--accent); }
@@ -157,7 +175,7 @@ a.mi { color: var(--ink); text-decoration: none; }
   body { font-size: 11pt; }
   .top, .side, .scrim, .toast, .tip, .selask, .prog, .menu, .menu-btn, .aimenu,
   .scene, .scene-hint, .sc-ph, [data-w], .sec-end, .ask, .sec-tools, .page-end, .mat-all, .matlist .acts, .prompts, .nlm-steps,
-  .block .btn, .check .ask, .fbw, .code-hd .btn { display: none !important; }
+  .block .btn, .check .ask, .fbw, .code-hd .btn, .seltools, dialog.fix { display: none !important; }
   .shell { display: block; }
   .main { padding: 0; }
   .article { max-width: none; }
