@@ -57,6 +57,73 @@ html.sc-lock { overflow: hidden; padding-right: var(--sbw, 0px); }
 html.sc-lock .top { padding-right: var(--sbw, 0px); }
 @media (prefers-reduced-motion: reduce) { .scene.fs, .scene.fs-on { transition: none; } }
 
+/* ===== Прогресс: кнопка в шапке, панель справа, закладки, навигация внизу страницы ===== */
+.prog-btn { gap: 6px; }
+.prog-btn b { font: 500 12px/1 var(--mono); color: var(--muted); }
+.prog-btn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.prog { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100%); z-index: 56; background: var(--paper); border-left: 1px solid var(--line); box-shadow: -12px 0 40px rgba(0, 0, 0, .25); transform: translateX(105%); transition: transform .25s ease; display: flex; flex-direction: column; }
+.prog.open { transform: none; }
+.prog-hd { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--line); font-size: 15px; }
+.prog-x { border: 0; background: transparent; color: var(--muted); font-size: 16px; cursor: pointer; padding: 4px 8px; border-radius: 8px; }
+.prog-x:hover { color: var(--ink); background: var(--sunk); }
+.prog-body { overflow-y: auto; padding: 6px 18px 28px; display: grid; gap: 22px; align-content: start; }
+.prog-body section { display: grid; gap: 8px; padding-top: 16px; }
+.prog-body section + section { border-top: 1px solid var(--line); }
+.prog-body .eyebrow { margin: 0; }
+.prog-page h4 { font: 600 17px/1.3 var(--ui); margin: 0; letter-spacing: -.01em; }
+.prog-body .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.prog-body .hint { margin: 0; }
+.prog-body .hint a { font-weight: 600; text-decoration: none; }
+.prog-body .hint a:hover { text-decoration: underline; }
+.prog-body .bar { width: 100%; height: 6px; border-radius: 99px; background: var(--sunk); overflow: hidden; }
+.prog-body .bar i { display: block; height: 100%; width: 0; background: var(--good); border-radius: inherit; transition: width .3s; }
+.done-btn { background: var(--sunk); color: var(--ink); gap: 8px; }
+.done-btn:hover { background: var(--accent-soft); color: var(--accent); }
+.done-btn.on { background: var(--good-soft); color: var(--good); }
+.done-btn small { font: 400 11.5px/1 var(--ui); opacity: .7; }
+.done-btn.on:hover { background: var(--bad-soft); color: var(--bad); }
+.btn[data-mark].on { border-color: var(--warn); color: var(--warn); }
+.mk { border: 0; background: transparent; color: var(--line-2); font-size: 15px; line-height: 1; cursor: pointer; padding: 2px 5px; border-radius: 6px; }
+.mk:hover { color: var(--warn); background: var(--sunk); }
+.mk.on { color: var(--warn); }
+.prog-list { list-style: none; margin: 0; padding: 0; }
+.prog-list li { display: grid; grid-template-columns: 18px 32px minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.prog-list li:last-child { border-bottom: 0; }
+.prog-list li.empty { display: block; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.prog-list input { width: 16px; height: 16px; margin: 0; accent-color: var(--good); cursor: pointer; }
+.prog-list .pn { font: 500 11.5px/1 var(--mono); color: var(--muted); }
+.prog-list .lt { color: var(--ink); text-decoration: none; line-height: 1.3; }
+.prog-list a.lt:hover { color: var(--accent); text-decoration: underline; }
+.prog-list li.here .lt { color: var(--accent); font-weight: 600; }
+.prog-list li.done .lt { color: var(--muted); }
+.prog-list .pm { font: 500 11px/1 var(--mono); color: var(--muted); white-space: nowrap; }
+#progMarks li { grid-template-columns: 32px minmax(0, 1fr) auto; }
+.prog-t { border-bottom: 1px solid var(--line); }
+.prog-t:last-of-type { border-bottom: 0; }
+.prog-t summary { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: baseline; gap: 6px; padding: 9px 4px; cursor: pointer; font-size: 14px; color: var(--ink-2); list-style: none; border-radius: 8px; }
+.prog-t summary::-webkit-details-marker { display: none; }
+.prog-t summary:hover { background: var(--sunk); color: var(--ink); }
+.prog-t[open] summary { color: var(--ink); font-weight: 600; }
+.prog-t summary .n { font: 500 11.5px/1.7 var(--mono); color: var(--muted); }
+.prog-t summary small { font: 500 10.5px/1.7 var(--mono); color: var(--muted); }
+.prog-t summary small.full { color: var(--good); }
+.prog-t .prog-list { margin: 0 0 8px 30px; }
+.prog-tools { gap: 10px !important; }
+.page-end { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 14px; align-items: center; margin: 56px auto 0; padding-top: 22px; border-top: 1px solid var(--line); }
+.page-end .pe { display: grid; gap: 3px; text-decoration: none; color: var(--ink); min-width: 0; }
+.page-end .pe small { font: 500 11px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.page-end .pe span { font: 600 15px/1.35 var(--ui); }
+.page-end .pe:hover span { color: var(--accent); }
+.page-end .next { text-align: right; }
+@media (max-width: 640px) {
+  .prog-btn .lg { display: none; }
+  .prog-btn { padding: 6px 8px; gap: 4px; }
+  .top-in { gap: 6px; }
+  .brand { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .page-end { grid-template-columns: 1fr 1fr; }
+  .page-end .done-btn { grid-column: 1 / -1; order: -1; justify-content: center; }
+}
+
 /* ===== Аналитика 101: навигация по курсу, меню ИИ, ссылки на материалы ===== */
 .blocks a { font-size: 12.5px; border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 9px; color: var(--muted); text-decoration: none; }
 .blocks a:hover { border-color: var(--accent); color: var(--accent); }
@@ -75,3 +142,43 @@ a.mi { color: var(--ink); text-decoration: none; }
 .files .dl:hover { text-decoration: underline; }
 .mat-all { margin: 4px 0 12px; }
 .nlm-open a { font-weight: 600; }
+
+/* ===== Печать: текст, код и вопросы без сцены, интерактивов и навигации; светлые цвета ===== */
+@media print {
+  :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    --paper: #ffffff; --surface: #ffffff; --sunk: #f1f3f6; --ink: #111111; --ink-2: #333333; --muted: #666666;
+    --line: #cfd4dc; --line-2: #b8bfca; --accent: #0d7468; --accent-ink: #ffffff; --accent-soft: #e1f1ee;
+    --good: #17784c; --good-soft: #e2f3ea; --warn: #975a00; --warn-soft: #fbf0dc; --bad: #bf3a2e; --bad-soft: #fbe6e3;
+    --shade: .13; --shadow: none;
+    --c1: #2f6db5; --c2: #d27a12; --c3: #17895f; --c4: #c2417a; --c5: #7b5bd6; --c6: #a8860f; --c7: #23919f; --c8: #5f6878;
+    color-scheme: light;
+  }
+  html, body { background: #fff !important; color: #111 !important; }
+  body { font-size: 11pt; }
+  .top, .side, .scrim, .toast, .tip, .selask, .prog, .menu, .menu-btn, .aimenu,
+  .scene, .scene-hint, .sc-ph, [data-w], .sec-end, .ask, .sec-tools, .page-end, .mat-all, .matlist .acts, .prompts, .nlm-steps,
+  .block .btn, .check .ask, .fbw, .code-hd .btn { display: none !important; }
+  .shell { display: block; }
+  .main { padding: 0; }
+  .article { max-width: none; }
+  .article > *, .article section > *, .article section > .wide { max-width: none; }
+  h1 { font-size: 24pt; margin-top: 0; }
+  h2 { font-size: 16pt; margin-top: 22pt; break-after: avoid; }
+  h3, .sub-h { break-after: avoid; }
+  .article p, .article li { font-size: 11pt; line-height: 1.5; }
+  .lead { font-size: 12.5pt; }
+  .meta-row { margin-bottom: 14pt; }
+  .pill { border: 1px solid var(--line); background: none; }
+  .block, .check, .callout, .formula, .tbl, .gloss div { break-inside: avoid; box-shadow: none !important; }
+  .block { border: 1px solid var(--line); }
+  pre.code, .out pre { max-height: none !important; overflow: visible !important; white-space: pre-wrap; word-break: break-word; font-size: 9pt; background: var(--sunk) !important; }
+  .out { grid-template-columns: 1fr; }
+  .choice { background: none; border: 1px solid var(--line); }
+  .choice.right, .choice.wrong, .choice.missed { background: none; border-color: var(--line); }
+  .choice .mk { background: none; border-color: var(--line-2); color: var(--muted); }
+  a { color: inherit; text-decoration: underline; }
+  .sources a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8.5pt; color: var(--muted); word-break: break-all; }
+  .term { border-bottom: 0; }
+  .ref { color: var(--muted); }
+  .article::after { content: "Аналитика 101 · печатная версия страницы: без сцены и интерактивов"; display: block; margin-top: 24pt; padding-top: 8pt; border-top: 1px solid var(--line); font: 9pt/1.4 var(--ui); color: var(--muted); }
+}

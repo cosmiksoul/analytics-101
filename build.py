@@ -110,7 +110,15 @@ def build(pid):
     if (d / 'page.css').exists():
         css += '\n/* ===== Стили страницы ===== */\n' + (d / 'page.css').read_text(encoding='utf-8')
     engine = (ROOT / 'engine' / 'engine.js').read_text(encoding='utf-8')
-    a101 = {'storageKey': COURSE['storageKey'], 'materials': materials_map(pid)}
+    # структура модуля для панели прогресса (только готовые страницы), соседние страницы для навигации внизу
+    ready = [p for tp in block['topics'] for p in tp['pages'] if p.get('file')]
+    brief = lambda p: {'id': p['id'], 'num': p['num'], 'title': p['title'], 'file': p['file'], 'minutes': p.get('minutes') or 0}
+    pos = next(i for i, p in enumerate(ready) if p['id'] == pid)
+    course = {'key': block['key'], 'name': block['name'],
+              'topics': [{'n': tp['n'], 'name': tp['name'], 'pages': [brief(p) for p in tp['pages'] if p.get('file')]}
+                         for tp in block['topics'] if any(p.get('file') for p in tp['pages'])]}
+    a101 = {'storageKey': COURSE['storageKey'], 'materials': materials_map(pid), 'page': brief(page), 'course': course,
+            'prev': brief(ready[pos - 1]) if pos > 0 else None, 'next': brief(ready[pos + 1]) if pos + 1 < len(ready) else None}
     head = (f'<title>{esc(meta["title"])} · Аналитика 101</title>\n'
             f'<meta name="description" content="{esc(meta["description"])}">\n{FONTS}\n<style>\n{css}</style>')
     tail = (f'<script>window.A101 = {json.dumps(a101, ensure_ascii=False, separators=(",", ":"))};</script>\n'

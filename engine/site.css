@@ -81,7 +81,12 @@
 .tcnt.full::before { content: "✓ "; }
 .course .article .tlead { font: 400 17px/1.6 var(--read); color: var(--ink-2); margin-bottom: 18px; }
 .course .lessons { list-style: none; margin: 0 auto 8px; padding: 0; border-top: 1px solid var(--line); }
-.course .lesson { display: grid; grid-template-columns: 20px 36px minmax(0, 1fr) auto; gap: 6px 12px; align-items: start; padding: 14px 0 16px; border-bottom: 1px solid var(--line); margin: 0; }
+.mk { border: 0; background: transparent; color: var(--line-2); font-size: 16px; line-height: 1; cursor: pointer; padding: 3px 6px; border-radius: 6px; }
+.mk:hover { color: var(--warn); background: var(--sunk); }
+.mk.on { color: var(--warn); }
+.side-marks h4 { margin-top: 18px; }
+.side-marks .toc a { grid-template-columns: 26px minmax(0, 1fr); }
+.course .lesson { display: grid; grid-template-columns: 20px 36px minmax(0, 1fr) auto auto; gap: 6px 10px; align-items: start; padding: 14px 0 16px; border-bottom: 1px solid var(--line); margin: 0; }
 .course .lesson input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--good); cursor: pointer; }
 .course .lesson .pn { font: 500 12px/1 var(--mono); color: var(--muted); padding-top: 5px; }
 .course .lb { min-width: 0; }
@@ -121,7 +126,8 @@
   .topic-list li { grid-template-columns: 32px minmax(0, 1fr); }
   .topic-list .go { display: none; }
   .course .topic h2 { flex-wrap: wrap; gap: 6px 10px; }
-  .course .lesson { grid-template-columns: 20px 32px minmax(0, 1fr); }
+  .course .lesson { grid-template-columns: 20px 32px minmax(0, 1fr) auto; }
   .course .pm { grid-column: 3; padding-top: 0; }
+  .course .lesson .mk { grid-column: 4; grid-row: 1; }
   .lost { padding: 56px 0; }
 }

@@ -188,6 +188,7 @@ def index_html():
     hero = (f'<section class="hero">\n  <p class="eyebrow">Курс о работе с данными · модуль «{esc(da["name"])}» готов</p>\n'
             f'  <h1>{esc(COURSE["title"])}</h1>\n  <p class="lead">{esc(typo(course_lead()))}</p>\n'
             f'  <div class="acts"><a class="btn accent" href="{first["file"]}.html">Начать с первой страницы</a>'
+            f'<a class="btn ghost" id="resume" hidden></a>'
             f'<a class="btn ghost" href="course.html#{da["key"]}">Оглавление модуля</a></div>\n'
             f'  <div class="facts"><span class="pill">{count(len(pages), PAGES)}</span><span class="pill">{count(len(da["topics"]), TOPICS)}</span>'
             f'<span class="pill">≈{NB}{hours}{NB}ч чтения</span><span class="pill">без регистрации</span>'
@@ -265,7 +266,8 @@ def course_html():
                         f'<span class="pn">{p["num"]}</span><div class="lb"><a class="lt" href="{p["file"]}.html">{esc(p["title"])}</a>'
                         f'<p class="li"><span>Идея:</span> {esc(typo(idea_of(p["id"])))}</p>'
                         f'<p class="lp">{esc(typo(lead_of(p["id"])))}</p></div>'
-                        f'<span class="pm">{duration(p["minutes"]) if p.get("minutes") else ""}</span></li>')
+                        f'<span class="pm">{duration(p["minutes"]) if p.get("minutes") else ""}</span>'
+                        f'<button type="button" class="mk" data-mark="{p["id"]}" aria-label="В закладки">☆</button></li>')
                 cards.append(
                     f'    <section class="topic" id="t-{k}-{t["n"]}">\n'
                     f'      <h2><span class="sn">{t["n"]}</span><a class="th" href="{tp[0]["file"]}.html">{esc(t["name"])}</a></h2>\n'
@@ -275,7 +277,8 @@ def course_html():
             sides.append(
                 f'<div class="side-mod" data-mod="{k}" hidden>\n  <h4>Темы блока {esc(b["gen"])}</h4>\n  <ul class="toc">\n' + '\n'.join(toc) + '\n  </ul>\n'
                 f'  <div class="side-prog"><div class="bar" data-pages="{ids}"><i></i></div>'
-                f'<span class="cnt" data-pages="{ids}" data-fmt="Пройдено {{n}} из {{t}}">Пройдено 0 из {len(pages)}</span></div>\n</div>')
+                f'<span class="cnt" data-pages="{ids}" data-fmt="Пройдено {{n}} из {{t}}">Пройдено 0 из {len(pages)}</span></div>\n'
+                f'  <div class="side-marks" hidden><h4>Закладки</h4><ul class="toc marks"></ul></div>\n</div>')
             mods.append(
                 f'<section class="mod" id="m-{k}" data-mod="{k}" data-name="{esc(b["name"])}" hidden>\n'
                 f'  <p class="eyebrow">{esc(COURSE["title"])} · <b>Оглавление модуля</b></p>\n  <h1>{esc(b["name"])}</h1>\n'

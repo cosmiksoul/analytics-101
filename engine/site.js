@@ -37,6 +37,37 @@
   });
   window.addEventListener('storage', e => { if (e.key === KEY) { done = load(); render(); } });
 
+  // Закладки (a101-marks): звёздочки у страниц в оглавлении и список в боковине. Названия берём из строк оглавления.
+  const MARKS = 'a101-marks';
+  const marks = () => { try { const v = JSON.parse(localStorage.getItem(MARKS) || '[]'); return new Set(Array.isArray(v) ? v : []); } catch (e) { return new Set(); } };
+  const renderMarks = () => {
+    const m = marks();
+    document.querySelectorAll('[data-mark]').forEach(b => { const on = m.has(b.dataset.mark); b.classList.toggle('on', on); b.textContent = on ? '★' : '☆'; b.setAttribute('aria-label', on ? 'Убрать из закладок' : 'В закладки'); });
+    document.querySelectorAll('.side-marks').forEach(box => {
+      const mod = box.closest('.side-mod');
+      const rows = [...document.querySelectorAll(`#m-${mod.dataset.mod} .lesson`)].filter(li => m.has(li.querySelector('input[data-page]').dataset.page));
+      box.hidden = rows.length === 0;
+      box.querySelector('ul').innerHTML = rows.map(li => { const a = li.querySelector('.lt'); return `<li><a href="${a.getAttribute('href')}"><b class="n">${li.querySelector('.pn').textContent}</b>${a.textContent}</a></li>`; }).join('');
+    });
+  };
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-mark]'); if (!b) return;
+    const m = marks(); if (m.has(b.dataset.mark)) m.delete(b.dataset.mark); else m.add(b.dataset.mark);
+    try { localStorage.setItem(MARKS, JSON.stringify([...m])); } catch (err) { /* хранилище недоступно */ }
+    renderMarks();
+  });
+  window.addEventListener('storage', e => { if (e.key === MARKS) renderMarks(); });
+  renderMarks();
+
+  // Главная: «Продолжить» ведёт на последнюю открытую страницу (a101-last пишет движок страниц).
+  const resume = document.getElementById('resume');
+  if (resume) {
+    try {
+      const last = JSON.parse(localStorage.getItem('a101-last') || 'null');
+      if (last && last.file) { resume.href = `${last.file}.html`; resume.textContent = `Продолжить: ${last.num} ${last.title}`; resume.hidden = false; }
+    } catch (e) { /* нет данных */ }
+  }
+
   // Боковина на узком экране: кнопка «Содержание», затемнение, Escape — как на страницах курса.
   const side = $('side'), scrim = $('scrim'), menuBtn = $('menuBtn');
   const closeSide = () => {

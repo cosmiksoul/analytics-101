@@ -94,7 +94,7 @@
     btns.forEach((b, i) => b.addEventListener('click', () => { if (ANS[id] !== undefined) return; ANS[id] = i; store.set(`${P.id}-answers`, ANS); settle(i); qprog(); box.querySelector('[data-ask] span').textContent = 'Разобрать с ИИ'; }));
     box.querySelector('[data-ask]').addEventListener('click', () => copyPrompt(qPrompt(id), ANS[id] === undefined ? 'с подсказкой к вопросу' : 'с разбором вопроса'));
   }
-  function qprog() { const n = Object.keys(ANS).length, ok = Object.entries(ANS).filter(([k, v]) => QS[k] && QS[k].opts[v][1]).length; $('qprog').textContent = `Вопросы: ${n} из ${QN}${n ? ` · верно ${ok}` : ''}`; }
+  function qprog() { const n = Object.keys(ANS).length, ok = Object.entries(ANS).filter(([k, v]) => QS[k] && QS[k].opts[v][1]).length; const el = $('progQ'); if (el) el.textContent = `Вопросы: ${n} из ${QN}${n ? ` · верно ${ok}` : ''}`; }
 
   /* ---------- навигация ---------- */
   const secs = [...document.querySelectorAll('section[data-sec]')];
@@ -271,8 +271,75 @@
     const s = document.querySelector(`section[data-sec="${selAsk.dataset.sec}"]`) || curSec;
     copyPrompt(`${INTRO}\n\n${RULES}\n\nОбъясни этот фрагмент проще и на примере: «${selAsk.dataset.text}»\n\n=== Раздел «${s.dataset.title}», откуда фрагмент ===\n${secText(s)}`, 'с выделенным фрагментом');
   });
-  scrim.addEventListener('click', () => closeSide());
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') { hideTip(); closeMenu(); closeSide(); } });
+  /* ---------- прогресс, закладки, печать ---------- */
+  // Отметки «пройдено» — массив id страниц под ключом из course.json (его же читают главная и оглавление),
+  // закладки — под a101-marks, последняя открытая страница — под a101-last. Панель строится из window.A101.course.
+  const A = window.A101 || {}, CR = A.course, PG = A.page || { id: P.id, title: H1, num: '', file: '' };
+  const DONE_KEY = A.storageKey || 'a101-done', MARK_KEY = 'a101-marks', LAST_KEY = 'a101-last';
+  const getDone = () => new Set(store.get(DONE_KEY, [])), getMarks = () => new Set(store.get(MARK_KEY, []));
+  const PAGES = CR ? CR.topics.flatMap(t => t.pages) : [];
+  const BYID = Object.fromEntries(PAGES.map(p => [p.id, p]));
+  const hm = m => { m = Math.round(m / 5) * 5; return m < 60 ? `${m} мин` : m % 60 ? `${Math.floor(m / 60)} ч ${m % 60} мин` : `${m / 60} ч`; };
+  const prog = $('prog'), progBtn = $('progBtn');
+  const closeProg = () => { if (!prog) return; prog.classList.remove('open'); prog.setAttribute('aria-hidden', 'true'); progBtn.setAttribute('aria-expanded', 'false'); if (!side.classList.contains('open')) scrim.hidden = true; };
+  const openProg = () => { prog.classList.add('open'); prog.setAttribute('aria-hidden', 'false'); progBtn.setAttribute('aria-expanded', 'true'); scrim.hidden = false; };
+  function renderProgress() {
+    const done = getDone(), marks = getMarks();
+    document.querySelectorAll('[data-done]').forEach(b => { const on = done.has(b.dataset.done); b.classList.toggle('on', on); b.innerHTML = on ? '✓ Пройдено<small>снять отметку</small>' : '○ Отметить пройденной'; b.setAttribute('aria-pressed', String(on)); });
+    document.querySelectorAll('[data-mark]').forEach(b => { const on = marks.has(b.dataset.mark); b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Убрать из закладок' : 'В закладки'); if (b.classList.contains('btn')) b.textContent = on ? '★ В закладках' : '☆ В закладки'; else b.textContent = on ? '★' : '☆'; });
+    document.querySelectorAll('.prog input[data-page]').forEach(c => { c.checked = done.has(c.dataset.page); c.closest('li').classList.toggle('done', c.checked); });
+    document.querySelectorAll('.toc [data-page]').forEach(li => li.classList.toggle('done', done.has(li.dataset.page)));
+    document.querySelectorAll('[data-tcnt]').forEach(el => { const ids = el.dataset.tcnt.split(' '), n = ids.filter(i => done.has(i)).length; el.textContent = `${n}/${ids.length}`; el.classList.toggle('full', n === ids.length); });
+    if (!CR) return;
+    const n = PAGES.filter(p => done.has(p.id)).length, total = PAGES.length;
+    const mDone = PAGES.filter(p => done.has(p.id)).reduce((s, p) => s + p.minutes, 0), mAll = PAGES.reduce((s, p) => s + p.minutes, 0);
+    $('progN').textContent = `${n}/${total}`;
+    $('progBar').firstElementChild.style.width = `${(100 * n / total).toFixed(1)}%`;
+    $('progCnt').textContent = `Пройдено ${n} из ${total} · ${hm(mDone)} из ${hm(mAll)}`;
+    const ml = PAGES.filter(p => marks.has(p.id));
+    $('progMarks').innerHTML = ml.length
+      ? ml.map(p => `<li><span class="pn">${p.num}</span>${p.id === PG.id ? `<span class="lt">${esc(p.title)}</span>` : `<a class="lt" href="${p.file}.html">${esc(p.title)}</a>`}<button type="button" class="mk" data-mark="${p.id}" aria-label="Убрать из закладок">★</button></li>`).join('')
+      : '<li class="empty">Закладок пока нет. Звёздочка ☆ у страницы добавит её сюда.</li>';
+    $('progMarks').querySelectorAll('[data-mark]').forEach(b => { b.classList.add('on'); b.setAttribute('aria-pressed', 'true'); });
+  }
+  function buildProgress() {
+    if (!prog || !CR) { if (progBtn) progBtn.hidden = true; return; }
+    store.set(LAST_KEY, { id: PG.id, file: PG.file, num: PG.num, title: PG.title });
+    const row = p => `<li class="${p.id === PG.id ? 'here' : ''}"><input type="checkbox" data-page="${p.id}" aria-label="Пройдено: ${p.num} ${esc(p.title)}"><span class="pn">${p.num}</span>${p.id === PG.id ? `<span class="lt">${esc(p.title)}</span>` : `<a class="lt" href="${p.file}.html">${esc(p.title)}</a>`}<span class="pm">${p.minutes ? `≈ ${p.minutes} мин` : ''}</span><button type="button" class="mk" data-mark="${p.id}">☆</button></li>`;
+    prog.innerHTML = `<div class="prog-hd"><b>Мой прогресс</b><button type="button" class="prog-x" id="progX" aria-label="Закрыть">✕</button></div>
+<div class="prog-body">
+<section class="prog-page"><p class="eyebrow">Эта страница</p><h4>${esc(PG.num)} ${esc(PG.title)}</h4>
+<div class="acts"><button type="button" class="btn small done-btn" data-done="${PG.id}"></button><button type="button" class="btn ghost small" data-mark="${PG.id}"></button></div>
+<p class="hint" id="progQ"></p></section>
+<section><p class="eyebrow">Модуль «${esc(CR.name)}»</p><div class="bar" id="progBar"><i></i></div><p class="hint" id="progCnt"></p></section>
+<section><p class="eyebrow">Закладки</p><ul class="prog-list" id="progMarks"></ul></section>
+<section><p class="eyebrow">Программа модуля</p>
+${CR.topics.map(t => `<details class="prog-t"${t.pages.some(p => p.id === PG.id) ? ' open' : ''}><summary><b class="n">${t.n}</b><span>${esc(t.name)}</span><small data-tcnt="${t.pages.map(p => p.id).join(' ')}"></small></summary><ul class="prog-list">${t.pages.map(row).join('')}</ul></details>`).join('')}
+<p class="hint"><a href="course.html#${CR.key}">Оглавление курса →</a></p></section>
+<section class="prog-tools"><button type="button" class="btn ghost small" id="printBtn">Версия для печати</button><span class="hint">Текст, код и вопросы страницы без сцены и интерактивов.</span></section>
+<p class="note">Отметки и закладки хранятся только в этом браузере.</p>
+</div>`;
+    const nav = document.createElement('nav'); nav.className = 'page-end'; nav.setAttribute('aria-label', 'Соседние страницы');
+    nav.innerHTML = `${A.prev ? `<a class="pe prev" href="${A.prev.file}.html"><small>← Предыдущая</small><span>${esc(A.prev.num)} ${esc(A.prev.title)}</span></a>` : '<span></span>'}
+<button type="button" class="btn done-btn" data-done="${PG.id}"></button>
+${A.next ? `<a class="pe next" href="${A.next.file}.html"><small>Следующая →</small><span>${esc(A.next.num)} ${esc(A.next.title)}</span></a>` : `<a class="pe next" href="course.html#${CR.key}"><small>Дальше →</small><span>Оглавление курса</span></a>`}`;
+    $('article').appendChild(nav);
+    progBtn.addEventListener('click', () => (prog.classList.contains('open') ? closeProg() : openProg()));
+    $('progX').addEventListener('click', closeProg);
+    $('printBtn').addEventListener('click', () => { closeProg(); window.print(); });
+    document.addEventListener('click', e => {
+      const d = e.target.closest('[data-done]'), m = e.target.closest('[data-mark]');
+      if (d) { const s = getDone(); if (s.has(d.dataset.done)) s.delete(d.dataset.done); else s.add(d.dataset.done); store.set(DONE_KEY, [...s]); renderProgress(); toast(s.has(d.dataset.done) ? 'Страница отмечена пройденной' : 'Отметка снята'); }
+      else if (m) { const s = getMarks(); if (s.has(m.dataset.mark)) s.delete(m.dataset.mark); else s.add(m.dataset.mark); store.set(MARK_KEY, [...s]); renderProgress(); toast(s.has(m.dataset.mark) ? `Закладка: ${BYID[m.dataset.mark] ? BYID[m.dataset.mark].num + ' ' + BYID[m.dataset.mark].title : 'добавлена'}` : 'Закладка убрана'); }
+    });
+    prog.addEventListener('change', e => { const c = e.target.closest('input[data-page]'); if (!c) return; const s = getDone(); if (c.checked) s.add(c.dataset.page); else s.delete(c.dataset.page); store.set(DONE_KEY, [...s]); renderProgress(); });
+    prog.addEventListener('click', e => { if (e.target.closest('a[href]')) closeProg(); });
+    window.addEventListener('storage', e => { if (e.key === DONE_KEY || e.key === MARK_KEY) renderProgress(); });
+    renderProgress(); qprog();
+  }
+
+  scrim.addEventListener('click', () => { closeSide(); closeProg(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { hideTip(); closeMenu(); closeSide(); closeProg(); } });
 
   /* ---------- сцена: плеер по шагам ---------- */
   // P.scene = { parts:[{n,name,s:[i…]}], steps:[{title, body, dur, next?}], hud:[{id,label}], legend, info,
@@ -392,10 +459,7 @@
     widgets[box.dataset.w] = w;
   });
   document.querySelectorAll('.check[data-q]').forEach(renderQ);
-  buildGlossary(); buildMaterials(); buildSecAsk();
-  // отметки «пройдено» из оглавления курса: галочка у страниц в боковине
-  const DONE = new Set(store.get((window.A101 || {}).storageKey || 'a101-done', []));
-  document.querySelectorAll('.toc [data-page]').forEach(li => li.classList.toggle('done', DONE.has(li.dataset.page)));
+  buildGlossary(); buildMaterials(); buildSecAsk(); buildProgress();
   const tst = $('toast');
   tst.addEventListener('pointerenter', () => clearTimeout(tt));
   tst.addEventListener('pointerleave', () => { tt = setTimeout(() => { tst.hidden = true; }, 2500); });

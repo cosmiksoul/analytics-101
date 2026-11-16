@@ -4,7 +4,7 @@
     <a class="brand" href="index.html">Аналитика 101</a>
     <span class="crumbs">{{CRUMBS}}</span>
     <span class="spacer"></span>
-    <span class="qprog" id="qprog">Вопросы: 0 из {{QN}}</span>
+    <button type="button" class="btn ghost small prog-btn" id="progBtn" aria-controls="prog" aria-expanded="false"><svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lg">Прогресс</span><b id="progN"></b></button>
     <a class="btn ghost small dl-link" href="#materials">Материалы</a>
     <div class="aimenu">
       <button type="button" class="btn accent small" id="aiBtn" aria-haspopup="true" aria-controls="aiMenu" aria-expanded="false"><span class="lg">Обсудить с ИИ</span><span class="sm">ИИ</span><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
@@ -40,6 +40,7 @@
 </div>
 
 <div class="scrim" id="scrim" hidden></div>
+<aside class="prog" id="prog" aria-label="Мой прогресс" aria-hidden="true"></aside>
 <button type="button" class="ask selask" id="selAsk" hidden>Спросить ИИ об этом</button>
 <div class="tip" id="tip" role="tooltip" hidden></div>
 <div class="toast" id="toast" role="status" hidden></div>
