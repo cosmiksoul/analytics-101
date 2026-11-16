@@ -121,8 +121,7 @@ def page(title, desc, main, nav='', crumbs='', side=None, cls=''):
             f'<script>window.A101 = {a101};</script>\n<script>\n{js}</script>\n</body>\n</html>\n')
 
 
-NB_READY = ('к каждой теме — блокнот в NotebookLM, где тему можно обсудить с ИИ по тексту курса.',
-            'к каждой теме готовится блокнот в NotebookLM, где тему можно будет обсудить с ИИ по тексту курса.')
+NB_READY = ('к каждой теме — блокнот в NotebookLM.', 'к каждой теме готовится блокнот в NotebookLM.')
 
 
 def notebooks_ready():
@@ -147,15 +146,66 @@ def block_stats(b):
 
 # ---------- главная ----------
 
-FEATURES = [
-    ('Сцена', 'Идея страницы показана анимацией по шагам. Шаги листаются кнопками или стрелками на клавиатуре.'),
-    ('Интерактив', 'Параметры можно менять руками и сразу видеть, как меняется результат.'),
-    ('Код с выводом', 'Python и SQL приведены вместе с настоящим выводом, как в ноутбуке: таблицы, числа и графики.'),
-    ('Вопросы с разбором', 'В конце страницы — вопросы, у каждого ответа есть объяснение. Ответы сохраняются в браузере.'),
-    ('Материалы', 'К странице приложены ноутбуки, код и данные, у тем 03–11 есть общий учебный набор. Всё скачивается с самой страницы.'),
-    ('Обсудить с ИИ', 'Кнопка копирует промпт с текстом раздела или всей страницы — вставьте его в Claude, ChatGPT или Gemini.'),
+# Методика страницы: четыре шага читателя и разделы страницы (порядок разделов — ENGINE.md), для схемы на главной.
+STEPS = [
+    ('Увидеть', 'Страница начинается с идеи в трёх-четырёх предложениях и сцены: анимация по шагам показывает, '
+                'что происходит с данными. Шаги листаются кнопками или стрелками на клавиатуре.',
+     ['01 Идея', 'Сцена']),
+    ('Потрогать', 'Задача из практики аналитика и вопрос на предсказание перед интерактивом: что получится? Потом параметры '
+                  'можно менять руками и сверять догадку с результатом. Дальше — нюансы и ограничения метода.',
+     ['02 Задача', '03 Метод', 'Интерактив', 'Нюансы', 'Ограничения']),
+    ('Повторить в коде', 'Python и SQL с настоящим выводом, как в ноутбуке: таблицы, числа и графики. Тот же код, ноутбуки '
+                         'и данные приложены к странице, у тем 03–11 есть общий учебный набор.',
+     ['Код', 'Материалы']),
+    ('Проверить и обсудить', 'Пять-семь вопросов, у каждого ответа есть разбор; ответы сохраняются в браузере. Что осталось '
+                             'непонятным — глоссарий, кнопка «Обсудить с ИИ» с готовым промптом по разделу и блокнот NotebookLM по теме.',
+     ['Проверь себя', 'Глоссарий', 'Обсудить с ИИ']),
 ]
 SAMPLE_PAGE = 'da-3-2'
+
+
+def principles(n_pages):
+    """Карточки «Что отличает курс»: бесплатно, BYOM, сделано вместе с ИИ, единая методика."""
+    boosty = (COURSE.get('boosty') or '').strip()
+    support = (f'<a class="btn ghost small" href="{esc(boosty)}" target="_blank" rel="noopener">Поддержать на Boosty</a>' if boosty
+               else '<span class="badge">Boosty · ссылка появится позже</span>')
+    nb = ('к каждой теме есть блокнот NotebookLM, где ИИ отвечает по тексту курса' if notebooks_ready()
+          else 'к каждой теме готовится блокнот NotebookLM, где ИИ будет отвечать по тексту курса')
+    cards = [
+        ('Бесплатно и без пейвола',
+         'Весь курс открыт: автор не продаёт к нему доступ и не собирается закрывать страницы за подписку. '
+         'Исходники лежат на GitHub. Если курс помог, автора можно поддержать на Boosty.',
+         support),
+        ('BYOM: принесите свою модель',
+         'У курса нет ментора и куратора, их место занимает ИИ, которым вы уже пользуетесь (BYOM, bring your own model). '
+         f'Кнопка «Обсудить с ИИ» копирует промпт с текстом раздела для Claude, ChatGPT или Gemini, а {nb}.',
+         ''),
+        ('Написан вместе с ИИ',
+         'Большую часть текста, сцен и кода сгенерировал ИИ по методике автора, автор вычитал и проверил результат. '
+         'Ошибки всё же возможны: выделите фрагмент на странице и нажмите «Предложить исправление» — заявка с цитатой '
+         'уйдёт в репозиторий курса.',
+         f'<a class="btn ghost small" href="{esc(COURSE["repo"])}" target="_blank" rel="noopener">Репозиторий на GitHub</a>'),
+        ('Одна страница — одна идея',
+         f'Все {count(n_pages, PAGES)} собраны по одному плану: идею показывают сценой, дают потрогать в интерактиве, '
+         'повторяют в коде и проверяют вопросами. Из чего состоит этот план — в схеме ниже.',
+         '<a class="btn ghost small" href="#method">К схеме методики</a>'),
+    ]
+    out = []
+    for t, d, act in cards:
+        out.append(f'  <div class="why"><b>{esc(t)}</b><p>{esc(typo(d))}</p>' + (f'<div class="act">{act}</div>' if act else '') + '</div>')
+    return '\n'.join(out)
+
+
+def method_flow():
+    """Схема методики: четыре шага читателя со стрелками, в каждом — разделы страницы."""
+    cells = []
+    for i, (t, d, tags) in enumerate(STEPS, 1):
+        if i > 1:
+            cells.append('  <span class="arr" aria-hidden="true"></span>')
+        chips = ''.join(f'<span>{esc(x)}</span>' for x in tags)
+        cells.append(f'  <div class="step"><span class="sno">Шаг {i:02d}</span><b>{esc(t)}</b><p>{esc(typo(d))}</p>'
+                     f'<div class="tags">{chips}</div></div>')
+    return '\n'.join(cells)
 
 
 def mod_cards():
@@ -182,9 +232,6 @@ def index_html():
     ids = ' '.join(p['id'] for p in pages)
     mins = [p['minutes'] for p in pages if p.get('minutes')]
     hours = round(total / 60)
-    nb_line = (' К каждой теме есть блокнот NotebookLM.' if notebooks_ready() else ' К каждой теме готовится блокнот NotebookLM.')
-    feats = FEATURES[:-1] + [(FEATURES[-1][0], FEATURES[-1][1] + nb_line)]
-
     hero = (f'<section class="hero">\n  <p class="eyebrow">Курс о работе с данными · модуль «{esc(da["name"])}» готов</p>\n'
             f'  <h1>{esc(COURSE["title"])}</h1>\n  <p class="lead">{esc(typo(course_lead()))}</p>\n'
             f'  <div class="acts"><a class="btn accent" href="{first["file"]}.html">Начать с первой страницы</a>'
@@ -194,10 +241,14 @@ def index_html():
             f'<span class="pill">≈{NB}{hours}{NB}ч чтения</span><span class="pill">без регистрации</span>'
             f'<span class="pill prog" data-pages="{ids}" data-fmt="пройдено {{n}} из {{t}}" data-hide-zero hidden></span></div>\n</section>')
 
-    feat_cards = '\n'.join(f'  <div class="feat"><b>{esc(t)}</b><p>{esc(typo(d))}</p></div>' for t, d in feats)
-    features = (f'<section class="feats">\n  <p class="eyebrow">Как устроена страница</p>\n'
+    why = (f'<section class="why-sec">\n  <p class="eyebrow">Что отличает курс</p>\n'
+           f'  <h2 class="sec-h">Открытый курс, который читают вместе с ИИ и правят вместе с читателями</h2>\n'
+           f'  <div class="why-grid">\n{principles(len(pages))}\n  </div>\n</section>')
+
+    features = (f'<section class="method" id="method">\n  <p class="eyebrow">Методика</p>\n'
                 f'  <h2 class="sec-h">Одна страница — одна идея, разобранная до конца</h2>\n'
-                f'  <div class="feat-grid">\n{feat_cards}\n  </div>\n</section>')
+                f'  <p class="sec-p">{esc(typo("На каждой странице читатель проходит одни и те же четыре шага: увидеть идею, потрогать её руками, повторить в коде и проверить себя. Разделы страницы идут в этом порядке, поэтому её можно читать подряд, а можно вернуться к нужному шагу из боковины."))}</p>\n'
+                f'  <div class="flow">\n{method_flow()}\n  </div>\n</section>')
 
     sp = next(p for p in pages if p['id'] == SAMPLE_PAGE)
     st = next(t for t in da['topics'] if sp in t['pages'])
@@ -236,7 +287,7 @@ def index_html():
            '  </div>\n</section>')
 
     foot = (f'<footer class="foot"><span>{esc(COURSE["title"])}</span><a href="course.html">Оглавление курса</a></footer>')
-    main = '\n'.join([hero, features, sample, modules, topics, how, foot])
+    main = '\n'.join([hero, why, features, sample, modules, topics, how, foot])
     nav = f'<a class="btn ghost small" href="course.html">Оглавление</a><a class="btn accent small" href="{first["file"]}.html">Начать</a>'
     desc = COURSE['lead'].split('. ')[0] + '.'
     return page(f'{COURSE["title"]} — бесплатный курс о работе с данными', desc, main, nav=nav, cls='home')
