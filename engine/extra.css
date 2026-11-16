@@ -38,6 +38,25 @@ pre, code, .mono, .ow-code, .nb-code, .out pre, pre.code { font-variant-ligature
 .sc-leg { flex-wrap: wrap; row-gap: 6px; min-width: 0; }
 .sc-foot > :last-child { flex-shrink: 0; }
 
+/* ===== Сцена на весь экран ===== */
+/* .fs — сцена вынута из потока и позиционирована по экрану, .fs-on включает переход к полным размерам;
+   координаты задаёт движок инлайн (от места сцены к экрану и обратно). Заглушка .sc-ph держит место сцены в тексте. */
+.sc-ph { margin: 6px auto 10px; }
+.scene.fs, .article section > .scene.fs { position: fixed; z-index: 58; margin: 0; max-width: none; display: flex; flex-direction: column; border-radius: 18px; box-shadow: 0 30px 80px rgba(0, 0, 0, .5); will-change: top, left, width, height; }
+.scene.fs-on { transition: top .45s cubic-bezier(.2, .7, .2, 1), left .45s cubic-bezier(.2, .7, .2, 1), width .45s cubic-bezier(.2, .7, .2, 1), height .45s cubic-bezier(.2, .7, .2, 1), border-radius .45s; border-radius: 0; border-color: transparent; }
+.scene.fs:not(.fs-on) { transition: top .4s cubic-bezier(.4, 0, .6, 1), left .4s cubic-bezier(.4, 0, .6, 1), width .4s cubic-bezier(.4, 0, .6, 1), height .4s cubic-bezier(.4, 0, .6, 1), border-radius .4s; }
+.scene.fs .sc-grid { flex: 1; min-height: 0; height: auto; overflow-y: auto; }
+.scene.fs .sc-bar { flex: none; }
+.sc-close { position: absolute; top: 14px; right: 16px; z-index: 3; display: none; align-items: center; gap: 8px; background: rgba(14, 19, 32, .92); border: 1px solid #2a3550; color: var(--s-ink); border-radius: 10px; padding: 8px 12px; font: 500 12.5px/1 var(--ui); cursor: pointer; }
+.sc-close small { font: 500 10.5px/1 var(--mono); color: var(--s-mut); border: 1px solid #2a3550; border-radius: 4px; padding: 2px 4px; }
+.sc-close:hover { border-color: var(--s-acc); color: var(--s-acc); }
+.scene.fs .sc-close { display: inline-flex; }
+.scene.fs .sc-info { top: 58px; }
+@container (max-width: 560px) { .scene.fs .sc-close small { display: none; } }
+html.sc-lock { overflow: hidden; padding-right: var(--sbw, 0px); }
+html.sc-lock .top { padding-right: var(--sbw, 0px); }
+@media (prefers-reduced-motion: reduce) { .scene.fs, .scene.fs-on { transition: none; } }
+
 /* ===== Аналитика 101: навигация по курсу, меню ИИ, ссылки на материалы ===== */
 .blocks a { font-size: 12.5px; border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 9px; color: var(--muted); text-decoration: none; }
 .blocks a:hover { border-color: var(--accent); color: var(--accent); }

@@ -286,7 +286,8 @@
 <div class="sc-stage" id="sc-stage"><div class="sc-html" id="sc-html"></div>
 <div class="sc-hud">${(S.hud || []).map(h => `<div class="hb"><span>${esc(h.label)}</span><b id="sc-h-${h.id}">—</b><small id="sc-hs-${h.id}"></small></div>`).join('')}</div>
 <div class="sc-foot"><div class="sc-leg">${S.legend || ''}</div>
-<div class="sc-player"><button type="button" id="sc-pause" aria-label="Пауза">❚❚</button><span class="sc-speed" role="group" aria-label="Скорость"><button type="button" data-sp="0.5">0.5×</button><button type="button" data-sp="1" aria-pressed="true">1×</button><button type="button" data-sp="2">2×</button></span><button type="button" id="sc-replay" aria-label="Повторить шаг">↺<span class="rp"> Повторить</span></button></div></div>
+<div class="sc-player"><button type="button" id="sc-pause" aria-label="Пауза">❚❚</button><span class="sc-speed" role="group" aria-label="Скорость"><button type="button" data-sp="0.5">0.5×</button><button type="button" data-sp="1" aria-pressed="true">1×</button><button type="button" data-sp="2">2×</button></span><button type="button" id="sc-replay" aria-label="Повторить шаг">↺<span class="rp"> Повторить</span></button><button type="button" id="sc-fs" aria-label="На весь экран">⤢<span class="rp"> На весь экран</span></button></div></div>
+<button type="button" class="sc-close" id="sc-close">✕ Свернуть<small>Esc</small></button>
 <div class="sc-info"><div><span>${esc(P.short || '')}</span><b>${esc(S.info || '')}</b></div><div><span id="sc-i3"></span><b id="sc-i4"></b></div></div>
 </div></div>
 <div class="sc-bar" id="sc-bar">${CH.map(c => `<div class="sc-cb"><span class="sc-cn"><b>${c.n}</b><span class="nm">${esc(c.name)}</span></span><span class="sc-segs">${c.s.map(s => `<button type="button" class="sc-sg" data-s="${s}" aria-label="Шаг ${s + 1}"><i></i></button>`).join('')}</span></div>`).join('')}</div>`;
@@ -334,6 +335,47 @@
     });
     panel(); view.render(0, 0); bar();
     if ('ResizeObserver' in window) new ResizeObserver(() => { if (!raf) { const d = STEPS[cur].dur; view.render(cur, t >= d ? 1 : t / d); } }).observe(root);
+
+    // Полный экран: сцена раскрывается на весь экран, когда читатель доскролливает до неё (один раз за страницу),
+    // и по кнопке в плеере. Выход — кнопка «Свернуть», Esc или та же кнопка плеера. Пока сцена раскрыта, страница
+    // под ней не прокручивается; на месте сцены стоит заглушка той же высоты, поэтому текст не сдвигается.
+    const ph = document.createElement('div'); ph.className = 'sc-ph'; ph.hidden = true; root.insertAdjacentElement('afterend', ph);
+    const html = document.documentElement;
+    let fs = false, fsTimer = 0, autoDone = false, scrolled = false;
+    const box = (r) => { root.style.top = `${r.top}px`; root.style.left = `${r.left}px`; root.style.width = `${r.width}px`; root.style.height = `${r.height}px`; };
+    const fsLabel = () => { $s('sc-fs').setAttribute('aria-label', fs ? 'Свернуть' : 'На весь экран'); $s('sc-fs').innerHTML = fs ? '⤡<span class="rp"> Свернуть</span>' : '⤢<span class="rp"> На весь экран</span>'; };
+    function enterFs() {
+      if (fs) return;
+      fs = true; clearTimeout(fsTimer);
+      const r = root.getBoundingClientRect();
+      ph.style.height = `${r.height}px`; ph.hidden = false;
+      const sbw = window.innerWidth - html.clientWidth;
+      html.style.setProperty('--sbw', `${sbw}px`); html.classList.add('sc-lock');
+      root.classList.add('fs'); box(r);
+      void root.offsetWidth;  // зафиксировать стартовые размеры, затем анимировать к экрану
+      root.classList.add('fs-on'); box({ top: 0, left: 0, width: html.clientWidth, height: window.innerHeight });
+      fsLabel(); $s('sc-close').focus({ preventScroll: true });
+    }
+    function exitFs() {
+      if (!fs) return;
+      fs = false; clearTimeout(fsTimer);
+      const r = ph.getBoundingClientRect();
+      root.classList.remove('fs-on'); box(r);
+      const done = () => {
+        root.classList.remove('fs'); root.style.cssText = ''; ph.hidden = true;
+        html.classList.remove('sc-lock'); html.style.removeProperty('--sbw');
+      };
+      fsTimer = setTimeout(done, 520);
+      fsLabel();
+    }
+    window.addEventListener('resize', () => { if (fs) box({ top: 0, left: 0, width: html.clientWidth, height: window.innerHeight }); });
+    $s('sc-fs').addEventListener('click', () => (fs ? exitFs() : enterFs()));
+    $s('sc-close').addEventListener('click', exitFs);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && fs) { e.preventDefault(); exitFs(); } });
+    window.addEventListener('scroll', () => { scrolled = true; }, { passive: true, once: true });
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => {
+      if (es[0].isIntersecting && !autoDone && !fs && scrolled && !reduced() && !document.hidden) { autoDone = true; enterFs(); }
+    }, { threshold: 0.6 }).observe(root);
     const plain = h => { const t = document.createElement('textarea'); t.innerHTML = h.replace(/<li>/g, '\n- ').replace(/<\/(p|ul)>/g, '\n').replace(/<[^>]+>/g, ''); return t.value.replace(/[\u00a0\u202f]/g, ' ').replace(/\n{2,}/g, '\n').trim(); };
     $s('sc-ask').addEventListener('click', () => copyPrompt(stepPrompt(), 'по шагу анимации'));
     return { go, steps: STEPS.map(s => ({ title: s.title, text: plain(s.body) })), current: () => ({ n: cur + 1, total: STEPS.length, title: STEPS[cur].title, text: plain(STEPS[cur].body) }) };
