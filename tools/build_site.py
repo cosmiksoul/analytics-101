@@ -196,6 +196,21 @@ def principles(n_pages):
     return '\n'.join(out)
 
 
+def join_demo(sp):
+    """Анимация к примеру страницы: заказы соединяются с покупателями, INNER и LEFT JOIN по очереди. Данные и такты — в site.js."""
+    return (f'<div class="join" id="joinDemo" role="img" aria-label="Анимация: строки таблицы заказов соединяются со строками '
+            f'таблицы покупателей по ключу customer_id, сначала INNER JOIN, затем LEFT JOIN">\n'
+            f'    <div class="hd"><b>Сцена со страницы {sp["num"]}: как соединяются таблицы</b><code id="joinKind">INNER JOIN</code></div>\n'
+            f'    <div class="pair">\n'
+            f'      <table><caption>orders</caption><thead><tr><th>order_id</th><th>customer_id</th></tr></thead><tbody id="joinL"></tbody></table>\n'
+            f'      <span class="on-key" aria-hidden="true">ON<br>=</span>\n'
+            f'      <table><caption>customers</caption><thead><tr><th>customer_id</th><th>name</th></tr></thead><tbody id="joinR"></tbody></table>\n'
+            f'    </div>\n'
+            f'    <table class="res"><caption>результат</caption><thead><tr><th>order_id</th><th>customer_id</th><th>name</th></tr></thead><tbody id="joinOut"></tbody></table>\n'
+            f'    <div class="status"><span id="joinNote">Для каждого заказа ищем покупателя с тем же customer_id</span><b id="joinCnt">строк: 0</b></div>\n'
+            f'  </div>')
+
+
 def method_flow():
     """Схема методики: четыре шага читателя со стрелками, в каждом — разделы страницы."""
     cells = []
@@ -254,12 +269,15 @@ def index_html():
     st = next(t for t in da['topics'] if sp in t['pages'])
     pills = ''.join(f'<span class="pill">{esc(p)}</span>' for p in pills_of(sp['id']))
     sample = (f'<section class="sample-sec">\n  <p class="eyebrow">Пример страницы</p>\n'
+              f'  <h2 class="sec-h">Так выглядит одна страница курса</h2>\n'
+              f'  <div class="sample-row">\n'
               f'  <div class="sample">\n    <p class="eyebrow">{esc(da["name"])} · Тема {st["n"]} · <b>{esc(st["name"])}</b></p>\n'
               f'    <h3><a href="{sp["file"]}.html">{sp["num"]} {esc(sp["title"])}</a></h3>\n'
               f'    <p class="li"><span>Идея:</span> {esc(typo(idea_of(sp["id"])))}</p>\n'
               f'    <p class="lp">{esc(typo(lead_of(sp["id"])))}</p>\n'
               f'    <div class="meta-row">{pills}</div>\n'
-              f'    <a class="btn ghost small" href="{sp["file"]}.html">Открыть страницу →</a>\n  </div>\n</section>')
+              f'    <a class="btn ghost small" href="{sp["file"]}.html">Открыть страницу →</a>\n  </div>\n'
+              f'  {join_demo(sp)}\n  </div>\n</section>')
 
     modules = (f'<section class="mods">\n  <p class="eyebrow">Модули курса</p>\n'
                f'  <h2 class="sec-h">Пять модулей, первый готов целиком</h2>\n'
@@ -284,10 +302,10 @@ def index_html():
            f'    <div><b>По порядку или с нужной темы</b><p>{esc(typo("Темы идут от инструментов к статистике, графикам, метрикам и экспериментам. Если Python, pandas и SQL уже знакомы, начинайте с темы 04."))}</p></div>\n'
            f'    <div><b>{min(mins)}–{max(mins)} минут на страницу</b><p>{esc(typo(f"Каждая страница рассчитана на одну сессию чтения, весь модуль — около {hours} часов. Время указано у каждой страницы в оглавлении."))}</p></div>\n'
            f'    <div><b>Прогресс в браузере</b><p>{esc(typo("Отметки «пройдено» и ответы на вопросы хранятся в этом браузере. Регистрации нет, поэтому и переноса на другое устройство тоже нет."))}</p></div>\n'
-           '  </div>\n</section>')
+           f'  </div>\n  <div class="acts"><a class="btn accent" href="course.html#{da["key"]}">В оглавление</a></div>\n</section>')
 
     foot = (f'<footer class="foot"><span>{esc(COURSE["title"])}</span><a href="course.html">Оглавление курса</a></footer>')
-    main = '\n'.join([hero, why, features, sample, modules, topics, how, foot])
+    main = '\n'.join([hero, why, features, how, sample, modules, topics, foot])
     nav = f'<a class="btn ghost small" href="course.html">Оглавление</a><a class="btn accent small" href="{first["file"]}.html">Начать</a>'
     desc = COURSE['lead'].split('. ')[0] + '.'
     return page(f'{COURSE["title"]} — бесплатный курс о работе с данными', desc, main, nav=nav, cls='home')
