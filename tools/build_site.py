@@ -197,17 +197,16 @@ def principles(n_pages):
 
 
 def join_demo(sp):
-    """Анимация к примеру страницы: заказы соединяются с покупателями, INNER и LEFT JOIN по очереди. Данные и такты — в site.js."""
-    return (f'<div class="join" id="joinDemo" role="img" aria-label="Анимация: строки таблицы заказов соединяются со строками '
-            f'таблицы покупателей по ключу customer_id, сначала INNER JOIN, затем LEFT JOIN">\n'
-            f'    <div class="hd"><b>Сцена со страницы {sp["num"]}: как соединяются таблицы</b><code id="joinKind">INNER JOIN</code></div>\n'
-            f'    <div class="pair">\n'
-            f'      <table><caption>orders</caption><thead><tr><th>order_id</th><th>customer_id</th></tr></thead><tbody id="joinL"></tbody></table>\n'
-            f'      <span class="on-key" aria-hidden="true">ON<br>=</span>\n'
-            f'      <table><caption>customers</caption><thead><tr><th>customer_id</th><th>name</th></tr></thead><tbody id="joinR"></tbody></table>\n'
-            f'    </div>\n'
-            f'    <table class="res"><caption>результат</caption><thead><tr><th>order_id</th><th>customer_id</th><th>name</th></tr></thead><tbody id="joinOut"></tbody></table>\n'
-            f'    <div class="status"><span id="joinNote">Для каждого заказа ищем покупателя с тем же customer_id</span><b id="joinCnt">строк: 0</b></div>\n'
+    """Превью к примеру страницы: два круга ключей из главной сцены страницы 3.2, по очереди INNER, LEFT, RIGHT и FULL JOIN.
+    Шаги переключает site.js, вид шага задаёт CSS по data-k."""
+    svg = '''<svg class="vn-svg" viewBox="0 0 320 200" aria-hidden="true" focusable="false"><circle class="cl" cx="112" cy="100" r="78"/><circle class="cr" cx="208" cy="100" r="78"/><path class="lens" d="M160 38.5A78 78 0 0 1 160 161.5A78 78 0 0 1 160 38.5Z"/><text class="lab lab-c" x="34" y="18">customers <tspan>c</tspan></text><text class="lab lab-o" x="286" y="18" text-anchor="end">orders <tspan>o</tspan></text><g class="ch l" transform="translate(60 73)"><rect width="44" height="22" rx="6"/><text x="22" y="15">110</text></g><g class="ch l" transform="translate(60 107)"><rect width="44" height="22" rx="6"/><text x="22" y="15">116</text></g><g class="ch x" transform="translate(138 55)"><rect width="44" height="22" rx="6"/><text x="22" y="15">105</text></g><g class="ch x" transform="translate(138 89)"><rect width="44" height="22" rx="6"/><text x="22" y="15">106</text></g><g class="ch x" transform="translate(138 123)"><rect width="44" height="22" rx="6"/><text x="22" y="15">114</text></g><g class="ch r" transform="translate(216 73)"><rect width="44" height="22" rx="6"/><text x="22" y="15">108</text></g><g class="ch r" transform="translate(216 107)"><rect width="44" height="22" rx="6"/><text x="22" y="15">111</text></g><g class="badge" transform="translate(171 80)"><rect width="24" height="16" rx="8"/><text x="12" y="12">×3</text></g></svg>'''
+    return (f'<div class="vn" id="vennDemo" data-k="0" role="img" aria-label="Анимация со страницы {sp["num"]}: ключи customer_id двух таблиц '
+            f'разложены по двум кругам, по очереди подсвечены INNER, LEFT, RIGHT и FULL JOIN">\n'
+            f'    <div class="vn-hd"><span class="eyebrow">Сцена со страницы {sp["num"]} · <b id="vnKind">ключ customer_id</b></span>'
+            f'<b class="vn-t" id="vnTitle">Ключи раскладываются по кругам</b></div>\n'
+            f'    {svg}\n'
+            f'    <p class="vn-note" id="vnNote">Общих ключей три: 105, 106 и 114. У клиента 106 три заказа, а ключ в круге один</p>\n'
+            f'    <div class="vn-hud"><span><b id="vnRows">—</b>строк</span><span><b>3</b>общих ключа</span><span><b id="vnNull">—</b>с NULL</span></div>\n'
             f'  </div>')
 
 

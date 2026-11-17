@@ -103,54 +103,31 @@
     window.addEventListener('load', () => { if ($(`t-${location.hash.slice(1)}`)) show(); });
     show();
   }
-  // Главная: анимация JOIN рядом с примером страницы. Состояние считается из номера такта, поэтому цикл детерминирован.
-  // Такты: по одному на заказ (подсветка пары и строка результата), затем пауза с итогом; INNER и LEFT JOIN по очереди.
-  const jl = $('joinL');
-  if (jl) {
-    const orders = [['o-101', 1], ['o-102', 2], ['o-103', 2], ['o-104', 5]];
-    const customers = [[1, 'Аня'], [2, 'Борис'], [3, 'Вера']];
-    const kinds = [
-      { name: 'INNER JOIN', keepMiss: false, note: 'Заказ без покупателя в результат не попадает', total: 'INNER JOIN: 3 строки из 4 заказов' },
-      { name: 'LEFT JOIN', keepMiss: true, note: 'Заказ без покупателя остаётся, вместо имени — NULL', total: 'LEFT JOIN: 4 строки, у одной NULL' },
+  // Главная: превью сцены 3.2 рядом с примером страницы. Шаги идут по кругу, вид шага задаёт CSS по data-k;
+  // крутится, только пока блок на экране, при prefers-reduced-motion стоит на INNER JOIN.
+  const vn = $('vennDemo');
+  if (vn) {
+    const STEPS = [
+      ['ключ customer_id', 'Ключи раскладываются по кругам', 'Общих ключей три: 105, 106 и 114. У клиента 106 три заказа, а ключ в круге один', '—', '—'],
+      ['INNER JOIN', 'Пересечение: только пары', 'В круге три ключа, а строк пять: клиент 106 размножился на три заказа', '5', '0'],
+      ['LEFT JOIN', 'Весь левый круг', 'Клиенты 110 и 116 без заказов остаются в результате, вместо заказа — NULL', '7', '2'],
+      ['RIGHT JOIN', 'Весь правый круг', 'Зеркало левого: заказы клиентов 108 и 111 остаются, вместо клиента — NULL', '7', '2'],
+      ['FULL JOIN', 'Оба круга', 'Девять строк: пять пар, два клиента без заказов и два заказа без клиента', '9', '4'],
     ];
-    const PAUSE = 2, PER = orders.length + PAUSE;
-    const jr = $('joinR'), out = $('joinOut'), kindEl = $('joinKind'), note = $('joinNote'), cnt = $('joinCnt');
-    const esc = v => String(v).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
-    const draw = tick => {
-      const k = kinds[Math.floor(tick / PER) % kinds.length];
-      const step = tick % PER, cur = step < orders.length ? step : -1, shown = Math.min(step, orders.length);
-      kindEl.textContent = k.name;
-      jl.innerHTML = orders.map(([id, c], i) => {
-        const match = customers.some(x => x[0] === c);
-        const cls = i === cur ? (match ? 'hot' : 'miss') : i < shown ? 'dim' : '';
-        return `<tr class="${cls}"><td>${esc(id)}</td><td>${c}</td></tr>`;
-      }).join('');
-      const curKey = cur >= 0 ? orders[cur][1] : null;
-      jr.innerHTML = customers.map(([c, n]) => `<tr class="${c === curKey ? 'hot' : ''}"><td>${c}</td><td>${esc(n)}</td></tr>`).join('');
-      const rows = [];
-      orders.slice(0, shown).forEach(([id, c], i) => {
-        const m = customers.find(x => x[0] === c);
-        if (m) rows.push(`<tr class="${i === cur ? 'new' : ''}"><td>${esc(id)}</td><td>${c}</td><td>${esc(m[1])}</td></tr>`);
-        else if (k.keepMiss) rows.push(`<tr class="${i === cur ? 'new' : ''}"><td>${esc(id)}</td><td>${c}</td><td class="null">NULL</td></tr>`);
-      });
-      out.innerHTML = rows.join('');
-      cnt.textContent = `строк: ${rows.length}`;
-      if (cur < 0) note.textContent = k.total;
-      else if (!customers.some(x => x[0] === curKey)) note.textContent = `customer_id = ${curKey}: такого покупателя нет`;
-      else note.textContent = `customer_id = ${curKey}: пара найдена, строка в результат`;
+    const el = { kind: $('vnKind'), title: $('vnTitle'), note: $('vnNote'), rows: $('vnRows'), nul: $('vnNull') };
+    const show = k => {
+      const s = STEPS[k];
+      vn.dataset.k = String(k);
+      el.kind.textContent = s[0]; el.title.textContent = s[1]; el.note.textContent = s[2]; el.rows.textContent = s[3]; el.nul.textContent = s[4];
     };
-    let tick = 0;
-    draw(tick);
-    const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (still) { draw(PER - 1); }
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) show(1);
     else {
-      let timer = null;
-      const start = () => { if (!timer) timer = setInterval(() => { tick += 1; draw(tick); }, 1100); };
+      let k = 0, timer = null;
+      const start = () => { if (!timer) timer = setInterval(() => { k = (k + 1) % STEPS.length; show(k); }, 2800); };
       const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
-      if ('IntersectionObserver' in window) {
-        new IntersectionObserver(es => es.forEach(e => (e.isIntersecting ? start() : stop())), { threshold: .2 }).observe(jl.closest('.join'));
-      } else start();
-      document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+      if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => (e.isIntersecting ? start() : stop())), { threshold: .3 }).observe(vn);
+      else start();
+      document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else if (vn.getBoundingClientRect().top < innerHeight) start(); });
     }
   }
 
