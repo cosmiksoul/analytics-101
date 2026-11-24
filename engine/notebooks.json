@@ -1,14 +1,14 @@
 {
  "_readme": "Ссылки на публичные блокноты NotebookLM по темам. Вставьте ссылку из «Поделиться» → «Все, у кого есть ссылка» в поле url и пересоберите страницы (python3 build.py --all). Пустой url — кнопка «NotebookLM» серая с пометкой «скоро».",
- "da-01": {"title": "Аналитика 101 · 01 Python для анализа", "url": ""},
- "da-02": {"title": "Аналитика 101 · 02 Pandas и подготовка данных", "url": ""},
- "da-03": {"title": "Аналитика 101 · 03 SQL для анализа", "url": ""},
- "da-04": {"title": "Аналитика 101 · 04 Математика для данных", "url": ""},
- "da-05": {"title": "Аналитика 101 · 05 Вероятность", "url": ""},
- "da-06": {"title": "Аналитика 101 · 06 Статистический вывод", "url": ""},
- "da-07": {"title": "Аналитика 101 · 07 Разведочный анализ", "url": ""},
- "da-08": {"title": "Аналитика 101 · 08 Визуализация в Python", "url": ""},
- "da-09": {"title": "Аналитика 101 · 09 Продуктовые метрики и события", "url": ""},
- "da-10": {"title": "Аналитика 101 · 10 Юнит-экономика", "url": ""},
- "da-11": {"title": "Аналитика 101 · 11 A/B-тестирование", "url": ""}
+ "da-01": {"title": "Аналитика 101 · 01 Python для анализа", "url": "https://notebook.google.com/notebook/e66545c6-9b6d-4274-8968-ed1ed08d8250"},
+ "da-02": {"title": "Аналитика 101 · 02 Pandas и подготовка данных", "url": "https://notebook.google.com/notebook/1ccde475-41c1-49e6-9170-778e84f5fcf3"},
+ "da-03": {"title": "Аналитика 101 · 03 SQL для анализа", "url": "https://notebook.google.com/notebook/f3c9f97b-a575-42f2-b814-5376e77fd042"},
+ "da-04": {"title": "Аналитика 101 · 04 Математика для данных", "url": "https://notebook.google.com/notebook/f13493cb-2c95-4f41-a1b3-14014ee24cf6"},
+ "da-05": {"title": "Аналитика 101 · 05 Вероятность", "url": "https://notebook.google.com/notebook/d3226b0d-8f5f-4ff7-b8d6-43436d4197b5"},
+ "da-06": {"title": "Аналитика 101 · 06 Статистический вывод", "url": "https://notebook.google.com/notebook/3275869a-e624-47ea-bb82-92719ad103cc"},
+ "da-07": {"title": "Аналитика 101 · 07 Разведочный анализ", "url": "https://notebook.google.com/notebook/4f369001-287d-4478-9cce-7ed3d7235081"},
+ "da-08": {"title": "Аналитика 101 · 08 Визуализация в Python", "url": "https://notebook.google.com/notebook/b27b3653-7264-45b6-849a-bb6f1c50109a"},
+ "da-09": {"title": "Аналитика 101 · 09 Продуктовые метрики и события", "url": "https://notebook.google.com/notebook/362d18c7-d6e1-4341-ae7b-79f1d16ca5d5"},
+ "da-10": {"title": "Аналитика 101 · 10 Юнит-экономика", "url": "https://notebook.google.com/notebook/d0d24cb2-fb17-4749-92c6-194e57aef014"},
+ "da-11": {"title": "Аналитика 101 · 11 A/B-тестирование", "url": "https://notebook.google.com/notebook/28e881ed-5765-4868-bc1f-e654cf237a50"}
 }
