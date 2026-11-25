@@ -23,10 +23,21 @@ const { chromium } = require('playwright');
       const art = document.querySelector('.article');
       const body = art.cloneNode(true); body.querySelectorAll('script,.block,.check,.scene,.gloss,.matlist,.prompts,pre,.sources').forEach(x => x.remove());
       const words = body.innerText.split(/\s+/).filter(Boolean).length;
-      return { scrollW: document.documentElement.scrollWidth, missingTerms, unusedGloss, badRefs: refs, badQ: ids, words, qprog: document.getElementById('qprog').textContent, scTitle: document.getElementById('sc-title').textContent };
+      return { scrollW: document.documentElement.scrollWidth, missingTerms, unusedGloss, badRefs: refs, badQ: ids, words, qprog: document.getElementById('progQ').textContent, scTitle: document.getElementById('sc-title').textContent };
     });
+    // Завершаем сцену сначала во весь экран, затем на странице.
+    if (!await p.locator('#scene.fs-on').count()) await p.click('#sc-fs');
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await p.click('#sc-next');
+      await p.waitForFunction(() => {
+        const text = document.querySelector('.scene-hint + *');
+        if (!text || document.activeElement !== text || document.querySelector('#scene.fs, html.sc-lock')) return false;
+        const top = text.getBoundingClientRect().top;
+        return top >= document.querySelector('.top').getBoundingClientRect().bottom && top < innerHeight / 2;
+      });
+    }
     await p.click('.check .choice >> nth=0'); await p.waitForTimeout(100);
-    info.qprogAfter = await p.$eval('#qprog', e => e.textContent);
+    info.qprogAfter = await p.$eval('#progQ', e => e.textContent);
     if (shots) { await p.screenshot({ path: `${shots}-${name}.png`, fullPage: false }); }
     info.errs = errs; out[name] = info; await p.close();
   }

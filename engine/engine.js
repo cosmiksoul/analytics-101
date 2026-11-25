@@ -434,7 +434,6 @@ ${A.next ? `<a class="pe next" href="${A.next.file}.html"><small>Следующ�
       cancelAnimationFrame(raf); last = performance.now(); raf = requestAnimationFrame(frame);
       $s('sc-pause').textContent = '❚❚'; paused = false; ai.refresh();
     }
-    $s('sc-next').addEventListener('click', () => { if (cur < STEPS.length - 1) go(cur + 1); else { let nx = root.nextElementSibling; if (nx && nx.classList.contains('scene-hint')) nx = nx.nextElementSibling; if (nx) nx.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
     $s('sc-back').addEventListener('click', () => go(cur - 1));
     $s('sc-replay').addEventListener('click', () => go(cur));
     $s('sc-pause').addEventListener('click', () => { paused = !paused; $s('sc-pause').textContent = paused ? '▶' : '❚❚'; $s('sc-pause').setAttribute('aria-label', paused ? 'Продолжить' : 'Пауза'); if (!paused && !raf && t < STEPS[cur].dur) { last = performance.now(); raf = requestAnimationFrame(frame); } });
@@ -471,21 +470,39 @@ ${A.next ? `<a class="pe next" href="${A.next.file}.html"><small>Следующ�
       root.classList.add('fs-on'); box({ top: 0, left: 0, width: html.clientWidth, height: window.innerHeight });
       fsLabel(); $s('sc-close').focus({ preventScroll: true });
     }
-    function exitFs() {
-      if (!fs) return;
+    function exitFs(afterClose) {
+      if (!root.classList.contains('fs')) {
+        if (afterClose) afterClose();
+        return;
+      }
       fs = false; clearTimeout(fsTimer);
       const r = ph.getBoundingClientRect();
       root.classList.remove('fs-on'); box(r);
       const done = () => {
         root.classList.remove('fs'); root.style.cssText = ''; ph.hidden = true;
         html.classList.remove('sc-lock'); html.style.removeProperty('--sbw');
+        if (afterClose) afterClose();
       };
-      fsTimer = setTimeout(done, 520);
       fsLabel();
+      if (reduced()) done();
+      else fsTimer = setTimeout(done, 520);
     }
+    function continueReading() {
+      let textStart = ph.nextElementSibling;
+      if (textStart && textStart.classList.contains('scene-hint')) textStart = textStart.nextElementSibling;
+      if (!textStart) return;
+      textStart.setAttribute('tabindex', '-1');
+      textStart.focus({ preventScroll: true });
+      textStart.scrollIntoView({ block: 'start', behavior: reduced() ? 'auto' : 'smooth' });
+    }
+    $s('sc-next').addEventListener('click', () => {
+      if (cur < STEPS.length - 1) return go(cur + 1);
+      autoDone = true;
+      exitFs(continueReading);
+    });
     window.addEventListener('resize', () => { if (fs) box({ top: 0, left: 0, width: html.clientWidth, height: window.innerHeight }); });
     $s('sc-fs').addEventListener('click', () => (fs ? exitFs() : enterFs()));
-    $s('sc-close').addEventListener('click', exitFs);
+    $s('sc-close').addEventListener('click', () => exitFs());
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && fs) { e.preventDefault(); exitFs(); } });
     window.addEventListener('scroll', () => { scrolled = true; }, { passive: true, once: true });
     if ('IntersectionObserver' in window) new IntersectionObserver(es => {
