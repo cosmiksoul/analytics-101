@@ -1,8 +1,8 @@
 -- Запросы страницы 3.3 «Агрегаты и группировка» курса «Аналитика 101». Учебная база shop, PostgreSQL 16.
 -- Запуск из корня папки материалов: psql -d shop -P null=NULL -f da-3-3-aggregates/queries.sql
 
--- ===== Метрики по каналам и группы из двух столбцов с HAVING =====
--- метрики оплаченных заказов по каналу заказа
+-- ===== Заказы, покупатели и выручка по каналам =====
+-- показатели по каналу для оплаченных заказов
 SELECT channel,
        COUNT(*)                    AS orders,
        COUNT(DISTINCT customer_id) AS buyers,
@@ -23,8 +23,8 @@ GROUP BY channel, brand
 HAVING COUNT(*) >= 20          -- оставить пары, где не меньше 20 заказов
 ORDER BY channel, revenue DESC;
 
--- ===== Условные агрегаты: CASE и FILTER =====
--- одна таблица вместо пяти запросов: отмены и выручка по месяцам
+-- ===== Число отмен и помесячная выручка =====
+-- в каждой строке канала считаем отмены и помесячную выручку
 SELECT channel,
        COUNT(*)                                              AS orders,
        SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) AS canc_case,
@@ -42,7 +42,7 @@ FROM orders
 GROUP BY channel
 ORDER BY channel;
 
--- ===== ROLLUP и GROUPING SETS =====
+-- ===== Итоги по каналам, брендам и магазину =====
 -- ROLLUP (channel): строки по каналам и итоговая строка
 SELECT CASE WHEN GROUPING(channel) = 1 THEN 'итого'
             ELSE channel END     AS channel,
@@ -54,21 +54,21 @@ WHERE status = 'paid'
 GROUP BY ROLLUP (channel)
 ORDER BY GROUPING(channel), revenue DESC;
 
--- GROUPING SETS: разрез по каналу, разрез по бренду и общий итог за один проход
+-- показатели по каналам, по брендам и по всем заказам
 SELECT channel, brand, COUNT(*) AS orders, SUM(amount) AS revenue
 FROM orders
 WHERE status = 'paid'
 GROUP BY GROUPING SETS ((channel), (brand), ())
 ORDER BY channel, brand;
 
--- ===== NULL внутри агрегатов =====
--- NULL внутри агрегатов: оценку rating поставили не за каждый заказ
+-- ===== Средняя оценка и баллы в пересчёте на заказ =====
+-- оценка известна только для части заказов
 SELECT status,
        COUNT(*)                                  AS orders,
        COUNT(rating)                             AS rated,
        SUM(rating)                               AS rating_sum,
        ROUND(AVG(rating), 2)                     AS avg_rating,
-       ROUND(SUM(rating)::numeric / COUNT(*), 2) AS per_order,
+       ROUND(AVG(COALESCE(rating, 0)), 2)        AS per_order,
        MAX(rating)                               AS max_rating
 FROM orders
 GROUP BY status

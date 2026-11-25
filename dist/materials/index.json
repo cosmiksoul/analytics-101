@@ -771,55 +771,55 @@
   "da-3-1": {
    "file": "da-3-1-select-order",
    "zip": "materials/da-3-1-select-order.zip",
-   "zipBytes": 15354,
+   "zipBytes": 16305,
    "files": [
     {
      "path": "materials/da-3-1-select-order/README.md",
      "name": "README.md",
-     "bytes": 1446,
+     "bytes": 1769,
      "about": ""
     },
     {
      "path": "materials/da-3-1-select-order/da-3-1-select-order.md",
      "name": "da-3-1-select-order.md",
-     "bytes": 37574,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 42665,
+     "about": "Текст урока, примеры кода, вопросы и глоссарий в Markdown"
     },
     {
      "path": "materials/da-3-1-select-order/dialects.py",
      "name": "dialects.py",
      "bytes": 1664,
-     "about": "Сравнение PostgreSQL, SQLite и DuckDB"
+     "about": "Скрипт для сравнения результатов одних и тех же запросов в трёх СУБД"
     },
     {
      "path": "materials/da-3-1-select-order/queries/q1.sql",
      "name": "queries/q1.sql",
      "bytes": 294,
-     "about": "Пять запросов из раздела «Код»: q1.sql–q5.sql"
+     "about": "Пять файлов с примерами запросов из урока (q1.sql–q5.sql)"
     },
     {
      "path": "materials/da-3-1-select-order/queries/q2.sql",
      "name": "queries/q2.sql",
      "bytes": 320,
-     "about": "Пять запросов из раздела «Код»: q1.sql–q5.sql"
+     "about": "Пять файлов с примерами запросов из урока (q1.sql–q5.sql)"
     },
     {
      "path": "materials/da-3-1-select-order/queries/q3.sql",
      "name": "queries/q3.sql",
      "bytes": 211,
-     "about": "Пять запросов из раздела «Код»: q1.sql–q5.sql"
+     "about": "Пять файлов с примерами запросов из урока (q1.sql–q5.sql)"
     },
     {
      "path": "materials/da-3-1-select-order/queries/q4.sql",
      "name": "queries/q4.sql",
-     "bytes": 624,
-     "about": "Пять запросов из раздела «Код»: q1.sql–q5.sql"
+     "bytes": 625,
+     "about": "Пять файлов с примерами запросов из урока (q1.sql–q5.sql)"
     },
     {
      "path": "materials/da-3-1-select-order/queries/q5.sql",
      "name": "queries/q5.sql",
-     "bytes": 594,
-     "about": "Пять запросов из раздела «Код»: q1.sql–q5.sql"
+     "bytes": 598,
+     "about": "Пять файлов с примерами запросов из урока (q1.sql–q5.sql)"
     }
    ],
    "shared": [
@@ -829,37 +829,37 @@
   "da-3-2": {
    "file": "da-3-2-join",
    "zip": "materials/da-3-2-join.zip",
-   "zipBytes": 18600,
+   "zipBytes": 19411,
    "files": [
     {
      "path": "materials/da-3-2-join/README.md",
      "name": "README.md",
-     "bytes": 1375,
+     "bytes": 1411,
      "about": ""
     },
     {
      "path": "materials/da-3-2-join/da-3-2-join.md",
      "name": "da-3-2-join.md",
-     "bytes": 40391,
+     "bytes": 44759,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-3-2-join/exercises.sql",
      "name": "exercises.sql",
-     "bytes": 6561,
-     "about": "Упражнения: предсказать число строк, найти размножение, переписать NOT IN"
+     "bytes": 6911,
+     "about": "Пять упражнений с проверками по числу строк, учёту заказов и NOT IN"
     },
     {
      "path": "materials/da-3-2-join/exercises_solutions.sql",
      "name": "exercises_solutions.sql",
-     "bytes": 8174,
+     "bytes": 8682,
      "about": "Решения упражнений"
     },
     {
      "path": "materials/da-3-2-join/joins.sql",
      "name": "joins.sql",
-     "bytes": 5274,
-     "about": "Четыре блока кода страницы одним файлом, начиная с выборки во временных таблицах"
+     "bytes": 5324,
+     "about": "Четыре примера из урока в одном SQL-файле"
     }
    ],
    "shared": [
@@ -869,37 +869,37 @@
   "da-3-3": {
    "file": "da-3-3-aggregates",
    "zip": "materials/da-3-3-aggregates.zip",
-   "zipBytes": 15373,
+   "zipBytes": 15586,
    "files": [
     {
      "path": "materials/da-3-3-aggregates/README.md",
      "name": "README.md",
-     "bytes": 1381,
+     "bytes": 1549,
      "about": ""
     },
     {
      "path": "materials/da-3-3-aggregates/avg_of_avgs.csv",
      "name": "avg_of_avgs.csv",
      "bytes": 3662,
-     "about": "Выборка интерактива: оплаченные заказы четырёх стран с отметкой промокода"
+     "about": "184 оплаченных заказа из четырёх стран с отметкой о применении промокода"
     },
     {
      "path": "materials/da-3-3-aggregates/da-3-3-aggregates.md",
      "name": "da-3-3-aggregates.md",
-     "bytes": 38710,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 40458,
+     "about": "Текст урока, код запросов, вопросы и глоссарий в формате Markdown"
     },
     {
      "path": "materials/da-3-3-aggregates/dialects.py",
      "name": "dialects.py",
      "bytes": 1214,
-     "about": "Сравнение PostgreSQL, SQLite и DuckDB из пятого блока"
+     "about": "Пример для сравнения деления и группировки в трёх СУБД"
     },
     {
      "path": "materials/da-3-3-aggregates/queries.sql",
      "name": "queries.sql",
-     "bytes": 3641,
-     "about": "Четыре блока запросов из раздела «Код»"
+     "bytes": 3644,
+     "about": "Запросы по каналам, отменам, итоговым строкам и оценкам"
     }
    ],
    "shared": [
@@ -909,18 +909,18 @@
   "da-3-4": {
    "file": "da-3-4-cte-null-types",
    "zip": "materials/da-3-4-cte-null-types.zip",
-   "zipBytes": 16720,
+   "zipBytes": 17470,
    "files": [
     {
      "path": "materials/da-3-4-cte-null-types/README.md",
      "name": "README.md",
-     "bytes": 1352,
+     "bytes": 1487,
      "about": ""
     },
     {
      "path": "materials/da-3-4-cte-null-types/da-3-4-cte-null-types.md",
      "name": "da-3-4-cte-null-types.md",
-     "bytes": 40139,
+     "bytes": 43964,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
@@ -932,13 +932,13 @@
     {
      "path": "materials/da-3-4-cte-null-types/queries.sql",
      "name": "queries.sql",
-     "bytes": 5265,
+     "bytes": 5277,
      "about": "Все запросы страницы в порядке разделов"
     },
     {
      "path": "materials/da-3-4-cte-null-types/three_valued.sql",
      "name": "three_valued.sql",
-     "bytes": 1863,
+     "bytes": 1869,
      "about": "Сверка интерактива: 14 условий на всех 24 сочетаниях значений"
     }
    ],
@@ -949,18 +949,18 @@
   "da-3-5": {
    "file": "da-3-5-window-functions",
    "zip": "materials/da-3-5-window-functions.zip",
-   "zipBytes": 16335,
+   "zipBytes": 17605,
    "files": [
     {
      "path": "materials/da-3-5-window-functions/README.md",
      "name": "README.md",
-     "bytes": 1367,
+     "bytes": 1534,
      "about": ""
     },
     {
      "path": "materials/da-3-5-window-functions/da-3-5-window-functions.md",
      "name": "da-3-5-window-functions.md",
-     "bytes": 41497,
+     "bytes": 47453,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
@@ -978,8 +978,8 @@
     {
      "path": "materials/da-3-5-window-functions/window_functions.sql",
      "name": "window_functions.sql",
-     "bytes": 6372,
-     "about": "Все запросы страницы: нюансы и четыре отчёта"
+     "bytes": 6440,
+     "about": "Запросы к базе shop для разбора рамок, рангов и четырёх отчётов"
     }
    ],
    "shared": [

@@ -1,9 +1,9 @@
 -- Запросы страницы 3.2 «JOIN» курса «Аналитика 101». Учебная база shop, PostgreSQL 16.
 -- Запуск из корня папки материалов: psql -d shop -P null=NULL -f da-3-2-join/joins.sql
--- Первый блок кладёт выборку из сцены во временные таблицы, остальные работают со всей базой.
+-- Первый блок создаёт временные таблицы с выборкой из анимации. Остальные запросы используют всю базу.
 
 -- ===== Пять типов JOIN на одной паре таблиц =====
--- Выборка из сцены и интерактива — во временных таблицах
+-- Сохраняем выборку из анимации и тренажёра во временных таблицах
 CREATE TEMP TABLE sample_customers AS
 SELECT customer_id, name, channel
 FROM customers
@@ -14,7 +14,7 @@ SELECT order_id, customer_id, channel, status
 FROM orders
 WHERE order_date BETWEEN '2026-01-11' AND '2026-01-13';
 
--- FULL JOIN: пары, клиенты без заказов и заказы без клиента
+-- FULL JOIN: совпавшие пары и строки без совпадений в обеих выборках
 SELECT c.customer_id, c.name, o.order_id, o.customer_id
 FROM sample_customers AS c
 FULL JOIN sample_orders AS o ON o.customer_id = c.customer_id
@@ -41,7 +41,7 @@ SELECT 'CROSS', count(*)
 FROM sample_customers AS c
 CROSS JOIN sample_orders AS o;
 
--- ===== Анти-соединение четырьмя способами =====
+-- ===== Четыре способа найти клиентов без заказов =====
 -- Клиенты без заказов: 1) LEFT JOIN … IS NULL
 SELECT c.customer_id, c.name
 FROM customers AS c
@@ -68,7 +68,7 @@ FROM (
   SELECT customer_id FROM orders
 ) AS t;
 
--- NOT IN ломается, когда в подзапросе есть NULL:
+-- Сравним NOT IN и NOT EXISTS, когда referrer_id содержит NULL.
 -- кто из клиентов никого не пригласил?
 SELECT count(*) AS not_in
 FROM customers AS c
@@ -87,7 +87,7 @@ FROM customers AS c
 JOIN customers AS r ON r.customer_id = c.referrer_id
 ORDER BY r.customer_id, c.customer_id;
 
--- NULL не находит пару даже среди NULL: добавим в справочник строку с пустым кодом
+-- Добавим в справочник строку с NULL вместо кода страны
 CREATE TEMP TABLE countries_x AS
 SELECT country_code, country_name FROM countries
 UNION ALL
@@ -109,16 +109,16 @@ ORDER BY c.customer_id;
 
 -- ===== COUNT до и после соединения, составной ключ =====
 -- До соединения: ключ order_id уникален в orders, но не в order_items
-SELECT count(*) AS n_rows, count(DISTINCT order_id) AS n_orders, sum(amount) AS revenue
+SELECT count(*) AS n_rows, count(DISTINCT order_id) AS n_orders, sum(amount) AS sum_all
 FROM orders;
 
 SELECT count(*) AS n_rows, count(DISTINCT order_id) AS n_orders,
        count(DISTINCT (order_id, product_id)) AS n_pairs
 FROM order_items;
 
--- После соединения: строки заказов размножились, выручка выросла
+-- После соединения полная стоимость заказа повторяется в каждой его позиции
 SELECT count(*) AS n_rows, count(DISTINCT o.order_id) AS n_orders,
-       sum(o.amount) AS revenue_wrong, sum(i.qty * i.price) AS revenue_items
+       sum(o.amount) AS wrong_sum_all, sum(i.qty * i.price) AS sum_all_items
 FROM orders AS o
 JOIN order_items AS i ON i.order_id = o.order_id;
 

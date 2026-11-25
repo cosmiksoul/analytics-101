@@ -1,21 +1,21 @@
       <p class="eyebrow">Дата аналитика · Тема 03 · <b>SQL для&nbsp;анализа</b></p>
       <h1>Оконные функции</h1>
-      <p class="lead">После страницы вы посчитаете ранги, нарастающие итоги, паузы между покупками и&nbsp;скользящие средние одним запросом, не&nbsp;потеряв ни&nbsp;одной строки, и&nbsp;будете знать, какие строки видит <span class="term" tabindex="0" data-g="window">оконная функция</span> в&nbsp;каждой строке результата.</p>
+      <p class="lead">Магазину нужно узнать, через сколько дней покупатели возвращаются за&nbsp;вторым заказом. С&nbsp;помощью <span class="term" tabindex="0" data-g="window">оконных функций</span> вы добавите к&nbsp;каждому заказу дату предыдущей покупки, посчитаете выручку нарастающим итогом и&nbsp;разберётесь, когда среднее за&nbsp;семь строк отличается от&nbsp;среднего за&nbsp;семь дней.</p>
       <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;10&nbsp;шагов</span><span class="pill">1 интерактив</span><span class="pill">7 блоков кода</span><span class="pill">7 вопросов</span></div>
 
       <section data-sec="idea" data-title="Идея">
-        <h2 id="idea"><span class="sn">01</span>Идея: строки остаются, функция видит соседей</h2>
-        <p>Оконная функция считает значение для&nbsp;каждой строки по&nbsp;связанным с&nbsp;ней строкам и, в&nbsp;отличие от&nbsp;GROUP BY, не&nbsp;схлопывает их: сколько строк вошло в&nbsp;запрос, столько и&nbsp;вышло. Какие строки связаны с&nbsp;текущей, описывает окно в&nbsp;скобках после <span class="term" tabindex="0" data-g="over">OVER</span>. PARTITION BY делит таблицу на&nbsp;<span class="term" tabindex="0" data-g="partition">секции</span>, ORDER BY выстраивает строки внутри секции, а&nbsp;<span class="term" tabindex="0" data-g="frame">рамка</span> выбирает из&nbsp;секции строки для&nbsp;текущей, например всё от&nbsp;начала секции до&nbsp;неё самой. Так рядом с&nbsp;каждым заказом в&nbsp;одном запросе появляются его номер у&nbsp;клиента, <span class="term" tabindex="0" data-g="running">нарастающий итог</span> и&nbsp;дата прошлой покупки.</p>
-        <div class="scene" id="scene" aria-label="Анимация: заказы четырёх клиентов сначала схлопываются GROUP BY, затем раскладываются по секциям окна; окно едет по строкам и считает ROW_NUMBER, нарастающий итог и LAG"></div>
-        <p class="scene-hint">Листайте шаги кнопками или стрелками ← → на&nbsp;клавиатуре. Ниже — та&nbsp;же мысль подробно.</p>
+        <h2 id="idea"><span class="sn">01</span>Как получить итог по клиенту и сохранить каждый заказ</h2>
+        <p>Пусть в&nbsp;таблице одна строка соответствует заказу. Если сгруппировать её по&nbsp;клиенту и&nbsp;сложить суммы, в&nbsp;результате будет одна строка на&nbsp;клиента. Оконная функция позволяет оставить каждый заказ отдельной строкой и&nbsp;добавить к&nbsp;нему результат расчёта. После <span class="term" tabindex="0" data-g="over">OVER</span> задают правила расчёта. PARTITION BY выделяет <span class="term" tabindex="0" data-g="partition">секцию</span>, например все заказы одного клиента. ORDER BY задаёт порядок внутри неё. У&nbsp;агрегата <span class="term" tabindex="0" data-g="frame">рамка</span> определяет, какие строки учитывать для текущего заказа. Так можно получить <span class="term" tabindex="0" data-g="running">нарастающий итог</span> от&nbsp;первой покупки клиента до&nbsp;очередного заказа.</p>
+        <div class="scene" id="scene" aria-label="Анимация: как посчитать сумму покупок и дату предыдущего заказа для каждого из четырёх клиентов"></div>
+        <p class="scene-hint">Переключайте шаги кнопками под анимацией или клавишами ← и&nbsp;→.</p>
 
-        <h3 class="sub-h">Где в&nbsp;запросе живёт окно</h3>
-        <p>Вызов состоит из&nbsp;функции, слова OVER и&nbsp;трёх необязательных частей в&nbsp;скобках<a class="ref" href="#src-2" data-ref="src-2">2</a>:</p>
+        <h3 class="sub-h">Как задать окно</h3>
+        <p>После имени функции и&nbsp;её аргументов указывают OVER. В&nbsp;скобках можно задать секцию, порядок строк и&nbsp;границы рамки<a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
         <div class="formula"><span class="f">функция(…) OVER (PARTITION BY … ORDER BY … рамка)</span><small>секция · порядок внутри секции · какие строки секции брать для&nbsp;текущей</small></div>
-        <p>Пустые скобки <code>OVER ()</code> делают всю таблицу одной секцией. Окна считаются после WHERE, GROUP BY и&nbsp;HAVING, но&nbsp;до&nbsp;финальных ORDER BY и&nbsp;LIMIT<a class="ref" href="#src-1" data-ref="src-1">1</a>. В&nbsp;порядке выполнения из&nbsp;3.1 это значит, что окно видит только строки, пережившие фильтры, а&nbsp;сами оконные функции разрешены лишь в&nbsp;SELECT и&nbsp;ORDER BY. Если несколько функций смотрят в&nbsp;одно окно, его описывают один раз в&nbsp;предложении <span class="term" tabindex="0" data-g="windowclause">WINDOW</span> и&nbsp;ссылаются по&nbsp;имени: <code>OVER w</code><a class="ref" href="#src-4" data-ref="src-4">4</a>.</p>
+        <p>Пустые скобки <code>OVER ()</code> объединяют в&nbsp;одну секцию все строки, доступные на&nbsp;этом этапе запроса. Например, если WHERE отобрал только оплаченные заказы, в&nbsp;расчёт войдут только они. Если уже была группировка, окно работает по&nbsp;строкам групп. В&nbsp;PostgreSQL&nbsp;16 оконную функцию можно вызвать в&nbsp;SELECT и&nbsp;ORDER BY. Её значение вычисляется после WHERE, GROUP BY и&nbsp;HAVING, до&nbsp;финальной сортировки и&nbsp;ограничения LIMIT<a class="ref" href="#src-1" data-ref="src-1">1</a>. Общее для нескольких функций окно удобно определить один раз в&nbsp;<span class="term" tabindex="0" data-g="windowclause">WINDOW</span> и&nbsp;затем использовать по&nbsp;имени, например <code>OVER w</code><a class="ref" href="#src-4" data-ref="src-4">4</a>.</p>
 
         <h3 class="sub-h">Ранжирование: ROW_NUMBER, RANK, DENSE_RANK</h3>
-        <p>Три функции нумеруют строки секции по&nbsp;порядку ORDER BY и&nbsp;расходятся только на&nbsp;<span class="term" tabindex="0" data-g="peers">равных строках</span> (peers) — тех, что ORDER BY не&nbsp;различает<a class="ref" href="#src-3" data-ref="src-3">3</a>. <span class="term" tabindex="0" data-g="rownumber">ROW_NUMBER</span> даёт всем разные номера, и&nbsp;кому из&nbsp;равных достанется меньший, база не&nbsp;обещает. <span class="term" tabindex="0" data-g="rank">RANK</span> ставит равным одно место и&nbsp;пропускает следующие, <span class="term" tabindex="0" data-g="dense">DENSE_RANK</span> не&nbsp;пропускает. Вот семь самых крупных заказов из&nbsp;выборки интерактива:</p>
+        <p>Разница между тремя функциями заметна, когда несколько заказов имеют одинаковую сумму. Такие строки <span class="term" tabindex="0" data-g="peers">равны по&nbsp;ключу сортировки</span> в&nbsp;окне<a class="ref" href="#src-3" data-ref="src-3">3</a>. <span class="term" tabindex="0" data-g="rownumber">ROW_NUMBER</span> присваивает каждой строке отдельный номер. Если других ключей сортировки нет, запрос не&nbsp;определяет, какой из&nbsp;двух одинаковых по&nbsp;сумме заказов получит меньший номер. <span class="term" tabindex="0" data-g="rank">RANK</span> даёт обоим одно место и&nbsp;пропускает следующее. <span class="term" tabindex="0" data-g="dense">DENSE_RANK</span> присваивает одно место каждой особой сумме, без пропусков. Сравните номера семи самых крупных заказов в&nbsp;учебной выборке.</p>
         <div class="tbl da35-tbl">
           <table>
             <thead><tr><th>amount</th><th>ROW_NUMBER</th><th>RANK</th><th>DENSE_RANK</th></tr></thead>
@@ -30,96 +30,96 @@
             </tbody>
           </table>
         </div>
-        <p>Отсюда задача «топ-3 в&nbsp;каждой категории»: ранг считают с&nbsp;PARTITION BY category и&nbsp;оставляют строки с&nbsp;рангом не&nbsp;больше трёх. Выбор функции — это решение о&nbsp;ничьих: ROW_NUMBER режет ровно по&nbsp;три строки, DENSE_RANK может вернуть больше.</p>
+        <p>Как выбрать три самых продаваемых товара в&nbsp;каждой категории? Разбейте товары на&nbsp;секции по&nbsp;категории и&nbsp;отсортируйте по&nbsp;числу проданных штук. Фильтр по&nbsp;ROW_NUMBER оставит до&nbsp;трёх товаров на&nbsp;категорию. Фильтр <code>DENSE_RANK &lt;= 3</code> сохранит все товары с&nbsp;тремя наибольшими различными значениями продаж. Товаров при этом может оказаться больше трёх.</p>
 
-        <h3 class="sub-h">Соседи: LAG и&nbsp;LEAD</h3>
-        <p><span class="term" tabindex="0" data-g="lag">LAG</span>(значение, N, запасное) берёт значение из&nbsp;строки на&nbsp;N позиций раньше в&nbsp;той&nbsp;же секции, LEAD — позже. По&nbsp;умолчанию N = 1, а&nbsp;запасное значение — NULL<a class="ref" href="#src-3" data-ref="src-3">3</a>. Так сравнивают с&nbsp;прошлым периодом. Выручка учебного магазина по&nbsp;месяцам — 173&nbsp;900, 278&nbsp;950 и&nbsp;459&nbsp;230&nbsp;₽, и&nbsp;<code>LAG(revenue) OVER (ORDER BY month)</code> ставит рядом с&nbsp;каждым месяцем прошлый: февраль вырос на&nbsp;60,4%, март — на&nbsp;64,6%. У&nbsp;января прошлого месяца нет, там NULL.</p>
+        <h3 class="sub-h">Как сравнить заказ с предыдущим или следующим</h3>
+        <p><span class="term" tabindex="0" data-g="lag">LAG</span> возвращает значение из&nbsp;предыдущей строки той&nbsp;же секции, LEAD — из&nbsp;следующей. Можно указать смещение в&nbsp;строках и&nbsp;результат на&nbsp;случай, если такой строки нет. По&nbsp;умолчанию смещение равно единице, а&nbsp;результат для отсутствующей строки — NULL<a class="ref" href="#src-3" data-ref="src-3">3</a>. Выручка магазина за&nbsp;январь, февраль и&nbsp;март составила 173&nbsp;900, 278&nbsp;950 и&nbsp;459&nbsp;230&nbsp;₽. Вызов <code>LAG(revenue) OVER (ORDER BY month)</code> добавляет к&nbsp;каждому месяцу выручку предыдущего месяца в&nbsp;этой выборке. В&nbsp;феврале выручка выросла на&nbsp;60,4%, в&nbsp;марте — на&nbsp;64,6%. Для января предыдущего значения в&nbsp;выборке нет.</p>
 
         <h3 class="sub-h">Агрегаты по&nbsp;окну: доля, итог, скользящее среднее</h3>
-        <p>SUM, AVG и&nbsp;COUNT с&nbsp;OVER остаются агрегатами, но&nbsp;считают по&nbsp;рамке текущей строки и&nbsp;пишут ответ в&nbsp;каждую строку<a class="ref" href="#src-3" data-ref="src-3">3</a>. Без&nbsp;ORDER BY рамка — вся секция, и&nbsp;итог группы встаёт рядом с&nbsp;деталями. Так считают <span class="term" tabindex="0" data-g="share">долю от&nbsp;суммы группы</span>: <code class="wrap">amount / SUM(amount) OVER (PARTITION BY channel)</code>. В&nbsp;выборке интерактива заказ 1153 на&nbsp;8&nbsp;030&nbsp;₽ — это 83,6% выручки рассылки за&nbsp;неделю.</p>
-        <p>С&nbsp;ORDER BY та&nbsp;же сумма становится нарастающим итогом: рамка тянется от&nbsp;начала секции до&nbsp;текущей строки. А&nbsp;рамка постоянной длины, которая едет вместе со&nbsp;строкой, даёт <span class="term" tabindex="0" data-g="moving">скользящее среднее</span>: <code class="wrap">AVG(revenue) OVER (ORDER BY day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)</code> — среднее текущей строки и&nbsp;шести предыдущих.</p>
+        <p>Агрегаты SUM, AVG и&nbsp;COUNT можно использовать с&nbsp;OVER. Тогда в&nbsp;каждой строке будет результат расчёта по&nbsp;её рамке<a class="ref" href="#src-3" data-ref="src-3">3</a>. Для <span class="term" tabindex="0" data-g="share">доли заказа в&nbsp;выручке канала</span> нужна сумма всей секции. Например, выражение <code>100.0 * amount / SUM(amount) OVER (PARTITION BY channel)</code> даёт долю в&nbsp;процентах. Множитель 100.0 в&nbsp;PostgreSQL позволяет сохранить дробную часть при делении целых сумм. В&nbsp;недельной выборке на&nbsp;заказ №&nbsp;1153 приходится 83,6% выручки от&nbsp;рассылки.</p>
+        <p>Чтобы посчитать нарастающий итог по&nbsp;заказам, упорядочьте их по&nbsp;дате и&nbsp;номеру и&nbsp;задайте рамку от&nbsp;начала секции до&nbsp;текущей строки. Для <span class="term" tabindex="0" data-g="moving">скользящего среднего</span> можно взять более короткую рамку. Например, <code>AVG(revenue) OVER (ORDER BY day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)</code> усредняет текущую строку и&nbsp;до&nbsp;шести предыдущих. Если за&nbsp;какой-то день записи нет, дата самой ранней строки может оказаться за&nbsp;пределами последней календарной недели.</p>
 
         <h3 class="sub-h">Последняя запись по&nbsp;ключу</h3>
-        <p>Из&nbsp;журнала статусов часто нужна одна строка на&nbsp;заказ, самая свежая. Это <span class="term" tabindex="0" data-g="dedup">дедупликация</span>: <code class="wrap">ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY changed_at DESC)</code> ставит единицу последней записи каждого заказа, и&nbsp;остаётся оставить строки с&nbsp;номером 1. Фильтруют уровнем выше, в&nbsp;CTE или подзапросе: в&nbsp;WHERE оконной функции ещё нет<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <p>В&nbsp;журнале статусов у&nbsp;заказа бывает несколько записей, для отчёта нужна последняя. Один из&nbsp;способов <span class="term" tabindex="0" data-g="dedup">дедупликации</span> — пронумеровать записи каждого заказа от&nbsp;поздних к&nbsp;ранним и&nbsp;оставить номер&nbsp;1. В&nbsp;PostgreSQL фильтр по&nbsp;этому номеру помещают во&nbsp;внешний запрос<a class="ref" href="#src-1" data-ref="src-1">1</a>. Если время двух событий может совпасть, понадобится дополнительное правило выбора, например больший уникальный номер события.</p>
 
-        <h3 class="sub-h">То&nbsp;же в&nbsp;pandas</h3>
-        <p>В&nbsp;темах 01–02 те&nbsp;же операции делались в&nbsp;pandas, и&nbsp;соответствие почти прямое<a class="ref" href="#src-10" data-ref="src-10">10</a>:</p>
+        <h3 class="sub-h">Те же расчёты в pandas</h3>
+        <p>В&nbsp;главе о&nbsp;pandas вы уже добавляли к&nbsp;каждому заказу итог по&nbsp;его группе через transform. Для других оконных расчётов тоже есть похожие операции<a class="ref" href="#src-10" data-ref="src-10">10</a>. Чтобы результаты совпали, проверьте порядок строк, границы окна и&nbsp;число наблюдений, необходимое для первого результата.</p>
         <div class="tbl da35-tbl da35-code">
           <table>
             <thead><tr><th>SQL</th><th>pandas</th></tr></thead>
             <tbody>
               <tr><td><code>SUM(amount) OVER (PARTITION BY channel)</code></td><td><code>groupby("channel")["amount"].transform("sum")</code></td></tr>
-              <tr><td><code>SUM(amount) OVER (PARTITION BY customer_id ORDER BY order_date)</code></td><td><code>groupby("customer_id")["amount"].cumsum()</code> после сортировки по&nbsp;дате</td></tr>
+              <tr><td><code>SUM(amount) OVER (PARTITION BY customer_id ORDER BY order_date, order_id ROWS UNBOUNDED PRECEDING)</code></td><td><code>groupby("customer_id")["amount"].cumsum()</code> после сортировки по&nbsp;дате и&nbsp;номеру заказа</td></tr>
               <tr><td><code>LAG(order_date) OVER (…)</code></td><td><code>groupby("customer_id")["order_date"].shift()</code></td></tr>
-              <tr><td><code>ROWS BETWEEN 6 PRECEDING AND CURRENT ROW</code></td><td><code>rolling(7)</code></td></tr>
-              <tr><td><code>RANGE BETWEEN INTERVAL '6 days' PRECEDING AND CURRENT ROW</code></td><td><code>rolling("7D")</code> по&nbsp;индексу из&nbsp;дат</td></tr>
+              <tr><td><code>ROWS BETWEEN 6 PRECEDING AND CURRENT ROW</code></td><td><code>rolling(7, min_periods=1)</code></td></tr>
+              <tr><td><code>RANGE BETWEEN INTERVAL '6 days' PRECEDING AND CURRENT ROW</code></td><td><code>rolling("7D")</code> для&nbsp;дневных итогов с&nbsp;одной строкой на&nbsp;дату</td></tr>
               <tr><td><code>ROW_NUMBER</code>, <code>RANK</code>, <code>DENSE_RANK</code></td><td><code>rank(method=…)</code>: <code>"first"</code>, <code>"min"</code>, <code>"dense"</code></td></tr>
             </tbody>
           </table>
         </div>
-        <p>pandas идёт по&nbsp;строкам в&nbsp;том порядке, в&nbsp;каком они лежат, а&nbsp;SQL — только по&nbsp;ORDER BY внутри OVER.</p>
+        <p>Перед <code>shift</code> или <code>cumsum</code> в&nbsp;pandas отсортируйте строки внутри группы. В&nbsp;SQL порядок для оконной функции задаётся в&nbsp;OVER. Отдельный ORDER BY в&nbsp;конце запроса определяет, в&nbsp;каком порядке строки увидит читатель.</p>
       </section>
 
       <section data-sec="task" data-title="Задача">
-        <h2 id="task"><span class="sn">02</span>Задача: четыре отчёта по&nbsp;учебной базе</h2>
-        <p>Учебная база магазина товаров для&nbsp;дома за&nbsp;январь–март 2026 — та&nbsp;же, что на&nbsp;страницах 3.1–3.4: заказы, позиции заказов, товары и&nbsp;журнал статусов. Данные сгенерированы для&nbsp;учебника. По&nbsp;ним нужны четыре отчёта:</p>
+        <h2 id="task"><span class="sn">02</span>Четыре задачи на данных магазина</h2>
+        <p>В&nbsp;учебной базе есть заказы за&nbsp;январь–март 2026&nbsp;года, состав каждого заказа, каталог товаров и&nbsp;журнал статусов. Эти таблицы уже встречались в&nbsp;уроках 3.1–3.4. Теперь по&nbsp;ним нужно подготовить четыре отчёта.</p>
         <ul>
-          <li><span class="term" tabindex="0" data-g="retention">удержание</span>: сколько клиентов купили второй раз и&nbsp;через сколько дней;</li>
-          <li>выручка по&nbsp;дням, сглаженная средним за&nbsp;семь дней, хотя в&nbsp;некоторые дни заказов не&nbsp;было;</li>
-          <li>три самых продаваемых товара в&nbsp;каждой категории;</li>
-          <li>текущий статус каждого заказа по&nbsp;журналу, где у&nbsp;заказа две или три записи.</li>
+          <li><span class="term" tabindex="0" data-g="retention">Удержание клиентов</span>. Какую долю покупателей магазин увидел снова и&nbsp;сколько дней прошло между покупками?</li>
+          <li>Выручка за&nbsp;семь календарных дней. Как учесть даты, когда не&nbsp;было продаж?</li>
+          <li>Лидеры продаж. Какие товары заняли первые три места в&nbsp;каждой категории и&nbsp;как учитывать одинаковые результаты?</li>
+          <li>Последний статус. Какая запись журнала соответствует текущему состоянию каждого заказа?</li>
         </ul>
-        <p>Каждый отчёт сравнивает строку с&nbsp;её группой или соседями, а&nbsp;GROUP BY оставит по&nbsp;строке на&nbsp;группу. Без&nbsp;окон пришлось&nbsp;бы соединять таблицу саму с&nbsp;собой (3.2) или писать коррелированный подзапрос (3.4), а&nbsp;это длинно и&nbsp;медленно. Оконная функция решает каждую задачу одним проходом по&nbsp;отсортированной секции — так эти отчёты строят в&nbsp;книгах по&nbsp;аналитическому SQL<a class="ref" href="#src-6" data-ref="src-6">6</a><a class="ref" href="#src-7" data-ref="src-7">7</a>.</p>
+        <p>Во&nbsp;всех четырёх задачах расчёт использует несколько строк одной группы. Например, для паузы между заказами нужны две покупки клиента, но&nbsp;результат относится к&nbsp;конкретной покупке. Подобные отчёты разбирают Кэти Танимура<a class="ref" href="#src-6" data-ref="src-6">6</a>, Энтони Молинаро и&nbsp;Роберт де&nbsp;Грааф<a class="ref" href="#src-7" data-ref="src-7">7</a>.</p>
       </section>
 
       <section data-sec="frame" data-title="Рамка окна">
-        <h2 id="frame"><span class="sn">03</span>Рамка: какие строки секции видит функция</h2>
-        <p>Рамку пишут после ORDER BY: режим и&nbsp;две <span class="term" tabindex="0" data-g="bounds">границы</span>, <code>ROWS BETWEEN начало AND конец</code>. Граница — это UNBOUNDED PRECEDING (начало секции), N PRECEDING (N назад), CURRENT ROW, N FOLLOWING (N вперёд) или UNBOUNDED FOLLOWING (конец секции)<a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
-        <p>Два режима по-разному считают «назад» и&nbsp;«вперёд». <span class="term" tabindex="0" data-g="rows">ROWS</span> отсчитывает строки: 2 PRECEDING — две строки выше, какие&nbsp;бы там ни&nbsp;были даты. <span class="term" tabindex="0" data-g="range">RANGE</span> отсчитывает значения ORDER BY: <code class="wrap">RANGE BETWEEN INTERVAL '2 days' PRECEDING AND CURRENT ROW</code> берёт все строки с&nbsp;датой не&nbsp;раньше, чем за&nbsp;два дня до&nbsp;текущей. Поэтому для&nbsp;RANGE со&nbsp;смещением ORDER BY должен состоять ровно из&nbsp;одного столбца, а&nbsp;смещение по&nbsp;дате пишут <span class="term" tabindex="0" data-g="interval">интервалом</span>. На&nbsp;<code>RANGE BETWEEN 1 PRECEDING</code> по&nbsp;дате PostgreSQL отвечает ошибкой «not supported for column type date and offset type integer».</p>
-        <p>Главное различие — в&nbsp;CURRENT ROW. В&nbsp;ROWS это сама строка, в&nbsp;RANGE — все равные ей по&nbsp;ORDER BY<a class="ref" href="#src-2" data-ref="src-2">2</a>. Если рамку не&nbsp;написать, при&nbsp;ORDER BY она равна <code class="wrap">RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</code> и&nbsp;захватывает строки с&nbsp;той&nbsp;же датой, а&nbsp;без&nbsp;ORDER BY рамка — вся секция. ROW_NUMBER, RANK, DENSE_RANK, LAG и&nbsp;LEAD рамку не&nbsp;читают: они смотрят на&nbsp;всю секцию в&nbsp;порядке ORDER BY<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
-        <p>Ниже — 11&nbsp;оплаченных заказов бренда «Сова» за&nbsp;1–7 марта: <code class="wrap">WHERE status = 'paid' AND brand = 'Сова' AND order_date BETWEEN '2026-03-01' AND '2026-03-07'</code>. 1 и&nbsp;6 марта было по&nbsp;три заказа, 4 и&nbsp;7 марта — по&nbsp;два, а&nbsp;2 и&nbsp;3 марта заказов не&nbsp;было. Сначала предскажите.</p>
+        <h2 id="frame"><span class="sn">03</span>Какие строки входят в&nbsp;рамку</h2>
+        <p>У&nbsp;рамки есть режим и&nbsp;две <span class="term" tabindex="0" data-g="bounds">границы</span>. Например, <code>ROWS BETWEEN 2 PRECEDING AND CURRENT ROW</code> означает «от&nbsp;двух строк перед текущей до&nbsp;текущей включительно». Ключевое слово UNBOUNDED обозначает начало или конец секции, а&nbsp;FOLLOWING — смещение вперёд<a class="ref" href="#src-2" data-ref="src-2">2</a>.</p>
+        <p>В&nbsp;режиме <span class="term" tabindex="0" data-g="rows">ROWS</span> смещение измеряется числом строк. В&nbsp;режиме <span class="term" tabindex="0" data-g="range">RANGE</span> границы зависят от&nbsp;значения ключа сортировки. Например, при сортировке дат по&nbsp;возрастанию рамка <code>RANGE BETWEEN INTERVAL '2 days' PRECEDING AND CURRENT ROW</code> включает записи за&nbsp;текущую дату и&nbsp;два предыдущих календарных дня, если такие записи есть. Для RANGE со&nbsp;смещением PostgreSQL&nbsp;16 требует одно выражение в&nbsp;ORDER BY и&nbsp;совместимый тип смещения. Для даты здесь указывают <span class="term" tabindex="0" data-g="interval">интервал</span>: <code>INTERVAL '2 days'</code>.</p>
+        <p>В&nbsp;режиме ROWS граница CURRENT ROW указывает на&nbsp;конкретную строку. В&nbsp;режиме RANGE такая конечная граница включает и&nbsp;все строки с&nbsp;таким&nbsp;же ключом сортировки<a class="ref" href="#src-2" data-ref="src-2">2</a>. Если указан ORDER BY без явной рамки, по&nbsp;умолчанию действует <code>RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</code>. Без сортировки и&nbsp;явной рамки агрегат учитывает всю секцию. Функции ROW_NUMBER, RANK, DENSE_RANK, LAG и&nbsp;LEAD используют строки секции независимо от&nbsp;границ рамки<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+        <p>В&nbsp;интерактиве 11&nbsp;оплаченных заказов бренда «Сова» за&nbsp;1–7&nbsp;марта. Первого и&nbsp;шестого марта было по&nbsp;три заказа, четвёртого и&nbsp;седьмого — по&nbsp;два, пятого — один. Второго и&nbsp;третьего марта заказов не&nbsp;было. Сначала попробуйте предсказать сумму для первого заказа.</p>
         <div class="check" data-q="q1"></div>
         <div class="block wide" data-w="win"></div>
-        <p>Строки в&nbsp;интерактиве стоят так, как их видит окно: по&nbsp;секциям и&nbsp;в&nbsp;порядке ORDER BY. Равные строки PostgreSQL ставит как вышло при&nbsp;сортировке, и&nbsp;документация предупреждает, что ROWS на&nbsp;неуникальном порядке непредсказуем<a class="ref" href="#src-4" data-ref="src-4">4</a>. Звёздочка отмечает строки, где от&nbsp;этого зависит ответ. Все сочетания настроек сверены с&nbsp;PostgreSQL&nbsp;16 на&nbsp;этой выборке, включая ошибки.</p>
+        <p>Таблица показывает строки по&nbsp;секциям и&nbsp;ключам из&nbsp;ORDER BY окна. Если ключи совпадают, PostgreSQL не&nbsp;гарантирует порядок внутри такой группы<a class="ref" href="#src-4" data-ref="src-4">4</a>. Звёздочка у&nbsp;результата означает, что при другом допустимом порядке равных строк число может измениться. В&nbsp;интерактиве можно выбрать строку, увидеть её рамку и&nbsp;сравнить результаты разных функций.</p>
       </section>
 
       <section data-sec="nuances" data-title="Нюансы">
-        <h2 id="nuances"><span class="sn">04</span>Нюансы: равные даты, WHERE и&nbsp;ничьи в&nbsp;рангах</h2>
-        <div class="callout"><p><b>Рамка по&nbsp;умолчанию захватывает равные строки.</b> <code>SUM(amount) OVER (ORDER BY order_date)</code> — это RANGE до&nbsp;текущей строки, и&nbsp;у&nbsp;трёх заказов 1 марта итог одинаковый: 4&nbsp;070&nbsp;₽. Замена на&nbsp;ROWS не&nbsp;лечит, а&nbsp;прячет ошибку: равные даты база расставляет как удобно. В&nbsp;блоке ниже нарастающий итог 4 и&nbsp;6 марта сначала убывает, а&nbsp;после добавления соседнего столбца растёт ровно, хотя данные те&nbsp;же. Надёжно одно — дописать в&nbsp;ORDER BY уникальный столбец: <code>ORDER BY order_date, order_id</code>.</p></div>
+        <h2 id="nuances"><span class="sn">04</span>Что меняется при совпадении дат или рангов</h2>
+        <div class="callout"><p><b>Нарастающий итог за&nbsp;день или после каждого заказа.</b> Выражение <code>SUM(amount) OVER (ORDER BY order_date)</code> даёт один итог для всех заказов с&nbsp;одной датой. У&nbsp;трёх заказов за&nbsp;1&nbsp;марта это 4&nbsp;070&nbsp;₽. Для итога после каждого заказа нужно задать порядок и&nbsp;внутри дня. Одной замены RANGE на&nbsp;ROWS для этого недостаточно. В&nbsp;нашем примере порядок однозначно задаёт <code>ORDER BY order_date, order_id</code>. Если оставить в&nbsp;окне только дату, значения при выводе по&nbsp;номеру заказа могут выглядеть так, будто накопленная сумма уменьшается.</p></div>
         <div class="block wide" data-code="ties"></div>
-        <div class="callout"><p><b>Оконную функцию нельзя в&nbsp;WHERE.</b> WHERE выполняется раньше окон, и&nbsp;PostgreSQL отвечает «window functions are not allowed in WHERE»<a class="ref" href="#src-1" data-ref="src-1">1</a>. То&nbsp;же в&nbsp;HAVING и&nbsp;GROUP BY. Окно считают в&nbsp;CTE, а&nbsp;фильтруют снаружи: так ниже найдены заказы дороже среднего по&nbsp;своему каналу.</p></div>
+        <div class="callout"><p><b>Фильтр по&nbsp;результату оконной функции.</b> В&nbsp;PostgreSQL&nbsp;16 попытка вызвать оконную функцию прямо в&nbsp;WHERE даёт ошибку <code>window functions are not allowed in WHERE</code><a class="ref" href="#src-1" data-ref="src-1">1</a>. Чтобы найти заказы дороже среднего по&nbsp;своему каналу, сначала посчитайте среднее в&nbsp;CTE или подзапросе. Затем сравните с&nbsp;ним сумму заказа во&nbsp;внешнем WHERE.</p></div>
         <div class="block wide" data-code="where"></div>
-        <div class="callout"><p><b>Ничьи в&nbsp;RANK.</b> Равные строки получают у&nbsp;RANK и&nbsp;DENSE_RANK одно место<a class="ref" href="#src-3" data-ref="src-3">3</a>, и&nbsp;фильтр «ранг не&nbsp;больше 3» может вернуть больше трёх строк. В&nbsp;учебной базе два товара посуды продали по&nbsp;21&nbsp;штуке и&nbsp;делят второе место, поэтому DENSE_RANK оставляет в&nbsp;топе четыре товара. ROW_NUMBER вернёт ровно три, но&nbsp;кого из&nbsp;равных выбросить, решит порядок сортировки, если не&nbsp;добавить в&nbsp;ORDER BY второй ключ. Разбор — в&nbsp;разделе «Код».</p></div>
+        <div class="callout"><p><b>Одинаковое число проданных товаров.</b> Два товара в&nbsp;категории «Посуда» проданы в&nbsp;одинаковом количестве — по&nbsp;21&nbsp;штуке — и&nbsp;делят второе место<a class="ref" href="#src-3" data-ref="src-3">3</a>. Если взять три первых различных значения продаж с&nbsp;помощью DENSE_RANK, в&nbsp;отчёт войдут четыре товара. Если нужны ровно три из&nbsp;этой категории, используйте ROW_NUMBER и&nbsp;укажите правило выбора при равных продажах.</p></div>
       </section>
 
       <section data-sec="limits" data-title="Ограничения">
-        <h2 id="limits"><span class="sn">05</span>Ограничения: окно сортирует секцию целиком</h2>
-        <p>Чтобы посчитать окно, база сортирует строки по&nbsp;PARTITION BY и&nbsp;ORDER BY и&nbsp;проходит по&nbsp;отсортированному. Каждое новое окно — новая сортировка. В&nbsp;учебной базе <span class="term" tabindex="0" data-g="plan">план запроса</span> с&nbsp;тремя функциями на&nbsp;двух разных окнах показывает два узла Sort и&nbsp;два WindowAgg. На&nbsp;двух сотнях строк это незаметно, на&nbsp;сотнях миллионов сортировка займёт минуты и&nbsp;память.</p>
+        <h2 id="limits"><span class="sn">05</span>Когда оконной функции нужна сортировка</h2>
+        <p>Функции, которым важен порядок строк, могут потребовать сортировки. В&nbsp;учебном <span class="term" tabindex="0" data-g="plan">плане запроса</span> три функции используют два разных окна, и&nbsp;PostgreSQL выбрал два узла Sort и&nbsp;два WindowAgg. Для другой выборки план может быть иным: иногда подходит порядок индекса или результат предыдущей сортировки.</p>
         <ul>
-          <li>Функции с&nbsp;одинаковым окном считаются за&nbsp;одну сортировку: описывайте его один раз в&nbsp;WINDOW.</li>
-          <li>WHERE до&nbsp;окна уменьшает сортировку. Исключение — фильтр по&nbsp;датам у&nbsp;скользящего среднего: он стоит снаружи, иначе окно потеряет предыдущие дни.</li>
-          <li>Как индекс избавляет от&nbsp;сортировки и&nbsp;как читать план — в&nbsp;блоке «Дата инженерия», тема&nbsp;03.</li>
+          <li>Если несколько функций используют одинаковую секцию и&nbsp;порядок, PostgreSQL может переиспользовать сортировку. Имя в&nbsp;WINDOW удобно тем, что определение окна записано один раз.</li>
+          <li>Отбор до&nbsp;оконного расчёта уменьшает число его входных строк. Для скользящего среднего сначала оставьте в&nbsp;выборке и&nbsp;даты, нужные для первого окна. Ограничить даты вывода можно уже во&nbsp;внешнем запросе.</li>
+          <li>Подробнее о&nbsp;том, как читать план запроса и&nbsp;проверять, использован&nbsp;ли индекс, — в&nbsp;главе&nbsp;3 блока «Дата инженерия».</li>
         </ul>
       </section>
 
       <section data-sec="code" data-title="Код">
-        <h2 id="code"><span class="sn">06</span>Код: удержание, скользящее среднее, топ-3, последняя версия</h2>
-        <p>Запросы запущены в&nbsp;PostgreSQL&nbsp;16 на&nbsp;учебной базе, вывод — как в&nbsp;psql. Первый блок ставит рядом с&nbsp;заказом паузу с&nbsp;прошлой покупки, а&nbsp;потом по&nbsp;когортам месяца первой покупки считает, сколько клиентов вернулись. <span class="term" tabindex="0" data-g="filter">FILTER</span> — короткая запись условного агрегата из&nbsp;3.3: <code class="wrap">COUNT(*) FILTER (WHERE n = 2)</code> равно <code class="wrap">COUNT(CASE WHEN n = 2 THEN 1 END)</code><a class="ref" href="#src-5" data-ref="src-5">5</a>.</p>
+        <h2 id="code"><span class="sn">06</span>От повторных покупок до последнего статуса</h2>
+        <p>Первый пример находит предыдущую дату покупки каждого клиента с&nbsp;помощью LAG. Затем запрос распределяет клиентов по&nbsp;месяцу первой покупки в&nbsp;выборке и&nbsp;считает, сколько из&nbsp;них сделали второй заказ. Условие <span class="term" tabindex="0" data-g="filter">FILTER</span> ограничивает строки для конкретного агрегата. Например, <code>COUNT(*) FILTER (WHERE n = 2)</code> и&nbsp;<code>COUNT(CASE WHEN n = 2 THEN 1 END)</code> здесь дают одно число<a class="ref" href="#src-5" data-ref="src-5">5</a>.</p>
         <div class="block wide" data-code="retention"></div>
-        <p>Второй сглаживает выручку по&nbsp;дням. 24 и&nbsp;26–28 января заказов не&nbsp;было, поэтому «семь строк» и&nbsp;«семь дней» — разные окна.</p>
+        <p>Второй пример сравнивает два способа усреднить дневную выручку. За&nbsp;24&nbsp;января и&nbsp;за&nbsp;26–28&nbsp;января в&nbsp;выборке нет строк. Проследите, как далеко назад от&nbsp;29&nbsp;января уходит рамка из&nbsp;семи строк и&nbsp;сколько дат с&nbsp;продажами есть в&nbsp;последних семи календарных днях.</p>
         <div class="block wide" data-code="moving"></div>
-        <p>Третий выбирает топ-3 товаров по&nbsp;штукам в&nbsp;каждой категории и&nbsp;показывает, как три функции ранжирования расходятся на&nbsp;ничьей.</p>
+        <p>Третий пример ранжирует товары внутри категории по&nbsp;числу проданных штук. Сравните места товаров с&nbsp;одинаковыми продажами и&nbsp;посмотрите, какие из&nbsp;них попадут в&nbsp;первую тройку при каждом правиле.</p>
         <div class="block wide" data-code="top3"></div>
-        <p>Четвёртый берёт последнюю версию каждого заказа из&nbsp;журнала и&nbsp;сверяет её с&nbsp;orders.status. Рядом окно без&nbsp;ORDER BY: <code class="wrap">BOOL_OR(status = 'paid') OVER (PARTITION BY order_id)</code> смотрит на&nbsp;всю историю заказа и&nbsp;отвечает, был&nbsp;ли он когда-нибудь оплачен.</p>
+        <p>Четвёртый пример выбирает для каждого заказа последнюю запись журнала и&nbsp;сверяет её с&nbsp;<code>orders.status</code>. Выражение <code>BOOL_OR(status = 'paid') OVER (PARTITION BY order_id)</code> отдельно показывает, была&nbsp;ли оплата хотя&nbsp;бы в&nbsp;одной записи истории этого заказа.</p>
         <div class="block wide" data-code="lastver"></div>
-        <p>В&nbsp;DuckDB тот&nbsp;же фильтр пишут без&nbsp;CTE: предложение <span class="term" tabindex="0" data-g="qualify">QUALIFY</span> фильтрует по&nbsp;оконной функции, как HAVING по&nbsp;агрегату<a class="ref" href="#src-9" data-ref="src-9">9</a>. В&nbsp;PostgreSQL QUALIFY нет — это различие диалектов, и&nbsp;код ниже отправляет один запрос в&nbsp;обе базы.</p>
+        <p>В&nbsp;DuckDB можно отбирать строки по&nbsp;результату оконной функции прямо в&nbsp;<span class="term" tabindex="0" data-g="qualify">QUALIFY</span><a class="ref" href="#src-9" data-ref="src-9">9</a>. PostgreSQL&nbsp;16 эту конструкцию не&nbsp;поддерживает. В&nbsp;следующем примере один и&nbsp;тот&nbsp;же запрос передаётся обеим системам.</p>
         <div class="block wide" data-code="qualify"></div>
         <p>Последовательный разбор аналитических функций — у&nbsp;Болье<a class="ref" href="#src-8" data-ref="src-8">8</a>.</p>
       </section>
 
       <section data-sec="check" data-title="Проверь себя">
         <h2 id="check"><span class="sn">07</span>Проверь себя</h2>
-        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <p>На каждый вопрос можно ответить один раз. Кнопка «Подсказка от&nbsp;ИИ» скопирует задание для чата. Вставьте его, чтобы получить наводящий вопрос.</p>
         <div class="check" data-q="q2"></div>
         <div class="check" data-q="q3"></div>
         <div class="check" data-q="q4"></div>
@@ -130,20 +130,20 @@
 
       <section data-sec="glossary" data-title="Глоссарий">
         <h2 id="glossary"><span class="sn">08</span>Глоссарий</h2>
-        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <p>Термины расположены по&nbsp;алфавиту. По&nbsp;английским названиям удобно искать справку, а&nbsp;по&nbsp;ссылке под определением — вернуться к&nbsp;примеру.</p>
         <dl class="gloss wide" id="gloss"></dl>
       </section>
 
       <section data-sec="materials" data-title="Материалы">
         <h2 id="materials"><span class="sn">09</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
-        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <p>Скачайте запросы и&nbsp;недельную выборку заказов, чтобы повторить расчёты. Для примеров по&nbsp;всему магазину понадобится учебная база shop. Текст урока с&nbsp;примерами кода доступен в&nbsp;Markdown.</p>
         <div class="matlist wide" id="mat"></div>
         <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
-        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «SQL для анализа» <span class="nlm-state"></span></p>
+        <p>В&nbsp;блокноте можно обсудить результаты запросов из&nbsp;урока. Для темы «SQL для анализа» <span class="nlm-state"></span></p>
         <ol class="nlm-steps">
           <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
-          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
-          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+          <li>Задайте свой вопрос или выберите задание ниже.</li>
+          <li>Нажмите на&nbsp;номер источника в&nbsp;ответе, чтобы открыть фрагмент, на&nbsp;который ссылается блокнот.</li>
         </ol>
         <div class="prompts wide" id="prompts"></div>
       </section>

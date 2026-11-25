@@ -1,10 +1,10 @@
 """Материалы страницы 3.4: все запросы страницы, сравнение SQLite и DuckDB, сверка интерактива
-«Троичная логика» с PostgreSQL. База — общий набор data/shop."""
+«Трёхзначная логика» с PostgreSQL. База — общий набор data/shop."""
 import json
 import os
 import subprocess
 
-TITLES = {"notin": "NOT IN с NULL в подзапросе против NOT EXISTS", "dates": "Дата против метки времени",
+TITLES = {"notin": "Почему NOT IN и NOT EXISTS дали разные результаты", "dates": "Заказы за день и за месяц",
           "explain": "EXPLAIN: встроенная CTE и MATERIALIZED", "report": "Отчёт из трёх CTE и размер каждого шага",
           "lost": "Поиск строк, пропавших из-за NULL", "weeks": "Группировка по неделям через DATE_TRUNC"}
 
@@ -31,7 +31,7 @@ def build(m):
     conds = list(dict.fromkeys((r["id"], r["sql"]) for r in rows))
     cols = ",\n".join(f"       ({sql}) AS c{i:02d}" for i, (_id, sql) in enumerate(conds, start=1))
     legend = "\n".join(f"--   c{i:02d}  {sql}" for i, (_id, sql) in enumerate(conds, start=1))
-    m.put("three_valued.sql", f"""-- Сверка интерактива «Троичная логика» страницы 3.4 с PostgreSQL 16.
+    m.put("three_valued.sql", f"""-- Сверка интерактива «Трёхзначная логика» страницы 3.4 с PostgreSQL 16.
 -- {len(conds)} условий на всех 24 сочетаниях значений rating и promo_code. В ответе t — TRUE, f — FALSE,
 -- пусто или NULL — UNKNOWN: WHERE пропустил бы только строки с t.
 -- Запуск: psql -P null=NULL -f da-3-4-cte-null-types/three_valued.sql   (таблицы базы не нужны)

@@ -1,46 +1,46 @@
       <p class="eyebrow">Дата аналитика · Тема 03 · <b>SQL для&nbsp;анализа</b></p>
       <h1>SELECT и&nbsp;порядок выполнения запроса</h1>
-      <p class="lead">Запрос на <span class="term" tabindex="0" data-g="sql">SQL</span> пишут, начиная с&nbsp;SELECT, а&nbsp;база выполняет его, начиная с&nbsp;FROM. После страницы вы сможете отбирать, сортировать и&nbsp;ограничивать строки учебной базы магазина, предсказывать, сколько строк останется после каждого шага, и&nbsp;объяснять, почему <span class="term" tabindex="0" data-g="alias">псевдоним</span> из&nbsp;SELECT нельзя использовать в&nbsp;WHERE, но&nbsp;можно в&nbsp;ORDER BY.</p>
+      <p class="lead">Как найти два бренда с наибольшей выручкой и исключить из расчёта отменённые заказы? На этом примере вы разберёте запрос на <span class="term" tabindex="0" data-g="sql">SQL</span> по шагам. Увидите, когда отбираются строки, когда подсчитываются суммы и почему в PostgreSQL можно сортировать по <span class="term" tabindex="0" data-g="alias">псевдониму</span> <code>revenue</code>, хотя в <code>WHERE</code> это имя недоступно.</p>
       <div class="meta-row"><span class="pill">≈ 30&nbsp;минут</span><span class="pill">анимация из&nbsp;11&nbsp;шагов</span><span class="pill">1&nbsp;интерактив</span><span class="pill">7&nbsp;блоков кода</span><span class="pill">7&nbsp;вопросов</span></div>
 
       <section data-sec="idea" data-title="Идея">
-        <h2 id="idea"><span class="sn">01</span>Идея: пишут с&nbsp;SELECT, выполняют с&nbsp;FROM</h2>
-        <p>SQL — язык, на&nbsp;котором у&nbsp;базы данных просят таблицу: в&nbsp;запросе описывают, какой нужен результат, а&nbsp;как&nbsp;его получить, решает <span class="term" tabindex="0" data-g="dbms">СУБД</span>. Запрос состоит из <span class="term" tabindex="0" data-g="clause">предложений</span> SELECT, FROM, WHERE и&nbsp;других; пишут их в&nbsp;одном порядке, а&nbsp;выполняются они в&nbsp;другом, <span class="term" tabindex="0" data-g="logorder">логическом</span>: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. Каждое предложение получает таблицу от&nbsp;предыдущего и&nbsp;передаёт следующему новую, обычно меньшую. Поэтому имя, которое столбец получил в&nbsp;SELECT, в&nbsp;WHERE и&nbsp;HAVING ещё не&nbsp;существует, а&nbsp;в&nbsp;ORDER BY уже есть.</p>
-        <div class="scene" id="scene" aria-label="Анимация: запрос SELECT перестраивается в порядок выполнения, и таблица orders сжимается на каждом шаге от 231 строки до двух"></div>
-        <p class="scene-hint">Листайте шаги кнопками или&nbsp;стрелками ← → на&nbsp;клавиатуре. Ниже — та же мысль подробно.</p>
+        <h2 id="idea"><span class="sn">01</span>В каком порядке разбирать запрос</h2>
+        <p>Запрос на SQL описывает результат, который вы хотите получить. Как именно прочитать и обработать данные, решает <span class="term" tabindex="0" data-g="dbms">СУБД</span> — система управления базами данных. Запрос состоит из <span class="term" tabindex="0" data-g="clause">предложений</span>. В записи первым идёт <code>SELECT</code>, но для разбора нашего запроса удобно начать с <code>FROM</code>. Затем идут <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>SELECT</code>, <code>ORDER BY</code> и <code>LIMIT</code>. Это <span class="term" tabindex="0" data-g="logorder">логический порядок обработки</span>. Он помогает понять, к чему относится условие и какие столбцы доступны на каждом шаге.</p>
+        <div class="scene" id="scene" aria-label="Как из 231 заказа выбрать два бренда с наибольшей выручкой среди брендов с 35 и более оплаченными заказами"></div>
+        <p class="scene-hint">Переключайте шаги кнопками или клавишами ← и →. Проследите, как из 231 заказа получаются две строки с выручкой брендов.</p>
 
-        <h3 class="sub-h">Семь шагов по&nbsp;порядку</h3>
-        <p>Этот порядок описан в&nbsp;документации PostgreSQL к&nbsp;команде SELECT<a class="ref" href="#src-1" data-ref="src-1">1</a>, а&nbsp;у&nbsp;Microsoft он прямо называется логическим порядком обработки<a class="ref" href="#src-2" data-ref="src-2">2</a>. Обязательно в&nbsp;запросе только SELECT, а&nbsp;FROM есть почти всегда. Остальные предложения можно пропускать, но&nbsp;в&nbsp;записи они стоят строго в&nbsp;том порядке, что&nbsp;и&nbsp;в&nbsp;начале сцены.</p>
+        <h3 class="sub-h">Семь шагов одного запроса</h3>
+        <p>Такой разбор запроса приведён в документации PostgreSQL<a class="ref" href="#src-1" data-ref="src-1">1</a> и SQL Server<a class="ref" href="#src-2" data-ref="src-2">2</a>. В нашем примере нужны все семь предложений. Простому запросу достаточно одного <code>SELECT</code>, например <code>SELECT 2 + 2</code>. Когда вы добавляете предложения, соблюдайте порядок их записи. Похожие операции в pandas приведены в таблице.</p>
         <div class="tbl d31-tbl">
           <table>
             <thead><tr><th>Шаг</th><th>Что&nbsp;делает</th><th>В&nbsp;pandas</th></tr></thead>
             <tbody>
-              <tr><td>1 FROM</td><td>берёт таблицу-источник</td><td><code>df</code></td></tr>
+              <tr><td>1 FROM</td><td>задаёт источник строк</td><td><code>df</code></td></tr>
               <tr><td>2 WHERE</td><td>оставляет строки, где условие истинно</td><td>маска <code>df[cond]</code></td></tr>
-              <tr><td>3 GROUP BY</td><td>раскладывает строки по&nbsp;группам</td><td><code>groupby</code></td></tr>
+              <tr><td>3 GROUP BY</td><td>группирует строки по указанным значениям</td><td><code>groupby</code></td></tr>
               <tr><td>4 HAVING</td><td>оставляет группы, где условие истинно</td><td>фильтр после <code>agg</code></td></tr>
-              <tr><td>5 SELECT</td><td>считает выходные столбцы и&nbsp;даёт им имена</td><td><code>agg(имя=…)</code></td></tr>
+              <tr><td>5 SELECT</td><td>задаёт столбцы результата и их имена</td><td><code>agg(имя=…)</code></td></tr>
               <tr><td>6 ORDER BY</td><td>сортирует</td><td><code>sort_values</code></td></tr>
               <tr><td>7 LIMIT</td><td>берёт первые строки</td><td><code>head</code></td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3 class="sub-h">Имя появляется в&nbsp;SELECT</h3>
-        <p><code>SUM(amount)</code> — <span class="term" tabindex="0" data-g="aggregate">агрегатная функция</span>: она сворачивает значения группы в&nbsp;одно число. <code>AS revenue</code> даёт результату имя, псевдоним. Он возникает на&nbsp;пятом шаге, поэтому WHERE и&nbsp;HAVING о&nbsp;нём не&nbsp;знают, а&nbsp;ORDER BY знает. Документация PostgreSQL говорит прямо: имя выходного столбца можно использовать в&nbsp;ORDER BY и&nbsp;GROUP BY, но&nbsp;не&nbsp;в&nbsp;WHERE и&nbsp;HAVING, там выражение пишут целиком<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
-        <p>Порядок логический: он задаёт смысл запроса, а&nbsp;не&nbsp;то, в&nbsp;какой последовательности база на&nbsp;самом деле читает данные. Об&nbsp;этом — в&nbsp;разделе «Ограничения».</p>
+        <h3 class="sub-h">Где можно использовать имя из SELECT</h3>
+        <p><code>SUM(amount)</code> — <span class="term" tabindex="0" data-g="aggregate">агрегатная функция</span>. Она складывает суммы заказов в каждой группе. Запись <code>AS revenue</code> задаёт имя столбца с результатом. В PostgreSQL по этому имени можно сортировать в <code>ORDER BY</code>. В <code>WHERE</code> и <code>HAVING</code> псевдоним результата использовать нельзя. Чтобы отобрать бренды по суммарной выручке, в <code>HAVING</code> повторяют выражение <code>SUM(amount)</code>. У <code>GROUP BY</code> есть отдельное правило PostgreSQL: здесь можно сослаться на имя выходного столбца, если само выражение допускает группировку<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <p>СУБД может выполнить вычисления в другом порядке, если ответ останется верным. В разделе «Ограничения» разберём, как посмотреть выбранный ею план.</p>
       </section>
 
       <section data-sec="task" data-title="Задача">
-        <h2 id="task"><span class="sn">02</span>Задача: почему revenue не&nbsp;находится</h2>
-        <p>Учебная база shop — интернет-магазин товаров для&nbsp;дома за&nbsp;январь–март 2026: клиенты, товары, заказы и&nbsp;их позиции. Данные сгенерированы для&nbsp;учебника. На&nbsp;этой странице нужны две таблицы: orders, 231&nbsp;заказ с&nbsp;суммой, статусом, брендом, каналом, оценкой и&nbsp;промокодом, и&nbsp;products, 32&nbsp;товара.</p>
-        <p>Задача — читать и&nbsp;писать запросы к&nbsp;ним и&nbsp;понимать, почему похожий запрос то работает, то падает. Аналитик считает выручку брендов, называет её revenue и&nbsp;пишет <code>WHERE revenue &gt; 250000</code>. PostgreSQL отвечает ошибкой <code class="wrap">column "revenue" does not exist</code>, хотя имя объявлено строкой выше. А <code>ORDER BY revenue</code> в&nbsp;том же запросе работает.</p>
-        <p>Ниже сначала разобраны отдельные предложения: фильтры, сортировка, DISTINCT и&nbsp;LIMIT. Затем в&nbsp;интерактиве условие переезжает между WHERE и&nbsp;HAVING, и&nbsp;видно, что&nbsp;меняется.</p>
+        <h2 id="task"><span class="sn">02</span>Почему PostgreSQL не находит столбец revenue</h2>
+        <p>В учебной базе <code>shop</code> собраны данные о работе магазина товаров для дома за январь–март 2026 года. В этом уроке понадобятся две таблицы. В <code>orders</code> 231 заказ. Для каждого указаны сумма, статус, бренд, канал, оценка и промокод. В <code>products</code> 32 товара.</p>
+        <p>Аналитик считает выручку каждого бренда и хочет оставить только бренды с выручкой больше 250 000&nbsp;₽. В <code>SELECT</code> он задаёт имя <code>revenue</code>, а ниже пишет <code>WHERE revenue &gt; 250000</code>. PostgreSQL сообщает, что столбец <code>revenue</code> не существует. Почему то же имя можно использовать в <code>ORDER BY revenue</code>?</p>
+        <p>Чтобы ответить, сначала выберем отдельные строки, отсортируем их и ограничим размер результата. Затем проверим в интерактиве, какие условия можно перенести из <code>WHERE</code> в <code>HAVING</code>.</p>
       </section>
 
       <section data-sec="filters" data-title="Фильтры и сортировка">
-        <h2 id="filters"><span class="sn">03</span>Фильтр, сортировка, первые строки</h2>
-        <p>WHERE оставляет строки, для&nbsp;которых условие истинно. Условие — <span class="term" tabindex="0" data-g="predicate">предикат</span>: выражение, которое для&nbsp;каждой строки даёт «да», «нет» или, если в&nbsp;нём участвует пустое значение, «неизвестно». Это&nbsp;та же маска, что&nbsp;в&nbsp;pandas, только записанная словами. Строковые значения в&nbsp;SQL берут в&nbsp;одинарные кавычки: 'paid'. Двойные кавычки — для&nbsp;имён столбцов и&nbsp;таблиц.</p>
+        <h2 id="filters"><span class="sn">03</span>Как отобрать и отсортировать строки</h2>
+        <p><code>WHERE</code> оставляет строки, для которых условие истинно. Такое условие называют <span class="term" tabindex="0" data-g="predicate">предикатом</span>. Например, при сравнении <code>amount &gt;= 5000</code> возможны три результата — <code>TRUE</code>, <code>FALSE</code> и <code>UNKNOWN</code>. Если сумма неизвестна, результат этого сравнения тоже неизвестен. В PostgreSQL текстовые значения заключают в одинарные кавычки, например <code>'paid'</code>. Двойные кавычки служат для имён, например для имени столбца.</p>
         <div class="tbl d31-tbl">
           <table>
             <thead><tr><th>Запись</th><th>Что&nbsp;значит</th><th>В&nbsp;pandas</th></tr></thead>
@@ -55,74 +55,74 @@
           </table>
         </div>
 
-        <h3 class="sub-h">Сортировка и&nbsp;место NULL</h3>
-        <p>ORDER BY сортирует по&nbsp;одному или&nbsp;нескольким столбцам: ASC — по&nbsp;возрастанию, это&nbsp;вариант по&nbsp;умолчанию, DESC — по&nbsp;убыванию. Второй столбец решает, когда в&nbsp;первом значения равны. <span class="term" tabindex="0" data-g="null">NULL</span> — отметка «значения нет», и&nbsp;у&nbsp;сортировки для&nbsp;него своё правило. PostgreSQL считает NULL больше любого значения: при&nbsp;DESC такие строки идут первыми, при&nbsp;ASC — последними<a class="ref" href="#src-3" data-ref="src-3">3</a>. Место задают явно: NULLS FIRST или&nbsp;NULLS LAST. У&nbsp;127&nbsp;заказов из&nbsp;231&nbsp;нет оценки, и&nbsp;«три лучших по&nbsp;оценке» без&nbsp;NULLS LAST окажутся тремя заказами без&nbsp;оценки, это&nbsp;запрос 4&nbsp;в&nbsp;разделе «Код».</p>
+        <h3 class="sub-h">Где при сортировке окажутся заказы без оценки</h3>
+        <p><code>ORDER BY</code> задаёт порядок строк. Для сортировки по возрастанию используют <code>ASC</code> (по умолчанию), по убыванию — <code>DESC</code>. Если значения первого столбца равны, их порядок определяет следующий ключ сортировки. У 127 заказов из 231 оценка отсутствует, и в столбце <code>rating</code> стоит <span class="term" tabindex="0" data-g="null">NULL</span>. В PostgreSQL при <code>DESC</code> строки с NULL по умолчанию идут первыми, при <code>ASC</code> — последними<a class="ref" href="#src-3" data-ref="src-3">3</a>. Поэтому запрос к этим заказам с <code>ORDER BY rating DESC LIMIT 3</code> вернёт три заказа без оценки. Чтобы первыми шли заказы с высокой оценкой, укажите <code>DESC NULLS LAST</code>. В запросе 4 сравните оба варианта для первой недели февраля.</p>
 
         <h3 class="sub-h">DISTINCT</h3>
-        <p><span class="term" tabindex="0" data-g="distinct">SELECT DISTINCT</span> убирает из&nbsp;результата повторяющиеся строки. Он выполняется сразу после SELECT и&nbsp;сравнивает строку целиком: <code>SELECT DISTINCT channel</code> даёт три канала, а <code>SELECT DISTINCT channel, brand</code> — все встретившиеся пары канала и&nbsp;бренда. Внутри агрегата DISTINCT считает разные значения: по <code>COUNT(DISTINCT customer_id)</code> видно, что&nbsp;заказы сделали 52&nbsp;клиента.</p>
+        <p><span class="term" tabindex="0" data-g="distinct">SELECT DISTINCT</span> удаляет повторы после выбора столбцов. При сравнении учитываются все выбранные значения. Например, <code>SELECT DISTINCT channel</code> вернёт три канала, а <code>SELECT DISTINCT channel, brand</code> — все пары канала и бренда, которые встречаются в заказах. Для подсчёта разных клиентов подходит <code>COUNT(DISTINCT customer_id)</code>. В нашей таблице заказы сделали 52 клиента.</p>
 
-        <h3 class="sub-h">LIMIT и&nbsp;OFFSET</h3>
-        <p><code>LIMIT n</code> оставляет первые n строк, <code>OFFSET m</code> перед этим пропускает m строк. Вместе они дают <span class="term" tabindex="0" data-g="pagination">пагинацию</span>, выдачу по&nbsp;страницам: <code>LIMIT 20 OFFSET 40</code> — третья страница по&nbsp;20&nbsp;строк. LIMIT выполняется последним, и&nbsp;«первые» значит первые после ORDER BY. Без&nbsp;ORDER BY база вернёт непредсказуемое подмножество строк, о&nbsp;чём документация PostgreSQL предупреждает отдельно<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
+        <h3 class="sub-h">Как разбить результат на страницы</h3>
+        <p><code>LIMIT n</code> возвращает не больше n строк. Если указать <code>OFFSET m</code>, запрос сначала пропустит m строк. Так можно организовать <span class="term" tabindex="0" data-g="pagination">пагинацию</span> — показывать результат по страницам. Например, <code>LIMIT 20 OFFSET 40</code> вернёт третью страницу, если на каждой помещается 20 строк. Чтобы однозначно определить состав страницы, нужен <code>ORDER BY</code> с ключами, которые задают порядок всех строк. Без сортировки состав первых 20 строк не гарантирован<a class="ref" href="#src-3" data-ref="src-3">3</a>.</p>
       </section>
 
       <section data-sec="method" data-title="WHERE и HAVING">
-        <h2 id="method"><span class="sn">04</span>WHERE и&nbsp;HAVING: запрос по&nbsp;шагам</h2>
-        <p>Главное различие двух фильтров — что&nbsp;они видят. WHERE работает до&nbsp;группировки и&nbsp;проверяет каждую строку. HAVING работает после и&nbsp;проверяет каждую группу целиком, поэтому в&nbsp;нём пишут агрегаты. Столбец, которого нет в&nbsp;GROUP BY, в&nbsp;HAVING можно упомянуть только внутри агрегата: в&nbsp;группе клиента пять заказов, и&nbsp;спросить «какой у&nbsp;группы status» нельзя.</p>
-        <p>С&nbsp;пустыми значениями агрегаты обходятся по-разному. <code>COUNT(*)</code> считает строки группы, а <code>COUNT(rating)</code> — только строки, где в&nbsp;rating не&nbsp;NULL: в&nbsp;orders 231&nbsp;строка, а&nbsp;заказов с&nbsp;оценкой 104.</p>
-        <p>В&nbsp;интерактиве — учебная выборка из&nbsp;orders: 15&nbsp;заказов четырёх клиентов, 101, 104, 106&nbsp;и&nbsp;143. В&nbsp;запросе она называется sample. Запрос ищет двух клиентов с&nbsp;наибольшей выручкой среди тех, у&nbsp;кого не&nbsp;меньше трёх оплаченных заказов. Сначала предскажите результат.</p>
+        <h2 id="method"><span class="sn">04</span>Когда использовать WHERE, а когда HAVING</h2>
+        <p><code>WHERE</code> проверяет отдельные строки до группировки. <code>HAVING</code> проверяет уже сформированные группы. Например, <code>WHERE status = 'paid'</code> оставляет только оплаченные заказы, а <code>HAVING COUNT(*) &gt;= 3</code> оставляет клиентов, у которых после отбора набралось хотя бы три заказа. Если группировать по <code>customer_id</code>, у одного клиента могут быть заказы с разными статусами. Его группу нельзя проверить по условию <code>HAVING status = 'paid'</code> в PostgreSQL.</p>
+        <p><code>COUNT(*)</code> считает все строки, а <code>COUNT(rating)</code> — строки с указанной оценкой. Если применить обе функции ко всей таблице <code>orders</code>, получится 231 заказ, из них 104 с оценкой.</p>
+        <p>В интерактиве используется выборка <code>sample</code>. В ней 15 заказов четырёх клиентов с номерами 101, 104, 106 и 143. Начальная версия запроса выбирает двух клиентов, у которых больше всего выручки от оплаченных заказов. В сравнении участвуют клиенты с тремя или более такими заказами. Сначала попробуйте предсказать результат.</p>
         <div class="check" data-q="q1"></div>
         <div class="block wide" data-w="steps"></div>
-        <p>Три вывода. Уберите <code>status = 'paid'</code> совсем, и&nbsp;HAVING посчитает отменённые заказы: у&nbsp;клиента 106&nbsp;их два, и&nbsp;он поднимется на&nbsp;второе место с&nbsp;19&nbsp;960&nbsp;₽. Перенесите это&nbsp;условие в&nbsp;HAVING, и&nbsp;PostgreSQL откажется выполнять запрос. COUNT(*) в&nbsp;WHERE и&nbsp;псевдоним revenue в&nbsp;WHERE или&nbsp;HAVING тоже дают ошибку: агрегатов на&nbsp;втором шаге ещё нет, а&nbsp;имени revenue нет до&nbsp;пятого.</p>
-        <p>Выборка взята запросом <code class="wrap">SELECT order_id, customer_id, amount, status FROM orders WHERE customer_id IN (101, 104, 106, 143)</code>. Интерактив считает на&nbsp;JavaScript; все 27&nbsp;расстановок условий сверены с&nbsp;PostgreSQL 16&nbsp;на&nbsp;каждом из&nbsp;семи этапов.</p>
+        <p>Уберите <code>status = 'paid'</code>. Теперь в количестве и сумме заказов учтены также отменённые. У клиента 106 два таких заказа. Сумма всех четырёх его заказов составит 19 960&nbsp;₽, и он окажется на втором месте. Если поместить условие по статусу в <code>HAVING</code>, PostgreSQL выдаст ошибку. Условие с <code>COUNT(*)</code> недопустимо в <code>WHERE</code>, а псевдоним <code>revenue</code> в этом запросе недоступен ни в <code>WHERE</code>, ни в <code>HAVING</code>.</p>
+        <p>Выборку можно получить запросом <code class="wrap">SELECT order_id, customer_id, amount, status FROM orders WHERE customer_id IN (101, 104, 106, 143) ORDER BY order_id</code>. В интерактиве результат рассчитывает JavaScript. Для всех 27 сочетаний настроек результаты и ошибки сверены с PostgreSQL 16.</p>
       </section>
 
       <section data-sec="dialects" data-title="Диалекты">
-        <h2 id="dialects"><span class="sn">05</span>Диалекты: различия в&nbsp;мелочах</h2>
-        <p>Ядро SQL задано стандартом, но&nbsp;у&nbsp;каждой СУБД свой <span class="term" tabindex="0" data-g="dialect">диалект</span> — набор расширений и&nbsp;отличий. SELECT, WHERE, GROUP BY и&nbsp;ORDER BY везде пишутся одинаково, расходятся мелочи, и&nbsp;как&nbsp;раз они ломают перенесённые запросы. SQLite и&nbsp;DuckDB — встраиваемые СУБД: база лежит в&nbsp;одном файле и&nbsp;работает внутри вашей программы. MS SQL — сервер Microsoft, BigQuery — облачное хранилище Google. Столбцы PostgreSQL, SQLite и&nbsp;DuckDB проверены запуском в&nbsp;разделе «Код» и&nbsp;сверены с&nbsp;документацией SQLite<a class="ref" href="#src-4" data-ref="src-4">4</a> и&nbsp;DuckDB<a class="ref" href="#src-5" data-ref="src-5">5</a>. MS SQL<a class="ref" href="#src-2" data-ref="src-2">2</a> и&nbsp;BigQuery<a class="ref" href="#src-6" data-ref="src-6">6</a> описаны только по&nbsp;документации. <code>FETCH FIRST n ROWS ONLY</code> — запись из&nbsp;стандарта SQL:2008, она делает то&nbsp;же, что LIMIT<a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
+        <h2 id="dialects"><span class="sn">05</span>Чем различаются диалекты SQL</h2>
+        <p>Конкретная СУБД поддерживает свой <span class="term" tabindex="0" data-g="dialect">диалект SQL</span>. Например, один и тот же запрос с сортировкой по оценке может по-разному расположить строки без оценки. Ниже сравниваются PostgreSQL, встраиваемые СУБД SQLite и DuckDB, Microsoft SQL Server и облачная платформа BigQuery. Примеры для первых трёх систем проверены на учебной базе. Правила SQLite<a class="ref" href="#src-4" data-ref="src-4">4</a> и DuckDB<a class="ref" href="#src-5" data-ref="src-5">5</a>, а также сведения о SQL Server<a class="ref" href="#src-2" data-ref="src-2">2</a> и BigQuery<a class="ref" href="#src-6" data-ref="src-6">6</a> приведены в документации. В PostgreSQL стандартная запись <code>FETCH FIRST n ROWS ONLY</code> ограничивает число строк так же, как <code>LIMIT n</code><a class="ref" href="#src-1" data-ref="src-1">1</a>.</p>
         <div class="tbl d31-tbl d31-wide">
           <table>
             <thead><tr><th></th><th>PostgreSQL</th><th>SQLite</th><th>DuckDB</th><th>MS SQL</th><th>BigQuery</th></tr></thead>
             <tbody>
               <tr><td>Первые n строк</td><td>LIMIT n, FETCH FIRST</td><td>LIMIT n</td><td>LIMIT n, FETCH FIRST</td><td>TOP (n), OFFSET … FETCH</td><td>LIMIT n</td></tr>
               <tr><td>NULL при&nbsp;DESC</td><td>первыми</td><td>последними</td><td>последними</td><td>последними</td><td>последними</td></tr>
-              <tr><td>LIKE и&nbsp;регистр</td><td>различает, есть ILIKE</td><td>не&nbsp;различает, но&nbsp;только у&nbsp;латиницы</td><td>различает, есть ILIKE</td><td>зависит от&nbsp;collation</td><td>различает</td></tr>
-              <tr><td>Псевдоним из&nbsp;SELECT</td><td>в&nbsp;ORDER BY и&nbsp;GROUP BY</td><td>везде, даже в&nbsp;WHERE</td><td>везде, даже в&nbsp;WHERE</td><td>только в&nbsp;ORDER BY</td><td>везде, кроме WHERE</td></tr>
+              <tr><td>LIKE и&nbsp;регистр</td><td>различает, есть ILIKE</td><td>не&nbsp;различает, но&nbsp;только для букв ASCII</td><td>различает, есть ILIKE</td><td>зависит от&nbsp;collation</td><td>различает</td></tr>
+              <tr><td>Псевдоним из&nbsp;SELECT</td><td>в&nbsp;ORDER BY и&nbsp;GROUP BY</td><td>в том числе в WHERE для выражений без агрегатов</td><td>в том числе в WHERE для выражений без агрегатов</td><td>только в&nbsp;ORDER BY</td><td>в GROUP BY, HAVING и ORDER BY</td></tr>
             </tbody>
           </table>
         </div>
-        <p>LIKE в&nbsp;MS SQL подчиняется <span class="term" tabindex="0" data-g="collation">правилу сравнения строк</span> (collation): с&nbsp;пометкой CI регистр не&nbsp;важен, с&nbsp;CS — важен<a class="ref" href="#src-2" data-ref="src-2">2</a>. Разрешённый псевдоним в&nbsp;HAVING удобен, но&nbsp;запрос с&nbsp;ним не&nbsp;перенести в&nbsp;PostgreSQL без&nbsp;правки.</p>
+        <p>В SQL Server чувствительность <code>LIKE</code> к регистру зависит от <span class="term" tabindex="0" data-g="collation">правила сравнения строк</span> (collation). Обозначение CI означает, что регистр не учитывается, CS — что учитывается<a class="ref" href="#src-2" data-ref="src-2">2</a>. При переносе запроса проверяйте и допустимость псевдонимов. Например, ссылка на имя <code>revenue</code> из <code>HAVING</code> в DuckDB допустима, а в PostgreSQL нужно написать <code>SUM(amount)</code>.</p>
       </section>
 
       <section data-sec="nuances" data-title="Нюансы">
-        <h2 id="nuances"><span class="sn">06</span>Нюансы: NULL, регистр, порядок страниц</h2>
-        <div class="callout"><p><b>Сравнение с&nbsp;NULL.</b> Любое сравнение с&nbsp;NULL даёт не&nbsp;TRUE и&nbsp;не&nbsp;FALSE, а&nbsp;UNKNOWN — третье значение <span class="term" tabindex="0" data-g="tvl">троичной логики</span><a class="ref" href="#src-7" data-ref="src-7">7</a>. WHERE пропускает только TRUE, поэтому <code>promo_code &lt;&gt; 'ЗИМА10'</code> находит 19&nbsp;заказов, а&nbsp;не&nbsp;209: 190&nbsp;строк без&nbsp;промокода выпали. Условие <code>= NULL</code> не&nbsp;находит ничего, пустоту ищут через IS NULL. Пустая строка '' — не&nbsp;NULL, таких промокодов в&nbsp;базе 7. Подробнее о&nbsp;троичной логике — на&nbsp;странице 3.4.</p></div>
-        <div class="callout"><p><b>LIKE и&nbsp;регистр.</b> В&nbsp;PostgreSQL LIKE различает регистр: 'лампа%' не&nbsp;найдёт «Лампа настольная», для&nbsp;поиска без&nbsp;учёта регистра есть ILIKE<a class="ref" href="#src-8" data-ref="src-8">8</a>. SQLite не&nbsp;различает регистр только у&nbsp;латиницы: <code>status LIKE 'PAID'</code> находит 195&nbsp;строк, а&nbsp;'лампа%' — ноль, и&nbsp;lower() кириллицу там тоже не&nbsp;меняет<a class="ref" href="#src-4" data-ref="src-4">4</a>. В&nbsp;PostgreSQL и&nbsp;DuckDB работает <code>lower(product_name) LIKE 'лампа%'</code>.</p></div>
-        <div class="callout"><p><b>Порядок и&nbsp;страницы.</b> Без&nbsp;ORDER BY порядок строк не&nbsp;гарантирован даже после GROUP BY: в&nbsp;интерактиве группы идут по&nbsp;customer_id только для&nbsp;удобства. Если сортировать по&nbsp;неуникальному столбцу, строки с&nbsp;равными значениями могут меняться местами от&nbsp;запроса к&nbsp;запросу, и&nbsp;страницы через LIMIT и&nbsp;OFFSET начнут повторять одни строки и&nbsp;терять другие<a class="ref" href="#src-3" data-ref="src-3">3</a>. Последним ключом ставят уникальный столбец: <code>ORDER BY rating DESC NULLS LAST, order_id</code>.</p></div>
+        <h2 id="nuances"><span class="sn">06</span>NULL, регистр букв и порядок строк</h2>
+        <div class="callout"><p><b>Как найти заказы без промокода.</b> При обычном сравнении с <code>NULL</code>, например <code>promo_code &lt;&gt; 'ЗИМА10'</code>, результат неизвестен. В <span class="term" tabindex="0" data-g="tvl">трёхзначной логике</span> его обозначают <code>UNKNOWN</code><a class="ref" href="#src-7" data-ref="src-7">7</a>. <code>WHERE</code> оставляет только строки с результатом <code>TRUE</code>. Из 231 заказа у 190 промокод равен <code>NULL</code>, у 22 указан «ЗИМА10», у 12 — «ВЕСНА15», у семи записана пустая строка. Поэтому условию <code>promo_code &lt;&gt; 'ЗИМА10'</code> соответствуют 19 заказов. Заказы без значения ищут с помощью <code>IS NULL</code>. Пустая строка <code>''</code> под это условие не подходит. Подробнее о <code>NULL</code> — в уроке 3.4.</p></div>
+        <div class="callout"><p><b>Как учесть регистр букв.</b> В нашем примере PostgreSQL различает регистр в <code>LIKE</code>, поэтому шаблон <code>'лампа%'</code> не подходит для названия «Лампа настольная». Для поиска без учёта регистра можно использовать <code>ILIKE</code><a class="ref" href="#src-8" data-ref="src-8">8</a>. В стандартной сборке SQLite <code>LIKE</code> по умолчанию не различает регистр букв ASCII, а для кириллицы регистр важен. Выражение <code>status LIKE 'PAID'</code> находит 195 строк, а <code>product_name LIKE 'лампа%'</code> — ни одной. Встроенная в SQLite функция <code>lower()</code> также не меняет регистр кириллицы<a class="ref" href="#src-4" data-ref="src-4">4</a>. В PostgreSQL функция <code>lower()</code> учитывает языковые настройки базы. Если они поддерживают смену регистра кириллицы, как в учебной базе, выражение <code>lower(product_name) LIKE 'лампа%'</code> находит четыре товара. В DuckDB результат тот же. В PostgreSQL с настройкой <code>C</code> заглавная «Л» останется заглавной, и запрос вернёт ноль строк.</p></div>
+        <div class="callout"><p><b>Как избежать повторов на соседних страницах.</b> В интерактиве группы расположены по номерам клиентов, чтобы их было легче сравнить. SQL гарантирует порядок только при <code>ORDER BY</code>. Даже с сортировкой по оценке у разных заказов могут оказаться одинаковые оценки. Тогда на соседних страницах один заказ может появиться дважды, а другой не попасть ни на одну из них<a class="ref" href="#src-3" data-ref="src-3">3</a>. Для неизменившегося набора заказов порядок станет однозначным, если последним ключом добавить уникальный номер заказа: <code>ORDER BY rating DESC NULLS LAST, order_id</code>.</p></div>
       </section>
 
       <section data-sec="limits" data-title="Ограничения">
-        <h2 id="limits"><span class="sn">07</span>Ограничения: логический порядок — не&nbsp;план</h2>
-        <p>Логический порядок объясняет, что&nbsp;запрос значит, но&nbsp;не&nbsp;то, как&nbsp;база его выполняет. <span class="term" tabindex="0" data-g="planner">Планировщик</span> PostgreSQL выбирает <span class="term" tabindex="0" data-g="plan">план выполнения</span>: может найти нужные строки по <span class="term" tabindex="0" data-g="index">индексу</span>, не&nbsp;читая таблицу целиком, или&nbsp;остановиться, как&nbsp;только набрал строки для&nbsp;LIMIT. Результат при&nbsp;этом тот же, что&nbsp;дал бы логический порядок. План показывает команда EXPLAIN<a class="ref" href="#src-9" data-ref="src-9">9</a>; планы и&nbsp;индексы разобраны в&nbsp;блоке «Дата инженерия», тема 03.</p>
+        <h2 id="limits"><span class="sn">07</span>Как СУБД выбирает план выполнения</h2>
+        <p><span class="term" tabindex="0" data-g="planner">Планировщик</span> PostgreSQL выбирает <span class="term" tabindex="0" data-g="plan">план выполнения</span> запроса. Например, если есть подходящий индекс, СУБД может найти заказы по <span class="term" tabindex="0" data-g="index">индексу</span>, а с <code>LIMIT</code> иногда может завершить поиск, когда нужные строки уже найдены. Логический разбор помогает проверить смысл запроса. Выбранный план можно посмотреть с помощью <code>EXPLAIN</code><a class="ref" href="#src-9" data-ref="src-9">9</a>. Планы и индексы подробнее разбираются в теме 03 блока «Дата инженерия».</p>
       </section>
 
       <section data-sec="code" data-title="Код">
-        <h2 id="code"><span class="sn">08</span>Код: пять запросов, pandas и&nbsp;три СУБД</h2>
-        <p>Запросы идут к&nbsp;учебной базе shop в&nbsp;PostgreSQL 16, сложность растёт от&nbsp;первого к&nbsp;пятому. Вывод — из&nbsp;psql, клиента PostgreSQL для&nbsp;терминала.</p>
+        <h2 id="code"><span class="sn">08</span>Пять запросов к базе магазина</h2>
+        <p>Выполните запросы к базе <code>shop</code> в PostgreSQL 16. Под каждым примером показан вывод <code>psql</code> — клиента PostgreSQL для командной строки.</p>
         <div class="block wide" data-code="s1"></div>
         <div class="block wide" data-code="s2"></div>
         <div class="block wide" data-code="s3"></div>
         <div class="block wide" data-code="s4"></div>
         <div class="block wide" data-code="s5"></div>
-        <p>Запрос из&nbsp;сцены можно отправить в&nbsp;SQLite прямо из&nbsp;pandas: <code>pd.read_sql</code> выполняет его и&nbsp;возвращает DataFrame<a class="ref" href="#src-10" data-ref="src-10">10</a>. Для&nbsp;сравнения ниже — то же самое силами pandas, как&nbsp;в&nbsp;теме 02.</p>
+        <p>Запрос о двух брендах можно выполнить из pandas. Функция <code>pd.read_sql</code> передаст его SQLite и вернёт результат в виде DataFrame<a class="ref" href="#src-10" data-ref="src-10">10</a>. Во второй части примера тот же расчёт выполняется средствами pandas после загрузки таблицы заказов.</p>
         <div class="block wide" data-code="pandas"></div>
-        <p>Последний блок прогоняет одни и&nbsp;те же запросы через PostgreSQL, SQLite и&nbsp;DuckDB и&nbsp;печатает, где ответы расходятся.</p>
+        <p>Последний пример показывает, какие результаты и ошибки дают одни и те же запросы в PostgreSQL, SQLite и DuckDB.</p>
         <div class="block wide" data-code="dialects"></div>
-        <p>Больше задач на&nbsp;SELECT — в&nbsp;браузерном тренажёре SQLBolt<a class="ref" href="#src-11" data-ref="src-11">11</a>, аналитические приёмы на&nbsp;SQL собраны у&nbsp;Танимуры<a class="ref" href="#src-12" data-ref="src-12">12</a>.</p>
+        <p>В браузерном тренажёре SQLBolt есть упражнения на <code>SELECT</code><a class="ref" href="#src-11" data-ref="src-11">11</a>. Дополнительные примеры аналитических запросов можно найти в книге Кэти Танимуры<a class="ref" href="#src-12" data-ref="src-12">12</a>.</p>
       </section>
 
       <section data-sec="check" data-title="Проверь себя">
         <h2 id="check"><span class="sn">09</span>Проверь себя</h2>
-        <p>Ответ можно выбрать один раз. Если не&nbsp;уверены, нажмите «Подсказка от&nbsp;ИИ»: кнопка скопирует промпт, в&nbsp;котором модель попросят вести вас вопросами и&nbsp;не&nbsp;называть ответ.</p>
+        <p>Если сомневаетесь, нажмите «Подсказка от ИИ» перед выбором ответа. Вставьте скопированный запрос в чат. Он попросит задавать наводящие вопросы. Ответ в уроке можно выбрать один раз.</p>
         <div class="check" data-q="q2"></div>
         <div class="check" data-q="q3"></div>
         <div class="check" data-q="q4"></div>
@@ -133,20 +133,20 @@
 
       <section data-sec="glossary" data-title="Глоссарий">
         <h2 id="glossary"><span class="sn">10</span>Глоссарий</h2>
-        <p>Термины страницы по&nbsp;алфавиту, с&nbsp;английскими названиями: по&nbsp;ним удобно искать документацию. Ссылка под&nbsp;определением ведёт туда, где термин впервые появляется в&nbsp;тексте.</p>
+        <p>В глоссарии указаны русские и английские названия терминов. Ссылка под определением ведёт к первому упоминанию в уроке.</p>
         <dl class="gloss wide" id="gloss"></dl>
       </section>
 
       <section data-sec="materials" data-title="Материалы">
         <h2 id="materials"><span class="sn">11</span>Материалы и&nbsp;работа с&nbsp;ИИ</h2>
-        <p>К&nbsp;странице прилагаются файлы, на&nbsp;которых построены анимация, интерактив и&nbsp;код. Скачайте их по&nbsp;одному или одним архивом, а&nbsp;страницу целиком можно скопировать в&nbsp;Markdown.</p>
+        <p>Скачайте учебную базу, пять SQL-файлов и скрипт для сравнения трёх СУБД. Текст урока с примерами кода можно скопировать в Markdown.</p>
         <div class="matlist wide" id="mat"></div>
         <h3 class="sub-h" id="nlm">Блокнот темы в&nbsp;NotebookLM</h3>
-        <p>NotebookLM отвечает только по&nbsp;загруженным источникам. Для&nbsp;темы «SQL для анализа» <span class="nlm-state"></span></p>
+        <p>В блокноте собраны материалы главы. Для темы «SQL для анализа» <span class="nlm-state"></span></p>
         <ol class="nlm-steps">
           <li>Откройте блокнот <span class="nlm-open"></span>. Нужен аккаунт Google.</li>
-          <li>Вставьте в&nbsp;чат блокнота один из&nbsp;промптов ниже или задайте свой вопрос.</li>
-          <li>Щёлкните по&nbsp;номеру в&nbsp;ответе, чтобы увидеть, на&nbsp;какой странице это написано.</li>
+          <li>Выберите один из предложенных запросов или задайте свой вопрос в чате блокнота.</li>
+          <li>Нажмите на номер ссылки в ответе, чтобы открыть соответствующий фрагмент источника.</li>
         </ol>
         <div class="prompts wide" id="prompts"></div>
       </section>
@@ -161,7 +161,7 @@
           <li id="src-5">DuckDB. <a href="https://duckdb.org/docs/stable/sql/query_syntax/orderby" target="_blank" rel="noopener">ORDER BY Clause</a>. NULLS LAST по&nbsp;умолчанию в&nbsp;обе стороны и&nbsp;отличие от&nbsp;PostgreSQL.</li>
           <li id="src-6">Google Cloud. <a href="https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax" target="_blank" rel="noopener">BigQuery: Query syntax</a> и <a href="https://cloud.google.com/bigquery/docs/reference/standard-sql/operators" target="_blank" rel="noopener">Operators</a>. Порядок вычисления, псевдонимы, NULL при&nbsp;сортировке, LIMIT и&nbsp;LIKE.</li>
           <li id="src-7">Winand M. <a href="https://modern-sql.com/concept/three-valued-logic" target="_blank" rel="noopener">Modern SQL: Three-Valued Logic</a>. Как&nbsp;сравнение с&nbsp;NULL даёт UNKNOWN по&nbsp;стандарту SQL.</li>
-          <li id="src-8">PostgreSQL Documentation. <a href="https://www.postgresql.org/docs/current/functions-matching.html" target="_blank" rel="noopener">Pattern Matching</a>. LIKE, ILIKE и&nbsp;знаки % и&nbsp;_.</li>
+          <li id="src-8">PostgreSQL Documentation. <a href="https://www.postgresql.org/docs/current/functions-matching.html" target="_blank" rel="noopener">Pattern Matching</a>. LIKE, ILIKE и&nbsp;знаки % и&nbsp;_. Правила преобразования регистра описаны в разделе <a href="https://www.postgresql.org/docs/16/functions-string.html" target="_blank" rel="noopener">String Functions and Operators</a>.</li>
           <li id="src-9">PostgreSQL Documentation. <a href="https://www.postgresql.org/docs/current/using-explain.html" target="_blank" rel="noopener">Using EXPLAIN</a>. Как&nbsp;посмотреть план выполнения запроса.</li>
           <li id="src-10">pandas. <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_sql.html" target="_blank" rel="noopener">pandas.read_sql</a>. Запрос к&nbsp;базе с&nbsp;результатом в&nbsp;DataFrame.</li>
           <li id="src-11"><a href="https://sqlbolt.com/" target="_blank" rel="noopener">SQLBolt</a>. Упражнения на&nbsp;SELECT в&nbsp;браузере.</li>

@@ -4,8 +4,8 @@ import csv
 import io
 import os
 
-TITLES = {"channels": "Метрики по каналам и группы из двух столбцов с HAVING", "conditional": "Условные агрегаты: CASE и FILTER",
-          "rollup": "ROLLUP и GROUPING SETS", "nulls": "NULL внутри агрегатов"}
+TITLES = {"channels": "Заказы, покупатели и выручка по каналам", "conditional": "Число отмен и помесячная выручка",
+          "rollup": "Итоги по каналам, брендам и магазину", "nulls": "Средняя оценка и баллы в пересчёте на заказ"}
 
 
 def build(m):

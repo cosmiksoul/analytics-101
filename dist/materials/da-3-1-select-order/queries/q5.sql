@@ -14,7 +14,7 @@ FROM orders
 WHERE revenue > 250000
 GROUP BY brand;
 
--- условие на выручку бренда пишут в HAVING выражением
+-- проверяем сумму оплаченных заказов каждого бренда
 SELECT brand, SUM(amount) AS revenue
 FROM orders
 WHERE status = 'paid'

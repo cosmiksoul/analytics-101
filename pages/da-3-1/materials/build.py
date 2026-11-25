@@ -21,5 +21,5 @@ def build(m):
     (m.work / "_pandas_block.py").write_text(m.page_code("pandas"), encoding="utf-8")
     m.run(["python", "_pandas_block.py"], expect=m.page_out("pandas"), what="блок «pandas» (не в материалах)")
 
-    m.extra = ("Запросы из `queries/` выполняются командой `psql -d shop -f da-3-1-select-order/queries/q1.sql`; "
-               "для q4 добавьте `-P null=NULL`, чтобы пустые значения печатались словом NULL.")
+    m.extra = ("Файлы из `queries/` можно выполнить с помощью psql. Например, первый запрос запускается командой `psql -d shop -f da-3-1-select-order/queries/q1.sql`; "
+               "для q4 добавьте `-P null=NULL`, чтобы psql явно показывал NULL в выводе.")

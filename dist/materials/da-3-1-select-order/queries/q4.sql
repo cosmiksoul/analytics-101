@@ -1,4 +1,4 @@
--- сравнение с NULL даёт UNKNOWN, и строка выпадает
+-- если промокод равен NULL, сравнение даёт UNKNOWN
 SELECT COUNT(*) AS not_zima
 FROM orders
 WHERE promo_code <> 'ЗИМА10';

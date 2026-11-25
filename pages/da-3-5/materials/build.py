@@ -4,9 +4,9 @@ import csv
 import io
 import os
 
-TITLES = {"ties": "Равные даты: рамка по умолчанию и ROWS", "where": "Окно в WHERE — ошибка, окно в CTE — работает",
+TITLES = {"ties": "Равные даты: рамка по умолчанию и ROWS", "where": "Как отобрать строки по результату оконной функции",
           "retention": "Удержание через LAG", "moving": "Скользящее среднее за 7 дней: ROWS и RANGE",
-          "top3": "Топ-3 по штукам и ничьи", "lastver": "Последняя версия записи из журнала"}
+          "top3": "Три лидера продаж в каждой категории", "lastver": "Последняя версия записи из журнала"}
 
 
 def build(m):
@@ -17,7 +17,7 @@ def build(m):
     keys = ["ties", "where", "retention", "moving", "top3", "lastver"]          # нюансы, потом четыре отчёта
     text = ("-- Запросы страницы 3.5 «Оконные функции» курса «Аналитика 101». Учебная база shop, PostgreSQL 16.\n"
             "-- Запуск из корня папки материалов: psql -d shop -P null=NULL < da-3-5-window-functions/window_functions.sql\n"
-            "-- Второй блок начинается с запроса, который нарочно падает: оконная функция в WHERE.\n")
+            "-- Второй блок начинается с запроса, который намеренно вызывает ошибку: оконная функция в WHERE.\n")
     for k in keys:
         text += f"\n-- ===== {TITLES[k]} =====\n" + m.page_code(k)
     m.put("window_functions.sql", text)

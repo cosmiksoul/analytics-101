@@ -1,7 +1,7 @@
 -- Запросы страницы 3.4 «Подзапросы, CTE, NULL и типы» курса «Аналитика 101». Учебная база shop, PostgreSQL 16.
 -- Запуск из корня папки материалов: psql -d shop -P null=NULL -f da-3-4-cte-null-types/queries.sql
 
--- ===== NOT IN с NULL в подзапросе против NOT EXISTS =====
+-- ===== Почему NOT IN и NOT EXISTS дали разные результаты =====
 -- Клиенты, которые никого не пригласили. referrer_id у 44 клиентов — NULL
 SELECT COUNT(*) AS not_in
 FROM customers
@@ -12,7 +12,7 @@ FROM customers c
 WHERE NOT EXISTS (SELECT 1 FROM customers r
                   WHERE r.referrer_id = c.customer_id);
 
--- ===== Дата против метки времени =====
+-- ===== Заказы за день и за месяц =====
 -- 12 февраля: 5 заказов, один из них (1008) ровно в 00:00:00
 SELECT COUNT(*) AS eq_literal FROM orders WHERE created_at = '2026-02-12';
 SELECT COUNT(*) AS eq_date    FROM orders WHERE created_at::date = '2026-02-12';

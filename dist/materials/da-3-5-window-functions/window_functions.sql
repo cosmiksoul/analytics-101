@@ -1,6 +1,6 @@
 -- Запросы страницы 3.5 «Оконные функции» курса «Аналитика 101». Учебная база shop, PostgreSQL 16.
 -- Запуск из корня папки материалов: psql -d shop -P null=NULL < da-3-5-window-functions/window_functions.sql
--- Второй блок начинается с запроса, который нарочно падает: оконная функция в WHERE.
+-- Второй блок начинается с запроса, который намеренно вызывает ошибку: оконная функция в WHERE.
 
 -- ===== Равные даты: рамка по умолчанию и ROWS =====
 -- 1. Рамка по умолчанию и ROWS на равных датах
@@ -23,7 +23,7 @@ WHERE status = 'paid' AND brand = 'Сова'
   AND order_date BETWEEN '2026-03-01' AND '2026-03-07'
 ORDER BY order_date, order_id;
 
--- ===== Окно в WHERE — ошибка, окно в CTE — работает =====
+-- ===== Как отобрать строки по результату оконной функции =====
 -- 1. Окно прямо в WHERE
 SELECT order_id, channel, amount
 FROM orders
@@ -93,7 +93,7 @@ SELECT * FROM moving
 WHERE day BETWEEN '2026-01-25' AND '2026-02-01'   -- фильтр снаружи: окно видело все дни
 ORDER BY day;
 
--- ===== Топ-3 по штукам и ничьи =====
+-- ===== Три лидера продаж в каждой категории =====
 WITH sales AS (                          -- штуки и выручка по товару, только оплаченные заказы
   SELECT p.category, p.product_name,
          SUM(oi.qty) AS units, SUM(oi.qty * oi.price) AS revenue

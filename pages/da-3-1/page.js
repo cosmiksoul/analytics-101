@@ -51,22 +51,22 @@
   const scene = {
     parts: [{ n: '01', name: 'Запись', s: [0, 1] }, { n: '02', name: 'FROM, WHERE', s: [2, 3] }, { n: '03', name: 'GROUP BY', s: [4, 5] }, { n: '04', name: 'HAVING', s: [6] }, { n: '05', name: 'SELECT', s: [7] }, { n: '06', name: 'ORDER, LIMIT', s: [8, 9, 10] }],
     steps: [
-      { title: 'Запрос, как его пишут', dur: 3400, body: '<p>Запрос к учебной таблице <b>orders</b> интернет-магазина: два бренда с наибольшей выручкой среди тех, у кого не меньше 35 оплаченных заказов.</p><p>Читаем его сверху вниз, и первым стоит <b>SELECT</b>.</p>' },
-      { title: 'Порядок выполнения', dur: 3800, body: '<p>База выполняет предложения в другом порядке: источник, фильтр строк, группы, фильтр групп. <b>SELECT</b> идёт только пятым, за ним сортировка и <b>LIMIT</b>.</p><p>Каждый шаг получает таблицу от предыдущего.</p>' },
-      { title: 'FROM: вся таблица', dur: 3200, body: '<p><b>FROM orders</b> берёт таблицу целиком: 231 строка, 10 столбцов. Каждая клетка на сцене — один заказ.</p>' },
-      { title: 'WHERE: фильтр строк', dur: 3800, body: '<p><b>WHERE</b> проверяет условие у каждой строки отдельно. 36 отменённых заказов не проходят, дальше идут 195.</p><p>Групп ещё нет, поэтому спросить здесь про COUNT(*) нельзя.</p>' },
-      { title: 'GROUP BY: стопки по бренду', dur: 3800, body: '<p><b>GROUP BY brand</b> раскладывает 195 строк по четырём группам, по одной на бренд. Дальше запрос работает с группами, а не со строками.</p>' },
-      { title: 'Агрегаты по группам', dur: 3200, body: '<p>Для каждой группы считаются агрегаты: <b>COUNT(*)</b> — число строк, <b>SUM(amount)</b> — сумма. Десятки строк группы сворачиваются в одно число на каждый агрегат.</p>' },
-      { title: 'HAVING: фильтр групп', dur: 3600, body: '<p><b>HAVING</b> проверяет условие у каждой группы. У Луча 30 оплаченных заказов, меньше порога 35, и группа выбывает.</p><p>Осталось три группы.</p>' },
-      { title: 'SELECT: столбцы и имена', dur: 3400, body: '<p>Только теперь <b>SELECT</b> собирает выходные столбцы: brand и два агрегата. <b>AS</b> даёт им имена <b>orders</b> и <b>revenue</b> — раньше этих имён не было.</p>' },
-      { title: 'ORDER BY: сортировка', dur: 3200, body: '<p><b>ORDER BY revenue DESC</b> сортирует строки по убыванию выручки. Имя revenue здесь уже есть: SELECT выполнен.</p>' },
-      { title: 'LIMIT: первые две', dur: 3000, body: '<p><b>LIMIT 2</b> оставляет две первые строки отсортированной таблицы: Сову и Бриз. Без ORDER BY «первые две» были бы какими угодно.</p>' },
-      { title: 'Почему WHERE не видит revenue', dur: 3800, next: 'Читать страницу', body: '<p>Условие <b>WHERE revenue &gt; 250000</b> PostgreSQL отвергнет: WHERE — второй шаг, а имя revenue появится на пятом.</p><p>Условие на выручку бренда пишут в HAVING выражением: <b>HAVING SUM(amount) &gt; 250000</b>. В ORDER BY имя уже работает.</p>' }
+      { title: 'Запрос о выручке двух брендов', dur: 3400, body: "<p>Выберем два бренда с наибольшей выручкой среди тех, у кого не меньше 35 оплаченных заказов. Данные берём из таблицы <b>orders</b>.</p><p>В записи запроса первым стоит <b>SELECT</b>. В нём перечислены столбцы, которые мы хотим увидеть в результате.</p>" },
+      { title: 'Логический порядок обработки', dur: 3800, body: "<p>Чтобы понять смысл запроса, сначала определим источник строк. Затем отберём заказы, объединим их по брендам и проверим условие для каждой группы.</p><p>В этом разборе <b>SELECT</b> будет пятым шагом. После него останется отсортировать строки и выбрать первые две.</p>" },
+      { title: 'FROM задаёт источник строк', dur: 3200, body: "<p><b>FROM orders</b> указывает, из какой таблицы запрос берёт заказы. В ней 231 строка и 10 столбцов. На схеме каждому заказу соответствует один квадрат.</p>" },
+      { title: 'WHERE оставляет оплаченные заказы', dur: 3800, body: "<p><b>WHERE status = 'paid'</b> проверяет статус каждого заказа. Из 231 заказа условию соответствуют 195. Остальные 36 заказов отменены.</p><p>Количество заказов по брендам можно будет сравнить после группировки.</p>" },
+      { title: 'GROUP BY объединяет заказы по брендам', dur: 3800, body: "<p>После <b>GROUP BY brand</b> каждый из 195 оплаченных заказов относится к одной из четырёх групп. В отдельной группе собраны все оплаченные заказы одного бренда.</p>" },
+      { title: 'Сколько заказов и выручки у каждого бренда', dur: 3200, body: "<p>Для каждой группы <b>COUNT(*)</b> считает заказы, а <b>SUM(amount)</b> складывает их суммы. Например, у «Бриза» 55 оплаченных заказов на 266 300 ₽.</p>" },
+      { title: 'HAVING отбирает бренды по числу заказов', dur: 3600, body: "<p>У «Луча» 30 оплаченных заказов. Условие <b>HAVING COUNT(*) &gt;= 35</b> исключает этот бренд из сравнения.</p><p>В выборке остаются «Бриз», «Кедр» и «Сова».</p>" },
+      { title: 'SELECT задаёт столбцы результата', dur: 3400, body: "<p>В результате будут три столбца. Первый содержит название бренда. Второй показывает число заказов, третий — выручку.</p><p>Выражения <b>AS orders</b> и <b>AS revenue</b> задают имена двух столбцов с результатами расчёта.</p>" },
+      { title: 'ORDER BY сортирует бренды по выручке', dur: 3200, body: "<p><b>ORDER BY revenue DESC</b> ставит первой «Сову», затем «Бриз» и «Кедр». В <b>ORDER BY</b> можно использовать имя revenue, которое мы указали в SELECT.</p>" },
+      { title: 'LIMIT оставляет два бренда', dur: 3000, body: "<p>После сортировки <b>LIMIT 2</b> вернёт «Сову» с выручкой 276 150 ₽ и «Бриз» с выручкой 266 300 ₽. Без ORDER BY запрос не гарантирует, что в эти две строки попадут лидеры по выручке.</p>" },
+      { title: 'Как отобрать бренды по суммарной выручке', dur: 3800, next: 'Читать страницу', body: "<p>Если написать <b>WHERE revenue &gt; 250000</b>, PostgreSQL сообщит, что столбца revenue нет. В исходной таблице этого имени нет, а WHERE не может ссылаться на псевдоним из SELECT.</p><p>Чтобы проверить выручку группы, запишите <b>HAVING SUM(amount) &gt; 250000</b>. Для сортировки по той же сумме подойдёт <b>ORDER BY revenue DESC</b>.</p>" }
     ].map(s => Object.assign(s, { body: nb(s.body) })),
     hud: [{ id: 'rows', label: 'Строк' }, { id: 'cols', label: 'Столбцов' }, { id: 'st', label: 'Этап' }],
     legend: '<span><i class="sq" style="background:#4d5b7c"></i>строка orders</span><span><i class="sq" style="background:#f2756a"></i>отброшено</span><span><i class="sq" style="background:#a48af0"></i>группа бренда</span>',
-    info: 'ПОРЯДОК ВЫПОЛНЕНИЯ',
-    aiNote: 'В анимации запрос к учебной таблице orders (231 заказ интернет-магазина за январь–март 2026): SELECT brand, COUNT(*) AS orders, SUM(amount) AS revenue FROM orders WHERE status = \'paid\' GROUP BY brand HAVING COUNT(*) >= 35 ORDER BY revenue DESC LIMIT 2. Карточки предложений перестраиваются из порядка записи в порядок выполнения FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. FROM: 231 строка, 10 столбцов; WHERE убирает 36 отменённых, остаётся 195; GROUP BY даёт 4 группы: Бриз 55 заказов и 266 300 ₽, Кедр 39 и 218 090 ₽, Луч 30 и 151 540 ₽, Сова 71 и 276 150 ₽; HAVING убирает Луч (30 < 35); SELECT даёт 3 строки и 3 столбца с именами orders и revenue; ORDER BY revenue DESC: Сова, Бриз, Кедр; LIMIT 2 оставляет Сову и Бриз. Последний шаг: WHERE revenue > 250000 даёт ошибку column "revenue" does not exist, потому что имя появляется только в SELECT.',
+    info: 'ЛОГИЧЕСКИЙ ПОРЯДОК',
+    aiNote: 'В анимации запрос к учебной таблице orders (231 заказ интернет-магазина за январь–март 2026): SELECT brand, COUNT(*) AS orders, SUM(amount) AS revenue FROM orders WHERE status = \'paid\' GROUP BY brand HAVING COUNT(*) >= 35 ORDER BY revenue DESC LIMIT 2. Карточки предложений перестраиваются из порядка записи в логический порядок FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. FROM: 231 строка, 10 столбцов; WHERE убирает 36 отменённых, остаётся 195; GROUP BY даёт 4 группы: Бриз 55 заказов и 266 300 ₽, Кедр 39 и 218 090 ₽, Луч 30 и 151 540 ₽, Сова 71 и 276 150 ₽; HAVING убирает Луч (30 < 35); SELECT даёт 3 строки и 3 столбца с именами orders и revenue; ORDER BY revenue DESC: Сова, Бриз, Кедр; LIMIT 2 оставляет бренды «Сова» и «Бриз». Последний шаг: WHERE revenue > 250000 даёт ошибку column "revenue" does not exist, потому что имя появляется только в SELECT.',
     mount(root, api) {
       const { hl } = api;
       root.innerHTML = '<div class="qo"><canvas class="qo-cv" aria-hidden="true"></canvas><div class="qo-w"></div></div>';
@@ -76,7 +76,7 @@
       const cards = CL.map((c, i) => mk('qo-card', `<span class="qo-n">${i + 1}</span><span class="qo-f">${hl(c.full, 'sql')}</span><span class="qo-s">${hl(c.short, 'sql')}</span><span class="qo-k">${c.kw}</span>`));
       const cur = mk('qo-cur', '');
       const plab = BR.map((b, i) => mk('qo-plab', `<b style="color:${BC[i]}">${b}</b><span>${NP[i]}</span><small>${fmtN(SUMP[i])}</small>`));
-      const thr = mk('qo-thr', '<span>порог 35</span>');
+      const thr = mk('qo-thr', '<span>минимум 35</span>');
       const head = mk('qo-row qo-head', '<span>brand</span><span class="qo-al">orders</span><span class="qo-al qo-rv">revenue<i>↓</i></span>');
       const rows = [0, 1, 3].map(b => ({ b, el: mk('qo-row', `<span style="color:${BC[b]}">${BR[b]}</span><span>${NP[b]}</span><span>${fmtN(SUMP[b])}</span>`) }));
       const cut = mk('qo-cut', '<span>LIMIT 2</span>');
@@ -173,16 +173,16 @@
         const m = G.mob, c = cx(G);
         const top = m ? 62 : 100;
         switch (k) {
-          case 0: return [m ? 0 : G.fx, fullY(WRITTEN, 4) - 30, 'так запрос пишут: SELECT первым', 0];
-          case 1: return [m ? 0 : G.fx, fullY(WRITTEN, 4) - 30, 'а выполняется SELECT пятым', 0];
+          case 0: return [m ? 0 : G.fx, fullY(WRITTEN, 4) - 30, 'SELECT стоит первым в записи', 0];
+          case 1: return [m ? 0 : G.fx, fullY(WRITTEN, 4) - 30, 'SELECT — пятый логический шаг', 0];
           case 2: return [gridXY(0)[0], G.ty0 - 34, 'orders: 231 строка × 10 столбцов', 0];
           case 3: return [gridXY(0)[0], G.ty0 - 34, "status = 'paid': −36 строк, осталось 195", 0];
           case 4: return [c, top, '195 строк → 4 группы по brand', 2];
           case 5: return [c, top, 'COUNT(*) и SUM(amount) по каждой группе', 2];
-          case 6: return [c, top, 'Луч: COUNT(*) = 30 < 35, группа выбывает', 2];
+          case 6: return [c, top, '«Луч»: 30 заказов при минимуме 35', 2];
           case 7: return [c, m ? 86 : 96, 'имена orders и revenue появились здесь', 2];
-          case 8: return [c, m ? 86 : 96, 'ORDER BY уже видит revenue', 2];
-          case 9: return [c, m ? 86 : 96, 'LIMIT 2: третья строка отброшена', 2];
+          case 8: return [c, m ? 86 : 96, 'сортировка по столбцу revenue', 2];
+          case 9: return [c, m ? 86 : 96, 'LIMIT 2: остаются два бренда', 2];
           case 10: return [c, m ? 64 : 76, 'WHERE revenue > 250000\nERROR: column "revenue" does not exist', 2];
         }
         return null;
@@ -319,7 +319,7 @@
   /*qx:end*/
 
   const STG = ['FROM', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'ORDER BY', 'LIMIT'];
-  const KIND = { row: 'условие на строку', agg: 'условие на группу', alias: 'псевдоним из SELECT' };
+  const KIND = { row: 'условие для строки', agg: 'условие для группы', alias: 'псевдоним из SELECT' };
   const PLACES = [['where', 'WHERE'], ['having', 'HAVING'], ['off', 'нет']];
 
   function buildSteps(box, api) {
@@ -327,10 +327,10 @@
     const S0 = () => ({ pos: { st: 'where', cnt: 'having', rev: 'off' }, k: 0 });
     let s = S0(), R = null;
     box.innerHTML = `<div class="block-hd"><span class="t">WHERE отбирает строки, HAVING — группы <i>интерактив</i></span><div class="ctrls"><button type="button" class="btn ghost small" id="qs-reset">Сбросить</button></div></div>
-<p class="hint qs-do">Переставляйте условия между WHERE и HAVING и шагайте по этапам. Таблица под запросом — то, что этап передаёт следующему.</p>
+<p class="hint qs-do">Выберите для каждого условия WHERE, HAVING или «нет». Затем переключайте этапы. Под запросом видно, какие заказы или группы прошли отбор.</p>
 <div class="qs-conds" id="qs-conds">${COND.map(c => `<div class="qs-cond" data-c="${c.id}"><code>${hl(c.sql, 'sql')}</code><small>${KIND[c.kind]}</small><span class="seg" role="group" aria-label="Куда поставить ${esc(c.sql)}">${PLACES.map(([v, t]) => `<button type="button" data-c="${c.id}" data-p="${v}">${t}</button>`).join('')}</span></div>`).join('')}</div>
 <div class="stage"><div class="qs-main"><pre class="qs-sql" id="qs-sql"></pre><p class="qs-cap" id="qs-cap"></p><div class="qs-tw" id="qs-tbl"></div></div>
-<div class="narr"><p class="cap">Порядок выполнения</p><ol class="qs-steps" id="qs-steps">${STG.map((t, i) => `<li><button type="button" data-k="${i}"><b>${i + 1}</b>${t}</button></li>`).join('')}</ol>
+<div class="narr"><p class="cap">Логический порядок</p><ol class="qs-steps" id="qs-steps">${STG.map((t, i) => `<li><button type="button" data-k="${i}"><b>${i + 1}</b>${t}</button></li>`).join('')}</ol>
 <div class="qs-nav"><button type="button" class="btn ghost small" id="qs-prev">← Назад</button><button type="button" class="btn small" id="qs-next">Следующий этап →</button></div>
 <div class="narr-text" id="qs-msg"></div><div class="readout"><div><span class="big" id="qs-n"></span><span class="lbl" id="qs-nl"></span></div></div></div></div>
 <div class="status"><span><span class="dot live" id="qs-dot"></span><span id="qs-s1"></span></span><span class="grow"></span><span id="qs-s2"></span></div>`;
@@ -344,9 +344,9 @@
 
     function errBox(e) {
       const why = {
-        agg: 'На этапе WHERE групп ещё нет, и COUNT(*) нечего считать. Условие с агрегатом ставят в HAVING.',
-        alias: e.at === 1 ? 'Имя revenue создаст SELECT на пятом шаге. На втором его ещё нет, а столбца с таким именем в sample нет вовсе.' : 'HAVING — четвёртый шаг, а имя revenue появится на пятом. В HAVING повторяют выражение: SUM(amount) >= 15000. SQLite и DuckDB такой псевдоним разрешают, PostgreSQL — нет.',
-        group: 'HAVING видит группы, а в группе у status может быть несколько значений: какое сравнивать? Столбец должен стоять в GROUP BY или внутри агрегата. PostgreSQL проверяет это до выполнения, а не по данным.'
+        agg: 'WHERE проверяет заказы по отдельности до группировки. Чтобы проверить число заказов у клиента, используйте HAVING COUNT(*) >= 3.',
+        alias: e.at === 1 ? 'В таблице sample нет столбца revenue. Это имя результата SUM(amount), и сослаться на него в WHERE нельзя.' : 'В PostgreSQL псевдоним revenue недоступен в HAVING. Запишите условие как HAVING SUM(amount) >= 15000. SQLite и DuckDB разрешают ссылаться здесь на псевдоним суммы.',
+        group: 'Заказы сгруппированы по customer_id. У одного клиента могут быть заказы с разными статусами, а в условии не сказано, какой из них проверять. PostgreSQL обнаружит это до выполнения запроса. Для отбора оплаченных заказов укажите статус в WHERE.'
       }[e.kind];
       return `<div class="qs-err"><p><b>ERROR:</b> ${esc(e.msg)}</p><p>${esc(why)}</p></div>`;
     }
@@ -380,29 +380,29 @@
     }
     function message(k) {
       const e = R.err;
-      if (e && k === e.at) return 'Здесь условие теряет смысл. На деле PostgreSQL находит ошибку ещё при разборе запроса и не возвращает ни одной строки.';
+      if (e && k === e.at) return 'На этом шаге видно, к каким данным относится условие. PostgreSQL обнаруживает ошибку ещё при проверке запроса и не возвращает результат.';
       const sc = R.W.find(c => c.id === 'st'), hc = R.H.find(c => c.id === 'cnt');
       switch (k) {
-        case 0: return `<b>FROM sample</b> берёт все ${R.rows.length} строк выборки. Столбцов orders и revenue ещё нет.`;
+        case 0: return `<b>FROM sample</b> задаёт исходную выборку из ${R.rows.length} заказов. Число заказов и их общую сумму по клиентам рассчитаем после группировки.`;
         case 1: {
-          if (!R.W.length) return '<b>WHERE</b> нет: все 15 строк идут дальше, отменённые заказы тоже.';
+          if (!R.W.length) return '<b>WHERE</b> отсутствует. В выборке остаются все 15 заказов, в том числе отменённые.';
           const out = R.where.filter(x => !x.ok).map(x => x.r.order_id);
-          return `<b>WHERE</b> проверяет каждую строку отдельно. Отменённые заказы ${ids(out)} выбывают, остаётся ${R.kept.length}.`;
+          return `<b>WHERE</b> проверяет каждую строку отдельно. Отбор исключает отменённые заказы с номерами ${ids(out)}. Остаётся ${R.kept.length} оплаченных заказов.`;
         }
-        case 2: return `<b>GROUP BY customer_id</b> раскладывает ${R.kept.length} строк по ${R.groups.length} группам. Здесь они идут по customer_id, но без ORDER BY база порядок не обещает.`;
+        case 2: return `<b>GROUP BY customer_id</b> объединяет строки по номеру клиента. Заказов — ${R.kept.length}, групп — ${R.groups.length}. Для удобства здесь группы показаны по номеру клиента. Без ORDER BY порядок результата не гарантирован.`;
         case 3: {
-          if (!hc) return '<b>HAVING</b> нет: все группы идут дальше.';
+          if (!hc) return '<b>HAVING</b> отсутствует. На этом шаге сохраняются все группы.';
           const out = R.having.filter(x => !x.ok).map(x => x.g.customer_id);
-          let t = `<b>HAVING</b> проверяет каждую группу целиком: COUNT(*) >= 3. ${out.length ? `${out.length === 1 ? 'Выбывает клиент' : 'Выбывают клиенты'} ${R.having.filter(x => !x.ok).map(x => `${x.g.customer_id}: COUNT(*) = ${x.g.count}`).join(', ')}.` : 'Проходят все.'}`;
-          if (!sc) t += ' Без WHERE в COUNT(*) попали и отменённые заказы: у клиента 106 их два, и он прошёл порог.';
+          let t = `<b>HAVING</b> проверяет каждую группу целиком: COUNT(*) >= 3. ${out.length ? `${out.length === 1 ? 'Не проходит клиент' : 'Не проходят клиенты'} ${R.having.filter(x => !x.ok).map(x => `${x.g.customer_id}: COUNT(*) = ${x.g.count}`).join(', ')}.` : 'Все клиенты набрали не меньше трёх заказов.'}`;
+          if (!sc) t += ' Без фильтра по статусу COUNT(*) учитывает и отменённые заказы. У клиента 106 таких заказов два, поэтому теперь его группа проходит отбор.';
           return t;
         }
-        case 4: return `<b>SELECT</b> собирает выходные столбцы и даёт им имена orders и revenue — по строке на группу, всего ${R.sel.length}.`;
-        case 5: return '<b>ORDER BY revenue DESC</b> сортирует по убыванию выручки. Имя revenue здесь уже есть: его создал SELECT.';
+        case 4: return `<b>SELECT</b> возвращает для каждого клиента его номер, число заказов (orders) и их сумму (revenue). В результате строк: ${R.sel.length}.`;
+        case 5: return '<b>ORDER BY revenue DESC</b> сортирует строки по убыванию суммы заказов. В ORDER BY разрешён псевдоним revenue из SELECT.';
         case 6: {
           const top = R.lim.map(r => `${r.customer_id} (${sumRu(r.revenue)})`).join(' и ');
-          let t = `<b>LIMIT 2</b> оставляет первые две строки: ${top}.`;
-          if (R.lim[1] && R.lim[1].customer_id === 106) t += ' Второе место занял клиент 106 — за счёт двух отменённых заказов.';
+          let t = `<b>LIMIT 2</b> оставляет двух клиентов с наибольшей суммой заказов: ${top}.`;
+          if (R.lim[1] && R.lim[1].customer_id === 106) t += ' Клиент 106 оказался вторым, поскольку в сумму вошли ещё два отменённых заказа.';
           return t;
         }
       }
@@ -434,7 +434,7 @@
       });
       $('qs-sql').innerHTML = sqlText();
       const n = outCount(k);
-      $('qs-cap').textContent = e && k === e.at ? `Этап ${k + 1} · ${STG[k]}: ошибка` : `После этапа ${k + 1} · ${STG[k]}: ${n} ${k === 2 || k === 3 ? plural(n, ['группа', 'группы', 'групп']) : plural(n, ['строка', 'строки', 'строк'])}`;
+      $('qs-cap').textContent = e && k === e.at ? `Этап ${k + 1} · ${STG[k]}: ошибка` : `После шага ${k + 1} · ${STG[k]}: ${n} ${k === 2 || k === 3 ? plural(n, ['группа', 'группы', 'групп']) : plural(n, ['строка', 'строки', 'строк'])}`;
       $('qs-tbl').innerHTML = table(k);
       box.querySelectorAll('#qs-steps button').forEach(b => {
         const i = +b.dataset.k, dead = !!(e && i > e.at);
@@ -445,7 +445,7 @@
       $('qs-next').disabled = k === 6 || !!(e && k >= e.at);
       $('qs-msg').innerHTML = message(k);
       $('qs-n').textContent = n == null ? '—' : n;
-      $('qs-nl').textContent = n == null ? 'запрос не выполнится' : `${k === 2 || k === 3 ? plural(n, ['группа', 'группы', 'групп']) : plural(n, ['строка', 'строки', 'строк'])} на выходе этапа`;
+      $('qs-nl').textContent = n == null ? 'запрос не выполнится' : `${k === 2 || k === 3 ? plural(n, ['группа', 'группы', 'групп']) : plural(n, ['строка', 'строки', 'строк'])} после этого шага`;
       $('qs-dot').classList.toggle('live', !e);
       $('qs-dot').classList.toggle('qs-dead', !!e);
       $('qs-s1').textContent = e ? `PostgreSQL 16 → ERROR: ${e.msg}` : `PostgreSQL 16 → ${R.lim.length} ${plural(R.lim.length, ['строка', 'строки', 'строк'])}: ${R.lim.map(r => `${r.customer_id} · ${r.revenue}`).join(', ')}`;
@@ -471,32 +471,32 @@
   /* ===================== Код ===================== */
   const PSQL = 'проверено: PostgreSQL 16.15';
   const code = {
-    s1: { title: 'Запрос 1. Пять самых дорогих оплаченных заказов', badge: PSQL, lang: 'sql', outLabel: 'Вывод psql -f q1.sql',
+    s1: { title: 'Запрос 1. Пять оплаченных заказов с наибольшей суммой', badge: PSQL, lang: 'sql', outLabel: 'Вывод psql -f q1.sql',
       code: "-- SELECT: какие столбцы, FROM: из какой таблицы\nSELECT order_id, order_date, brand, amount\nFROM orders\nWHERE status = 'paid'          -- только оплаченные\nORDER BY amount DESC, order_id -- при равной сумме — по номеру\nLIMIT 5;",
       out: ' order_id | order_date | brand | amount \n----------+------------+-------+--------\n     1191 | 2026-02-27 | Кедр  |  18390\n     1112 | 2026-03-19 | Бриз  |  16660\n     1041 | 2026-01-12 | Кедр  |  15450\n     1052 | 2026-03-28 | Кедр  |  14050\n     1114 | 2026-01-14 | Луч   |  12550\n(5 rows)' },
-    s2: { title: 'Запрос 2. Фильтры IN, BETWEEN и LIKE', badge: PSQL, lang: 'sql', outLabel: 'Вывод psql -f q2.sql',
+    s2: { title: 'Запрос 2. Выбор товаров по категории, цене и названию', badge: PSQL, lang: 'sql', outLabel: 'Вывод psql -f q2.sql',
       code: "SELECT product_name, category, price\nFROM products\nWHERE category IN ('свет', 'декор')   -- одно из значений списка\n  AND price BETWEEN 1500 AND 2500     -- обе границы включены\n  AND product_name LIKE '%«Сова»'     -- % — любые символы\nORDER BY price;",
       out: '      product_name       | category | price \n-------------------------+----------+-------\n Гирлянда «Сова»         | свет     |  1730\n Ваза «Сова»             | декор    |  1900\n Лампа настольная «Сова» | свет     |  2500\n(3 rows)',
       note: 'Лампа за 2 500 ₽ попала в выборку: BETWEEN включает обе границы.' },
-    s3: { title: 'Запрос 3. DISTINCT и три вида COUNT', badge: PSQL, lang: 'sql', outLabel: 'Вывод psql -f q3.sql',
+    s3: { title: 'Запрос 3. Как посчитать заказы, оценки и разных клиентов', badge: PSQL, lang: 'sql', outLabel: 'Вывод psql -f q3.sql',
       code: "SELECT DISTINCT channel\nFROM orders\nORDER BY channel;\n\nSELECT COUNT(*)                    AS all_orders,\n       COUNT(rating)               AS rated,\n       COUNT(DISTINCT customer_id) AS customers\nFROM orders;",
       out: ' channel  \n----------\n органика\n рассылка\n реклама\n(3 rows)\n\n all_orders | rated | customers \n------------+-------+-----------\n        231 |   104 |        52\n(1 row)',
       note: 'COUNT(*) считает строки, COUNT(rating) — только непустые оценки, COUNT(DISTINCT customer_id) — разных клиентов.' },
-    s4: { title: 'Запрос 4. NULL в сравнении, в сортировке и вторая страница', badge: PSQL, lang: 'sql', outLabel: 'Вывод psql -P null=NULL -f q4.sql',
-      code: "-- сравнение с NULL даёт UNKNOWN, и строка выпадает\nSELECT COUNT(*) AS not_zima\nFROM orders\nWHERE promo_code <> 'ЗИМА10';\n\n-- «три лучших по оценке» за первую неделю февраля\nSELECT order_id, amount, rating\nFROM orders\nWHERE order_date BETWEEN '2026-02-01' AND '2026-02-07'\nORDER BY rating DESC, order_id\nLIMIT 3;\n\n-- NULL в конец, вторая страница по три строки\nSELECT order_id, amount, rating\nFROM orders\nWHERE order_date BETWEEN '2026-02-01' AND '2026-02-07'\nORDER BY rating DESC NULLS LAST, order_id\nLIMIT 3 OFFSET 3;",
+    s4: { title: 'Запрос 4. Как NULL влияет на фильтр и сортировку', badge: PSQL, lang: 'sql', outLabel: 'Вывод psql -P null=NULL -f q4.sql',
+      code: "-- если промокод равен NULL, сравнение даёт UNKNOWN\nSELECT COUNT(*) AS not_zima\nFROM orders\nWHERE promo_code <> 'ЗИМА10';\n\n-- «три лучших по оценке» за первую неделю февраля\nSELECT order_id, amount, rating\nFROM orders\nWHERE order_date BETWEEN '2026-02-01' AND '2026-02-07'\nORDER BY rating DESC, order_id\nLIMIT 3;\n\n-- NULL в конец, вторая страница по три строки\nSELECT order_id, amount, rating\nFROM orders\nWHERE order_date BETWEEN '2026-02-01' AND '2026-02-07'\nORDER BY rating DESC NULLS LAST, order_id\nLIMIT 3 OFFSET 3;",
       out: ' not_zima \n----------\n       19\n(1 row)\n\n order_id | amount | rating \n----------+--------+--------\n     1076 |   3320 |   NULL\n     1077 |   2190 |   NULL\n     1126 |   2190 |   NULL\n(3 rows)\n\n order_id | amount | rating \n----------+--------+--------\n     1128 |  12400 |      4\n     1129 |   6740 |      4\n     1140 |   2550 |      4\n(3 rows)',
-      note: 'Без промокода ЗИМА10 — 209 заказов, а запрос нашёл 19: 190 строк с NULL выпали. «Лучшие по оценке» оказались заказами без оценки. Слово NULL psql печатает из-за параметра -P null=NULL, по умолчанию там пусто.' },
-    s5: { title: 'Запрос 5. Запрос из сцены и псевдоним в WHERE', badge: PSQL, lang: 'sql', outLabel: 'Вывод psql -f q5.sql',
-      code: "SELECT brand,\n       COUNT(*)    AS orders,\n       SUM(amount) AS revenue\nFROM orders\nWHERE status = 'paid'\nGROUP BY brand\nHAVING COUNT(*) >= 35\nORDER BY revenue DESC   -- псевдоним здесь уже есть\nLIMIT 2;\n\n-- в WHERE псевдонима ещё нет\nSELECT brand, SUM(amount) AS revenue\nFROM orders\nWHERE revenue > 250000\nGROUP BY brand;\n\n-- условие на выручку бренда пишут в HAVING выражением\nSELECT brand, SUM(amount) AS revenue\nFROM orders\nWHERE status = 'paid'\nGROUP BY brand\nHAVING SUM(amount) > 250000\nORDER BY revenue DESC;",
+      note: 'Условию по промокоду соответствуют 19 заказов. У 190 заказов значение NULL, поэтому сравнение не даёт TRUE. При сортировке по убыванию первыми оказались строки без оценки. Параметр -P null=NULL заставляет psql явно показывать пропуск как NULL. По умолчанию на его месте остаётся пустое поле.' },
+    s5: { title: 'Запрос 5. Как отобрать бренды по выручке', badge: PSQL, lang: 'sql', outLabel: 'Вывод psql -f q5.sql',
+      code: "SELECT brand,\n       COUNT(*)    AS orders,\n       SUM(amount) AS revenue\nFROM orders\nWHERE status = 'paid'\nGROUP BY brand\nHAVING COUNT(*) >= 35\nORDER BY revenue DESC   -- псевдоним здесь уже есть\nLIMIT 2;\n\n-- в WHERE псевдонима ещё нет\nSELECT brand, SUM(amount) AS revenue\nFROM orders\nWHERE revenue > 250000\nGROUP BY brand;\n\n-- проверяем сумму оплаченных заказов каждого бренда\nSELECT brand, SUM(amount) AS revenue\nFROM orders\nWHERE status = 'paid'\nGROUP BY brand\nHAVING SUM(amount) > 250000\nORDER BY revenue DESC;",
       out: ' brand | orders | revenue \n-------+--------+---------\n Сова  |     71 |  276150\n Бриз  |     55 |  266300\n(2 rows)\n\npsql:q5.sql:15: ERROR:  column "revenue" does not exist\nLINE 3: WHERE revenue > 250000\n              ^\n brand | revenue \n-------+---------\n Сова  |  276150\n Бриз  |  266300\n(2 rows)' },
     pandas: { title: 'Тот же запрос к SQLite из pandas', badge: 'проверено: pandas 3.0.5, SQLite 3.53.1', lang: 'python',
       code: "import sqlite3\nimport pandas as pd\n\ncon = sqlite3.connect(\"data/shop/shop.sqlite\")   # та же база одним файлом\n\nquery = \"\"\"\nSELECT brand, COUNT(*) AS orders, SUM(amount) AS revenue\nFROM orders\nWHERE status = 'paid'\nGROUP BY brand\nHAVING COUNT(*) >= 35\nORDER BY revenue DESC\nLIMIT 2\n\"\"\"\ntop = pd.read_sql(query, con)        # считает база, в pandas приходят 2 строки\nprint(top)\nprint()\n\n# то же силами pandas: загрузить все строки и считать в памяти\norders = pd.read_sql(\"SELECT * FROM orders\", con)\npaid = orders[orders[\"status\"] == \"paid\"]                   # WHERE\nby_brand = paid.groupby(\"brand\").agg(orders=(\"order_id\", \"size\"),\n                                     revenue=(\"amount\", \"sum\"))  # GROUP BY и агрегаты\nby_brand = by_brand[by_brand[\"orders\"] >= 35]               # HAVING\nprint(by_brand.sort_values(\"revenue\", ascending=False).head(2))  # ORDER BY и LIMIT\nprint(\"загружено строк:\", len(orders), \"| в ответе базы:\", len(top))",
       out: '  brand  orders  revenue\n0  Сова      71   276150\n1  Бриз      55   266300\n\n       orders  revenue\nbrand                 \nСова       71   276150\nБриз       55   266300\nзагружено строк: 231 | в ответе базы: 2',
-      note: 'Ответ тот же, но в первом случае считала база и прислала две строки, во втором pandas получил все 231 строку и считал сам.' },
+      note: 'В первом варианте SQLite выполнила расчёт и вернула в pandas две строки. Во втором pandas загрузил все заказы (231 строку) и сам посчитал выручку по брендам. Результаты совпали.' },
     dialects: { title: 'Одни и те же запросы в трёх СУБД', badge: 'проверено: PostgreSQL 16.15, SQLite 3.53.1, DuckDB 2.0.0', lang: 'python',
       code: "import sqlite3\nimport duckdb      # 2.0.0\nimport psycopg     # 3.3.8\n\nengines = {\n    \"PostgreSQL\": psycopg.connect(\"host=/tmp dbname=shop user=postgres\", autocommit=True),\n    \"SQLite\": sqlite3.connect(\"data/shop/shop.sqlite\"),\n    \"DuckDB\": duckdb.connect(\"data/shop/shop.duckdb\", read_only=True),\n}\nweek = \"order_date BETWEEN '2026-02-01' AND '2026-02-07'\"\ntests = {\n    \"NULL при DESC\": f\"SELECT order_id, rating FROM orders WHERE {week} \"\n                     \"ORDER BY rating DESC, order_id LIMIT 3\",\n    \"LIKE 'PAID'\": \"SELECT COUNT(*) FROM orders WHERE status LIKE 'PAID'\",\n    \"LIKE 'лампа%'\": \"SELECT COUNT(*) FROM products WHERE product_name LIKE 'лампа%'\",\n    \"lower() и кириллица\": \"SELECT COUNT(*) FROM products WHERE lower(product_name) LIKE 'лампа%'\",\n    \"псевдоним в WHERE\": \"SELECT order_id, amount * 2 AS twice FROM orders WHERE twice > 36000\",\n    \"FETCH FIRST\": \"SELECT order_id FROM orders ORDER BY order_id FETCH FIRST 2 ROWS ONLY\",\n    \"TOP\": \"SELECT TOP 2 order_id FROM orders ORDER BY order_id\",\n    \"псевдоним в HAVING\": \"SELECT brand, SUM(amount) AS revenue FROM orders \"\n                          \"GROUP BY brand HAVING revenue > 300000 ORDER BY brand\",\n    \"status в HAVING\": \"SELECT brand, COUNT(*) FROM orders \"\n                       \"GROUP BY brand HAVING status = 'paid' ORDER BY brand\",\n}\nfor title, sql in tests.items():\n    print(title)\n    for name, con in engines.items():\n        try:\n            res = con.execute(sql).fetchall()\n        except Exception as e:\n            res = \"ошибка: \" + str(e).splitlines()[0][:58].rstrip()\n        print(f\"  {name:<11}{res}\")",
       out: "NULL при DESC\n  PostgreSQL [(1076, None), (1077, None), (1126, None)]\n  SQLite     [(1065, 5), (1069, 5), (1142, 5)]\n  DuckDB     [(1065, 5), (1069, 5), (1142, 5)]\nLIKE 'PAID'\n  PostgreSQL [(0,)]\n  SQLite     [(195,)]\n  DuckDB     [(0,)]\nLIKE 'лампа%'\n  PostgreSQL [(0,)]\n  SQLite     [(0,)]\n  DuckDB     [(0,)]\nlower() и кириллица\n  PostgreSQL [(4,)]\n  SQLite     [(0,)]\n  DuckDB     [(4,)]\nпсевдоним в WHERE\n  PostgreSQL ошибка: column \"twice\" does not exist\n  SQLite     [(1191, 36780)]\n  DuckDB     [(1191, 36780)]\nFETCH FIRST\n  PostgreSQL [(1001,), (1002,)]\n  SQLite     ошибка: near \"FETCH\": syntax error\n  DuckDB     [(1001,), (1002,)]\nTOP\n  PostgreSQL ошибка: syntax error at or near \"2\"\n  SQLite     ошибка: near \"2\": syntax error\n  DuckDB     ошибка: Parser Error: syntax error at or near \"2\"\nпсевдоним в HAVING\n  PostgreSQL ошибка: column \"revenue\" does not exist\n  SQLite     [('Бриз', 312510), ('Сова', 328440)]\n  DuckDB     [('Бриз', 312510), ('Сова', 328440)]\nstatus в HAVING\n  PostgreSQL ошибка: column \"orders.status\" must appear in the GROUP BY clause\n  SQLite     [('Бриз', 68), ('Кедр', 48), ('Луч', 34), ('Сова', 81)]\n  DuckDB     ошибка: Binder Error: column \"status\" must appear in the GROUP BY",
-      note: 'Последний тест — ловушка SQLite: запрос с status в HAVING выполнился и посчитал отменённые заказы (у Бриза 68 вместо 55 оплаченных). PostgreSQL и DuckDB такой запрос не пропускают. MS SQL и BigQuery здесь не запускались, их поведение — в таблице раздела «Диалекты» по документации.' }
+      note: 'В последнем примере SQLite проверяет status у произвольной строки группы. В этом запуске у «Бриза» в подсчёт попали все 68 заказов, из которых оплачены 55. Так нельзя надёжно отобрать оплаченные заказы. PostgreSQL и DuckDB отклоняют запрос. Сведения о SQL Server и BigQuery в разделе «Диалекты» взяты из документации.' }
   };
 
   /* ===================== Данные страницы ===================== */
@@ -505,55 +505,55 @@
     short: 'DA-03',
     title: 'SELECT и порядок выполнения запроса',
     where: 'блок «Дата аналитика», тема 03 «SQL для анализа», страница 3.1',
-    aiData: 'учебная база shop интернет-магазина товаров для дома за январь–март 2026: таблица orders (231 заказ; brand, channel, amount, status paid или cancelled, promo_code и rating с NULL) и products (32 товара); диалект — PostgreSQL 16',
+    aiData: 'Учебная база shop за январь–март 2026 года. В таблице orders 231 заказ. У каждого есть бренд, канал, сумма и статус paid или cancelled. В promo_code и rating встречается NULL. В таблице products 32 товара. Примеры написаны для PostgreSQL 16.',
     scene,
     widgets: { steps: buildSteps },
     code,
     questions: {
-    q1: { sec: 'method', title: 'Сначала предскажите', q: 'В запросе из интерактива ниже условие status = \'paid\' перенесли из WHERE в HAVING, рядом с COUNT(*) >= 3. Что ответит PostgreSQL?', opts: [['То же, что раньше: условие просто проверяется позже'], ['Ошибку: status не входит в GROUP BY и не стоит внутри агрегата', 1], ['Оставит только группы, где все заказы оплачены'], ['Вернёт группы вместе с отменёнными заказами']],
-      why: 'HAVING видит группы, а у группы клиента может быть несколько значений status, и сравнивать нечего. PostgreSQL отвергает такой запрос ещё до выполнения. Вариант «все заказы оплачены» описывает другое условие, его пишут через агрегат. Группы с отменёнными заказами вернула бы SQLite: она такое пропускает. Проверьте в интерактиве.' },
-    q2: { sec: 'idea', q: 'В сцене в таблице orders 231 строка, из них 36 отменённых. Сколько строк получает на вход GROUP BY?', opts: [['231 — группировка видит всю таблицу'], ['195 — WHERE уже убрал отменённые', 1], ['4 — по числу брендов'], ['3 — после HAVING']],
-      why: 'GROUP BY — третий шаг: ему достаются строки, которые пропустил WHERE, то есть 231 − 36 = 195. Вся таблица была на входе WHERE. Четыре — это число групп на выходе GROUP BY, а три осталось после HAVING, который выполняется позже.' },
-    q3: { sec: 'task', q: 'Почему SELECT brand, SUM(amount) AS revenue FROM orders WHERE revenue > 250000 GROUP BY brand падает с ошибкой column "revenue" does not exist?', opts: [['revenue — зарезервированное слово, его нельзя использовать как имя'], ['WHERE выполняется до SELECT, и имени revenue в этот момент ещё нет', 1], ['Псевдонимы работают только в одинарных кавычках'], ['Нужно написать AS после WHERE']],
-      why: 'Псевдоним создаёт SELECT на пятом шаге, а WHERE — второй. Слово revenue не зарезервировано: в ORDER BY того же запроса оно работает. Одинарные кавычки задают строку, а не имя. Чинят запрос не через AS: условие на сумму группы переносят в HAVING и пишут выражением SUM(amount) > 250000.' },
-    q4: { sec: 'filters', q: 'В PostgreSQL запрос SELECT order_id, rating FROM orders ORDER BY rating DESC LIMIT 3 выполнили на заказах, где у части нет оценки. Что окажется в результате?', opts: [['Три заказа с оценкой 5'], ['Три заказа без оценки: NULL при DESC идёт первым', 1], ['Ошибка: нельзя сортировать столбец с NULL'], ['Заказы с NULL будут отброшены сортировкой']],
-      why: 'PostgreSQL считает NULL больше любого значения, поэтому при DESC такие строки идут первыми. Три пятёрки дали бы SQLite и DuckDB, у них NULL при DESC в конце. Сортировать столбец с пропусками можно, и строки не теряются. Нужное место задают явно: NULLS LAST.' },
-    q5: { sec: 'method', q: 'SELECT COUNT(*), COUNT(rating) FROM orders вернул 231 и 104. Почему числа разные?', opts: [['COUNT(rating) считает разные значения оценки'], ['COUNT(*) считает строки, а COUNT(rating) — только строки, где rating не NULL', 1], ['COUNT(rating) считает только оплаченные заказы'], ['COUNT(*) считает и строки-дубликаты дважды']],
-      why: 'Звёздочка значит «строку целиком», и NULL ей не мешает. COUNT(столбец) пропускает NULL: у 127 заказов оценки нет, 231 − 127 = 104. Разные значения считает COUNT(DISTINCT rating), статус тут ни при чём, а дубликаты COUNT(*) считает по одному разу, как любые строки.' },
-    q6: { sec: 'code', q: 'В базе 231 заказ, промокод ЗИМА10 у 22, а у 190 промокода нет (NULL). Сколько строк насчитает эта строка?', code: "SELECT COUNT(*) FROM orders WHERE promo_code <> 'ЗИМА10';", lang: 'sql', opts: [['209'], ['19', 1], ['0'], ['231']],
-      why: 'Для 190 строк сравнение NULL <> \'ЗИМА10\' даёт не TRUE, а UNKNOWN, и WHERE их отбрасывает. Остаются 7 пустых строк \'\' и 12 заказов с ВЕСНА15: 19. 209 получится, если дописать OR promo_code IS NULL. Ноль и 231 не учитывают ни NULL, ни сам фильтр.' },
-    q7: { sec: 'nuances', q: 'Список заказов показывают по 20 на страницу запросом ORDER BY order_date LIMIT 20 OFFSET … В один день бывает несколько заказов. Что может пойти не так?', opts: [['Ничего: ORDER BY делает порядок однозначным'], ['Заказы одного дня могут меняться местами между запросами, и на соседних страницах одни повторятся, а другие пропадут', 1], ['OFFSET без ORDER BY не работает'], ['LIMIT 20 вернёт меньше строк, если в дне больше 20 заказов']],
-      why: 'Порядок строк с равным ключом сортировки не определён, и при каждом запросе он может быть другим. Тогда граница страницы режет группу равных дат по-разному. Лечится уникальным последним ключом: ORDER BY order_date, order_id. OFFSET без ORDER BY синтаксически работает, просто страницы непредсказуемы, а LIMIT не зависит от того, сколько заказов в одном дне.' }
+    q1: { sec: 'method', title: 'Сначала предскажите', q: "В учебном запросе группируют заказы по customer_id. Условие status = 'paid' перенесли из WHERE в HAVING и оставили рядом с COUNT(*) >= 3. Что произойдёт в PostgreSQL?", opts: [["Результат останется прежним, хотя проверка статуса произойдёт позже"], ["Возникнет ошибка: status не входит в GROUP BY и используется без агрегатной функции", 1], ["Останутся только клиенты, у которых оплачены все заказы"], ["В результат попадут все клиенты с отменёнными заказами"]],
+      why: "У одного клиента может быть несколько заказов с разными статусами. В этом запросе status не входит в ключ группировки, а условие в HAVING требует единого значения для всей группы. PostgreSQL обнаружит ошибку до выполнения запроса. Для отбора оплаченных заказов укажите условие по статусу в WHERE." },
+    q2: { sec: 'idea', q: "В таблице orders 231 заказ, из них 36 отменены. Сколько строк поступит на группировку в запросе из анимации?", opts: [["231 строка — все заказы"], ["195 строк — только оплаченные заказы", 1], ["4 строки — по числу брендов"], ["3 строки — по числу брендов, прошедших HAVING"]],
+      why: "Условие WHERE status = 'paid' оставляет 231 − 36 = 195 заказов. GROUP BY сформирует из них четыре группы, а после HAVING останутся три." },
+    q3: { sec: 'task', q: "Почему PostgreSQL сообщает, что столбец revenue не существует, если написать SELECT brand, SUM(amount) AS revenue FROM orders WHERE revenue > 250000 GROUP BY brand?", opts: [["revenue — зарезервированное слово, которым нельзя назвать столбец"], ["В orders нет столбца revenue, а в WHERE нельзя сослаться на псевдоним из SELECT", 1], ["Псевдоним нужно заключить в одинарные кавычки"], ["После WHERE пропущено слово AS"]],
+      why: "revenue — имя столбца с результатом SUM(amount). Его можно использовать в ORDER BY. Чтобы проверить сумму для группы, нужно написать HAVING SUM(amount) > 250000. В одинарных кавычках revenue станет обычной строкой текста." },
+    q4: { sec: 'filters', q: "У 127 заказов из учебной таблицы отсутствует оценка. Какие строки вернёт в PostgreSQL запрос SELECT order_id, rating FROM orders ORDER BY rating DESC LIMIT 3?", opts: [["Три заказа с оценкой 5"], ["Три заказа без оценки", 1], ["Возникнет ошибка, потому что в столбце rating есть NULL"], ["Три заказа с оценкой ниже 5"]],
+      why: "При сортировке по убыванию в PostgreSQL значения NULL по умолчанию оказываются первыми. Какой именно заказ будет первым среди них, здесь не определено. Чтобы сначала увидеть высокие оценки и однозначно упорядочить заказы с одинаковой оценкой, укажите ORDER BY rating DESC NULLS LAST, order_id." },
+    q5: { sec: 'method', q: "Почему SELECT COUNT(*), COUNT(rating) FROM orders вернул два разных числа — 231 и 104?", opts: [["COUNT(rating) учитывает каждое значение оценки только один раз"], ["COUNT(*) считает все строки, а COUNT(rating) — только заказы с указанной оценкой", 1], ["COUNT(rating) проверяет, был ли заказ оплачен"], ["COUNT(*) считает только те заказы, у которых нет оценки"]],
+      why: "У 127 из 231 заказа значение rating равно NULL. COUNT(rating) пропустит эти строки и вернёт 104. Для подсчёта разных оценок использовали бы COUNT(DISTINCT rating). Статус заказа ни одно из двух выражений не проверяет." },
+    q6: { sec: 'code', q: "В таблице 231 заказ. У 22 записан промокод «ЗИМА10», у 190 значение promo_code равно NULL. Сколько заказов посчитает запрос?", code: "SELECT COUNT(*) FROM orders WHERE promo_code <> 'ЗИМА10';", lang: 'sql', opts: [["209"], ["19", 1], ["0"], ["231"]],
+      why: "Сравнение с «ЗИМА10» даёт UNKNOWN для 190 заказов с NULL. Для 22 заказов с этим промокодом результат FALSE. Остаются 19 заказов: 12 с промокодом «ВЕСНА15» и семь с пустой строкой. Чтобы включить заказы с NULL, добавьте к условию OR promo_code IS NULL." },
+    q7: { sec: 'nuances', q: "Заказы показывают по 20 на страницу. В запросе указано ORDER BY order_date LIMIT 20 OFFSET …, причём на одну дату приходится несколько заказов. Что может произойти даже при неизменных данных?", opts: [["ORDER BY гарантирует однозначный порядок всех заказов"], ["На соседних страницах заказ может повториться, а другой остаться за пределами обеих страниц", 1], ["Запрос с OFFSET нельзя выполнить без второго столбца сортировки"], ["Если в один день было больше 20 заказов, LIMIT 20 обязательно вернёт меньше 20 строк"]],
+      why: "При равных датах порядок заказов внутри одного дня не задан. Два запроса могут по-разному расположить их на границе страниц. Для фиксированного набора данных достаточно добавить уникальный номер заказа в конец списка сортировки: ORDER BY order_date, order_id." }
     },
     glossary: {
-      sql: { t: 'SQL', en: 'Structured Query Language', d: 'Язык запросов к реляционным базам данных: описывает, какой результат нужен.' },
-      dbms: { t: 'СУБД', en: 'database management system', d: 'Программа, которая хранит данные и выполняет запросы к ним: PostgreSQL, SQLite, DuckDB.' },
-      clause: { t: 'Предложение запроса', en: 'clause', d: 'Часть запроса, которая начинается с ключевого слова: SELECT, FROM, WHERE, ORDER BY.' },
-      logorder: { t: 'Логический порядок выполнения', en: 'logical query processing order', d: 'Порядок, в котором предложения передают друг другу таблицы: FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT.' },
-      aggregate: { t: 'Агрегатная функция', en: 'aggregate function', d: 'Функция, которая сворачивает строки группы в одно значение: COUNT, SUM, AVG, MIN, MAX.' },
-      alias: { t: 'Псевдоним', en: 'alias', d: 'Имя, которое выходной столбец получает в SELECT через AS.' },
-      predicate: { t: 'Предикат', en: 'predicate', d: 'Условие, которое для строки истинно, ложно или неизвестно.' },
-      like: { t: 'Шаблон LIKE', en: 'pattern matching', d: 'Сравнение строки с образцом: % — любое число символов, _ — ровно один.' },
-      null: { t: 'NULL', en: 'NULL', d: 'Отметка «значения нет». Это не ноль и не пустая строка.' },
-      distinct: { t: 'DISTINCT', en: 'DISTINCT', d: 'Слово после SELECT, которое убирает из результата повторяющиеся строки.' },
-      pagination: { t: 'Пагинация', en: 'pagination', d: 'Выдача результата по страницам через LIMIT и OFFSET.' },
-      dialect: { t: 'Диалект SQL', en: 'SQL dialect', d: 'Вариант SQL конкретной СУБД: стандарт плюс свои расширения и отличия.' },
-      collation: { t: 'Правило сравнения строк', en: 'collation', d: 'Настройка, которая решает, равны ли строки с разным регистром и как они сортируются.' },
-      tvl: { t: 'Троичная логика', en: 'three-valued logic', d: 'Логика с тремя значениями: TRUE, FALSE и UNKNOWN, которое даёт сравнение с NULL.' },
-      planner: { t: 'Планировщик', en: 'query planner', d: 'Часть СУБД, которая выбирает, как физически выполнить запрос.' },
-      plan: { t: 'План выполнения', en: 'execution plan', d: 'Последовательность операций, которой СУБД получает результат. Показывается командой EXPLAIN.' },
-      index: { t: 'Индекс', en: 'index', d: 'Отдельная структура, по которой база находит строки, не читая таблицу целиком.' }
+      sql: { t: 'SQL', en: 'Structured Query Language', d: "Язык для работы с реляционными базами данных. В запросе SELECT описывают, какие данные нужно получить." },
+      dbms: { t: 'СУБД', en: 'database management system', d: "Система управления базами данных. Хранит данные и выполняет запросы к ним. Примеры — PostgreSQL, SQLite и DuckDB." },
+      clause: { t: 'Предложение запроса', en: 'clause', d: "Часть SQL-запроса со своим назначением. Например, FROM задаёт источник строк, а WHERE — условие их отбора." },
+      logorder: { t: 'Логический порядок выполнения', en: 'logical query processing order', d: "Порядок, в котором разбирают смысл запроса. Например, WHERE применяется к строкам до группировки, а HAVING — к группам." },
+      aggregate: { t: 'Агрегатная функция', en: 'aggregate function', d: "Функция, которая по значениям группы вычисляет один результат. Например, COUNT(*) считает строки, SUM(amount) складывает суммы заказов." },
+      alias: { t: 'Псевдоним', en: 'alias', d: "Имя, присвоенное столбцу или источнику данных в запросе. Например, AS revenue задаёт имя столбца с суммарной выручкой." },
+      predicate: { t: 'Предикат', en: 'predicate', d: "Условие, которое может быть истинным, ложным или иметь неизвестный результат." },
+      like: { t: 'Шаблон LIKE', en: 'pattern matching', d: "Способ проверить, соответствует ли строка образцу. В образце знак процента обозначает любое число символов, включая ноль, а знак подчёркивания — ровно один символ." },
+      null: { t: 'NULL', en: 'NULL', d: "Обозначение отсутствующего значения. Число 0 и пустая строка — отдельные значения." },
+      distinct: { t: 'DISTINCT', en: 'DISTINCT', d: "Ключевое слово. В SELECT DISTINCT оставляет по одной строке для каждой комбинации выбранных значений." },
+      pagination: { t: 'Пагинация', en: 'pagination', d: "Вывод результата по страницам. LIMIT и OFFSET задают размер страницы и число строк, которые нужно пропустить." },
+      dialect: { t: 'Диалект SQL', en: 'SQL dialect', d: "Вариант языка SQL, который поддерживает конкретная СУБД. Диалекты могут различаться синтаксисом и правилами обработки данных." },
+      collation: { t: 'Правило сравнения строк', en: 'collation', d: "Набор правил сортировки и сравнения текста. От него может зависеть, считаются ли одинаковыми строки, различающиеся регистром." },
+      tvl: { t: 'Трёхзначная логика', en: 'three-valued logic', d: "Логика с тремя возможными результатами: TRUE, FALSE и UNKNOWN. Например, обычное сравнение числа с NULL даёт UNKNOWN." },
+      planner: { t: 'Планировщик', en: 'query planner', d: "Компонент СУБД, который выбирает способ выполнения запроса." },
+      plan: { t: 'План выполнения', en: 'execution plan', d: "Набор операций, которые СУБД выбрала для выполнения запроса. В PostgreSQL его показывает команда EXPLAIN." },
+      index: { t: 'Индекс', en: 'index', d: "Структура данных, с помощью которой СУБД может найти нужные строки без полного просмотра таблицы." }
     },
     materials: [
-      ['da-3-1-select-order.md', 'Страница целиком в Markdown: текст, код, вопросы и глоссарий'],
-      ['data/shop/', 'Учебная база shop для PostgreSQL, SQLite и DuckDB — общий набор темы 03'],
-      ['queries/', 'Пять запросов из раздела «Код»: q1.sql–q5.sql'],
-      ['dialects.py', 'Сравнение PostgreSQL, SQLite и DuckDB']
+      ['da-3-1-select-order.md', 'Текст урока, примеры кода, вопросы и глоссарий в Markdown'],
+      ['data/shop/', 'Учебная база shop для всей главы в форматах PostgreSQL, SQLite и DuckDB'],
+      ['queries/', 'Пять файлов с примерами запросов из урока (q1.sql–q5.sql)'],
+      ['dialects.py', 'Скрипт для сравнения результатов одних и тех же запросов в трёх СУБД']
     ],
     prompts: [
-      ['Порядок выполнения', 'Дай мне по одному запросу к учебной базе из источника. Я распишу, что получает и отдаёт каждое предложение в порядке FROM → … → LIMIT и сколько строк останется. Ты проверишь и укажешь, где я ошибся. Пять запросов, по одному за раз.'],
-      ['WHERE или HAVING', 'Задавай мне задачи на отбор: «заказы дороже 5 000 ₽», «бренды, где больше 40 заказов» и подобные. Я скажу, куда ставить условие — в WHERE или в HAVING, и почему. Не давай готовый запрос, пока я не отвечу.'],
-      ['Разбор моего запроса', 'Я вставлю свой SELECT. Наводящими вопросами помоги найти, где он может молча ошибиться: NULL в сравнении, регистр в LIKE, сортировка без уникального ключа, псевдоним не на своём месте. Не переписывай запрос за меня.']
+      ['Порядок выполнения', 'Предложи пять запросов к учебной базе, по одному за раз. Я объясню, какие строки или группы рассматриваются на каждом шаге, от FROM до LIMIT. Проверяй мой ответ по данным урока.'],
+      ['WHERE или HAVING', 'Предложи задачи на отбор заказов и брендов. Например, нужно найти заказы дороже 5 000 ₽ или бренды с числом заказов больше 40. Дождись, пока я выберу WHERE или HAVING и объясню решение. Затем проверь мой ответ.'],
+      ['Разбор моего запроса', 'Я пришлю запрос и опишу, какой результат ожидаю. Помоги проверить условия с NULL, шаблоны LIKE, порядок сортировки и псевдонимы. Если заметишь ошибку, задай вопрос, который поможет мне самому исправить запрос.']
     ]
   };
 })();
