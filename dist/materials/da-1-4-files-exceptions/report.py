@@ -8,16 +8,16 @@ class ReportError(Exception):
 
 
 class Report:
-    """Чертёж отчёта по выгрузке заказов."""
+    """Отчёт по заказам из одного файла."""
 
     def __init__(self, path, orders, bad_lines):
         self.path = Path(path)        # атрибуты экземпляра
         self.orders = orders          # [(id, дата, категория, сумма), …]
-        self.bad_lines = bad_lines    # номера битых строк
+        self.bad_lines = bad_lines    # номера пропущенных строк
 
     @classmethod
     def from_csv(cls, path, max_bad=5):
-        """Собрать отчёт из файла: битые строки — в список, остальное — в заказы."""
+        """Собрать отчёт из файла: сохранить заказы и номера строк с ошибкой кодировки."""
         orders, bad = [], []
         with open(path, "rb") as f:
             for n, raw in enumerate(f, start=1):
@@ -30,8 +30,8 @@ class Report:
                     oid, date, cat, amount = line.rstrip("\n").split(",")
                     orders.append((int(oid), date, cat, int(amount)))
         if len(bad) > max_bad:
-            raise ReportError(f"{path}: битых строк {len(bad)}, допустимо {max_bad}")
-        return cls(path, orders, bad)  # cls — сам класс Report
+            raise ReportError(f"{path}: пропущено {len(bad)} стр., допустимо {max_bad}")
+        return cls(path, orders, bad)  # здесь cls — класс Report
 
     def revenue(self):
         return sum(o[3] for o in self.orders)
@@ -41,7 +41,7 @@ class Report:
 
 
 report = Report.from_csv(Path("data") / "orders.csv")
-print(type(report).__name__, "|", report.path, "|", len(report.orders), "заказов | битые:", report.bad_lines)
+print(type(report).__name__, "|", report.path, "|", len(report.orders), "заказов | пропущенные строки:", report.bad_lines)
 print("выручка:", report.revenue(), "₽, средний чек:", round(report.avg_check()), "₽")
 
 try:

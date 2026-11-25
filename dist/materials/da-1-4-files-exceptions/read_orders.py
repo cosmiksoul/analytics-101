@@ -2,7 +2,7 @@ from pathlib import Path
 
 path = Path("data") / "orders.csv"
 
-orders, bad = [], []                    # заказы и номера битых строк
+orders, bad = [], []                    # заказы и номера пропущенных строк
 with open(path, "rb") as f:
     for n, raw in enumerate(f, start=1):
         try:
@@ -15,5 +15,5 @@ with open(path, "rb") as f:
             orders.append(line.rstrip("\n").split(","))
 
 print("заказов прочитано:", len(orders))
-print("битых строк:", len(bad), bad)
+print("пропущено строк:", len(bad), bad)
 print("файл закрыт:", f.closed)
