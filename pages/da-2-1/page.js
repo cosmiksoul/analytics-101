@@ -23,17 +23,17 @@
   const MASK_ROWS = [0, 2, 5, 6];
   // шаг → что показать; sel: { rows, cols ('all' | список), kind }
   const SC = [
-    { lane: 'df = orders.head(8).sort_values("amount", ascending=False)', rows: '8', kind: 'DataFrame', map: '—', idxOn: 1, call: [[-1, 'слева — индекс, а не номера строк']] },
+    { lane: 'df = orders.head(8).sort_values("amount", ascending=False)', rows: '8', kind: 'DataFrame', map: '—', idxOn: 1, call: [[-1, 'слева метки строк']] },
     { lane: 'df.index  →  [0, 6, 5, 3, 4, 7, 2, 1]', rows: '8', kind: 'DataFrame', map: '2 · 6', idxOn: 1, mark: [6], call: [[6, 'метка 2 стоит на позиции 6']] },
-    { lane: '{"date": Series, "brand": Series, "amount": Series}', lb: 'внутри', rows: '8', kind: 'DataFrame', map: '—', idxOn: 1, call: [[-1, 'один индекс на все столбцы']] },
+    { lane: '{"date": Series, "brand": Series, "amount": Series}', lb: 'внутри', rows: '8', kind: 'DataFrame', map: '—', idxOn: 1, call: [[-1, 'общий индекс всех столбцов']] },
     { lane: 'df.dtypes', rows: '8', kind: 'DataFrame', map: '—', call: [[-1, 'int64: 8 байт на каждое число', 'amount']] },
-    { lane: 'df["amount"]', rows: '8', kind: 'Series', map: '—', sel: { rows: [0, 1, 2, 3, 4, 5, 6, 7], cols: ['amount'], kind: 'col' }, dimOther: 1, call: [[-1, 'Series: name amount, dtype int64', 'amount']] },
+    { lane: 'df["amount"]', rows: '8', kind: 'Series', map: '—', sel: { rows: [0, 1, 2, 3, 4, 5, 6, 7], cols: ['amount'], kind: 'col' }, dimOther: 1, call: [[-1, 'имя amount, тип int64', 'amount']] },
     { lane: 'df.loc[2]', rows: '1', kind: 'Series', map: '2 · 6', sel: { rows: [6], cols: 'all', kind: 'loc' }, call: [[6, 'метка 2 → позиция 6', 'loc']] },
     { lane: 'df.loc[[2, 5], ["brand", "amount"]]', rows: '2', kind: 'DataFrame', map: '—', sel: { rows: [6, 2], cols: ['brand', 'amount'], kind: 'loc' }, call: [[2, 'метка 5 → позиция 2', 'loc']] },
     { lane: 'df.iloc[2]', rows: '1', kind: 'Series', map: '5 · 2', sel: { rows: [2], cols: 'all', kind: 'iloc' }, call: [[2, 'позиция 2 → метка 5', 'iloc']] },
-    { lane: 'df.iloc[0:3]', rows: '3', kind: 'DataFrame', map: '—', sel: { rows: [0, 1, 2], cols: 'all', kind: 'iloc' }, call: [[3, 'позиция 3 уже не входит', 'bad']] },
-    { lane: 'mask = df["brand"] == "Кедр"', rows: '8', kind: 'bool', map: '—', mask: 1, call: [[-1, 'bool, тот же индекс', 'mask']] },
-    { lane: 'df[mask]', rows: '4 из 8', kind: 'DataFrame', map: '—', mask: 1, dim: 1, sel: { rows: MASK_ROWS, cols: 'all', kind: 'mask' }, call: [[1, 'False: строка гаснет', 'bad']] },
+    { lane: 'df.iloc[0:3]', rows: '3', kind: 'DataFrame', map: '—', sel: { rows: [0, 1, 2], cols: 'all', kind: 'iloc' }, call: [[3, 'позиция 3 за границей среза', 'bad']] },
+    { lane: 'mask = df["brand"] == "Кедр"', rows: '8', kind: 'bool', map: '—', mask: 1, call: [[-1, 'тип bool, индекс таблицы', 'mask']] },
+    { lane: 'df[mask]', rows: '4 из 8', kind: 'DataFrame', map: '—', mask: 1, dim: 1, sel: { rows: MASK_ROWS, cols: 'all', kind: 'mask' }, call: [[1, 'False: строка не входит в результат', 'bad']] },
     { lane: 'df.loc[2]    df.iloc[2]    df[mask]', rows: '8', kind: 'DataFrame', map: '—', mask: 1, final: 1, call: [[6, 'loc[2] — метка', 'loc'], [2, 'iloc[2] — позиция', 'iloc'], [5, 'маска — условие', 'mask']] }
   ];
 
@@ -47,23 +47,23 @@
       { n: '06', name: 'Итог', s: [11] }
     ],
     steps: [
-      { title: 'Восемь заказов после сортировки', dur: 3400, body: '<p>Первые восемь заказов учебной выгрузки отсортированы по&nbsp;сумме, от&nbsp;большей к&nbsp;меньшей. В&nbsp;сцене три столбца из&nbsp;семи: дата, бренд и&nbsp;сумма.</p><p>Слева pandas печатает <b>индекс</b>: 0, 6, 5, 3… Это не&nbsp;номера строк, а&nbsp;метки, которые уехали вместе со&nbsp;строками при сортировке.</p>' },
-      { title: 'Метка и позиция', dur: 3600, body: '<p>У&nbsp;каждой строки два адреса. <b>Позиция</b> — порядковый номер сверху вниз, с&nbsp;нуля, и&nbsp;она меняется при любой сортировке. <b>Метка</b> — значение индекса, она едет вместе со&nbsp;строкой.</p><p>Строка с&nbsp;меткой 2 стоит на&nbsp;позиции 6, седьмой сверху.</p>' },
-      { title: 'Таблица распадается на столбцы', dur: 3600, body: '<p>Внутри DataFrame не&nbsp;сетка ячеек, а&nbsp;набор столбцов. Каждый столбец — отдельный массив, и&nbsp;все они подписаны одним общим индексом.</p><p>Поэтому DataFrame ведёт себя как словарь: ключ — имя столбца, значение — столбец.</p>' },
-      { title: 'Один столбец — один тип', dur: 3800, body: '<p>У&nbsp;каждого столбца свой тип данных, <b>dtype</b>: дата — <b>datetime64[us]</b>, бренд — <b>str</b>, сумма — <b>int64</b>.</p><p>Все значения столбца одного размера и&nbsp;лежат подряд, поэтому операция над столбцом идёт одним проходом, без цикла Python.</p>' },
-      { title: 'Столбец — это Series', dur: 3400, body: '<p><b>df["amount"]</b> достаёт один столбец. Это объект Series: значения, тот&nbsp;же индекс и&nbsp;имя amount.</p><p>Series — массив с&nbsp;метками: к&nbsp;значению можно обратиться и&nbsp;по&nbsp;метке, и&nbsp;по&nbsp;позиции.</p>' },
-      { title: 'loc ищет метку', dur: 3600, body: '<p><b>df.loc[2]</b> ищет строку, у&nbsp;которой метка равна 2, где&nbsp;бы она ни&nbsp;стояла. Сейчас это позиция 6.</p><p>Результат — Series: значения одной строки, подписанные именами столбцов.</p>' },
-      { title: 'Метки строк, имена столбцов', dur: 3600, body: '<p>В&nbsp;loc через запятую пишут две части: какие строки и&nbsp;какие столбцы, обе по&nbsp;именам. Списки дают таблицу 2&nbsp;×&nbsp;2.</p><p>Строки результата идут в&nbsp;порядке списка: сначала метка 2, потом метка 5.</p>' },
-      { title: 'iloc считает позиции', dur: 3600, body: '<p><b>df.iloc[2]</b> на&nbsp;метки не&nbsp;смотрит: отсчитывает позиции 0, 1, 2 и&nbsp;берёт третью строку сверху. Её&nbsp;метка — 5.</p><p>Те&nbsp;же скобки, то&nbsp;же число 2 — и&nbsp;другая строка.</p>' },
-      { title: 'Срез iloc: конец не входит', dur: 3400, body: '<p>Срез iloc устроен как срез списка: начало входит, конец нет. <b>df.iloc[0:3]</b> — позиции 0, 1 и&nbsp;2.</p><p>Срез loc по&nbsp;меткам, наоборот, включает обе границы.</p>' },
-      { title: 'Условие — столбец True и False', dur: 3600, body: '<p>Сравнение столбца со&nbsp;значением проверяет каждое значение и&nbsp;даёт новый столбец из&nbsp;True и&nbsp;False с&nbsp;тем&nbsp;же индексом. Это <b>булева маска</b>.</p><p>Цикла в&nbsp;коде нет: сравнение идёт по&nbsp;всему массиву сразу.</p>' },
-      { title: 'Маска гасит строки', dur: 3600, body: '<p><b>df[mask]</b> оставляет строки, где в&nbsp;маске True, и&nbsp;гасит остальные. Из&nbsp;восьми заказов осталось четыре заказа «Кедра».</p><p>Маска сопоставляется со&nbsp;строками по&nbsp;меткам индекса. То&nbsp;же самое пишут как <b>df.loc[mask]</b>.</p>' },
-      { title: 'Три способа указать строки', dur: 4400, next: 'Читать страницу', body: '<p>loc — по&nbsp;меткам, iloc — по&nbsp;позициям, маска — по&nbsp;условию. После сортировки или фильтра метки и&nbsp;позиции расходятся, и&nbsp;одна и&nbsp;та&nbsp;же двойка даёт разные строки.</p><p>Дальше — как это устроено подробно и&nbsp;как не&nbsp;путаться.</p>' }
+      { title: 'Восемь заказов после сортировки', dur: 3400, body: '<p>Возьмём первые восемь заказов из выгрузки и отсортируем их по убыванию суммы. На экране показаны три столбца из семи — дата, бренд и сумма заказа.</p><p>В левом столбце видны метки индекса. Метки остались у тех же заказов. Теперь они идут в порядке 0, 6, 5, 3, 4, 7, 2, 1.</p>' },
+      { title: 'Где находится строка с меткой 2', dur: 3600, body: '<p><b>Позиция</b> показывает место строки в текущем порядке, начиная с нуля. <b>Метка</b> хранится в индексе. При сортировке позиция заказа может измениться, а метка сохранится.</p><p>После сортировки строка с меткой 2 стоит седьмой сверху. Её позиция — 6.</p>' },
+      { title: 'Один индекс для трёх столбцов', dur: 3600, body: '<p>У столбцов с датами, брендами и суммами один и тот же индекс. Благодаря этому видно, какие значения относятся к одному заказу.</p><p>По имени столбца можно получить весь столбец как объект Series.</p>' },
+      { title: 'Как узнать тип столбца', dur: 3800, body: '<p>Свойство <b>df.dtypes</b> показывает тип каждого столбца. Даты здесь имеют тип datetime64[us], названия брендов — str, а суммы — int64.</p><p>Для каждой суммы типа int64 нужно восемь байт. У названий брендов разная длина, поэтому расход памяти на текст зависит от самих строк.</p>' },
+      { title: 'Столбец сумм как Series', dur: 3400, body: '<p>Выражение <b>df["amount"]</b> возвращает Series с именем amount и индексом исходной таблицы.</p><p>Сумму одного заказа можно получить по метке строки или по её позиции.</p>' },
+      { title: 'Поиск по метке', dur: 3600, body: '<p>Выражение <b>df.loc[2]</b> находит заказ с меткой 2. Он находится на позиции 6. Сумма заказа — 910 ₽.</p><p>Результат — Series со значениями одной строки. Значения подписаны именами столбцов.</p>' },
+      { title: 'Выбор нескольких строк и столбцов', dur: 3600, body: '<p>В скобках после loc через запятую указывают, какие строки и столбцы нужны. В этом примере первый список содержит метки 2 и 5, второй — имена brand и amount.</p><p>Результат — таблица из двух строк и двух столбцов. Строки идут в порядке, который мы задали в списке меток.</p>' },
+      { title: 'Поиск по позиции', dur: 3600, body: '<p>Выражение <b>df.iloc[2]</b> возвращает третью строку сверху, потому что отсчёт позиций начинается с нуля.</p><p>У этого заказа метка 5, а сумма — 2 640 ₽. По метке 2 мы нашли другой заказ.</p>' },
+      { title: 'Первые три строки', dur: 3400, body: '<p>В срезе <b>df.iloc[0:3]</b> начальная позиция 0 входит в выборку, а конечная позиция 3 остаётся за её пределами. Получим строки на позициях 0, 1 и 2.</p><p>В срезе по меткам через loc обе указанные границы входят в выборку.</p>' },
+      { title: 'Какие заказы относятся к «Кедру»', dur: 3600, body: '<p>Выражение <b>df["brand"] == "Кедр"</b> сравнивает каждое название бренда со строкой «Кедр». Совпадениям соответствует True, остальным значениям — False.</p><p>Результат — <b>булева маска</b>. У этой Series те же метки строк, что и у таблицы заказов.</p>' },
+      { title: 'Четыре заказа «Кедра»', dur: 3600, body: '<p>Выражение <b>df[mask]</b> оставит четыре строки, где значение маски равно True. Это заказы «Кедра» с метками 0, 5, 7 и 2.</p><p>В анимации остальные строки затемнены. В таблицу результата они не входят. Ту же выборку можно записать как <b>df.loc[mask]</b>.</p>' },
+      { title: 'Когда выбирать loc, iloc или маску', dur: 4400, next: 'Читать страницу', body: '<p>Для поиска по метке используйте <b>loc</b>, по месту строки в текущей таблице — <b>iloc</b>, по условию — <b>маску</b>.</p><p>Проверьте себя на этих заказах. По метке 2 мы получили сумму 910 ₽, по позиции 2 — 2 640 ₽, а по названию бренда «Кедр» нашли сразу четыре заказа.</p>' }
     ],
-    hud: [{ id: 'rows', label: 'Строк' }, { id: 'kind', label: 'Тип' }, { id: 'map', label: 'Метка/поз.' }],
+    hud: [{ id: 'rows', label: 'Строк' }, { id: 'kind', label: 'Тип' }, { id: 'map', label: 'Метка / позиция' }],
     legend: '<span><i style="background:#36b8a6"></i>loc — метка</span><span><i style="background:#f0a247"></i>iloc — позиция</span><span><i style="background:#a48af0"></i>маска</span>',
     info: 'DATAFRAME',
-    aiNote: 'В анимации таблица df — первые восемь учебных заказов, отсортированные по сумме по убыванию: индекс сверху вниз 0, 6, 5, 3, 4, 7, 2, 1, показаны столбцы date, brand, amount. Таблица распадается на столбцы с общим индексом (dtype: datetime64[us], str, int64), df.loc[2] подсвечивает строку с меткой 2 на позиции 6, df.iloc[2] — строку на позиции 2 с меткой 5, df.iloc[0:3] — позиции 0–2, маска df["brand"] == "Кедр" оставляет четыре строки с метками 0, 5, 7, 2.',
+    aiNote: 'Для таблицы df взяли первые восемь заказов и отсортировали их по убыванию суммы. Метки строк сверху вниз: 0, 6, 5, 3, 4, 7, 2, 1, показаны столбцы date, brand, amount. У показанных столбцов общий индекс (dtype: datetime64[us], str, int64), df.loc[2] подсвечивает строку с меткой 2 на позиции 6, df.iloc[2] — строку на позиции 2 с меткой 5, df.iloc[0:3] — позиции 0–2, маска df["brand"] == "Кедр" оставляет четыре строки с метками 0, 5, 7, 2.',
     mount(root, api) {
       const { esc } = api;
       const head = (name, dt) => `<div class="dfs-h"><b>${esc(name)}</b><i>${esc(dt || '')}</i></div>`;
@@ -259,7 +259,7 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
         case 'attr': {
           const o = ev(n.obj);
           if (['loc', 'iloc'].includes(n.name) && ['frame', 'col', 'row'].includes(o.t)) return { t: 'idx', kind: n.name, of: o };
-          if (o.t === 'frame' && o.cols.some(c => COLS[c] === n.name)) { notes.push(`df.${n.name} — то&nbsp;же, что df["${n.name}"]: столбец как Series. Так можно писать, если имя столбца — правильное имя Python и&nbsp;не&nbsp;совпадает с&nbsp;методом таблицы.`); return { t: 'col', rows: o.rows.slice(), c: COLS.indexOf(n.name) }; }
+          if (o.t === 'frame' && o.cols.some(c => COLS[c] === n.name)) { notes.push(`df.${n.name} — то&nbsp;же, что df["${n.name}"]: столбец как Series. Такая запись работает, если имя столбца подходит для переменной Python и не совпадает с существующим атрибутом таблицы.`); return { t: 'col', rows: o.rows.slice(), c: COLS.indexOf(n.name) }; }
           if (o.t === 'row' && o.cols.some(c => COLS[c] === n.name)) return { t: 'scalar', r: o.r, c: COLS.indexOf(n.name) };
           if (['at', 'iat', 'head', 'tail', 'query', 'filter', 'sample', 'index', 'columns', 'values', 'dtypes', 'shape', 'T'].includes(n.name)) throw new Unsup(`${n.name} — настоящий атрибут pandas, но этот разбор его не выполняет. ${SUPPORTED}`);
           throw new Unsup(`Атрибута ${n.name} у этого объекта разбор не знает. Столбцы таблицы: ${COLS.join(', ')}.`);
@@ -288,7 +288,7 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
           const a = ev(n.a), b = ev(n.b);
           if ((a.t === 'num' || b.t === 'num') && (a.t === 'mask' || b.t === 'mask' || a.t === 'col' || b.t === 'col')) throw new Unsup(PRECEDENCE);
           if (a.t !== 'mask' || b.t !== 'mask') throw new Unsup('& и | соединяют маски — результаты сравнений в скобках.');
-          if (a.rows.join() !== b.rows.join()) throw new Unsup('Маски построены по разным выборкам: такое выравнивание разбор не поддерживает.');
+          if (a.rows.join() !== b.rows.join()) throw new Unsup('Маски построены по разным выборкам. Для этого упражнения возьмите маски, рассчитанные по одним и тем же строкам.');
           notes.push(n.k === 'and' ? '&amp; оставляет True там, где оба условия выполнены.' : '| оставляет True там, где выполнено хотя&nbsp;бы одно условие.');
           return { t: 'mask', rows: a.rows, vals: a.vals.map((v, j) => (n.k === 'and' ? v && b.vals[j] : v || b.vals[j])), name: a.name === b.name ? a.name : null };
         }
@@ -311,14 +311,14 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
       const cmp = (x, y) => (op === '==' ? x === y : op === '!=' ? x !== y : op === '<' ? x < y : op === '>' ? x > y : op === '<=' ? x <= y : x >= y);
       const allBool = v => ({ t: 'mask', rows: a.rows.slice(), vals: a.rows.map(() => v), name: COLS[c] });
       const otherT = b.t === 'str' ? 'str' : b.int ? 'int' : 'float';
-      const bad = () => new PyErr('TypeError', `Invalid comparison between dtype=${dt} and ${otherT}`, `Столбец ${COLS[c]} имеет тип ${dt}, и&nbsp;сравнивать его на&nbsp;больше-меньше с&nbsp;${b.t === 'str' ? 'текстом' : 'числом'} pandas отказывается.`);
+      const bad = () => new PyErr('TypeError', `Invalid comparison between dtype=${dt} and ${otherT}`, `Для столбца ${COLS[c]} с типом ${dt} такое сравнение с ${b.t === 'str' ? 'текстом' : 'числом'} не определено.`);
       let vals;
       if (dt === 'int64') {
         if (b.t === 'str') { if (eq) { notes.push('Число никогда не&nbsp;равно строке, поэтому маска целиком ' + (op === '==' ? 'False' : 'True') + '.'); return allBool(op !== '=='); } throw bad(); }
         vals = a.rows.map(r => cmp(ROWS[r][c], b.v));
       } else if (dt === 'str') {
         if (b.t === 'num') { if (eq) { notes.push('Строка никогда не&nbsp;равна числу, поэтому маска целиком ' + (op === '==' ? 'False' : 'True') + '.'); return allBool(op !== '=='); } throw bad(); }
-        if (!eq) notes.push('Строки сравниваются по&nbsp;алфавиту, точнее — по&nbsp;кодам символов.');
+        if (!eq) notes.push('Порядок строк при сравнении зависит от кодов символов Unicode.');
         vals = a.rows.map(r => cmp(ROWS[r][c], b.v));
       } else {
         const m = b.t === 'str' && /^(\d{4})-(\d{2})(?:-(\d{2}))?(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/.exec(b.v);
@@ -335,7 +335,7 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
       if (key.t !== 'num' && key.t !== 'str') throw new Unsup('Такой ключ разбор не поддерживает.');
       const hits = []; labels.forEach((l, j) => { if (sameLabel(l, key)) hits.push(j); });
       if (!hits.length) throw keyErr(key, why);
-      if (hits.length > 1) throw new Unsup('Метка повторяется: выборка по повторяющимся меткам в этом разборе не поддержана.');
+      if (hits.length > 1) throw new Unsup('В полученной таблице эта метка встречается несколько раз. Упражнение рассчитано на выборку по уникальным меткам.');
       return hits[0];
     }
     function byLabel(labels, key, what) {
@@ -353,10 +353,10 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
       }
       throw new Unsup('В loc на месте строк ставят метку, список меток, срез меток или маску.');
     }
-    function alignMask(labels, m) {
+    function alignMask(labels, m, warnOnReindex = false) {
       const map = new Map(m.rows.map((r, j) => [LAB[r], m.vals[j]]));
-      if (!labels.every(l => map.has(l))) throw new Unsup('Маска построена по другой выборке, и не все метки находят пару.');
-      if (labels.length !== m.rows.length) notes.push('Маска длиннее таблицы: pandas выровняет её по&nbsp;меткам и&nbsp;предупредит «Boolean Series key will be reindexed to match DataFrame index».');
+      if (!labels.every(l => map.has(l))) throw new PyErr('IndexingError', 'Unalignable boolean Series provided as indexer (index of the boolean Series and of the indexed object do not match).', 'В маске нет значения для одной или нескольких меток выбранных строк.');
+      if (warnOnReindex && (labels.length !== m.rows.length || labels.some((l, j) => l !== LAB[m.rows[j]]))) notes.push('Метки маски и таблицы идут в разном порядке или различаются по составу. pandas сопоставит значения маски по меткам. Предупреждение: «Boolean Series key will be reindexed to match DataFrame index».');
       return labels.map((l, j) => (map.get(l) ? j : -1)).filter(j => j >= 0);
     }
     function labelSlice(labels, s, what) {
@@ -477,7 +477,7 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
         if (k.t === 'str') {
           const c = o.cols.find(c => COLS[c] === k.v);
           if (c === undefined) throw keyErr(k, `Столбца с&nbsp;таким именем нет. Имена чувствительны к&nbsp;регистру: ${COLS.join(', ')}.`);
-          notes.push(`df["${esc0(k.v)}"] достаёт столбец целиком — Series с&nbsp;тем&nbsp;же индексом, что у&nbsp;таблицы.`);
+          notes.push(`df["${esc0(k.v)}"] возвращает столбец целиком — Series с&nbsp;тем&nbsp;же индексом, что у&nbsp;таблицы.`);
           return { t: 'col', rows: o.rows.slice(), c };
         }
         if (k.t === 'num') throw keyErr(k, 'Без loc и&nbsp;iloc число в&nbsp;квадратных скобках ищется среди имён столбцов, а&nbsp;столбца с&nbsp;таким именем нет. Строку по&nbsp;метке берут через df.loc, по&nbsp;позиции — через df.iloc.');
@@ -491,11 +491,11 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
         if (k.t === 'slice') {
           if ([k.a, k.b, k.c].some(b => b && b.t !== 'num')) throw new Unsup('Срез со строками в df[…] разбор не поддерживает.');
           const idx = posSlice(o.rows.length, k);
-          notes.push('Срез чисел в&nbsp;df[…] режет строки по&nbsp;позициям, как iloc.');
+          notes.push('В df[…] срез с целочисленными границами выбирает строки по позициям, как iloc.');
           return { t: 'frame', rows: idx.map(j => o.rows[j]), cols: o.cols.slice() };
         }
         if (k.t === 'mask') {
-          const idx = alignMask(o.rows.map(r => LAB[r]), k);
+          const idx = alignMask(o.rows.map(r => LAB[r]), k, true);
           notes.push(`Маска в&nbsp;df[…] оставляет строки, где True: ${idx.length} из&nbsp;${o.rows.length}.`);
           return { t: 'frame', rows: idx.map(j => o.rows[j]), cols: o.cols.slice() };
         }
@@ -509,7 +509,7 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
         if (k.t === 'str') throw keyErr(k, 'Метки этой Series — числа, строки среди них нет.');
         if (k.t === 'slice') {
           if ([k.a, k.b, k.c].some(b => b && b.t !== 'num')) throw new Unsup('Срез со строками разбор не поддерживает.');
-          const idx = posSlice(o.rows.length, k); notes.push('Срез чисел в&nbsp;s[…] режет по&nbsp;позициям, как iloc.');
+          const idx = posSlice(o.rows.length, k); notes.push('В s[…] срез с целочисленными границами выбирает значения по позициям, как iloc.');
           return { t: 'col', rows: idx.map(j => o.rows[j]), c: o.c };
         }
         if (k.t === 'mask') { const idx = alignMask(o.rows.map(r => LAB[r]), k); return { t: 'col', rows: idx.map(j => o.rows[j]), c: o.c }; }
@@ -517,7 +517,7 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
       }
       if (o.t === 'row') {
         if (k.t === 'str' || k.t === 'list') return loc(o, [k]);
-        if (k.t === 'num') throw keyErr(k, 'Метки строки-Series — имена столбцов. В&nbsp;pandas 3 число в&nbsp;s[…] всегда ищется среди меток, позицию берут через .iloc.');
+        if (k.t === 'num') throw keyErr(k, 'Индекс выбранной строки состоит из имён столбцов. В&nbsp;pandas 3 число в&nbsp;s[…] всегда ищется среди меток, позицию берут через .iloc.');
         if (k.t === 'slice' && [k.a, k.b, k.c].every(b => !b || b.t === 'num')) { const idx = posSlice(o.cols.length, k); return { t: 'row', r: o.r, cols: idx.map(j => o.cols[j]) }; }
         throw new Unsup(SUPPORTED);
       }
@@ -547,8 +547,8 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
   const TASKS = ['Выберите вторую строку таблицы.', 'Выберите строку с меткой 2.'];
   function buildSel(box, api) {
     const { $, esc, plural } = api;
-    box.innerHTML = `<div class="block-hd"><span class="t">Одна и та же двойка — две разные строки <i>интерактив</i></span><div class="ctrls"><button type="button" class="btn ghost small" id="ix-reset">Сбросить</button></div></div>
-<p class="hint ix-do">Введите выражение и нажмите Enter или «Выполнить» — подсветятся выбранные ячейки. Затем выполните два задания из&nbsp;блока «Задания».</p>
+    box.innerHTML = `<div class="block-hd"><span class="t">Какой заказ вернёт выражение? <i>интерактив</i></span><div class="ctrls"><button type="button" class="btn ghost small" id="ix-reset">Сбросить</button></div></div>
+<p class="hint ix-do">Введите выражение и нажмите Enter или «Выполнить». Можно также нажать на один из готовых примеров. Найдите в таблице ячейки, которые соответствуют результату выборки, и выполните два задания.</p>
 <div class="stage ix-stage"><div class="ix-left">
 <form class="ix-form" id="ix-form" autocomplete="off"><label class="vh" for="ix-in">Выражение pandas</label><input id="ix-in" class="ix-in" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" placeholder='например, df.iloc[1]'><button type="submit" class="btn small">Выполнить</button></form>
 <div class="ix-chips" role="group" aria-label="Готовые выражения">${CHIPS.map(c => `<button type="button" class="ix-chip" data-x="${esc(c)}">${esc(c)}</button>`).join('')}</div>
@@ -591,7 +591,7 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
     }
     function preview(v) {
       const kv = pairs => `<table class="ix-kv">${pairs.map(([k, x, cl]) => `<tr><th>${esc(k)}</th><td${cl ? ` class="${cl}"` : ''}>${esc(x)}</td></tr>`).join('')}</table>`;
-      if (v.t === 'scalar') return `<div class="ix-scal">${esc(pyVal(v.r, v.c))}</div><p class="ix-meta">скаляр из&nbsp;ячейки: метка ${LAB[v.r]}, столбец ${COLS[v.c]}</p>`;
+      if (v.t === 'scalar') return `<div class="ix-scal">${esc(pyVal(v.r, v.c))}</div><p class="ix-meta">значение ячейки: метка ${LAB[v.r]}, столбец ${COLS[v.c]}</p>`;
       if (v.t === 'row') return kv(v.cols.map(c => [COLS[c], val(v.r, c, true)])) + `<p class="ix-meta">Name: ${LAB[v.r]}, dtype: ${dtypeOf(v.cols)}</p>`;
       if (v.t === 'col') return (v.rows.length ? kv(v.rows.map(r => [String(LAB[r]), val(r, v.c)])) : '<p class="ix-meta">Пустая Series</p>') + `<p class="ix-meta">Name: ${COLS[v.c]}, dtype: ${DT[COLS[v.c]]}</p>`;
       if (v.t === 'mask') return kv(v.rows.map((r, j) => [String(LAB[r]), v.vals[j] ? 'True' : 'False', v.vals[j] ? 't' : 'f'])) + `<p class="ix-meta">Name: ${v.name || 'None'}, dtype: bool</p>`;
@@ -602,8 +602,8 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
       const extra = [];
       const one = v && (v.t === 'row' || (v.t === 'frame' && v.rows.length === 1)) ? (v.t === 'row' ? v.r : v.rows[0]) : null;
       const full = v && (v.t === 'row' ? v.cols.length === NC : v.t === 'frame' && v.cols.length === NC);
-      if (one === 1 && full) { if (!done[0]) extra.push('<b>Задание 1 выполнено.</b>'); done[0] = true; if (!/iloc|\[\s*1\s*:\s*2\s*\]/.test(src)) extra.push('Верно, но&nbsp;через метку: после другой сортировки вторая строка будет другой, а&nbsp;df.iloc[1] останется второй.'); }
-      if (one === 6 && full) { if (!done[1]) extra.push('<b>Задание 2 выполнено.</b>'); done[1] = true; if (/iloc/.test(src)) extra.push('Сработало, но&nbsp;через позицию 6: после другой сортировки там окажется другая строка, а&nbsp;df.loc[2] найдёт метку 2 где угодно.'); }
+      if (one === 1 && full) { if (!done[0]) extra.push('<b>Задание 1 выполнено.</b>'); done[0] = true; if (!/iloc|\[\s*1\s*:\s*2\s*\]/.test(src)) extra.push('Верно, но&nbsp;через метку: при другой сортировке второй может оказаться другая строка. Выражение df.iloc[1] всегда выбирает строку на этой позиции.'); }
+      if (one === 6 && full) { if (!done[1]) extra.push('<b>Задание 2 выполнено.</b>'); done[1] = true; if (/iloc/.test(src)) extra.push('Сработало, но&nbsp;через позицию 6: при другой сортировке на этой позиции может оказаться другая строка. Выражение df.loc[2] выбирает нужную метку при любом порядке строк.'); }
       if (one === 7 && full && !done[0]) extra.push('Если вы искали вторую строку: это метка 1, а&nbsp;после сортировки она последняя. «Вторая по&nbsp;счёту» — позиция 1.');
       if (one === 2 && full && !done[1]) extra.push('Если вы искали метку 2: iloc считает позиции, а&nbsp;на&nbsp;позиции 2 стоит метка 5.');
       return extra;
@@ -611,8 +611,8 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
     function draw() {
       table();
       const res = $('ix-res'), msg = $('ix-msg');
-      if (!last) { res.innerHTML = '<p class="ix-meta">Здесь появится результат.</p>'; msg.innerHTML = 'Таблица df — восемь заказов после сортировки по&nbsp;сумме. Слева позиции и&nbsp;метки: их легко перепутать.'; $('ix-kind').textContent = 'ничего не выбрано'; $('ix-cells').textContent = ''; $('ix-dot').className = 'dot'; }
-      else if (last.unsup) { res.innerHTML = '<p class="ix-unsup">Форма не поддерживается</p>'; msg.innerHTML = esc(last.unsup); $('ix-kind').textContent = 'разбор не поддерживает'; $('ix-cells').textContent = ''; $('ix-dot').className = 'dot'; }
+      if (!last) { res.innerHTML = '<p class="ix-meta">Здесь появится результат.</p>'; msg.innerHTML = 'В таблице df восемь заказов. Слева указаны позиции и метки строк. Попробуйте найти заказ на 3 000 ₽.'; $('ix-kind').textContent = 'ничего не выбрано'; $('ix-cells').textContent = ''; $('ix-dot').className = 'dot'; }
+      else if (last.unsup) { res.innerHTML = '<p class="ix-unsup">Такое выражение здесь выполнить нельзя</p>'; msg.innerHTML = esc(last.unsup); $('ix-kind').textContent = 'разбор не поддерживает'; $('ix-cells').textContent = ''; $('ix-dot').className = 'dot'; }
       else if (last.err) { res.innerHTML = `<p class="ix-err">${esc(last.err.type)}: ${esc(last.err.msg)}</p>`; msg.innerHTML = [last.err.why, ...last.notes.slice(-1)].filter(Boolean).join(' '); $('ix-kind').textContent = last.err.type; $('ix-cells').textContent = 'ячеек: 0'; $('ix-dot').className = 'dot bad'; }
       else {
         const v = last.v, S = sets(v);
@@ -639,7 +639,7 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
     draw();
     return {
       describe() {
-        const st = !last ? 'выражение ещё не вводил' : `выражение ${src} → ${last.unsup ? 'форма не поддерживается разбором' : last.err ? `${last.err.type}: ${last.err.msg}` : describeRes(last.v)}`;
+        const st = !last ? 'выражений пока нет' : `выражение ${src} → ${last.unsup ? 'это выражение выходит за пределы упражнения' : last.err ? `${last.err.type}: ${last.err.msg}` : describeRes(last.v)}`;
         return `таблица df с индексом 0, 6, 5, 3, 4, 7, 2, 1 (восемь учебных заказов после сортировки по сумме); ${st}; выполнено выражений: ${runs}; заданий выполнено: ${done.filter(Boolean).length} из 2 («вторая строка» и «строка с меткой 2»).`;
       }
     };
@@ -651,7 +651,7 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
     short: 'DA-02',
     title: 'DataFrame изнутри: индекс, типы, выборка',
     where: 'блок «Дата аналитика», тема 02 «Pandas и подготовка данных», страница 2.1',
-    aiData: 'учебная выгрузка заказов интернет-магазина за январь–март 2026 (order_id, date, brand — Сова, Кедр, Луч, Бриз, country — BY, RU, KZ, UZ, channel, amount в рублях, status — paid или cancelled); в примерах df — первые восемь заказов, отсортированные по сумме, с индексом 0, 6, 5, 3, 4, 7, 2, 1',
+    aiData: 'Заказы учебного интернет-магазина за январь–март 2026 года (order_id, date, brand — Сова, Кедр, Луч, Бриз, country — BY, RU, KZ, UZ, channel, amount в рублях, status — paid или cancelled); в примерах df — первые восемь заказов, отсортированные по убыванию суммы. Метки строк по порядку: 0, 6, 5, 3, 4, 7, 2, 1.',
     scene,
     widgets: { sel: buildSel },
     code: {
@@ -660,7 +660,7 @@ ${col('pos', 'поз.', '', ROWS.map((_, r) => String(r)))}${col('idx', 'мет�
 import pandas as pd
 
 # Учебная выгрузка заказов: 100 000 строк, январь–март 2026
-rng = np.random.default_rng(9)            # зерно: при каждом запуске те же данные
+rng = np.random.default_rng(9)            # фиксируем начальное состояние генератора
 n = 100_000
 orders = pd.DataFrame({
     "order_id": np.arange(10001, 10001 + n),
@@ -701,7 +701,7 @@ channel     2278.5
 amount       781.2
 status      1245.5
 dtype: float64`,
-        note: 'Индекс по умолчанию — RangeIndex: он хранит только начало, конец и шаг, поэтому занимает 0,1 КБ. Числа и даты — ровно по 8 байт на значение, строки str — байты текста в UTF-8 плюс смещения.' },
+        note: "У RangeIndex шаг равен единице, поэтому не требуется хранить отдельную метку для каждой строки. В этом примере индекс занимает около 0,1 КБ. Каждое значение int64 и datetime64[us] занимает восемь байт. Для строк с pyarrow расход зависит от длины текста." },
       types: { title: 'Перевод типов: str, object, category и числа из строк', badge: 'проверено: pandas 3.0.5', lang: 'python',
         code: `from timeit import timeit
 
@@ -736,7 +736,7 @@ category     98 КБ   s == 'Сова': 0.11 мс
 str 3430400н/д1 300
 [3430.0, 400.0, nan, 1300.0] float64
 object`,
-        note: 'Время зависит от компьютера, а соотношения повторяются: object медленнее str в несколько раз, category быстрее на порядок. Перевод в число дал float64, потому что NaN — значение с плавающей точкой.' },
+        note: 'В этом замере сравнение со строкой быстрее всего выполнилось для category. Точное соотношение зависит от данных и среды. После удаления пробелов три суммы удалось превратить в числа. Для «н/д» получился пропуск NaN, поэтому результат имеет тип float64.' },
       four: { title: 'Одна выборка четырьмя способами', badge: 'проверено: pandas 3.0.5', lang: 'python',
         code: `# Оплаченные заказы из Беларуси дороже 3 000 ₽: номер и сумма
 cols = ["order_id", "amount"]
@@ -759,7 +759,7 @@ print(rows[:3])`,
 103     10104    3180
 110     10111    3450
 [ 70 103 110]`,
-        note: 'Индекс здесь RangeIndex, поэтому позиции 70, 103, 110 совпадают с метками. После сортировки способ 4 пришлось бы пересчитывать, а способы 1–3 работают с метками и условием и не зависят от порядка строк.' },
+        note: 'Первые три подходящих заказа сейчас стоят на позициях 70, 103 и 110. Если вы переставите строки, вычислите позиции заново перед вызовом iloc. Сохранённые ранее позиции могут указать на другие заказы.' },
       speed: { title: 'Замер: цикл по строкам против векторного выражения', badge: 'проверено: pandas 3.0.5', lang: 'python',
         code: `import time
 
@@ -799,7 +799,7 @@ for name, f in [("iterrows", by_iterrows), ("zip", by_zip), ("векторно",
 iterrows     171 247 920    1682.4                 1×
 zip          171 247 920      56.2                30×
 векторно     171 247 920       1.8               937×`,
-        note: 'Ответ у всех трёх способов один, различается только время. Абсолютные миллисекунды зависят от компьютера, порядок разницы — нет.' },
+        note: 'Все три способа дали 171 247 920 ₽. Соотношение времени выполнения зависит от среды, числа строк и типов столбцов.' },
       chain: { title: 'Цепочка присваивания в pandas 3 и pandas 2', badge: 'проверено: pandas 3.0.5 и 2.3.3', lang: 'python',
         code: `import warnings
 warnings.simplefilter("always")                     # показывать каждое предупреждение
@@ -835,7 +835,7 @@ B: 0
    SettingWithCopyWarning: A value is trying to be set on a copy of a slice from a DataFrame.
 C: 3430 6860
 D: 0`,
-        note: 'Третья строка кода печатает только первую строку каждого предупреждения, чтобы вывод поместился. В pandas 2 строка B изменила таблицу, а A — нет; в pandas 3 не работает ни одна цепочка, работает только D.' },
+        note: 'В выводе показана первая строка каждого предупреждения. Сравните сумму отменённого заказа до и после каждого присваивания. В pandas 3.0.5 только вариант D изменяет её в таблице df. В 2.3.3 на df повлиял также вариант B.' },
       tz: { title: 'Часовой пояс сдвигает дату заказа', badge: 'проверено: pandas 3.0.5', lang: 'python',
         code: `# Время заказов записано в UTC, а сутки отчёта — по местному времени
 utc = pd.Series(pd.to_datetime(["2026-03-28 22:30", "2026-03-29 08:10"]))
@@ -855,60 +855,60 @@ UTC            ['28.03 22:30', '29.03 08:10']
 Europe/Minsk   ['29.03 01:30', '29.03 11:10']
 Asia/Tashkent  ['29.03 03:30', '29.03 13:10']
 TypeError: Invalid comparison between dtype=datetime64[us, UTC] and Timestamp`,
-        note: 'Первый заказ в UTC сделан 28 марта, а по минскому и ташкентскому времени — 29-го. Дневная выручка зависит от того, в каком поясе считать сутки.' }
+        note: "Первый заказ сделан 28 марта по UTC. В Минске и Ташкенте в этот момент уже 29 марта. Выбор часового пояса определяет, за какой день заказ попадёт в отчёт." }
     },
     questions: {
-    q1: { sec: 'select', title: 'Сначала предскажите', q: 'Индекс таблицы сверху вниз: 0, 6, 5, 3, 4, 7, 2, 1. Что вернёт df.loc[2]?', opts: [['Третью строку сверху — у неё метка 5'], ['Седьмую строку сверху — у неё метка 2', 1], ['KeyError: метки идут не по порядку'], ['Две первые строки, с метками 0 и 6']],
-      why: 'loc ищет метку, а не позицию: строка с меткой 2 стоит седьмой сверху, на позиции 6, и loc найдёт её, где бы она ни стояла. Третью строку сверху вернул бы df.iloc[2]. Беспорядок в метках loc не мешает, KeyError бывает, только если метки нет совсем. Две первые строки дал бы срез df.iloc[0:2]. Проверьте в интерактиве ниже.' },
-    q2: { sec: 'idea', q: 'В анимации таблица распалась на столбцы. Что общего у этих столбцов?', opts: [['Тип данных: pandas приводит все столбцы к одному dtype'], ['Индекс: все столбцы подписаны одними и теми же метками строк', 1], ['Память: все значения таблицы лежат в одном общем массиве'], ['Ничего: после разделения каждый столбец получает свой индекс 0, 1, 2…']],
-      why: 'DataFrame — набор столбцов с общим индексом: по нему pandas собирает строку из значений разных столбцов и сопоставляет новые столбцы. Тип у каждого столбца свой — в сцене это datetime64[us], str и int64, поэтому одного общего массива на всю таблицу быть не может. Свой индекс 0, 1, 2… столбец тоже не получает: df["amount"] сохраняет метки таблицы.' },
-    q3: { sec: 'select', q: 'У таблицы обычный индекс 0, 1, 2, …, 99 999. Сколько строк вернут df.loc[0:2] и df.iloc[0:2]?', opts: [['2 и 2'], ['3 и 2', 1], ['2 и 3'], ['3 и 3']],
-      why: 'Срез loc включает обе границы: метки 0, 1 и 2 — три строки. Срез iloc устроен как срез списка: позиции 0 и 1, конец не входит. На индексе по умолчанию метки совпадают с позициями, поэтому разница только в правой границе. На перемешанном индексе из интерактива df.loc[0:2] возвращает уже семь строк.' },
-    q4: { sec: 'idea', q: 'Выгрузку прочитали через read_csv в pandas 3, и столбец amount получил тип str, а не int64. Что вероятнее всего случилось?', opts: [['read_csv всегда читает числа как строки, их переводят вручную'], ['В столбце есть пустые ячейки'], ['Хотя бы одно значение не разбирается как число, например «н/д» или «1 300» с пробелом', 1], ['Суммы больше 2 147 483 647 не помещаются в int64']],
-      why: 'Тип у столбца один на все значения. Если хотя бы одно не похоже на число, pandas оставляет весь столбец текстом: в pandas 3 это str, в pandas 2 был object. Пустые ячейки дали бы float64 с NaN, а не текст. Числа read_csv распознаёт сам, а 2 147 483 647 — предел int32; int64 вмещает числа до 9,2 · 10^18. Исправление — pd.to_numeric(…, errors="coerce").' },
-    q5: { sec: 'nuances', q: 'Как в pandas 3 понять, копия перед вами или представление, если вы собираетесь менять результат выборки?', opts: [['Проверить, выдал ли pandas SettingWithCopyWarning'], ['Проверить np.shares_memory: если память общая, изменения попадут в исходную таблицу'], ['Гадать не нужно: любой результат выборки ведёт себя как копия, а исходную таблицу меняют через df.loc[строки, столбцы] = значение', 1], ['Посмотреть dtype: у представления он помечен как view']],
-      why: 'С Copy-on-Write любой объект, полученный выборкой, ведёт себя как копия: запись в него сначала отделяет его данные и до исходной таблицы не доходит. SettingWithCopyWarning — сигнал pandas 2, в pandas 3 его убрали. Общая память до первой записи бывает, pandas копирует лениво, но изменения через неё не проходят. Пометки view в dtype нет.' },
-    q6: { sec: 'assign', q: 'Что произойдёт после этой строки в pandas 3?', code: 'df[df["status"] == "cancelled"]["amount"] = 0', lang: 'python', opts: [['Суммы отменённых заказов в df станут нулями'], ['pandas предупредит ChainedAssignmentError, а df не изменится', 1], ['pandas предупредит SettingWithCopyWarning, но df изменится'], ['KeyError: в выборке нет столбца amount']],
-      why: 'Первые скобки вернули новую таблицу из отменённых заказов, и вторые записали ноль в неё, а не в df. В pandas 3 так происходит всегда, и pandas предупреждает ChainedAssignmentError — строка A в блоке кода. SettingWithCopyWarning — предупреждение pandas 2, в pandas 3 его нет. KeyError не будет: после первых скобок осталась таблица со всеми столбцами. Правильно — df.loc[df["status"] == "cancelled", "amount"] = 0.' },
-    q7: { sec: 'idea', q: 'Таблицу из интерактива сбросили: df2 = df.reset_index(drop=True). Что теперь вернут df2.loc[2] и df2.iloc[2]?', opts: [['Обе — заказ на 910 ₽, у которого была метка 2'], ['Обе — третью строку сверху, заказ на 2 640 ₽', 1], ['loc — заказ на 910 ₽, iloc — заказ на 2 640 ₽'], ['loc — KeyError: метки 2 больше нет']],
-      why: 'reset_index(drop=True) выбрасывает старые метки и ставит новые 0, 1, 2… по порядку строк. Метки снова совпадают с позициями, и метка 2 теперь у третьей строки сверху — заказа на 2 640 ₽. Старую метку 2 не сохранили: drop=True не перенёс её в столбец. KeyError не будет: метка 2 есть, просто у другой строки.' }
+    q1: { sec: 'select', title: 'Сначала предскажите', q: "Метки строк идут в таком порядке: 0, 6, 5, 3, 4, 7, 2, 1. Что вернёт df.loc[2]?", opts: [["Третью строку сверху с меткой 5"], ["Седьмую строку сверху с меткой 2", 1], ["Ошибку KeyError, потому что метки не отсортированы"], ["Первые две строки с метками 0 и 6"]],
+      why: "loc найдёт строку с меткой 2 независимо от порядка строк. В этой таблице её позиция — 6. Третью строку сверху вернёт df.iloc[2], а две первые строки — df.iloc[0:2]." },
+    q2: { sec: 'idea', q: "В таблице есть столбцы с датами, брендами и суммами. Что останется общим у трёх Series, если выбрать каждый столбец отдельно?", opts: [["Тип данных у всех трёх столбцов"], ["Индекс с метками исходных строк", 1], ["Один массив, в котором хранятся все даты, бренды и суммы"], ["Только количество строк. Каждый столбец получит новые метки 0, 1, 2…"]],
+      why: "Все три Series сохранят метки строк исходной таблицы в том же порядке. Тип данных у каждого столбца свой. Например, у brand он строковый, а у amount — целочисленный." },
+    q3: { sec: 'select', q: "У таблицы индекс по умолчанию — от 0 до 99 999. Сколько строк вернут df.loc[0:2] и df.iloc[0:2] соответственно?", opts: [["2 и 2"], ["3 и 2", 1], ["2 и 3"], ["3 и 3"]],
+      why: "В срез loc входят метки 0, 1 и 2. В срез iloc входят только позиции 0 и 1. Если метки расположены в другом порядке, число строк в срезе loc может измениться. В таблице из интерактива от метки 0 до метки 2 семь строк, включая обе граничные." },
+    q4: { sec: 'idea', q: "В pandas 3 прочитали CSV с помощью read_csv с настройками по умолчанию. Почему у сумм заказов мог оказаться тип str?", opts: [["read_csv всегда читает числа как текст"], ["Среди целых чисел встретилось пустое поле"], ["В столбце есть запись «н/д» или число с пробелом между разрядами, например «1 300»", 1], ["Одна из сумм превышает 2 147 483 647 и поэтому не помещается в int64"]],
+      why: "Записи «н/д» и «1 300» при обычных настройках не распознаются как числа. Пустое поле среди целых чисел обычно даёт float64 с пропуском. Предел 2 147 483 647 относится к int32. Чтобы восстановить суммы из текста, удалите пробелы между разрядами и примените pd.to_numeric с errors=\"coerce\"." },
+    q5: { sec: 'nuances', q: "В pandas 3 вы сохранили часть таблицы в новую переменную. Что произойдёт, если изменить суммы в этой выборке?", opts: [["Если предупреждения нет, суммы также изменятся в исходной таблице"], ["Если объекты используют одну память, суммы обязательно изменятся и в исходной таблице"], ["Изменятся только суммы в выборке. Для изменения исходной таблицы можно присвоить значения через её loc", 1], ["Это зависит от того, есть ли в dtype пометка view"]],
+      why: "Правило Copy-on-Write позволяет менять результат выборки независимо от исходной таблицы. До присваивания они могут использовать общую память. При записи pandas при необходимости скопирует затронутые данные." },
+    q6: { sec: 'assign', q: "Как изменятся суммы в исходной таблице df после этого присваивания в pandas 3?", code: 'df[df["status"] == "cancelled"]["amount"] = 0', lang: 'python', opts: [["Суммы отменённых заказов станут нулями"], ["Суммы останутся прежними. pandas выдаст предупреждение ChainedAssignmentError", 1], ["Суммы изменятся, но появится предупреждение SettingWithCopyWarning"], ["Возникнет KeyError, потому что в выборке нет столбца amount"]],
+      why: "Первые скобки выбирают отменённые заказы. Следующее присваивание относится к этому промежуточному объекту. Чтобы изменить суммы в df, выполните df.loc[df[\"status\"] == \"cancelled\", \"amount\"] = 0." },
+    q7: { sec: 'idea', q: "Из таблицы в интерактиве получили df2 = df.reset_index(drop=True). Какие заказы вернут df2.loc[2] и df2.iloc[2]?", opts: [["Оба выражения вернут заказ на 910 ₽, у которого раньше была метка 2"], ["Оба выражения вернут третий заказ сверху на 2 640 ₽", 1], ["loc вернёт заказ на 910 ₽, iloc — на 2 640 ₽"], ["loc вызовет KeyError, потому что метки 2 больше нет"]],
+      why: "reset_index(drop=True) присваивает метки 0, 1, 2… в текущем порядке строк. У третьей строки теперь и метка, и позиция равны 2. Сумма в ней осталась прежней — 2 640 ₽." }
     },
     glossary: {
-      dataframe: { t: 'DataFrame', en: 'DataFrame', d: 'Таблица pandas: столбцы-Series с общим индексом.' },
-      series: { t: 'Series', en: 'Series', d: 'Одномерный массив pandas с метками: значения, индекс и имя.' },
-      index: { t: 'Индекс', en: 'index', d: 'Метки строк таблицы или Series.' },
-      label: { t: 'Метка', en: 'label', d: 'Значение индекса у строки. Едет вместе со строкой; по ней ищет loc.' },
-      position: { t: 'Позиция', en: 'position', d: 'Номер строки сверху, с нуля. Меняется при сортировке; по нему ищет iloc.' },
-      dtype: { t: 'Тип данных столбца', en: 'dtype', d: 'Тип, общий для всех значений столбца: int64, datetime64, str, category, object.' },
-      loc: { t: 'loc', en: 'label-based indexing', d: 'Выборка по меткам и именам. Срез включает обе границы.' },
-      iloc: { t: 'iloc', en: 'integer-location indexing', d: 'Выборка по позициям с нуля. Правая граница среза не входит.' },
-      mask: { t: 'Булева маска', en: 'boolean mask', d: 'Series из True и False; в df[mask] оставляет строки с True.' },
-      vectorization: { t: 'Векторизация', en: 'vectorization', d: 'Операция над целым массивом вместо цикла Python по элементам.' },
-      object: { t: 'object', en: 'object dtype', d: 'Тип «любой объект Python»: массив указателей. Медленный и тяжёлый.' },
-      str: { t: 'str', en: 'string dtype', d: 'Тип строк по умолчанию в pandas 3.' },
-      arrow: { t: 'Arrow', en: 'Apache Arrow', d: 'Формат столбцов в памяти: значения одного типа подряд в общих буферах.' },
-      category: { t: 'Категориальный тип', en: 'category', d: 'Словарь немногих значений плюс маленькие целые коды в строках.' },
-      rangeindex: { t: 'RangeIndex', en: 'RangeIndex', d: 'Индекс по умолчанию 0, 1, 2…: хранит только начало, конец и шаг.' },
-      align: { t: 'Выравнивание по индексу', en: 'index alignment', d: 'Сопоставление значений двух объектов по меткам, а не по порядку.' },
-      chained: { t: 'Цепочка присваивания', en: 'chained assignment', d: 'Запись df[…][…] = значение. В pandas 3 не меняет таблицу.' },
-      view: { t: 'Представление', en: 'view', d: 'Объект, который смотрит в ту же память, что исходный.' },
-      swc: { t: 'SettingWithCopyWarning', en: 'SettingWithCopyWarning', d: 'Предупреждение pandas 2 о записи в возможную копию. В pandas 3 удалено.' },
-      cow: { t: 'Copy-on-Write', en: 'Copy-on-Write', d: 'Правило pandas 3: выборка ведёт себя как копия, данные копируются при первой записи.' },
-      naive: { t: 'Наивное время', en: 'tz-naive datetime', d: 'Дата и время без часового пояса.' },
-      polars: { t: 'Polars', en: 'Polars', d: 'Библиотека таблиц на Rust с ленивыми вычислениями.' },
-      duckdb: { t: 'DuckDB', en: 'DuckDB', d: 'Встраиваемая аналитическая база с SQL по файлам и таблицам.' }
+      dataframe: { t: 'DataFrame', en: 'DataFrame', d: "Двумерная таблица pandas. У всех столбцов общий индекс строк, а у каждого столбца свой тип данных." },
+      series: { t: 'Series', en: 'Series', d: "Одномерная последовательность значений с индексом. У Series также может быть имя." },
+      index: { t: 'Индекс', en: 'index', d: "Последовательность меток, которыми обозначены строки таблицы или значения Series." },
+      label: { t: 'Метка', en: 'label', d: "Значение индекса, например номер заказа. При сортировке метка остаётся у той же строки." },
+      position: { t: 'Позиция', en: 'position', d: "Место строки или столбца в текущем порядке. Отсчёт начинается с нуля." },
+      dtype: { t: 'Тип данных столбца', en: 'dtype', d: "Свойство, которое показывает тип данных столбца. Например, int64 обозначает целые числа, а str — строки." },
+      loc: { t: 'loc', en: 'label-based indexing', d: "Способ выбрать строки и столбцы по меткам. Обе указанные граничные метки входят в срез." },
+      iloc: { t: 'iloc', en: 'integer-location indexing', d: "Способ выбрать строки и столбцы по позициям. В срезе правая граница не входит в результат." },
+      mask: { t: 'Булева маска', en: 'boolean mask', d: "Набор логических значений. В этом уроке маска — Series с индексом таблицы. При выборе строк df[mask] сохраняет те строки, которым соответствует True." },
+      vectorization: { t: 'Векторизация', en: 'vectorization', d: "Способ задать операцию сразу для массива или столбца целиком, без явного цикла по отдельным значениям." },
+      object: { t: 'object', en: 'object dtype', d: "Тип столбца, в котором хранятся ссылки на объекты Python. Значения могут быть разных типов." },
+      str: { t: 'str', en: 'string dtype', d: "Тип, который pandas 3 по умолчанию присваивает столбцам со строками текста." },
+      arrow: { t: 'Arrow', en: 'Apache Arrow', d: "Формат хранения данных по столбцам. Например, для текста Arrow хранит байты строк и их границы в буферах памяти." },
+      category: { t: 'Категориальный тип', en: 'category', d: "Тип данных, который хранит перечень категорий и целочисленный код категории для каждого значения в столбце." },
+      rangeindex: { t: 'RangeIndex', en: 'RangeIndex', d: "Индекс с равным шагом между целочисленными метками. Для его хранения достаточно начала, конца и шага. По умолчанию метки идут от нуля с шагом один." },
+      align: { t: 'Выравнивание по индексу', en: 'index alignment', d: "Сопоставление значений по меткам. Например, при добавлении Series в таблицу pandas ищет для каждой строки значение с той же меткой." },
+      chained: { t: 'Цепочка присваивания', en: 'chained assignment', d: "Присваивание через промежуточную выборку, например df[…][…] = значение. В pandas 3 исходная таблица при этом сохраняет прежние значения." },
+      view: { t: 'Представление', en: 'view', d: "Объект, который использует ту же область памяти, что и исходный объект." },
+      swc: { t: 'SettingWithCopyWarning', en: 'SettingWithCopyWarning', d: "Предупреждение pandas 2 о том, что запись в результат выборки может затронуть только копию. В pandas 3 это предупреждение убрали." },
+      cow: { t: 'Copy-on-Write', en: 'Copy-on-Write', d: "В pandas 3 результат выборки можно изменять независимо от исходной таблицы. Данные, которые объекты пока используют совместно, pandas копирует при необходимости." },
+      naive: { t: 'Наивное время', en: 'tz-naive datetime', d: "Дата и время без сведений о часовом поясе. Чтобы однозначно определить момент события, нужно знать исходный пояс." },
+      polars: { t: 'Polars', en: 'Polars', d: "Библиотека для работы с таблицами. Позволяет сначала построить план запроса, а затем выполнить вычисления." },
+      duckdb: { t: 'DuckDB', en: 'DuckDB', d: "Аналитическая база данных, которая выполняет SQL-запросы к таблицам и файлам, в том числе CSV и Parquet." }
     },
     materials: [
-      ['da-2-1-dataframe-inside.md', 'Страница целиком в Markdown: текст, код, вопросы и глоссарий'],
-      ['orders_2026q1.csv', 'Учебная выгрузка: 100 000 заказов января–марта 2026'],
+      ['da-2-1-dataframe-inside.md', 'Текст урока, примеры кода, вопросы и глоссарий в Markdown'],
+      ['orders_2026q1.csv', '100 000 учебных заказов за январь–март 2026 года'],
       ['dataframe_inside.ipynb', 'Блоки кода страницы и упражнения на loc, iloc, маски и типы'],
-      ['dataframe_inside_solutions.ipynb', 'Решения упражнений'],
-      ['loc_iloc_drill.py', 'Тридцать выражений выборки к таблице из интерактива с ответами pandas 3']
+      ['dataframe_inside_solutions.ipynb', 'Решения пяти упражнений с пояснениями'],
+      ['loc_iloc_drill.py', '30 примеров выбора строк и столбцов из учебной таблицы с результатами для pandas 3']
     ],
     prompts: [
-      ['Проверка понимания', 'Задай мне пять вопросов по источнику о разнице loc и iloc, метки и позиции. По одному; после ответа объясни ошибку со ссылкой на текст.'],
-      ['Разбор выражений', 'Я пришлю выражения выборки к таблице с индексом 0, 6, 5, 3, 4, 7, 2, 1 из источника. Сначала спроси, какие строки я ожидаю, потом объясни, что вернёт pandas 3.'],
-      ['Переезд на pandas 3', 'Я пришлю код на pandas 2 с цепочками присваивания и .copy(). Найди строки, которые в pandas 3 перестанут менять таблицу, и предложи замену через loc.']
+      ['Проверка понимания', 'Задай по одному пять вопросов о выборе по меткам и позициям. Используй таблицу заказов из урока. После каждого ответа проверь моё объяснение. Если я ошибусь, покажи на примере одной строки, в чём ошибка, и укажи источник.'],
+      ['Разбор выражений', 'Я пришлю выражение для таблицы из урока. Метки строк сверху вниз: 0, 6, 5, 3, 4, 7, 2, 1. Предложи мне назвать метки и суммы заказов, которые попадут в результат. Затем разбери выражение в pandas 3.'],
+      ['Переход на pandas 3', 'Я пришлю код, написанный для pandas 2. Разбери каждое присваивание. Какой объект изменится в pandas 3? Если нужно обновить исходную таблицу, покажи, как записать условие и имя столбца через loc.']
     ]
   };
 })();

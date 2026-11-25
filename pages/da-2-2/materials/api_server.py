@@ -1,4 +1,4 @@
-"""Учебный сервер заказов мобильного приложения: пагинация, ключ, лимит 30 запросов в минуту.
+"""Учебный сервер выдаёт заказы приложения по страницам. Для доступа нужен учебный ключ.
 Запуск: SHOP_API_TOKEN=<учебный ключ> python api_server.py"""
 import json
 import math
@@ -9,7 +9,7 @@ from urllib.parse import parse_qs, urlparse
 
 ORDERS = json.load(open("data/app_orders.json", encoding="utf-8"))   # 10 учебных заказов
 TOKEN = os.environ["SHOP_API_TOKEN"]
-INTERVAL = 60 / 30            # 30 запросов в минуту = не чаще раза в 2 секунды
+INTERVAL = 60 / 30            # минимальный интервал между запросами — две секунды
 last = {"t": -math.inf}
 
 

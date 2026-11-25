@@ -1,7 +1,7 @@
 import pandas as pd
 from sqlalchemy import create_engine, text
 
-# В работе здесь PostgreSQL, а адрес с паролем лежат в переменной окружения:
+# Для подключения к PostgreSQL импортируйте os и прочитайте адрес из переменной окружения:
 # engine = create_engine(os.environ["SHOP_DB_URL"])   # postgresql+psycopg://…/shop
 engine = create_engine("sqlite:///data/shop.db")       # учебная замена: SQLite
 
@@ -23,7 +23,5 @@ if __name__ == "__main__":
     print(len(site), "строк:", site["date"].min().date(), "—", site["date"].max().date())
     print(site.dtypes.to_string())
 
-    end = "2026-04-01' OR '1'='1"             # такое значение пришло из формы
-    sql = f"SELECT count(*) AS n FROM orders WHERE order_date >= '2026-01-01' AND order_date < '{end}'"
-    print("f-строка:", pd.read_sql(text(sql), engine)["n"].iloc[0], "строк")
-    print("параметры:", len(read_site(end=end)), "строк")
+    print("С декабря:", len(read_site(start="2025-12-01")))
+    print("С января:", len(site))

@@ -11,7 +11,7 @@ LIMIT_PER_MIN = 30                           # лимит из документ�
 PAUSE = 60 / LIMIT_PER_MIN                   # 2 секунды между запросами
 
 session = requests.Session()
-session.headers["Authorization"] = f"Bearer {os.environ['SHOP_API_TOKEN']}"   # ключ — не в коде
+session.headers["Authorization"] = f"Bearer {os.environ['SHOP_API_TOKEN']}"   # учебный ключ из окружения
 
 
 def get_page(page, tries=4):
@@ -25,7 +25,7 @@ def get_page(page, tries=4):
             continue
         r.raise_for_status()                                  # 401, 404 — сразу ошибка
         return r.json()
-    raise RuntimeError(f"page={page}: нет ответа за {tries} попытки")
+    raise RuntimeError(f"page={page}: не удалось получить страницу за {tries} попытки")
 
 
 def read_app(verbose=True):

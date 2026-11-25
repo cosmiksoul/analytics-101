@@ -45,20 +45,18 @@ def build(m):
     _postgres(m)
 
     m.extra = (
-        "Порядок запуска. `python gen_data.py` пересоздаёт папку `data/` — она уже лежит готовой. "
-        "`read_excel.py`, `load_csv.py` и `load_db.py` запускаются сразу.\n\n"
-        "`load_api.py` и `save_parquet.py` обращаются к учебному серверу. Откройте второй терминал, задайте "
-        "в обоих один и тот же учебный ключ и запустите сервер:\n\n"
-        "```\n"
-        "export SHOP_API_TOKEN=uchebny-klyuch-2026      # Windows PowerShell: $env:SHOP_API_TOKEN = \"uchebny-klyuch-2026\"\n"
-        "python api_server.py\n"
-        "```\n\n"
-        "Сервер слушает адрес 127.0.0.1:8765 и принимает не больше запроса в две секунды. "
-        "Между запусками скриптов подождите пару секунд, иначе первый же запрос получит ответ 429.\n\n"
-        "База в примере — SQLite, чтобы не поднимать сервер. Тот же запрос проверен на PostgreSQL 16: "
-        "меняется только строка подключения в `load_db.py`. Последняя строка вывода там другая: "
-        "вместо «параметры: 12 строк» PostgreSQL отвечает ошибкой `invalid input syntax for type date`.\n\n"
-        "Нужны pandas, openpyxl, SQLAlchemy, requests и pyarrow."
+        "Папка `data/` уже содержит учебные данные. Чтобы создать их заново, выполните "
+        "`python gen_data.py`. Скрипты `read_excel.py`, `load_csv.py` и `load_db.py` можно запустить сразу.\n\n"
+        "Для `load_api.py` и `save_parquet.py` нужны два терминала в папке с материалами. "
+        "В обоих задайте один и тот же учебный ключ. В PowerShell выполните "
+        "`$env:SHOP_API_TOKEN = \"uchebny-klyuch-2026\"`, в Bash — `export SHOP_API_TOKEN=uchebny-klyuch-2026`.\n\n"
+        "В первом терминале запустите `python api_server.py` и оставьте его открытым. "
+        "Во втором выполните `python load_api.py` или `python save_parquet.py`. "
+        "Сервер по адресу 127.0.0.1:8765 принимает один запрос в две секунды. "
+        "Если следующий запрос придёт раньше, клиент получит код 429 и повторит запрос после паузы.\n\n"
+        "Скрипт `load_db.py` использует локальную базу SQLite. С начальной датой 1 декабря "
+        "запрос вернёт 15 заказов, с 1 января — 12. Конечная дата в обоих случаях — 1 апреля.\n\n"
+        "Для запуска примеров нужны pandas, openpyxl, SQLAlchemy, requests и pyarrow."
     )
 
 
@@ -73,33 +71,24 @@ def _not_utf8(data):
 def _postgres(m):
     try:
         import pandas as pd
-        from sqlalchemy import create_engine, text, types
-        adm = create_engine("postgresql+psycopg://postgres@/postgres?host=/tmp", isolation_level="AUTOCOMMIT")
-        with adm.connect() as c:
-            c.execute(text("DROP DATABASE IF EXISTS mat22"))
-            c.execute(text("CREATE DATABASE mat22"))
+        from sqlalchemy import create_engine, text
+        engine = create_engine("postgresql+psycopg://postgres@/postgres?host=/tmp")
+        connection = engine.connect()
     except Exception as e:                                   # noqa: BLE001
-        print(f"   ! PostgreSQL недоступен, проверка примечания пропущена: {str(e).splitlines()[0][:80]}")
+        print(f"   ! PostgreSQL недоступен, проверка пропущена: {str(e).splitlines()[0][:80]}")
         return
-    engine = create_engine("postgresql+psycopg://postgres@/mat22?host=/tmp")
-    src = pd.read_sql("SELECT * FROM orders", create_engine(f"sqlite:///{m.out / 'data' / 'shop.db'}"),
-                      parse_dates=["order_date"])
-    src["order_date"] = src["order_date"].dt.date
-    src.to_sql("orders", engine, index=False, dtype={"order_date": types.Date()})
-    query = text("SELECT order_id FROM orders WHERE order_date >= :start AND order_date < :end ORDER BY order_id")
-    ok = pd.read_sql(query, engine, params={"start": "2026-01-01", "end": "2026-04-01"})
-    m.check("PostgreSQL 16: тот же запрос с параметрами даёт 12 строк", len(ok) == 12, str(len(ok)))
-    bad = "2026-04-01' OR '1'='1"
-    n = pd.read_sql(text(f"SELECT count(*) AS n FROM orders WHERE order_date >= '2026-01-01' AND order_date < '{bad}'"),
-                    engine)["n"].iloc[0]
-    m.check("PostgreSQL 16: f-строка с инъекцией возвращает все 15 строк", n == 15, str(n))
-    try:
-        pd.read_sql(query, engine, params={"start": "2026-01-01", "end": bad})
-        err = ""
-    except Exception as e:                                   # noqa: BLE001
-        err = str(e)
-    m.check("PostgreSQL 16: то же значение в параметре — ошибка invalid input syntax for type date",
-            "invalid input syntax for type date" in err, err[:120])
+
+    # Временная таблица существует только в этом соединении.
+    with connection as conn:
+        conn.execute(text("CREATE TEMP TABLE orders (order_date date) ON COMMIT DROP"))
+        src = create_engine(f"sqlite:///{m.out / 'data' / 'shop.db'}")
+        with src.connect() as db:
+            dates = pd.read_sql(text("SELECT order_date FROM orders"), db)["order_date"]
+        src.dispose()
+        conn.execute(text("INSERT INTO pg_temp.orders (order_date) VALUES (CAST(:date AS date))"),
+                     [{"date": date} for date in dates])
+        query = text("SELECT order_date FROM pg_temp.orders WHERE order_date >= :start AND order_date < :end")
+        for start, n in (("2025-12-01", 15), ("2026-01-01", 12)):
+            rows = pd.read_sql(query, conn, params={"start": start, "end": "2026-04-01"})
+            m.check(f"PostgreSQL: период с {start}, заказов: {n}", len(rows) == n, str(len(rows)))
     engine.dispose()
-    with adm.connect() as c:
-        c.execute(text("DROP DATABASE mat22"))

@@ -12,7 +12,7 @@ print(orders.shape, orders["source"].value_counts(sort=False).to_dict())
 print(orders.dtypes.to_string())
 
 orders.to_parquet("data/orders_q1.parquet", index=False)   # движок pyarrow
-orders.to_csv("data/orders_q1.csv", index=False)
+orders.to_csv("data/orders_q1.csv", index=False, lineterminator="\n")  # перенос строки LF на всех системах
 
 pq = pd.read_parquet("data/orders_q1.parquet")
 csv = pd.read_csv("data/orders_q1.csv")

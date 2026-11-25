@@ -541,43 +541,43 @@
   "da-2-1": {
    "file": "da-2-1-dataframe-inside",
    "zip": "materials/da-2-1-dataframe-inside.zip",
-   "zipBytes": 836353,
+   "zipBytes": 842346,
    "files": [
     {
      "path": "materials/da-2-1-dataframe-inside/README.md",
      "name": "README.md",
-     "bytes": 1190,
+     "bytes": 1408,
      "about": ""
     },
     {
      "path": "materials/da-2-1-dataframe-inside/da-2-1-dataframe-inside.md",
      "name": "da-2-1-dataframe-inside.md",
-     "bytes": 43811,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 49189,
+     "about": "Текст урока, примеры кода, вопросы и глоссарий в Markdown"
     },
     {
      "path": "materials/da-2-1-dataframe-inside/dataframe_inside.ipynb",
      "name": "dataframe_inside.ipynb",
-     "bytes": 25699,
+     "bytes": 25762,
      "about": "Блоки кода страницы и упражнения на loc, iloc, маски и типы"
     },
     {
      "path": "materials/da-2-1-dataframe-inside/dataframe_inside_solutions.ipynb",
      "name": "dataframe_inside_solutions.ipynb",
-     "bytes": 30207,
-     "about": "Решения упражнений"
+     "bytes": 30374,
+     "about": "Решения пяти упражнений с пояснениями"
     },
     {
      "path": "materials/da-2-1-dataframe-inside/loc_iloc_drill.py",
      "name": "loc_iloc_drill.py",
-     "bytes": 6680,
-     "about": "Тридцать выражений выборки к таблице из интерактива с ответами pandas 3"
+     "bytes": 6663,
+     "about": "30 примеров выбора строк и столбцов из учебной таблицы с результатами для pandas 3"
     },
     {
      "path": "materials/da-2-1-dataframe-inside/orders_2026q1.csv",
      "name": "orders_2026q1.csv",
      "bytes": 5543449,
-     "about": "Учебная выгрузка: 100 000 заказов января–марта 2026"
+     "about": "100 000 учебных заказов за январь–март 2026 года"
     }
    ],
    "shared": []
@@ -585,24 +585,24 @@
   "da-2-2": {
    "file": "da-2-2-loading",
    "zip": "materials/da-2-2-loading.zip",
-   "zipBytes": 32121,
+   "zipBytes": 32460,
    "files": [
     {
      "path": "materials/da-2-2-loading/README.md",
      "name": "README.md",
-     "bytes": 3047,
+     "bytes": 3278,
      "about": ""
     },
     {
      "path": "materials/da-2-2-loading/api_server.py",
      "name": "api_server.py",
-     "bytes": 2357,
-     "about": "Учебный API: страницы, ключ, лимит"
+     "bytes": 2366,
+     "about": "Учебный сервер с постраничной выдачей заказов"
     },
     {
      "path": "materials/da-2-2-loading/da-2-2-loading.md",
      "name": "da-2-2-loading.md",
-     "bytes": 44398,
+     "bytes": 48269,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
@@ -615,7 +615,7 @@
      "path": "materials/da-2-2-loading/data/crm_by_month.xlsx",
      "name": "data/crm_by_month.xlsx",
      "bytes": 6929,
-     "about": "Те же заказы CRM по листам «Январь», «Февраль», «Март»"
+     "about": "Заказы CRM на листах «Январь», «Февраль» и «Март»"
     },
     {
      "path": "materials/da-2-2-loading/data/orders_crm.csv",
@@ -632,38 +632,38 @@
     {
      "path": "materials/da-2-2-loading/gen_data.py",
      "name": "gen_data.py",
-     "bytes": 5007,
-     "about": "Генератор учебных данных с зерном 22"
+     "bytes": 5165,
+     "about": "Генератор данных с начальным значением 22"
     },
     {
      "path": "materials/da-2-2-loading/load_api.py",
      "name": "load_api.py",
-     "bytes": 2351,
+     "bytes": 2403,
      "about": "Обход API по страницам"
     },
     {
      "path": "materials/da-2-2-loading/load_csv.py",
      "name": "load_csv.py",
-     "bytes": 1457,
+     "bytes": 1534,
      "about": "Чтение файла CRM с явными типами"
     },
     {
      "path": "materials/da-2-2-loading/load_db.py",
      "name": "load_db.py",
-     "bytes": 1336,
+     "bytes": 1103,
      "about": "Запрос к базе с параметрами"
     },
     {
      "path": "materials/da-2-2-loading/read_excel.py",
      "name": "read_excel.py",
-     "bytes": 590,
+     "bytes": 585,
      "about": "Чтение книги Excel"
     },
     {
      "path": "materials/da-2-2-loading/save_parquet.py",
      "name": "save_parquet.py",
-     "bytes": 944,
-     "about": "Склейка и сохранение в parquet"
+     "bytes": 1030,
+     "about": "Объединение заказов и запись в Parquet"
     }
    ],
    "shared": []
@@ -671,49 +671,49 @@
   "da-2-3": {
    "file": "da-2-3-cleaning",
    "zip": "materials/da-2-3-cleaning.zip",
-   "zipBytes": 29198,
+   "zipBytes": 29899,
    "files": [
     {
      "path": "materials/da-2-3-cleaning/README.md",
      "name": "README.md",
-     "bytes": 1259,
+     "bytes": 1577,
      "about": ""
     },
     {
      "path": "materials/da-2-3-cleaning/clean_orders.ipynb",
      "name": "clean_orders.ipynb",
-     "bytes": 13252,
-     "about": "Четыре ячейки раздела «Код»"
+     "bytes": 13500,
+     "about": "Ноутбук с четырьмя шагами очистки и журналом изменений"
     },
     {
      "path": "materials/da-2-3-cleaning/cost_of_missing.py",
      "name": "cost_of_missing.py",
-     "bytes": 4019,
-     "about": "Расчёт интерактива «Цена пропуска» на pandas"
+     "bytes": 3932,
+     "about": "Сравнение пяти способов обработки пропусков на pandas"
     },
     {
      "path": "materials/da-2-3-cleaning/da-2-3-cleaning.md",
      "name": "da-2-3-cleaning.md",
-     "bytes": 43146,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 47120,
+     "about": "Текст урока, код, вопросы и глоссарий в формате Markdown"
     },
     {
      "path": "materials/da-2-3-cleaning/data/orders_raw.csv",
      "name": "data/orders_raw.csv",
      "bytes": 14800,
-     "about": "Учебная выгрузка на 207 строк со всей грязью страницы"
+     "about": "207 строк с пропусками, повторными записями и ошибочной суммой"
     },
     {
      "path": "materials/da-2-3-cleaning/data/orders_true.csv",
      "name": "data/orders_true.csv",
      "bytes": 14696,
-     "about": "Те же 200 заказов без порчи, «правда» интерактива"
+     "about": "Полные данные по 200 заказам для сравнения способов обработки пропусков"
     },
     {
      "path": "materials/da-2-3-cleaning/gen_data.py",
      "name": "gen_data.py",
-     "bytes": 5384,
-     "about": "Генератор обеих выгрузок, зёрна 23 и 230"
+     "bytes": 5464,
+     "about": "Генератор двух учебных выгрузок с фиксированными параметрами случайности"
     }
    ],
    "shared": []
@@ -721,18 +721,18 @@
   "da-2-4": {
    "file": "da-2-4-groupby-pivot-merge",
    "zip": "materials/da-2-4-groupby-pivot-merge.zip",
-   "zipBytes": 53073,
+   "zipBytes": 61310,
    "files": [
     {
      "path": "materials/da-2-4-groupby-pivot-merge/README.md",
      "name": "README.md",
-     "bytes": 1280,
+     "bytes": 1486,
      "about": ""
     },
     {
      "path": "materials/da-2-4-groupby-pivot-merge/da-2-4-groupby-pivot-merge.md",
      "name": "da-2-4-groupby-pivot-merge.md",
-     "bytes": 38956,
+     "bytes": 44309,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
@@ -745,7 +745,7 @@
      "path": "materials/da-2-4-groupby-pivot-merge/data/gen.py",
      "name": "data/gen.py",
      "bytes": 3416,
-     "about": "Генератор учебных данных, seed 186"
+     "about": "Скрипт для создания тех же трёх таблиц (seed=186)"
     },
     {
      "path": "materials/da-2-4-groupby-pivot-merge/data/managers.csv",
@@ -762,8 +762,8 @@
     {
      "path": "materials/da-2-4-groupby-pivot-merge/report.ipynb",
      "name": "report.ipynb",
-     "bytes": 55087,
-     "about": "Четыре блока кода: когорты, сводная, соединение, melt"
+     "bytes": 66266,
+     "about": "Ноутбук с четырьмя примерами расчёта и графиком выручки"
     }
    ],
    "shared": []

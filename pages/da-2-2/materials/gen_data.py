@@ -1,21 +1,21 @@
-"""Генератор учебных данных страницы 2.2: заказы интернет-магазина за I квартал 2026 в трёх источниках.
+"""Генератор учебных данных страницы 2.2: заказы интернет-магазина для отчёта за I квартал 2026 года.
 
 Запуск: python gen_data.py
-Пишет в папку data/ рядом с собой:
+Записывает в подпапку data/ выбранного каталога (по умолчанию текущего):
   orders_crm.csv     — CRM: 8 заказов, cp1251, «;», десятичная запятая, даты дд.мм.гггг;
-  crm_by_month.xlsx  — те же заказы CRM, по листу на месяц;
+  crm_by_month.xlsx  — те же заказы CRM на отдельных листах по месяцам;
   shop.db            — база сайта: SQLite вместо PostgreSQL, 15 заказов, из них 3 — за декабрь 2025;
-  app_orders.json    — заказы приложения для учебного сервера api_server.py: 10 штук.
-Зерно генератора случайных чисел зафиксировано: random.Random(22), файлы получаются одинаковыми.
-Данные подобраны под поломки, которые разбирает страница: в датах CRM день не больше 12,
-иначе подмену дня и месяца было бы не видно.
+  app_orders.json    — 10 заказов приложения для учебного сервера api_server.py.
+Генератор использует random.Random(22), поэтому при повторном запуске заказы будут теми же.
+Все заказы CRM сделаны с 1-го по 12-е число месяца. Если при чтении перепутать день и месяц,
+получатся допустимые даты, и ошибка может остаться незамеченной.
 Для книги Excel нужны pandas и openpyxl, для остального хватает стандартной библиотеки.
 """
 import json, random, sqlite3, sys
 from datetime import date, timedelta
 from pathlib import Path
 
-OUT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")   # куда положить папку data/
+OUT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")   # где создать папку data/
 rng = random.Random(22)
 BRANDS = ["Сова", "Кедр", "Луч", "Бриз"]
 COUNTRIES = ["BY", "RU", "KZ", "UZ"]
@@ -26,7 +26,7 @@ def order(d):
             "channel": rng.choice(CHANNELS), "amount": rng.randrange(30000, 1500000, 10) / 100,
             "status": "paid" if rng.random() < 0.85 else "cancelled"}
 
-# CRM: 8 телефонных заказов, день месяца не больше 12 (так видна путаница день/месяц)
+# CRM: 8 телефонных заказов, день месяца не больше 12 (можно перепутать день и месяц)
 crm_days = sorted(date(2026, rng.randint(1, 3), rng.randint(1, 12)) for _ in range(8))
 crm = [dict(order_id=5001 + i, **order(d)) for i, d in enumerate(crm_days)]
 comments = {1: "позвонить; после 18:00", 5: "оставить у двери"}
@@ -60,7 +60,7 @@ for i, d in enumerate(app_days):
                 "total": {"amount": o["amount"], "currency": "RUB"}})
 (OUT / "data" / "app_orders.json").write_text(json.dumps(app, ensure_ascii=False, indent=1), encoding="utf-8")
 
-# Книга Excel: читаем только что записанный файл CRM и раскладываем по листам
+# Книга Excel: читаем только что записанный файл CRM и записываем заказы на отдельные листы по месяцам
 import pandas as pd
 
 crm_df = pd.read_csv(OUT / "data" / "orders_crm.csv", encoding="cp1251", sep=";", quotechar="'", decimal=",",
