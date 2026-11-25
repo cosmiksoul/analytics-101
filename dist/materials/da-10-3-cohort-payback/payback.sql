@@ -2,7 +2,7 @@
 -- Кривые окупаемости по каналам и по когортам поиска в PostgreSQL 16. Нужна база unit: как её загрузить — в data/unit/README.md.
 -- Запуск из корня папки материалов: psql -d unit -P null=NULL -f da-10-3-cohort-payback/payback.sql
 
--- 1. Клетка «канал × когорта × месяц жизни n»: размер когорты и её маржинальный доход
+-- 1. Число клиентов в когорте и её маржинальный доход за месяц n по каждому каналу
 CREATE TEMP TABLE cell AS
 WITH ord AS (                                 -- маржинальный доход заказа по соглашению учебника
   SELECT client_id,
@@ -25,9 +25,9 @@ SELECT s.channel, s.cm, g.n, s.size, COALESCE(b.margin, 0) AS margin
 FROM sizes s
 CROSS JOIN generate_series(0, 23) AS g(n)
 LEFT JOIN by_n b ON b.channel = s.channel AND b.cm = s.cm AND b.n = g.n
-WHERE s.sm + g.n <= 2026 * 12 + 6;            -- только прожитые месяцы: данные кончаются в июне 2026
+WHERE s.sm + g.n <= 2026 * 12 + 6;            -- учитываем только месяцы, попавшие в выгрузку по июнь 2026 года
 
--- 2. Кривые окупаемости каналов: прирост на клиента — по когортам, дожившим до n
+-- 2. Кривые окупаемости каналов: доход за месяц n на клиента тех когорт, для которых этот месяц есть в данных
 WITH cac AS (
   SELECT channel, SUM(spend) / (SELECT COUNT(*) FROM clients c WHERE c.channel = m.channel)::numeric AS cac
   FROM marketing_spend m GROUP BY channel
@@ -55,7 +55,7 @@ WITH coh AS (
   JOIN marketing_spend m ON m.channel = c.channel AND m.month = TO_CHAR(c.cm, 'YYYY-MM')
   WHERE c.channel = 'поиск'
   GROUP BY c.cm
-), pay AS (                                   -- первый месяц, где накопленная маржа догнала CAC когорты
+), pay AS (                                   -- первый месяц, когда доход от заказов покрыл привлечение когорты
   SELECT c.cm, MIN(c.n) AS payback_n
   FROM (SELECT cm, n, SUM(margin) OVER (PARTITION BY cm ORDER BY n) AS cum, size FROM cell
         WHERE channel = 'поиск') c

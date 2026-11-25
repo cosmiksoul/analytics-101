@@ -7,7 +7,7 @@ WITH cohorts AS (
   SELECT client_id, date_trunc('month', signup_date)::date AS cohort
   FROM clients
 ),
-order_margin AS (                -- маржинальный доход и чистая выручка заказа, месяц жизни n
+order_margin AS (                -- доход от заказа и число месяцев с регистрации
   SELECT o.client_id,
          CASE WHEN o.refunded = 1 THEN -2 * o.delivery_cost - o.payment_fee
               ELSE o.revenue - o.cogs - o.delivery_cost - o.payment_fee END AS margin,
@@ -17,7 +17,7 @@ order_margin AS (                -- маржинальный доход и чи�
   FROM orders o
   JOIN cohorts c USING (client_id)
 ),
-per_cohort AS (                  -- клиенты без заказов остаются в знаменателе: LEFT JOIN
+per_cohort AS (                  -- LEFT JOIN сохраняет в расчёте клиентов без заказов
   SELECT c.cohort,
          count(DISTINCT c.client_id)            AS clients,
          sum(m.margin) FILTER (WHERE m.n < 6)  AS margin6,
@@ -29,11 +29,11 @@ per_cohort AS (                  -- клиенты без заказов ост�
   GROUP BY c.cohort
 )
 SELECT to_char(cohort, 'YYYY-MM') AS cohort, clients,
-       round(margin6::numeric / clients)  AS ltv6,    -- без ::numeric bigint / bigint делится нацело
+       round(margin6::numeric / clients)  AS ltv6,    -- приведение типа сохраняет дробную часть при делении
        round(margin12::numeric / clients) AS ltv12,
        round(net12::numeric / clients)    AS ltv12_net
 FROM per_cohort
-UNION ALL                        -- вся группа: сумма маржи / сумма клиентов, а не среднее 12 чисел
+UNION ALL                        -- для всей группы делим общий доход на число клиентов
 SELECT 'все 12', sum(clients), round(sum(margin6) / sum(clients)),
        round(sum(margin12) / sum(clients)), round(sum(net12) / sum(clients))
 FROM per_cohort

@@ -1,4 +1,4 @@
-# продолжение предыдущей ячейки: size, act, marg, power, pick, grp, orders уже в памяти
+# Перед запуском выполните предыдущую ячейку. В ней определены size, act, marg, power, pick, grp и orders.
 S, A, M = size.to_numpy(), act.to_numpy(), marg.to_numpy()   # 12 когорт × месяцы 0–12
 
 
@@ -17,7 +17,7 @@ for j, name in enumerate(["LTV12", "LTV24, степенной хвост"]):
     lo, hi = np.percentile(boot[:, j], [2.5, 97.5])
     print(f"{name}: {point[j]:.0f} ₽, 95% интервал {lo:.0f}–{hi:.0f} ₽")
 
-# LTV12 по каналам с тем же бутстрэпом по когортам; CAC — расходы тех же 12 месяцев на новичка канала
+# Для каждого канала повторяем бутстрэп по когортам. CAC считаем по расходам и регистрациям за те же 12 месяцев.
 spend = pd.read_csv("data/unit/marketing_spend.csv").query("'2024-07' <= month <= '2025-06'").groupby("channel").spend.sum()
 o12 = pick(orders).query("n < 12").merge(clients[["client_id", "channel"]], on="client_id")
 mar_ch = o12.pivot_table(index="cohort", columns="channel", values="margin", aggfunc="sum")

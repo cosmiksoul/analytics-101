@@ -18,7 +18,7 @@ CAC = S.sum() / N[S.columns].sum()
 
 
 def increments(ch):
-    """Маржинальный доход на клиента в месяц n: только когорты, дожившие до n (как в SQL выше)."""
+    """Доход за месяц n на клиента тех когорт, для которых этот месяц есть в данных."""
     size = cl[cl["channel"] == ch].groupby("m").size()
     margin = od[od["channel"] == ch].groupby("n")["margin"].sum()
     return np.array([margin.get(n, 0) / size[size.index + n <= LAST].sum() for n in range(24)])
@@ -29,12 +29,12 @@ beta = {ch: np.polyfit(np.log(S[ch]), np.log(N[ch]), 1)[0] for ch in ["поис�
 for ch, b in beta.items():
     print(f"{ch}: эластичность {b:.2f}, средний CAC {CAC[ch]:.0f} ₽, предельный ≈ {CAC[ch] / b:.0f} ₽")
 dS, dN = S["соцсети"].diff()["2025-11"], N["соцсети"].diff()["2025-11"]
-print(f"тест таргета, ноябрь 2025 к октябрю: +{dS / 1e6:.2f} млн ₽ и +{dN:.0f} клиентов, по {dS / dN:.0f} ₽ за каждого\n")
+print(f"реклама в соцсетях, ноябрь 2025 года по сравнению с октябрём: +{dS / 1e6:.2f} млн ₽ и +{dN:.0f} клиентов, по {dS / dN:.0f} ₽ за каждого\n")
 
-# 2. Сценарии для поиска: удержание множит месяцы 1–23, чек — все месяцы
+# 2. В сценариях для поиска удержание влияет на доход с месяца 1, изменение чека — с месяца 0
 inc = increments("поиск")
 o = od[od["channel"] == "поиск"]
-M, DLV = o["margin"].mean(), o["delivery_cost"].mean()  # маржа и доставка на заказ
+M, DLV = o["margin"].mean(), o["delivery_cost"].mean()  # маржинальный доход и стоимость доставки на заказ
 
 
 def scenario(ret=1.0, check=1.0, cac=CAC["поиск"]):
@@ -53,14 +53,14 @@ print(table.to_string(), "\n")
 year = cl[cl["signup_date"] >= "2025-07-01"]["channel"].value_counts()
 gain = pd.Series({ch: year[ch] * 0.02 * increments(ch)[1:12].sum() for ch in year.index})
 print(f"+2% к удержанию: поиск +{0.02 * inc[1:12].sum():.1f} ₽ на клиента, "
-      f"все {year.sum()} новичков года +{gain.sum() / 1e6:.2f} млн ₽ маржи за 12 месяцев\n")
+      f"для {year.sum()} новых клиентов всех каналов +{gain.sum() / 1e6:.2f} млн ₽ маржинального дохода за их первые 12 месяцев\n")
 
 
-# 4. Кассовый разрыв: расходы на поиск растут 12 месяцев, потом держатся; хвост после n = 23 не считаем
+# 4. Бюджет на поиск растёт 12 месяцев, затем остаётся постоянным. Доход когорт учитываем до n = 23 включительно
 def cash(growth, b, s0=1.2e6, months=36):
     s = s0 * (1 + growth) ** np.minimum(np.arange(months), 12)
     new = s0 / CAC["поиск"] * (s / s0) ** b                 # b = 1 — CAC не растёт с бюджетом
-    cum = (np.convolve(new, inc)[:months] - s).cumsum()     # маржа всех когорт минус расходы, накопленно
+    cum = (np.convolve(new, inc)[:months] - s).cumsum()     # накопленный маржинальный доход всех когорт за вычетом расходов на привлечение
     up = [t for t in range(cum.argmin(), months) if cum[t] >= 0]
     return {"расходы с месяца 12, млн ₽": round(s[12] / 1e6, 2), "CAC новичков, ₽": round(s[12] / new[12]),
             "дно, млн ₽": round(cum.min() / 1e6, 1), "месяц дна": cum.argmin(), "в плюсе с месяца": up[0] if up else "нет"}

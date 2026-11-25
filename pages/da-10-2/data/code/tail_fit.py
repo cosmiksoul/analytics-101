@@ -32,7 +32,7 @@ def power(n, a, b):                   # степенная: отток со вр
     return a * n ** -b
 
 
-def expo(n, a, k):                    # экспонента: каждый месяц уходит одна и та же доля
+def expo(n, a, k):                    # доля активных каждый месяц снижается на один и тот же процент
     return a * np.exp(-k * n)
 
 
@@ -49,10 +49,10 @@ check = pd.DataFrame({"факт": r.loc[n7]} | {k: models[k][0](n7, *p) for k, p
 print(check.round(1))
 print("средняя ошибка, п. п.:", check.drop(columns="факт").sub(check["факт"], axis=0).abs().mean().round(2).to_dict())
 
-# 2) подгоняем по всем месяцам 1–12 и дорисовываем хвост до 24 и 36 месяцев
+# 2) оцениваем параметры по месяцам 1–12 и прогнозируем LTV за 24 и 36 месяцев
 fit12 = {k: curve_fit(f, np.arange(1, 13), r.loc[1:], p0=p0)[0] for k, (f, p0) in models.items()}
 print("степенная по 1–12: a = %.4f, b = %.4f" % tuple(fit12["степенная"]))
-m_tail = marg[[10, 11, 12]].sum().sum() / act[[10, 11, 12]].sum().sum()   # свежая маржа на активного
+m_tail = marg[[10, 11, 12]].sum().sum() / act[[10, 11, 12]].sum().sum()   # доход на активного клиента за месяцы 10–12
 known = (r * m).sum()                 # месяцы 0–12 — данные
 ltv = {k: {H: known + (models[k][0](np.arange(13, H), *p) * m_tail).sum() for H in (24, 36)} for k, p in fit12.items()}
 print(f"LTV12 по данным: {(r * m).loc[:11].sum():.0f} ₽; маржа на активного в хвосте: {m_tail:.0f} ₽")
@@ -70,14 +70,14 @@ for k, col, dy in [("степенная", "#2f6db5", 0.85), ("экспонент
     ax.text(38, y[-1] * dy, f"{k}\nLTV36 {ltv[k][36]:,.0f} ₽".replace(",", " "), color=col, va="center", fontweight="bold")
 ax.plot(r.index[1:], r.loc[1:] * 100, "o", color="#141a24", ms=4)
 ax.set(xscale="log", yscale="log", xlim=(0.9, 36), ylim=(0.6, 50),
-       xlabel="месяц жизни n, логарифмическая шкала", ylabel="% когорты, активной в месяц n")
+       xlabel="Месяц после регистрации (n)", ylabel="Активные клиенты, % когорты")
 ax.set_xticks([1, 2, 3, 6, 12, 24, 36], labels=["1", "2", "3", "6", "12", "24", "36"])
 ax.set_yticks([1, 2, 5, 10, 20, 40], labels=["1", "2", "5", "10", "20", "40"])
 ax.minorticks_off()
 ax.spines[["top", "right"]].set_visible(False)
-ax.text(13.5, 30, "данных нет:\nхвост дорисован", color="#737c8f")
-ax.text(1.05, 1.1, "точки — 12 когорт июля 2024 — июня 2025,\nучебные данные; линии — подгонки по месяцам 1–12", color="#737c8f")
-fig.suptitle("В логарифмических осях удержание ложится на прямую:\nэто степенная кривая, и её хвост — посередине",
+ax.text(13.5, 30, "Прогноз\nс месяца 13", color="#737c8f")
+ax.text(1.05, 1.1, "Точки — данные 12 когорт за месяцы 1–12.\nЛинии — три модели удержания.", color="#737c8f")
+fig.suptitle("Степенная модель описывает удержание\nв первые 12 месяцев после регистрации",
              x=0.01, ha="left", fontweight="bold", fontsize=10.5)
 fig.tight_layout()
 fig.subplots_adjust(right=0.78)

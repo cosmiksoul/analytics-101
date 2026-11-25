@@ -279,31 +279,31 @@
   "da-10-2": {
    "file": "da-10-2-ltv-retention",
    "zip": "materials/da-10-2-ltv-retention.zip",
-   "zipBytes": 73484,
+   "zipBytes": 82857,
    "files": [
     {
      "path": "materials/da-10-2-ltv-retention/README.md",
      "name": "README.md",
-     "bytes": 1858,
+     "bytes": 2180,
      "about": ""
     },
     {
      "path": "materials/da-10-2-ltv-retention/da-10-2-ltv-retention.md",
      "name": "da-10-2-ltv-retention.md",
-     "bytes": 45003,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 60238,
+     "about": "Текст урока в Markdown с примерами кода, вопросами и глоссарием"
     },
     {
      "path": "materials/da-10-2-ltv-retention/ltv_cohorts.sql",
      "name": "ltv_cohorts.sql",
-     "bytes": 2399,
-     "about": "LTV когорт из таблицы заказов для PostgreSQL 16"
+     "bytes": 2393,
+     "about": "Запрос для PostgreSQL 16. Рассчитывает LTV по заказам для отдельных когорт и для всех 12 когорт вместе"
     },
     {
      "path": "materials/da-10-2-ltv-retention/ltv_tail.ipynb",
      "name": "ltv_tail.ipynb",
-     "bytes": 82614,
-     "about": "Удержание, три хвоста через curve_fit, рисунок и бутстрэп по когортам"
+     "bytes": 90906,
+     "about": "Ноутбук с расчётом удержания, сравнением трёх моделей, графиком и бутстрэп-интервалами для LTV"
     }
    ],
    "shared": [
@@ -313,31 +313,31 @@
   "da-10-3": {
    "file": "da-10-3-cohort-payback",
    "zip": "materials/da-10-3-cohort-payback.zip",
-   "zipBytes": 26794,
+   "zipBytes": 29547,
    "files": [
     {
      "path": "materials/da-10-3-cohort-payback/README.md",
      "name": "README.md",
-     "bytes": 1901,
+     "bytes": 2234,
      "about": ""
     },
     {
      "path": "materials/da-10-3-cohort-payback/da-10-3-cohort-payback.md",
      "name": "da-10-3-cohort-payback.md",
-     "bytes": 49130,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 65446,
+     "about": "Текст урока в Markdown с примерами кода, вопросами и глоссарием"
     },
     {
      "path": "materials/da-10-3-cohort-payback/payback.ipynb",
      "name": "payback.ipynb",
-     "bytes": 34960,
-     "about": "Сценарный калькулятор, денежный поток и график для маркетинга на pandas и Matplotlib"
+     "bytes": 36410,
+     "about": "Ноутбук для расчёта окупаемости и денежного потока при разных сценариях. В нём также строится график расходов на привлечение по каналам"
     },
     {
      "path": "materials/da-10-3-cohort-payback/payback.sql",
      "name": "payback.sql",
-     "bytes": 4085,
-     "about": "Кривые окупаемости по каналам и когортам для PostgreSQL 16"
+     "bytes": 4167,
+     "about": "Запрос для PostgreSQL 16. Рассчитывает баланс и срок окупаемости по каналам и когортам"
     }
    ],
    "shared": [
