@@ -9,7 +9,7 @@ for n in [4, 10, 100, 1000]:                 # площадь под криво�
     print(f"n = {n:>4}: сумма прямоугольников = {np.sum(density(mids) * dx):.6f}")
 
 income = pd.read_csv("data/clients/clients.csv")["income"]
-edges = np.arange(25_000, 325_001, 25_000)             # столбики по 25 тыс. ₽
+edges = np.arange(25_000, 325_001, 25_000)             # границы интервалов с шагом 25 тыс. ₽
 h, edges = np.histogram(income, bins=edges, density=True)
 widths = np.diff(edges)
 print("площадь всей гистограммы:", round(np.sum(h * widths), 6))

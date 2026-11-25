@@ -989,36 +989,36 @@
   "da-4-1": {
    "file": "da-4-1-vectors-numpy",
    "zip": "materials/da-4-1-vectors-numpy.zip",
-   "zipBytes": 31709,
+   "zipBytes": 33631,
    "files": [
     {
      "path": "materials/da-4-1-vectors-numpy/README.md",
      "name": "README.md",
-     "bytes": 1619,
+     "bytes": 1769,
      "about": ""
     },
     {
      "path": "materials/da-4-1-vectors-numpy/curse.py",
      "name": "curse.py",
-     "bytes": 1940,
-     "about": "Расчёт из «Ограничений»: расстояния в 2–500 измерениях, seed 4"
+     "bytes": 2165,
+     "about": "Расчёт расстояний и косинусов для таблицы в разделе «Ограничения»"
     },
     {
      "path": "materials/da-4-1-vectors-numpy/da-4-1-vectors-numpy.md",
      "name": "da-4-1-vectors-numpy.md",
-     "bytes": 40489,
+     "bytes": 48266,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-4-1-vectors-numpy/vectors_numpy.ipynb",
      "name": "vectors_numpy.ipynb",
-     "bytes": 28465,
+     "bytes": 30076,
      "about": "Код страницы и упражнения на формы массивов"
     },
     {
      "path": "materials/da-4-1-vectors-numpy/vectors_numpy_solutions.ipynb",
      "name": "vectors_numpy_solutions.ipynb",
-     "bytes": 34088,
+     "bytes": 35700,
      "about": "Решения упражнений"
     }
    ],
@@ -1030,31 +1030,31 @@
   "da-4-2": {
    "file": "da-4-2-matrix-transforms",
    "zip": "materials/da-4-2-matrix-transforms.zip",
-   "zipBytes": 22706,
+   "zipBytes": 24232,
    "files": [
     {
      "path": "materials/da-4-2-matrix-transforms/README.md",
      "name": "README.md",
-     "bytes": 1359,
+     "bytes": 1529,
      "about": ""
     },
     {
      "path": "materials/da-4-2-matrix-transforms/da-4-2-matrix-transforms.md",
      "name": "da-4-2-matrix-transforms.md",
-     "bytes": 44998,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 53397,
+     "about": "Текст урока, примеры кода, вопросы и глоссарий в Markdown"
     },
     {
      "path": "materials/da-4-2-matrix-transforms/deform.py",
      "name": "deform.py",
-     "bytes": 6203,
-     "about": "Расчёт интерактива на NumPy: определитель, ранг, собственные векторы"
+     "bytes": 6288,
+     "about": "Скрипт для проверки своей матрицы 2 × 2 с помощью NumPy"
     },
     {
      "path": "materials/da-4-2-matrix-transforms/matrix_transforms.ipynb",
      "name": "matrix_transforms.ipynb",
-     "bytes": 18919,
-     "about": "Ячейки разделов «Нюансы» и «Код»"
+     "bytes": 19574,
+     "about": "Ноутбук с шестью примерами, от умножения матриц до регрессии"
     }
    ],
    "shared": [
@@ -1064,37 +1064,37 @@
   "da-4-3": {
    "file": "da-4-3-derivative-gradient",
    "zip": "materials/da-4-3-derivative-gradient.zip",
-   "zipBytes": 17975,
+   "zipBytes": 19180,
    "files": [
     {
      "path": "materials/da-4-3-derivative-gradient/README.md",
      "name": "README.md",
-     "bytes": 1273,
+     "bytes": 1559,
      "about": ""
     },
     {
      "path": "materials/da-4-3-derivative-gradient/da-4-3-derivative-gradient.md",
      "name": "da-4-3-derivative-gradient.md",
-     "bytes": 44292,
+     "bytes": 50682,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-4-3-derivative-gradient/integral.py",
      "name": "integral.py",
-     "bytes": 1083,
-     "about": "Сумма прямоугольников и гистограмма с density=True"
+     "bytes": 1111,
+     "about": "Приближение интеграла и расчёт долей наблюдений по нормированной гистограмме"
     },
     {
      "path": "materials/da-4-3-derivative-gradient/regression_gd.py",
      "name": "regression_gd.py",
-     "bytes": 2953,
-     "about": "Регрессия спуском, сравнение с lstsq, опыт с масштабом"
+     "bytes": 3189,
+     "about": "Линейная регрессия на исходных и стандартизованных признаках, сравнение с lstsq"
     },
     {
      "path": "materials/da-4-3-derivative-gradient/surface.py",
      "name": "surface.py",
-     "bytes": 3061,
-     "about": "Поверхность сцены: градиент, численная производная, спуск; парабола"
+     "bytes": 3003,
+     "about": "Проверка градиента и траектории спуска на параболе и на поверхности с двумя минимумами"
     }
    ],
    "shared": [

@@ -1,11 +1,11 @@
-"""Регрессия spend ~ income + orders градиентным спуском.
+"""Градиентный спуск для линейной модели spend ~ income + orders.
 
-Страница 4.3 «Производная и градиент» курса «Аналитика 101». Два блока кода страницы подряд: спуск по стандартизованным признакам приходит к весам lstsq, а без стандартизации разлетается или ползёт.
+Страница 4.3 «Производная и градиент» курса «Аналитика 101». Скрипт сравнивает коэффициенты модели с результатом lstsq, а затем показывает, как масштаб признаков влияет на скорость спуска при разных шагах обучения.
 Запуск из корня папки материалов: python da-4-3-derivative-gradient/regression_gd.py
 Нужен общий набор data/clients/.
 """
 
-# ===== Спуск приходит к тем же весам, что lstsq =====
+# ===== После 60 итераций коэффициенты совпадают с результатом lstsq при округлении =====
 import numpy as np, pandas as pd
 np.set_printoptions(precision=4, suppress=True)
 
@@ -23,27 +23,27 @@ for k in range(1, 61):
         rmse = np.sqrt(np.mean((X @ w - y) ** 2))
         print(f"шаг {k:>2}: RMSE = {rmse:8.1f} ₽, |градиент| = {np.linalg.norm(grad):.3g}")
 
-b = w[1:] / sd                                   # веса обратно в рубли и штуки
+b = w[1:] / sd                                   # коэффициенты при признаках в исходных единицах
 w_gd = np.r_[w[0] - b @ mu, b]
 w_ls, *_ = np.linalg.lstsq(np.c_[np.ones(len(y)), F], y, rcond=None)
 print("спуск:", np.round(w_gd, 4))
 print("lstsq:", np.round(w_ls, 4))
 
-# ===== Без стандартизации спуск разлетается или ползёт =====
+# ===== На исходных признаках даже 10 000 шагов дают большую ошибку, чем 60 после стандартизации =====
 import numpy as np, pandas as pd
 np.set_printoptions(precision=4, suppress=True)
 
 df = pd.read_csv("data/clients/clients.csv")
 y = df["spend"].to_numpy(float)
 F = df[["income", "orders"]].to_numpy(float)
-raw = np.c_[np.ones(len(y)), F]                          # доход в рублях, заказы в штуках
+raw = np.c_[np.ones(len(y)), F]                          # доход в рублях и число заказов
 std = np.c_[np.ones(len(y)), (F - F.mean(0)) / F.std(0)] # оба признака в стандартных отклонениях
 
 def descend(X, eta, steps):
     w = np.zeros(3)
     for _ in range(steps):
         w = w - eta * 2 / len(y) * X.T @ (X @ w - y)
-    return w, np.sqrt(np.mean((X @ w - y) ** 2))         # веса и RMSE, ₽
+    return w, np.sqrt(np.mean((X @ w - y) ** 2))         # веса модели и RMSE в рублях
 
 print("градиент в нуле, сырые:   ", 2 / len(y) * raw.T @ -y)
 print("градиент в нуле, стандарт:", 2 / len(y) * std.T @ -y)
