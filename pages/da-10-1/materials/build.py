@@ -20,9 +20,10 @@ def build(m):
                                           " органика               |      NULL |       27742 |  20390 | NULL |")), out["cac"][-500:])
     m.check("arpu.sql: в июне 2026 ARPPU 4 112 ₽, ARPU на активного 1 689 ₽, на всю базу 309 ₽",
             " 2026-06 |    18690180 |   4545 |  11065 |      60504 |  4112 |        1689 |       309" in out["arpu"], out["arpu"][-300:])
-    m.extra = ("Файлам `cac.sql` и `arpu.sql` нужен PostgreSQL 16 с базой `unit`. Как её загрузить, написано в `data/unit/README.md`. "
-               f"Запуск из корня материалов: `psql -d unit -P null=NULL -f {m.stem}/cac.sql`. "
-               f"Скрипт запускается оттуда же: `python {m.stem}/unit_summary.py`.")
+    m.extra = ("Команды для двух запросов и сводной таблицы урока\n\n"
+               f"```sh\npsql -d unit -P null=NULL -f {m.stem}/cac.sql\n"
+               f"psql -d unit -P null=NULL -f {m.stem}/arpu.sql\n"
+               f"python {m.stem}/unit_summary.py\n```")
 
     r = m.script("unit_summary.py", "unit")
     m.check("unit_summary.py: поиск в минусе на 128 ₽ за 24 месяца данных, но окупается в месяц n = 12; вся реклама: МД 1 147 ₽ при CAC 1 844 ₽",

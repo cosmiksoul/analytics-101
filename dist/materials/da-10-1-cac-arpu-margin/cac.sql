@@ -17,7 +17,7 @@ WITH spend AS (
 ), by_channel AS (
   SELECT n.channel, s.spend, n.new_clients, n.buyers
   FROM newbies AS n
-  LEFT JOIN spend AS s USING (channel)      -- у органики расходов нет: spend = NULL
+  LEFT JOIN spend AS s USING (channel)      -- в выгрузке нет расходов по органическому каналу
 ), blended AS (
   SELECT 'вся реклама' AS channel, SUM(spend) AS spend,
          SUM(new_clients) FILTER (WHERE spend IS NOT NULL) AS new_clients,

@@ -239,37 +239,37 @@
   "da-10-1": {
    "file": "da-10-1-cac-arpu-margin",
    "zip": "materials/da-10-1-cac-arpu-margin.zip",
-   "zipBytes": 16934,
+   "zipBytes": 18966,
    "files": [
     {
      "path": "materials/da-10-1-cac-arpu-margin/README.md",
      "name": "README.md",
-     "bytes": 1814,
+     "bytes": 1862,
      "about": ""
     },
     {
      "path": "materials/da-10-1-cac-arpu-margin/arpu.sql",
      "name": "arpu.sql",
      "bytes": 1587,
-     "about": "ARPU и ARPPU по месяцам для PostgreSQL 16"
+     "about": "Запрос для PostgreSQL 16. Рассчитывает ARPU и ARPPU по месяцам"
     },
     {
      "path": "materials/da-10-1-cac-arpu-margin/cac.sql",
      "name": "cac.sql",
-     "bytes": 1729,
-     "about": "CAC по каналам и смешанный CAC для PostgreSQL 16"
+     "bytes": 1760,
+     "about": "Запрос для PostgreSQL 16. Рассчитывает CAC по каждому каналу и общий CAC"
     },
     {
      "path": "materials/da-10-1-cac-arpu-margin/da-10-1-cac-arpu-margin.md",
      "name": "da-10-1-cac-arpu-margin.md",
-     "bytes": 41272,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 53201,
+     "about": "Текст урока в Markdown с примерами кода, вопросами и глоссарием"
     },
     {
      "path": "materials/da-10-1-cac-arpu-margin/unit_summary.py",
      "name": "unit_summary.py",
-     "bytes": 3301,
-     "about": "Сводка юнит-экономики по каналам и средний клиент по месяцам жизни"
+     "bytes": 3454,
+     "about": "Расчёт показателей по каналам и маржинального дохода на клиента по месяцам с регистрации"
     }
    ],
    "shared": [

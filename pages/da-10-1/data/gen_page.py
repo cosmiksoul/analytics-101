@@ -114,6 +114,7 @@ aa = a.merge(c[['client_id', 'channel', 'coh']], on='client_id')
 aa['n'] = (aa.month.str[:4].astype(int) * 12 + aa.month.str[5:].astype(int)) - aa.coh
 x1 = aa[(aa.channel == 'поиск') & (aa.n == 1)]
 den1 = (cl.coh <= LAST - 1).sum()
+scene['observed1'] = int(den1)
 scene['act1'] = R(len(x1) / den1 * 100)
 scene['buy1'] = R((x1.orders > 0).sum() / den1 * 100)
 socCum = np.cumsum(scene['soc'])
