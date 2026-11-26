@@ -2,7 +2,7 @@ import pandas as pd
 
 ev = pd.read_parquet("data/events/events.parquet")  # сырой журнал, время в UTC
 
-# 1. Очищенный слой: без дублей event_id, без ботов, день по Минску
+# 1. Одна строка на event_id. Исключаем устройства ботов по числу событий за минские сутки.
 ev = ev.drop_duplicates("event_id")
 ev["day"] = ev["event_time"].dt.tz_convert("Europe/Minsk").dt.date
 client = ev[ev["origin"] == "client"]

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-# журнал по соглашениям темы: без дублей, без ботов, минский день, человек = аккаунт
+# Один человек может использовать несколько устройств. Несвязанные устройства считаем по отдельности.
 e = pd.read_parquet("data/events/events.parquet").drop_duplicates("event_id")
 e["day"] = e.event_time.dt.tz_convert("Europe/Minsk").dt.tz_localize(None).dt.normalize()
 per_day = e[e.origin == "client"].groupby(["anonymous_id", "day"]).size()
@@ -24,7 +24,11 @@ def factors(week, platform=None):
 
 def log_split(x0, x1):
     """Вклад множителя = L · ln(x1 / x0), где L — логарифмическое среднее двух выручек."""
+    if (x0 <= 0).any() or (x1 <= 0).any():
+        raise ValueError("Для логарифмической декомпозиции все множители должны быть положительными.")
     r0, r1 = x0.prod(), x1.prod()
+    if r0 == r1:
+        return r0 * np.log(x1 / x0)  # предел логарифмического среднего при равной выручке
     return (r1 - r0) / np.log(r1 / r0) * np.log(x1 / x0)
 
 

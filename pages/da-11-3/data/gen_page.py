@@ -33,7 +33,8 @@ def per_user(exp, drop_bots=True):
     s = S[S.experiment == exp]
     u = (s.groupby("user_id").agg(n=("session_id", "size"), conv=("converted", "sum"),
                                   orders=("orders", "sum"), rev=("revenue", "sum"))
-         .join(E[E.experiment == exp].set_index("user_id").group))
+         .join(E[E.experiment == exp].set_index("user_id").group, how="right", validate="one_to_one")
+         .fillna({"n": 0, "conv": 0, "orders": 0, "rev": 0}).sort_index())
     bots = u[(u.n > 200) & (u.orders == 0)]
     if drop_bots:
         u = u.drop(bots.index)

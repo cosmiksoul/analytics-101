@@ -1,7 +1,7 @@
-"""Данные, вывод кода и рисунок страницы 11.1 «Почему эксперимент, а не „до и после“».
+"""Данные, вывод кода и рисунок страницы 11.1 «Как оценить эффект релиза с помощью A/B-теста».
 
 Запуск из любой папки:  python3 pages/da-11-1/data/build_page.py
-Окружение: Python 3.13, pandas 3.0.5, NumPy 2.5.3, Matplotlib 3.10.0, PostgreSQL 16 (база ab, сокет /tmp).
+Окружение: Python 3.13, pandas 3.0.5, NumPy 2.5.3, Matplotlib 3.10.0, PostgreSQL 16 (база ab, параметры подключения libpq).
 
 1. Модель сцены и интерактива — функции simulate() и estimate() из code/simulate.py (читаются из файла, без копий).
    Для seed 481 сюда выписываются шум дня/недели и шум покупок, которыми JS повторяет simulate(); для всех 32 наборов
@@ -70,7 +70,7 @@ out_sim = o1.stdout.rstrip()
 out_runs = o2.stdout.split("<<<runs>>>\n", 1)[1].rstrip()
 assert o2.stdout.split("<<<runs>>>\n", 1)[0].rstrip() == out_sim
 sql = (HERE / "code" / "hash_balance.sql").read_text(encoding="utf-8").rstrip()
-run = subprocess.run(["psql", "-h", "/tmp", "-U", "postgres", "-d", "ab", "-X", "-P", "pager=off", "-P", "null=NULL",
+run = subprocess.run(["psql", "-U", "postgres", "-d", "ab", "-X", "-P", "pager=off", "-P", "null=NULL",
                       "-f", str(HERE / "code" / "hash_balance.sql")], capture_output=True, text=True, check=True)
 assert not run.stderr.strip(), run.stderr
 out_sql = run.stdout.rstrip()
@@ -110,14 +110,15 @@ J = {"до": win("2026-03-02", "2026-03-15"), "после": win("2026-03-16", "2
 print("журнал 09, конверсия активного дня, %:", {k: {a: round(v, 2) for a, v in x.items()} for k, x in J.items()})
 app_up = J["после"]["приложение"] / J["до"]["приложение"] - 1
 web_up = J["после"]["сайт"] / J["до"]["сайт"] - 1
-print(f"приложение {app_up:+.1%}, сайт {web_up:+.1%}, разность разностей (отношение) {(1 + app_up) / (1 + web_up) - 1:+.1%}")
+print(f"приложение {app_up:+.1%}, сайт {web_up:+.1%}, отношение относительных изменений {(1 + app_up) / (1 + web_up) - 1:+.1%}")
 
 art = PAGE / "article.html"
 a = art.read_text(encoding="utf-8")
 NB = "&nbsp;"
 ru = lambda v: f"{v:.1f}".replace(".", ",")
-for s in [ru(J["до"]["приложение"]), ru(J["после"]["приложение"]), ru(J["до"]["сайт"]), ru(J["после"]["сайт"]),
-          ru(J["кампания"]["приложение"]), ru(check["11111"][0]), ru(app_up * 100), ru(web_up * 100)]:
+did = (J["после"]["приложение"] - J["до"]["приложение"]) - (J["после"]["сайт"] - J["до"]["сайт"])
+rate_labels = [f"{J[period][platform]:.2f}".replace(".", ",") for period in ("до", "после") for platform in ("приложение", "сайт")]
+for s in [*rate_labels, ru(J["кампания"]["приложение"]), ru(check["11111"][0]), ru(did)]:
     assert s in a, f"в article.html нет числа {s}"
 
 # ---------------------------------------------------------------- 4. запись в page.js и article.html
@@ -125,9 +126,7 @@ DATA = {"P": P, "shock": [round(float(v), 7) for v in shock], "z": [[round(float
         "check": check, "rtm": rtm, "ab": {"saltB": round(float(salt_b), 1)}}
 CODE = {
     "sim": {"code": src_sim, "out": out_sim,
-            "note": "Те же числа показывают сцена и интерактив: страница считает их на JS по тем же формулам и с тем же шумом "
-                    "(seed 481). Шум зафиксирован, поэтому разница между строками — только вклад нового слоя. Зерно 481 выбрано так, чтобы без помех обе оценки стояли рядом с истиной; как они гуляют при других зёрнах, показывает следующий блок. «д/п» — «до и после»; "
-                    "ошибки — в процентных пунктах от истинных +10%."},
+            "note": 'Для анимации и калькулятора используются те же формулы и случайные числа (seed 481). Строки показывают, как меняется оценка после добавления очередной помехи. В двух последних столбцах указано отклонение от заданного прироста 10%, в процентных пунктах.'},
     "runs": {"code": src_runs, "out": out_runs,
              "note": "Ячейка продолжает предыдущую: simulate, estimate, LIFT и BEFORE уже в памяти. В каждом прогоне свой шум и свои "
                      "помехи, истинный эффект всегда +10%. Во второй части помех нет вовсе: завышение даёт только выбор момента релиза."},
@@ -142,8 +141,7 @@ s = re.sub(r"/\*data:start\*/.*?/\*data:end\*/", lambda _: "/*data:start*/const 
 s = re.sub(r"/\*code:start\*/.*?/\*code:end\*/", lambda _: "/*code:start*/const CODE = " + json.dumps(CODE, ensure_ascii=False) + ";/*code:end*/", s, flags=re.S)
 js.write_text(s, encoding="utf-8")
 
-ALT = ("Гистограмма оценок эффекта в 1000 учебных мирах: зелёные столбцы A/B узкой горкой стоят у вертикальной линии "
-       "истинного эффекта +10%, оранжевые столбцы «до и после» размазаны от −12 до +40%")
+ALT = 'Распределение оценок в 1 000 прогонах. Оценки A/B сосредоточены около заданного прироста в 10%. У оценок по двум периодам разброс больше.'
 tag = f'<img src="{fig}" alt="{ALT}">'
 a, n = re.subn(r"<!--fig:runs-->.*?<!--/fig:runs-->", lambda _: f"<!--fig:runs-->{tag}<!--/fig:runs-->", a, flags=re.S)
 assert n == 1, "нет метки рисунка runs"

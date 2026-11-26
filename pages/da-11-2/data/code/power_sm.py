@@ -20,10 +20,3 @@ es = pw.solve_power(nobs1=nA, ratio=nB / nA, alpha=0.05, power=0.8)    # в ст
 p_min = np.sin(np.arcsin(np.sqrt(p0)) + es / 2) ** 2                   # из арксинусов обратно в долю
 print(f"\nвыборка {nA} + {nB}: MDE конверсии {(p_min - p0) * 100:.2f} п. п., "
       f"выручки {es * sd:.0f} ₽ ({es * sd / mu:+.1%})")
-
-# Что получили и какая мощность была у дизайна для эффекта такого размера
-b = c[c.group == "B"]
-for name, eff, es_obs in [
-        ("конверсия", f"{(b.conv.mean() - p0) * 100:+.2f} п. п.", proportion_effectsize(b.conv.mean(), p0)),
-        ("выручка", f"{b.revenue.mean() / mu - 1:+.1%}", (b.revenue.mean() - mu) / sd)]:
-    print(f"{name}: {eff}, мощность для такого эффекта {pw.power(es_obs, nobs1=nA, alpha=0.05, ratio=nB / nA):.2f}")

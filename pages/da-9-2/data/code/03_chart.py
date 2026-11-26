@@ -7,7 +7,7 @@ may = first[~first.index.isin(old)
             & (first.t < pd.Timestamp("2026-06-01", tz=MSK))]
 n = funnel(ev, may.t).sum()                   # дошли до шага: окно 7 суток, любой порядок
 step = n / n.shift()                          # доля перехода с прошлого шага
-worst = step.idxmin()                         # где теряем больше всего
+worst = step.idxmin()                         # шаг с самой низкой конверсией от предыдущего
 print(n.to_dict())
 print("переходы, %:", (step.iloc[1:] * 100).round(1).to_dict())
 assert worst == "add_to_cart" and step[worst] < 0.5, "заголовок данными не подтверждается"

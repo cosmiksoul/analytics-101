@@ -22,7 +22,7 @@ CREATE TABLE exposures (
 CREATE TABLE sessions (
     experiment    text NOT NULL,
     user_id       text NOT NULL REFERENCES users,
-    "group"       text NOT NULL,           -- как записал клиент; у 331 человека бывает чужая
+    "group"       text NOT NULL,           -- запись журнала сессий. У 331 участника встречаются обе группы, ещё у 45 все записи отличаются от назначения
     session_id    text PRIMARY KEY,
     session_start timestamptz NOT NULL,
     converted     smallint NOT NULL,

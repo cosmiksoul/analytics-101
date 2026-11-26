@@ -80,16 +80,16 @@ def main():
     outs, svg = run_python()
     src = lambda f: (HERE / "code" / f).read_text(encoding="utf-8").rstrip()
     code = {
-        "fun": {"title": "Воронка на SQL: окно 7 суток, порядок через MIN(event_time) по шагам", "badge": "проверено: PostgreSQL 16",
+        "fun": {"title": "Воронка за семь суток при любом и строгом порядке шагов", "badge": "проверено: PostgreSQL 16",
                 "lang": "sql", "code": src("01_funnel.sql"), "out": sql_out, "outLabel": "Вывод psql",
                 "note": "Запуск: <code>psql -h /tmp -U postgres -d events -P null=NULL -f funnel.sql</code>. Пустые значения psql печатал бы словом NULL, так настроен вывод; здесь их нет. "
                         "Столбцы any_order и strict совпадают с интерактивом в состояниях «человек · 7 суток»: 18,0% — ответ аналитика Б."},
-        "seg": {"title": "Та же воронка по сегментам в pandas: в каждом канале приложение лучше, в сумме — хуже", "badge": PY,
+        "seg": {"title": "Конверсия в покупку по платформам и каналам", "badge": PY,
                 "lang": "python", "code": src("02_segments.py"), "out": outs["seg"], "outLabel": "Вывод: конверсия в оплату за 7 суток, %, и число людей",
-                "note": "Журнал и аккаунты — общий набор data/events/. margins=True добавляет строку и столбец «всего»: в нём и прячется парадокс."},
-        "chart": {"title": "График воронки без «воронки»: столбцы, доля перехода и один акцент", "badge": PY + ", Matplotlib 3.10.0",
+                "note": "Функция pivot_table с параметром margins=True добавляет итоговые строку и столбец. Сравните показатели по каналам с итогами по платформам."},
+        "chart": {"title": "Число участников и конверсия на каждом шаге", "badge": PY + ", Matplotlib 3.10.0",
                   "lang": "python", "code": src("03_chart.py"), "out": outs["chart"], "outLabel": "Вывод: проверка заголовка перед рисованием",
-                  "note": "Продолжение блока выше: ev, first, old, funnel, STEPS и MSK — оттуда. Рисунок ниже — настоящий вывод этого кода, SVG с текстом вместо кривых."},
+                  "note": "Запустите предыдущую ячейку, чтобы определить ev, first, old, funnel, STEPS и MSK. Код сохраняет диаграмму в funnel_bars.svg."},
     }
     js = PAGE / "page.js"
     s = js.read_text(encoding="utf-8")

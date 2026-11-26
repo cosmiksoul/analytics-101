@@ -10,7 +10,7 @@ SPEND = {                                                    # функции р
 }
 
 def bounds(t, spent):
-    """Границы |z| для долей информации t: к взгляду k потрачено ровно spent(t_k) из α."""
+    """Границы |z| для долей информации t: накопленная вероятность пересечь одну из первых k границ равна spent(t_k) в канонической нормальной модели."""
     corr = np.sqrt(np.minimum.outer(t, t) / np.maximum.outer(t, t))   # corr(Z_i, Z_j) = √(t_i / t_j)
     b = []
     for k in range(len(t)):
@@ -19,7 +19,10 @@ def bounds(t, spent):
         b.append(optimize.brentq(lambda c: crossed(c) - spent(t[k]), 1, 10))
     return np.array(b)
 
-# checkout_v2 без ботов; смотрим раз в неделю: конверсия людей, пришедших к этому дню
+# Учебная реконструкция еженедельных оценок по состоянию журнала на эту дату.
+# Доля набранных участников здесь лишь приближает статистическую информацию.
+# У уже вошедших людей конверсия может обновиться позже: для принятия решения
+# о реальной остановке нужны проверенная модель информации и окно наблюдения.
 BOTS = ["u_025389", "u_053191", "u_055948"]
 exp = pd.read_csv("data/ab/exposures.csv", parse_dates=["exposed_at"]).query(
     "experiment == 'checkout_v2' and user_id not in @BOTS")
@@ -38,8 +41,8 @@ for end in [7, 14, 21, 28]:
     rows.append({"день": end, "людей": len(who), "эффект, п. п.": diff * 100,
                  "z": diff / np.sqrt(a.var() / len(a) + b.var() / len(b))})
 res = pd.DataFrame(rows)
-res["t"] = res["людей"] / res["людей"].iloc[-1]             # доля информации: сколько людей уже пришло
+res["t"] = res["людей"] / res["людей"].iloc[-1]             # ретроспективная доля набора от конечной выборки
 for name, spent in SPEND.items():
     res[f"граница {name}"] = bounds(res.t.to_numpy(), spent)
-res["стоп по OBF"] = (res.z.abs() >= res["граница OBF"]).cummax()
+res["граница OBF пересечена"] = (res.z.abs() >= res["граница OBF"]).cummax()
 print(res.round(2).to_string(index=False))

@@ -8,7 +8,7 @@ data/ab) и вписывает данные и настоящий вывод в 
 
 python3 pages/da-11-5/data/gen_page.py
 """
-import json, re, subprocess, sys
+import json, os, re, subprocess, sys
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -186,7 +186,7 @@ cloud = ''.join(enc(R((v + 4) * 400), 2) for v in q.ravel())
 OUT = {}
 for name in ['cuped', 'sequential', 'bayes']:
     src = (CODE / f'{name}.py').read_text(encoding='utf-8')
-    res = subprocess.run([sys.executable, str(CODE / f'{name}.py')], cwd=AB.parents[1], capture_output=True, text=True, check=True)
+    res = subprocess.run([sys.executable, str(CODE / f'{name}.py')], cwd=AB.parents[1], capture_output=True, encoding="utf-8", env={**os.environ, "PYTHONIOENCODING": "utf-8"}, check=True)
     OUT[name + '_py'] = src.rstrip('\n')
     OUT[name] = res.stdout.rstrip('\n')
 weeks = []

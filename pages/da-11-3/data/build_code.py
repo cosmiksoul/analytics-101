@@ -1,13 +1,12 @@
 """Запускает код страницы 11.3 и вписывает настоящий вывод в страницу.
 
 Запуск:  python3 pages/da-11-3/data/build_code.py   (после gen_page.py)
-- code/users.sql выполняется в PostgreSQL 16 (база ab, сокет /tmp, psql -P null=NULL);
-- code/analysis.py, delta.py, boot.py — ячейки одного ноутбука: выполняются подряд во временной папке,
-  куда подложены sessions.parquet, exposures.csv и users.csv из data/ab.
+- code/users.sql выполняется в PostgreSQL 16 (база ab, параметры подключения libpq, psql -P null=NULL);
+- code/analysis.py, delta.py, boot.py — ячейки одного ноутбука: выполняются подряд из корня проекта и читают файлы из data/ab.
 Код и вывод попадают в PAGE.code между /*code:start*/ и /*code:end*/.
 Сверяет вывод кода с DATA из gen_page.py: если генератор и код разошлись, падает.
 """
-import json, re, subprocess, sys, tempfile
+import json, re, subprocess, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -15,17 +14,15 @@ PAGE = HERE.parent
 AB = PAGE.parents[1] / "data" / "ab"
 C = HERE / "code"
 
-run = subprocess.run(["psql", "-h", "/tmp", "-U", "postgres", "-d", "ab", "-X", "-P", "pager=off", "-P", "null=NULL",
+run = subprocess.run(["psql", "-U", "postgres", "-d", "ab", "-X", "-P", "pager=off", "-P", "null=NULL",
                       "-f", str(C / "users.sql")], capture_output=True, text=True, check=True)
 assert not run.stderr.strip(), run.stderr
 sql_out = run.stdout.rstrip()
 
 cells = [(C / f).read_text(encoding="utf-8").rstrip() for f in ("analysis.py", "delta.py", "boot.py")]
-with tempfile.TemporaryDirectory() as tmp:
-    (Path(tmp) / "data").symlink_to(AB.parent)                  # путь в коде: data/ab/…
-    src = "\nprint('<<<cell>>>')\n".join(cells)
-    out = subprocess.run([sys.executable, "-c", src], cwd=tmp, capture_output=True, text=True, check=True)
-    assert not out.stderr.strip(), out.stderr
+src = "\nprint('<<<cell>>>')\n".join(cells)
+out = subprocess.run([sys.executable, "-c", src], cwd=AB.parent.parent, capture_output=True, text=True, check=True)
+assert not out.stderr.strip(), out.stderr
 o1, o2, o3 = (x.strip("\n").rstrip() for x in out.stdout.split("<<<cell>>>\n"))
 
 # сверка с DATA из gen_page.py
@@ -54,12 +51,12 @@ CODE = {
                      "ошибку по общей доле, интервал — по долям групп."},
     "delta": {"title": "Дельта-метод для ratio-метрик", "badge": PY + " · NumPy 2.5", "lang": "python",
               "code": cells[1], "out": o2, "outLabel": "Вывод: ошибки разницы, если строка — сессия и если строка — человек",
-              "note": "Ячейка продолжает предыдущую. Для строки-сессии знаменатель равен 1, ковариация и дисперсия знаменателя "
+              "note": "Ячейка продолжает предыдущую. Для конверсии при расчёте по сессиям знаменатель каждой строки равен 1, ковариация и дисперсия знаменателя "
                       "обнуляются, и формула даёт наивную ошибку z-теста."},
     "boot": {"title": "Бутстрэп по пользователям и обрезка хвоста", "badge": PY + " · NumPy 2.5", "lang": "python",
              "code": cells[2], "out": o3, "outLabel": "Вывод: бутстрэп по людям и по сессиям, выручка, обрезка",
              "note": "Ячейка продолжает предыдущие. Зерно генератора зафиксировано, 2 000 перевыборок на группу; "
-                     "повторный запуск даёт те же числа. Ячейка идёт около 10 секунд."},
+                     "повторный запуск даёт те же числа. Время выполнения зависит от компьютера."},
 }
 s = re.sub(r"/\*code:start\*/.*?/\*code:end\*/",
            lambda _: "/*code:start*/const CODE = " + json.dumps(CODE, ensure_ascii=False) + ";/*code:end*/", s, flags=re.S)

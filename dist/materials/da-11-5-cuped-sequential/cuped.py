@@ -7,10 +7,10 @@ exp = pd.read_csv("data/ab/exposures.csv").query("experiment == 'checkout_v2' an
 ses = pd.read_parquet("data/ab/sessions.parquet").query("experiment == 'checkout_v2'")
 pre = pd.read_csv("data/ab/pre_period.csv")
 
-d = (exp[["user_id", "group"]]                                     # группа — по хешу, из exposures
+d = (exp[["user_id", "group"]]                                     # назначенный вариант из журнала показов
      .merge(ses.groupby("user_id", as_index=False).revenue.sum(), on="user_id", how="left")
      .merge(pre[["user_id", "revenue_pre"]], on="user_id", how="left")
-     .fillna({"revenue": 0, "revenue_pre": 0}))                    # нет предпериода — ковариата 0
+     .fillna({"revenue": 0, "revenue_pre": 0}))                    # в учебных данных нет покупок до теста — траты равны 0
 y, x = d.revenue, d.revenue_pre
 theta = np.cov(x, y)[0, 1] / x.var()                               # один θ на обе группы
 d["revenue_cuped"] = y - theta * (x - x.mean())
@@ -24,8 +24,8 @@ ratio = d.revenue_cuped.var() / y.var()
 print(f"θ = {theta:.3f}, корреляция ρ = {x.corr(y):.3f}, дисперсия {ratio - 1:+.1%}")
 print("без CUPED:", effect("revenue"))
 print("с CUPED:  ", effect("revenue_cuped"))
-print(f"та же точность за {28 * ratio:.1f} дня вместо 28")
+print(f"Расчётный срок набора при равномерном притоке: {28 * ratio:.1f} дня вместо 28")
 
-# то же самое как регрессия с ковариатой
+# сравниваем с оценкой коэффициента группы в линейной регрессии
 fit = smf.ols("revenue ~ C(group) + revenue_pre", data=d).fit()
 print(f"регрессия: {fit.params['C(group)[T.B]']:+.1f} ₽, SE {fit.bse['C(group)[T.B]']:.1f}")

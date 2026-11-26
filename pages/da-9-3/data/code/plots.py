@@ -27,9 +27,9 @@ ax.annotate("кампания", (12.8, 14.5), xytext=(6, 0), textcoords="offset 
             annotation_clip=False)
 ax.set_xlim(0.5, 12.5)
 fig.colorbar(im, ax=ax, shrink=0.45, location="bottom", label="% когорты, активной в неделю n")
-fig.suptitle("После релиза когорты держатся лучше,\nкогорты кампании — хуже", x=0.02, ha="left",
+fig.suptitle("Доля вернувшихся выше у мартовских когорт\nпосле релиза", x=0.02, ha="left",
              fontweight="bold", fontsize=11)
-ax.set_title("Классическое удержание; пустой угол — недели, которые ещё не наступили",
+ax.set_title("Классическое удержание. В пустых ячейках неделя ещё не закончилась",
              loc="left", fontsize=8, color="#737c8f")
 fig.savefig("heatmap.svg")
 
@@ -51,9 +51,9 @@ for name, (rows, color, offset) in groups.items():
 ax.axvspan(4, 9, color="#edf0f4", zorder=0)
 ax.text(6.5, 35, "плато: недели 4–9", ha="center", color="#737c8f")
 ax.set(xlim=(1, 12), ylim=(0, 40), xticks=range(1, 13), xlabel="неделя жизни когорты n", ylabel="% когорты")
-fig.suptitle("Релиз поднял плато с 15 до 19%, у когорт кампании оно снова ниже", x=0.02, ha="left",
+fig.suptitle("После релиза плато выше: 19% у мартовских когорт", x=0.02, ha="left",
              fontweight="bold", fontsize=11)
-ax.set_title("Классическое удержание; тонкие линии — отдельные когорты; учебный журнал событий",
+ax.set_title("Тонкие линии — отдельные когорты. Источник: учебный журнал событий",
              loc="left", fontsize=7.5, color="#737c8f")
 fig.savefig("curves.svg")
 print({f: round(os.path.getsize(f) / 1024, 1) for f in ["heatmap.svg", "curves.svg"]}, "КБ")

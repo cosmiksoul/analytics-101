@@ -347,36 +347,36 @@
   "da-11-1": {
    "file": "da-11-1-why-experiment",
    "zip": "materials/da-11-1-why-experiment.zip",
-   "zipBytes": 22732,
+   "zipBytes": 21609,
    "files": [
     {
      "path": "materials/da-11-1-why-experiment/README.md",
      "name": "README.md",
-     "bytes": 1993,
+     "bytes": 2015,
      "about": ""
     },
     {
      "path": "materials/da-11-1-why-experiment/da-11-1-why-experiment.md",
      "name": "da-11-1-why-experiment.md",
-     "bytes": 45877,
+     "bytes": 43523,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-11-1-why-experiment/hash_balance.sql",
      "name": "hash_balance.sql",
-     "bytes": 2638,
+     "bytes": 2649,
      "about": "Разбиение по хешу и проверка баланса групп на учебных экспериментах data/ab в PostgreSQL"
     },
     {
      "path": "materials/da-11-1-why-experiment/runs.py",
      "name": "runs.py",
-     "bytes": 8253,
+     "bytes": 8232,
      "about": "Тысяча прогонов «до и после» против A/B; симуляция из simulate.py уже внутри"
     },
     {
      "path": "materials/da-11-1-why-experiment/simulate.py",
      "name": "simulate.py",
-     "bytes": 4224,
+     "bytes": 4258,
      "about": "Учебная симуляция магазина со слоями помех"
     }
    ],
@@ -387,30 +387,30 @@
   "da-11-2": {
    "file": "da-11-2-test-design",
    "zip": "materials/da-11-2-test-design.zip",
-   "zipBytes": 21989,
+   "zipBytes": 22092,
    "files": [
     {
      "path": "materials/da-11-2-test-design/README.md",
      "name": "README.md",
-     "bytes": 1581,
+     "bytes": 1601,
      "about": ""
     },
     {
      "path": "materials/da-11-2-test-design/da-11-2-test-design.md",
      "name": "da-11-2-test-design.md",
-     "bytes": 43226,
+     "bytes": 44411,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-11-2-test-design/sample_size.ipynb",
      "name": "sample_size.ipynb",
-     "bytes": 16403,
-     "about": "Размер выборки вручную и в statsmodels, MDE из денег, проверка мощности симуляцией"
+     "bytes": 15706,
+     "about": "Расчёт выборки вручную и в statsmodels, выбор MDE, проверка мощности моделированием"
     },
     {
      "path": "materials/da-11-2-test-design/test_design_template.md",
      "name": "test_design_template.md",
-     "bytes": 4814,
+     "bytes": 5198,
      "about": "Шаблон документа дизайна теста: пустой и заполненный для checkout_v2"
     }
    ],
@@ -421,36 +421,36 @@
   "da-11-3": {
    "file": "da-11-3-analysis",
    "zip": "materials/da-11-3-analysis.zip",
-   "zipBytes": 23435,
+   "zipBytes": 23922,
    "files": [
     {
      "path": "materials/da-11-3-analysis/README.md",
      "name": "README.md",
-     "bytes": 2028,
+     "bytes": 2076,
      "about": ""
     },
     {
      "path": "materials/da-11-3-analysis/ab_analysis.ipynb",
      "name": "ab_analysis.ipynb",
-     "bytes": 17990,
+     "bytes": 18413,
      "about": "Баланс, тесты, интервалы, дельта-метод, бутстрэп по пользователям и отчёт"
     },
     {
      "path": "materials/da-11-3-analysis/checkout_v2_users.sql",
      "name": "checkout_v2_users.sql",
-     "bytes": 1727,
+     "bytes": 1793,
      "about": "Строка на пользователя и сводка по группам для PostgreSQL 16"
     },
     {
      "path": "materials/da-11-3-analysis/da-11-3-analysis.md",
      "name": "da-11-3-analysis.md",
-     "bytes": 45173,
+     "bytes": 46551,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-11-3-analysis/report_template.md",
      "name": "report_template.md",
-     "bytes": 2861,
+     "bytes": 4046,
      "about": "Шаблон отчёта об эксперименте на одну страницу"
     }
    ],
@@ -461,7 +461,7 @@
   "da-11-4": {
    "file": "da-11-4-pitfalls",
    "zip": "materials/da-11-4-pitfalls.zip",
-   "zipBytes": 29894,
+   "zipBytes": 30735,
    "files": [
     {
      "path": "materials/da-11-4-pitfalls/README.md",
@@ -472,20 +472,20 @@
     {
      "path": "materials/da-11-4-pitfalls/da-11-4-pitfalls.md",
      "name": "da-11-4-pitfalls.md",
-     "bytes": 45815,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 50062,
+     "about": "Текст урока, примеры кода, вопросы и глоссарий в Markdown"
     },
     {
      "path": "materials/da-11-4-pitfalls/pitfalls.ipynb",
      "name": "pitfalls.ipynb",
-     "bytes": 41915,
+     "bytes": 42212,
      "about": "Симуляция подглядывания, поправки на множественность, SRM и график новизны на pandas, SciPy и statsmodels"
     },
     {
      "path": "materials/da-11-4-pitfalls/sim.py",
      "name": "sim.py",
      "bytes": 7778,
-     "about": "Сто показанных тестов и доли ложных побед на общем наборе A/A-тестов data/ab/aa_sim.py"
+     "about": "Сто показанных тестов и доли ложных сигналов на общем наборе A/A-тестов data/ab/aa_sim.py"
     }
    ],
    "shared": [
@@ -495,42 +495,42 @@
   "da-11-5": {
    "file": "da-11-5-cuped-sequential",
    "zip": "materials/da-11-5-cuped-sequential.zip",
-   "zipBytes": 22235,
+   "zipBytes": 24336,
    "files": [
     {
      "path": "materials/da-11-5-cuped-sequential/README.md",
      "name": "README.md",
-     "bytes": 2180,
+     "bytes": 2220,
      "about": ""
     },
     {
      "path": "materials/da-11-5-cuped-sequential/bayes.py",
      "name": "bayes.py",
-     "bytes": 1153,
+     "bytes": 1208,
      "about": "Байесовская оценка конверсии: вероятность превосходства и ожидаемые потери"
     },
     {
      "path": "materials/da-11-5-cuped-sequential/cuped.py",
      "name": "cuped.py",
-     "bytes": 1773,
+     "bytes": 1941,
      "about": "CUPED на выручке checkout_v2 и проверка регрессией"
     },
     {
      "path": "materials/da-11-5-cuped-sequential/da-11-5-cuped-sequential.md",
      "name": "da-11-5-cuped-sequential.md",
-     "bytes": 39923,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 49522,
+     "about": "Текст урока, примеры кода, вопросы и глоссарий в Markdown"
     },
     {
      "path": "materials/da-11-5-cuped-sequential/sequential.py",
      "name": "sequential.py",
-     "bytes": 2546,
-     "about": "Групповые проверки раз в неделю с границами по функции расходования α"
+     "bytes": 3129,
+     "about": "Еженедельные проверки на накопленных данных с границами по функции расходования α"
     },
     {
      "path": "materials/da-11-5-cuped-sequential/sequential_sim.py",
      "name": "sequential_sim.py",
-     "bytes": 12869,
+     "bytes": 13013,
      "about": "Границы и симуляция последовательных тестов на 20 000 A/A и A/B; A/A — общий набор data/ab/aa_sim.py"
     }
    ],
@@ -1611,36 +1611,36 @@
   "da-9-1": {
    "file": "da-9-1-event-model",
    "zip": "materials/da-9-1-event-model.zip",
-   "zipBytes": 21264,
+   "zipBytes": 21639,
    "files": [
     {
      "path": "materials/da-9-1-event-model/README.md",
      "name": "README.md",
-     "bytes": 1990,
+     "bytes": 2017,
      "about": ""
     },
     {
      "path": "materials/da-9-1-event-model/da-9-1-event-model.md",
      "name": "da-9-1-event-model.md",
-     "bytes": 44463,
+     "bytes": 46998,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-9-1-event-model/hero_12_15_may.csv",
      "name": "hero_12_15_may.csv",
      "bytes": 2165,
-     "about": "21 строка героя за 12–15 мая — лента интерактива"
+     "about": "События покупателя за 12–15 мая, использованные в интерактиве"
     },
     {
      "path": "materials/da-9-1-event-model/sessions.ipynb",
      "name": "sessions.ipynb",
-     "bytes": 15235,
+     "bytes": 15074,
      "about": "Сессии, склейка и витрина «пользователь — день» в pandas; пересчёт состояний интерактива"
     },
     {
      "path": "materials/da-9-1-event-model/sessions.sql",
      "name": "sessions.sql",
-     "bytes": 2564,
+     "bytes": 2582,
      "about": "Очищенный слой и сессионизация из раздела «Код»"
     }
    ],
@@ -1651,7 +1651,7 @@
   "da-9-2": {
    "file": "da-9-2-funnels",
    "zip": "materials/da-9-2-funnels.zip",
-   "zipBytes": 44352,
+   "zipBytes": 43643,
    "files": [
     {
      "path": "materials/da-9-2-funnels/README.md",
@@ -1662,7 +1662,7 @@
     {
      "path": "materials/da-9-2-funnels/da-9-2-funnels.md",
      "name": "da-9-2-funnels.md",
-     "bytes": 41067,
+     "bytes": 41759,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
@@ -1674,7 +1674,7 @@
     {
      "path": "materials/da-9-2-funnels/funnel_segments.ipynb",
      "name": "funnel_segments.ipynb",
-     "bytes": 44505,
+     "bytes": 43493,
      "about": "Ноутбук: та же воронка по сегментам, Симпсон и график"
     }
    ],
@@ -1685,7 +1685,7 @@
   "da-9-3": {
    "file": "da-9-3-retention-cohorts",
    "zip": "materials/da-9-3-retention-cohorts.zip",
-   "zipBytes": 33829,
+   "zipBytes": 32770,
    "files": [
     {
      "path": "materials/da-9-3-retention-cohorts/README.md",
@@ -1702,13 +1702,13 @@
     {
      "path": "materials/da-9-3-retention-cohorts/da-9-3-retention-cohorts.md",
      "name": "da-9-3-retention-cohorts.md",
-     "bytes": 48755,
+     "bytes": 48309,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-9-3-retention-cohorts/retention.ipynb",
      "name": "retention.ipynb",
-     "bytes": 88251,
+     "bytes": 87482,
      "about": "Три вида удержания, тепловая карта и кривые на pandas и Matplotlib"
     }
    ],
@@ -1719,7 +1719,7 @@
   "da-9-4": {
    "file": "da-9-4-metric-tree",
    "zip": "materials/da-9-4-metric-tree.zip",
-   "zipBytes": 18770,
+   "zipBytes": 19432,
    "files": [
     {
      "path": "materials/da-9-4-metric-tree/README.md",
@@ -1736,19 +1736,19 @@
     {
      "path": "materials/da-9-4-metric-tree/da-9-4-metric-tree.md",
      "name": "da-9-4-metric-tree.md",
-     "bytes": 42976,
+     "bytes": 44997,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-9-4-metric-tree/decompose.py",
      "name": "decompose.py",
-     "bytes": 3350,
+     "bytes": 3755,
      "about": "Вклад множителей в изменение выручки: логарифмы и подстановка"
     },
     {
      "path": "materials/da-9-4-metric-tree/metric_card_template.md",
      "name": "metric_card_template.md",
-     "bytes": 1626,
+     "bytes": 1807,
      "about": "Шаблон карточки метрики для своих метрик"
     }
    ],
@@ -1760,15 +1760,15 @@
  "data": {
   "ab": {
    "zip": "materials/data-ab.zip",
-   "zipBytes": 14386627,
+   "zipBytes": 14400564,
    "files": [
     {
      "path": "materials/data/ab/README.md",
-     "bytes": 9860
+     "bytes": 12279
     },
     {
      "path": "materials/data/ab/aa_sim.py",
-     "bytes": 3989
+     "bytes": 4046
     },
     {
      "path": "materials/data/ab/exposures.csv",
@@ -1776,11 +1776,11 @@
     },
     {
      "path": "materials/data/ab/gen.py",
-     "bytes": 9643
+     "bytes": 9727
     },
     {
      "path": "materials/data/ab/load_pg.sql",
-     "bytes": 2323
+     "bytes": 2431
     },
     {
      "path": "materials/data/ab/pre_period.csv",
@@ -1842,11 +1842,11 @@
   },
   "events": {
    "zip": "materials/data-events.zip",
-   "zipBytes": 8896626,
+   "zipBytes": 8873436,
    "files": [
     {
      "path": "materials/data/events/README.md",
-     "bytes": 10504
+     "bytes": 12328
     },
     {
      "path": "materials/data/events/events.csv.gz",
@@ -1858,7 +1858,7 @@
     },
     {
      "path": "materials/data/events/gen.py",
-     "bytes": 20692
+     "bytes": 20734
     },
     {
      "path": "materials/data/events/load_pg.sql",

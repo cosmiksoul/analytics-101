@@ -7,7 +7,7 @@ def ratio_delta(X, Y):
     return r, var
 
 
-# та же формула для сессий: у строки-сессии знаменатель 1, и формула превращается в наивную p(1 − p)/n
+# та же формула для конверсии по сессиям: у каждой сессии знаменатель 1, и формула превращается в наивную p(1 − p)/n
 sess = (s[~s.user_id.isin(bots)].drop(columns="group")
         .merge(x[["user_id", "group"]], on="user_id")
         .rename(columns={"converted": "conv"}).assign(sessions=1))

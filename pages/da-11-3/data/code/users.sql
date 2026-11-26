@@ -1,12 +1,12 @@
 -- checkout_v2: лог сессий → строка на пользователя → сводка по группам
 WITH per_user AS (                         -- группа — из показа (по хешу), а не из столбца group сессии
   SELECT x."group", x.user_id,
-         count(*)         AS sessions,
-         sum(s.converted) AS conv_sessions,
-         sum(s.orders)    AS orders,
-         sum(s.revenue)   AS revenue
+         count(s.session_id)           AS sessions,
+         coalesce(sum(s.converted), 0) AS conv_sessions,
+         coalesce(sum(s.orders), 0)    AS orders,
+         coalesce(sum(s.revenue), 0)   AS revenue
   FROM exposures x
-  JOIN sessions s ON s.experiment = x.experiment AND s.user_id = x.user_id
+  LEFT JOIN sessions s ON s.experiment = x.experiment AND s.user_id = x.user_id
   WHERE x.experiment = 'checkout_v2'
   GROUP BY x."group", x.user_id
 )

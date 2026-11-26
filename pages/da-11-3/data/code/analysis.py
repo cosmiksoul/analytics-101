@@ -17,7 +17,8 @@ print(f"показов: A {n.A}, B {n.B}; доля B {n.B / n.sum():.2%}; χ² �
 u = (s.groupby("user_id")
       .agg(sessions=("session_id", "size"), conv=("converted", "sum"),
            orders=("orders", "sum"), revenue=("revenue", "sum"))
-      .join(x.set_index("user_id").group))
+      .join(x.set_index("user_id").group, how="right", validate="one_to_one")
+      .fillna({"sessions": 0, "conv": 0, "orders": 0, "revenue": 0}).sort_index())
 both = (s.groupby("user_id").group.nunique() > 1).sum()   # сессии записаны в обеих группах
 bots = u.query("sessions > 200 and orders == 0").index     # сотни сессий без единого заказа
 u = u.drop(bots)

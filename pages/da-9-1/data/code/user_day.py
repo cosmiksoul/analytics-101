@@ -4,7 +4,7 @@ dev_user = (ev.dropna(subset=["anonymous_id", "user_id"])
               .groupby("anonymous_id")["user_id"].first())
 ev["person"] = (ev["user_id"]
                 .fillna(ev["anonymous_id"].map(dev_user))
-                .fillna(ev["anonymous_id"]))           # входа не было: человек = устройство
+                .fillna(ev["anonymous_id"]))           # без входа используем идентификатор устройства
 print("людей:", ev["person"].nunique())
 
 # 4. Витрина «пользователь — день»: одна строка на человека и минский день
@@ -24,6 +24,6 @@ print(user_day.shape)
 print(user_day.head(3))
 print(user_day[user_day["person"] == "u_06883"])
 
-# DAU — просто число строк витрины за день
+# В дневной витрине у каждого активного пользователя одна строка
 dau = user_day.groupby("day").size()
 print("DAU в мае:", round(dau[dau.index.astype(str).str[:7] == "2026-05"].mean(), 1))

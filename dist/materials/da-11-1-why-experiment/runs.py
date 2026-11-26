@@ -1,6 +1,6 @@
 """Тысяча прогонов: «до и после» против A/B
 
-Страница 11.1 «Эксперимент вместо «до и после»» курса «Аналитика 101». Второй блок кода страницы вместе с первым: симуляция магазина из simulate.py и тысяча миров со случайными помехами. Сохраняет рисунок runs.svg.
+Страница 11.1 «Как оценить эффект релиза с помощью A/B-теста» курса «Аналитика 101». Второй блок кода страницы вместе с первым: симуляция магазина из simulate.py и тысяча прогонов модели с разными помехами. Сохраняет рисунок runs.svg.
 Запуск из корня папки материалов: python da-11-1-why-experiment/runs.py
 """
 
@@ -17,8 +17,8 @@ LIFT = 0.10                                             # истинный эф�
 
 
 def simulate(seed, trend=0.0, season=0.0, campaign=None, tracking=None, dip=0.0):
-    """Учебный магазин по дням. Аудитория поделена пополам по хешу: группы A и B.
-    a — покупки A без релиза, b — покупки B с релизом, a_all — те же люди A, если релиз выкатили всем."""
+    """Учебный магазин по дням. На каждую группу приходится половина визитов за день.
+    a и b — покупки в группах A и B, a_all — покупки в A при выпуске новой версии для всех."""
     rng = np.random.default_rng(seed)
     shock = 0.02 * rng.standard_normal(42) + 0.03 * np.repeat(rng.standard_normal(6), 7)   # колебания дня и недели
     z = rng.standard_normal((2, 42))                    # шум покупок в каждой половине
@@ -28,7 +28,7 @@ def simulate(seed, trend=0.0, season=0.0, campaign=None, tracking=None, dip=0.0)
     if season:                                          # сезон: выходные и осенний спрос вокруг релиза
         p *= np.where(weekend, 0.92, 1) * (1 + season / (1 + np.exp(-(T - 27) / 4)))
     p *= np.where((T >= 21) & (T < 28), 1 - dip, 1)     # провал за неделю до релиза
-    weak = np.zeros(42)                                 # кампания: +40% визитов, покупают в 0,45 раза реже
+    weak = np.zeros(42)                                 # кампания: +40% визитов, вероятность покупки составляет 45% от обычной
     if campaign is not None:
         weak[campaign:campaign + 7] = 0.4 * visits[campaign:campaign + 7]
     seen = np.ones(42)                                  # трекинг: 20% визитов не доходят до журнала
@@ -45,7 +45,7 @@ def simulate(seed, trend=0.0, season=0.0, campaign=None, tracking=None, dip=0.0)
 def estimate(d):
     """Две оценки эффекта: «до и после» по всей аудитории и A/B по группам в одни и те же дни."""
     conv = lambda buys, days: buys[days].sum() / d.visits[days].sum()
-    everyone = (d.a_all + d.b) / 2                      # мир без эксперимента: релиз получили все
+    everyone = (d.a_all + d.b) / 2                      # сценарий с выпуском новой версии для всех
     return conv(everyone, AFTER) / conv(everyone, BEFORE) - 1, conv(d.b, AFTER) / conv(d.a, AFTER) - 1
 
 
@@ -69,7 +69,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# 1. Тысяча миров: в каждом свои помехи, их размер и дни заранее неизвестны
+# 1. Тысяча прогонов с разными помехами и датами их появления
 rng = np.random.default_rng(2025)
 res = []
 for run in range(1000):
@@ -96,7 +96,7 @@ print("\nсредняя ошибка, п. п.")
 print(pd.DataFrame({"все прогоны": calm[["до и после", "A/B"]].mean(),
                     "после слабых недель": calm.loc[bad, ["до и после", "A/B"]].mean()}).T.round(2).to_string())
 
-# 3. Рисунок: распределение двух оценок в тысяче миров
+# 3. Рисунок: распределение двух оценок в тысяче прогонов
 plt.rcParams.update({"svg.fonttype": "none", "font.size": 9, "axes.spines.top": False, "axes.spines.right": False})
 fig, ax = plt.subplots(figsize=(6.4, 3.3), layout="constrained")
 bins = np.arange(-20, 46, 1)
@@ -108,8 +108,8 @@ ax.annotate("истинный эффект +10%", (LIFT * 100, 288), xytext=(4, 
 ax.annotate("A/B", (13, 150), color="#0d7468", fontweight="bold")
 ax.annotate("«до и после»", (27, 22), color="#b0650a", fontweight="bold")
 ax.set(xlabel="оценка эффекта релиза, %", ylabel="прогонов из 1000", xlim=(-20, 45))
-fig.suptitle("«До и после» промахивается в обе стороны, A/B ложится у истины", x=0.02, ha="left",
+fig.suptitle("Как меняются оценки эффекта за 1 000 прогонов", x=0.02, ha="left",
              fontweight="bold", fontsize=11)
-ax.set_title("Учебная симуляция: 1000 миров со случайным трендом, сезоном, кампанией и поломкой трекинга",
+ax.set_title("Тренд, сезонность, реклама и пропущенные визиты в учебном магазине",
              loc="left", fontsize=7.5, color="#737c8f")
 fig.savefig("runs.svg")

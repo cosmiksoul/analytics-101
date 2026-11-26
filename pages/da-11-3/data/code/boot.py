@@ -24,11 +24,11 @@ lo, hi = np.percentile(d_rev, [2.5, 97.5])
 print(f"выручка на человека, бутстрэп: разница {u.groupby('group').revenue.mean().diff().iloc[-1]:.1f} ₽, "
       f"95% интервал [{lo:.1f}; {hi:.1f}] ₽")
 
-# обрезка хвоста: порог — 99-й процентиль обеих групп вместе, выше него — сам порог
+# обрезка хвоста: выручку каждого участника ограничиваем общим 99-м процентилем
 cap = u.revenue.quantile(0.99)
 w = u.assign(revenue=u.revenue.clip(upper=cap))
 a, b = w.loc[w.group == "A", "revenue"], w.loc[w.group == "B", "revenue"]
 d, se = b.mean() - a.mean(), np.sqrt(a.var() / len(a) + b.var() / len(b))
 print(f"обрезка по {cap:.0f} ₽: {a.mean():.1f} → {b.mean():.1f} ₽, разница {d:.1f} ₽ "
       f"[{d - Z95 * se:.1f}; {d + Z95 * se:.1f}]; p = {stats.ttest_ind(b, a, equal_var=False).pvalue:.4f}")
-print(f"обрезано людей: {(u.revenue > cap).sum()}, у них {u.revenue[u.revenue > cap].sum() / u.revenue.sum():.0%} выручки")
+print(f"участников с выручкой выше порога: {(u.revenue > cap).sum()}, у них {u.revenue[u.revenue > cap].sum() / u.revenue.sum():.0%} выручки")

@@ -6,7 +6,7 @@
 |---|---|
 | `data/ab/` | Учебные данные темы 11 — общий набор: пользователи, показы, сессии трёх экспериментов, предпериод; загрузка в PostgreSQL 16, генераторы. Лежит один раз в корне материалов, а не в этой папке |
 | `cuped.py` | CUPED на выручке checkout_v2 и проверка регрессией |
-| `sequential.py` | Групповые проверки раз в неделю с границами по функции расходования α |
+| `sequential.py` | Еженедельные проверки на накопленных данных с границами по функции расходования α |
 | `bayes.py` | Байесовская оценка конверсии: вероятность превосходства и ожидаемые потери |
 | `sequential_sim.py` | Границы и симуляция последовательных тестов на 20 000 A/A и A/B; A/A — общий набор data/ab/aa_sim.py |
 
@@ -14,4 +14,4 @@
 
 Код проверен на Python 3.13, pandas 3.0, NumPy 2.5, SciPy 1.18, statsmodels 0.15 и pyarrow 26. На других версиях вывод может отличаться в мелочах. Данные учебные.
 
-Запуск из корня материалов: `python da-11-5-cuped-sequential/cuped.py`, `python da-11-5-cuped-sequential/sequential.py`, `python da-11-5-cuped-sequential/bayes.py`. `python da-11-5-cuped-sequential/sequential_sim.py` идёт около 20 секунд: берёт A/A-тесты из `data/ab/aa_sim.py` и печатает границы, доли ложных побед и мощность; ожидаемый вывод записан в конце файла.
+Запуск из корня материалов: `python da-11-5-cuped-sequential/cuped.py`, `python da-11-5-cuped-sequential/sequential.py`, `python da-11-5-cuped-sequential/bayes.py`. `python da-11-5-cuped-sequential/sequential_sim.py` идёт около 20 секунд: берёт A/A-тесты из `data/ab/aa_sim.py` и печатает границы, доли ложных сигналов и мощность. В конце файла приведён ожидаемый результат.

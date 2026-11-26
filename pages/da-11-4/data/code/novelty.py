@@ -15,7 +15,7 @@ s["week"] = ((s.session_start + pd.Timedelta(hours=3)).dt.floor("D").dt.tz_local
 
 
 def uplift(g):
-    """Эффект конверсии сессии B к A и 95-% интервал: дельта-метод по пользователям, как в 11.3."""
+    """Относительный прирост конверсии сессии и его 95%-й интервал: дельта-метод по пользователям, как в 11.3."""
     r = {}
     for grp, x in g.groupby("group"):
         u = x.groupby("user_id").converted.agg(["sum", "size"])
@@ -46,7 +46,7 @@ for (a, b), (_, r) in zip(BINS, by_day.iterrows()):
                 textcoords="offset points", ha="center", color=ACC, fontweight="bold")
 t = np.linspace(0, 28, 200)
 ax.plot(t, (0.04 + 0.20 * np.exp(-t / 5)) * 100, color=GREY, linestyle="--", linewidth=1.4)
-ax.annotate("так данные сгенерированы:\n+4% навсегда плюс новизна", (2.4, 16.4), xytext=(7.6, 27), color=MUT,
+ax.annotate("модель: постоянные +4%\nи временная прибавка", (2.4, 16.4), xytext=(7.6, 27), color=MUT,
             fontsize=8.5, arrowprops={"arrowstyle": "-", "color": GREY, "linewidth": 0.8})
 ax.axhline(total["эффект"] * 100, color=MUT, linewidth=1, linestyle=":")
 ax.annotate(f"оценка за 28 дней {pct(total['эффект'])}", (27.8, total["эффект"] * 100 + 1),
@@ -56,7 +56,7 @@ ax.set(xlim=(0, 28), ylim=(-12, 36), xticks=[0, 3, 7, 14, 21, 28])
 ax.set_yticks([-10, 0, 10, 20, 30], labels=["−10%", "0", "+10%", "+20%", "+30%"])
 ax.set_xlabel("дней с первого показа · учебные данные checkout_v2, 7 сентября — 4 октября 2026", loc="left",
               fontsize=8, color=GREY)
-fig.suptitle("Прирост конверсии от нового оформления тает за неделю после показа", x=0.01, ha="left",
+fig.suptitle("Наибольший прирост конверсии наблюдался в первые трое суток", x=0.01, ha="left",
              fontweight="bold", fontsize=11.5)
-ax.set_title("Конверсия сессии B к A по дням с первого показа, 95-% интервалы", loc="left", fontsize=8.5, color=MUT)
+ax.set_title("Относительный прирост конверсии сессий, полосы показывают 95%-е интервалы", loc="left", fontsize=8.5, color=MUT)
 fig.savefig("novelty.svg")

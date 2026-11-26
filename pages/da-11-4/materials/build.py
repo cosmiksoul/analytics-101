@@ -30,10 +30,10 @@ def build(m):
     r = m.run(["python", "sim.py"], what="python sim.py")
     made = m.work / "sim.json"
     m.check("sim.py из материалов даёт тот же sim.json, что вшит в страницу",
-            made.exists() and made.read_bytes() == (m.pdir / "data" / "sim.json").read_bytes())
+            made.exists() and json.loads(made.read_text(encoding="utf-8")) == json.loads((m.pdir / "data" / "sim.json").read_text(encoding="utf-8")))
     m.check("sim.py не оставил sim.json в материалах страницы", not (m.out / "sim.json").exists())
     s = json.loads((m.pdir / "data" / "sim.json").read_text("utf-8"))
     m.check("в sim.json: блок 173, тест сцены 17359, в ста показанных 4, 10 и 30 ложных побед при одном, четырёх и 28 взглядах",
             (s["block"], s["scene"]["run"], s["shown"]["1"][0], s["shown"]["4"][0], s["shown"]["28"][0]) == (173, 17359, 4, 10, 30), str(s["shown"]))
-    m.extra = (f"Ноутбук можно открыть из этой папки. Скрипт запускается из корня материалов: `python {m.stem}/sim.py` — он берёт прогоны из "
-               "`data/ab/aa_sim.py` и пишет `sim.json` рядом с собой: это данные интерактива страницы.")
+    m.extra = (f"Откройте ноутбук в папке урока. Для воспроизведения симуляции запустите из корня материалов `python {m.stem}/sim.py` — он берёт прогоны из "
+               "`data/ab/aa_sim.py` и сохраняет в `sim.json` данные для тренажёра.")

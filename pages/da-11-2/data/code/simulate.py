@@ -30,6 +30,7 @@ def rev_share(n, lift, reps=R):
     return hits / reps
 
 
+b = c[c.group == "B"]
 lift = b.revenue.mean() / mu                # +7,8%, как вышло в checkout_v2
 need = int(np.ceil(z**2 * (1 + lift**2) * sd**2 / (mu * (lift - 1)) ** 2))   # σ_B = lift · σ_A
 print(f"выручка, {nA} в группе: A/A значимы {rev_share(nA, 1):.1%}, "

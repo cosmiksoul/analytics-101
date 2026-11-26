@@ -23,7 +23,8 @@ exp = exp[~exp.user_id.isin(BOTS)]
 ses = pd.read_parquet(AB / "sessions.parquet")
 ses = ses[~ses.user_id.isin(BOTS)]
 users = (ses.groupby(["experiment", "user_id"]).agg(conv=("converted", "max"), revenue=("revenue", "sum"))
-            .reset_index().merge(exp, on=["experiment", "user_id"]))
+            .reset_index().merge(exp, on=["experiment", "user_id"], how="right", validate="one_to_one")
+            .fillna({"conv": 0, "revenue": 0}))
 exp["day"] = exp.exposed_at.dt.tz_convert("Europe/Minsk").dt.date
 
 z = lambda q: stats.norm.ppf(q)

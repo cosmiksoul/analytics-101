@@ -35,7 +35,7 @@ const out = {{ phi: {json.dumps(xs)}.map(C.Phi), inv: {json.dumps(ps)}.map(C.inv
   conv: {json.dumps(grid_c)}.map(s => C.plan(s).nA), rev: {json.dumps(grid_r)}.map(s => C.plan(s).nA) }};
 console.log(JSON.stringify(out));
 """
-r = json.loads(subprocess.run(["node", "-e", js], capture_output=True, text=True, check=True).stdout)
+r = json.loads(subprocess.run(["node", "-"], input=js, capture_output=True, text=True, check=True).stdout)
 
 print("Φ: наибольшая абсолютная ошибка", f"{max(abs(a - norm.cdf(x)) for a, x in zip(r['phi'], xs)):.1e}")
 print("Φ⁻¹: наибольшая абсолютная ошибка", f"{max(abs(a - norm.ppf(p)) for a, p in zip(r['inv'], ps)):.1e}")

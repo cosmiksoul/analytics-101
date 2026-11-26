@@ -10,8 +10,8 @@ LIFT = 0.10                                             # истинный эф�
 
 
 def simulate(seed, trend=0.0, season=0.0, campaign=None, tracking=None, dip=0.0):
-    """Учебный магазин по дням. Аудитория поделена пополам по хешу: группы A и B.
-    a — покупки A без релиза, b — покупки B с релизом, a_all — те же люди A, если релиз выкатили всем."""
+    """Учебный магазин по дням. На каждую группу приходится половина визитов за день.
+    a и b — покупки в группах A и B, a_all — покупки в A при выпуске новой версии для всех."""
     rng = np.random.default_rng(seed)
     shock = 0.02 * rng.standard_normal(42) + 0.03 * np.repeat(rng.standard_normal(6), 7)   # колебания дня и недели
     z = rng.standard_normal((2, 42))                    # шум покупок в каждой половине
@@ -21,7 +21,7 @@ def simulate(seed, trend=0.0, season=0.0, campaign=None, tracking=None, dip=0.0)
     if season:                                          # сезон: выходные и осенний спрос вокруг релиза
         p *= np.where(weekend, 0.92, 1) * (1 + season / (1 + np.exp(-(T - 27) / 4)))
     p *= np.where((T >= 21) & (T < 28), 1 - dip, 1)     # провал за неделю до релиза
-    weak = np.zeros(42)                                 # кампания: +40% визитов, покупают в 0,45 раза реже
+    weak = np.zeros(42)                                 # кампания: +40% визитов, вероятность покупки составляет 45% от обычной
     if campaign is not None:
         weak[campaign:campaign + 7] = 0.4 * visits[campaign:campaign + 7]
     seen = np.ones(42)                                  # трекинг: 20% визитов не доходят до журнала
@@ -38,7 +38,7 @@ def simulate(seed, trend=0.0, season=0.0, campaign=None, tracking=None, dip=0.0)
 def estimate(d):
     """Две оценки эффекта: «до и после» по всей аудитории и A/B по группам в одни и те же дни."""
     conv = lambda buys, days: buys[days].sum() / d.visits[days].sum()
-    everyone = (d.a_all + d.b) / 2                      # мир без эксперимента: релиз получили все
+    everyone = (d.a_all + d.b) / 2                      # сценарий с выпуском новой версии для всех
     return conv(everyone, AFTER) / conv(everyone, BEFORE) - 1, conv(d.b, AFTER) / conv(d.a, AFTER) - 1
 
 

@@ -142,12 +142,12 @@ users = pd.DataFrame({"user_id": uid, "signup_date": signup_date, "platform": pl
 
 for df, c in [(exposures, "exposed_at"), (sessions, "session_start")]:
     df[c] = pd.to_datetime(df[c]).dt.floor("s").dt.tz_localize("UTC")
-users.to_csv(P / "users.csv", index=False)
-exposures.sort_values(["experiment", "exposed_at"]).to_csv(P / "exposures.csv", index=False)
+users.to_csv(P / "users.csv", index=False, lineterminator="\n")
+exposures.sort_values(["experiment", "exposed_at"]).to_csv(P / "exposures.csv", index=False, lineterminator="\n")
 sessions = sessions.sort_values(["experiment", "session_start", "session_id"])
 sessions.to_parquet(P / "sessions.parquet", index=False)
-sessions.assign(session_start=sessions.session_start.dt.strftime("%Y-%m-%dT%H:%M:%SZ")).to_csv(P / "sessions.csv.gz", index=False)
-pre_agg.to_csv(P / "pre_period.csv", index=False)
+sessions.assign(session_start=sessions.session_start.dt.strftime("%Y-%m-%dT%H:%M:%SZ")).to_csv(P / "sessions.csv.gz", index=False, lineterminator="\n")
+pre_agg.to_csv(P / "pre_period.csv", index=False, lineterminator="\n")
 print("пользователей", N, "показов", len(exposures), "сессий в тестах", len(sessions), "предпериод", len(pre_agg))
 print(exposures.groupby(["experiment", "group"]).size().unstack())
 print("боты:", list(uid[bots]))

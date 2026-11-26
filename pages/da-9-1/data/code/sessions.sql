@@ -15,7 +15,7 @@ SELECT * FROM dedup
 WHERE anonymous_id IS NULL                   -- серверные события: устройства у них нет
    OR anonymous_id NOT IN (SELECT anonymous_id FROM bots);
 
--- 2. Пауза до предыдущего события того же устройства
+-- 2. Время, прошедшее с предыдущего события на этом устройстве
 CREATE TEMP VIEW gaps AS
 SELECT anonymous_id, event_id, event_name, event_time,
        event_time - LAG(event_time) OVER w AS gap

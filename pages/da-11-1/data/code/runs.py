@@ -2,7 +2,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# 1. Тысяча миров: в каждом свои помехи, их размер и дни заранее неизвестны
+# 1. Тысяча прогонов с разными помехами и датами их появления
 rng = np.random.default_rng(2025)
 res = []
 for run in range(1000):
@@ -29,7 +29,7 @@ print("\nсредняя ошибка, п. п.")
 print(pd.DataFrame({"все прогоны": calm[["до и после", "A/B"]].mean(),
                     "после слабых недель": calm.loc[bad, ["до и после", "A/B"]].mean()}).T.round(2).to_string())
 
-# 3. Рисунок: распределение двух оценок в тысяче миров
+# 3. Рисунок: распределение двух оценок в тысяче прогонов
 plt.rcParams.update({"svg.fonttype": "none", "font.size": 9, "axes.spines.top": False, "axes.spines.right": False})
 fig, ax = plt.subplots(figsize=(6.4, 3.3), layout="constrained")
 bins = np.arange(-20, 46, 1)
@@ -41,8 +41,8 @@ ax.annotate("истинный эффект +10%", (LIFT * 100, 288), xytext=(4, 
 ax.annotate("A/B", (13, 150), color="#0d7468", fontweight="bold")
 ax.annotate("«до и после»", (27, 22), color="#b0650a", fontweight="bold")
 ax.set(xlabel="оценка эффекта релиза, %", ylabel="прогонов из 1000", xlim=(-20, 45))
-fig.suptitle("«До и после» промахивается в обе стороны, A/B ложится у истины", x=0.02, ha="left",
+fig.suptitle("Как меняются оценки эффекта за 1 000 прогонов", x=0.02, ha="left",
              fontweight="bold", fontsize=11)
-ax.set_title("Учебная симуляция: 1000 миров со случайным трендом, сезоном, кампанией и поломкой трекинга",
+ax.set_title("Тренд, сезонность, реклама и пропущенные визиты в учебном магазине",
              loc="left", fontsize=7.5, color="#737c8f")
 fig.savefig("runs.svg")

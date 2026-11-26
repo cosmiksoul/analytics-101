@@ -346,10 +346,10 @@ ev["event_time"] = pd.to_datetime(ev["event_time"]).dt.floor("s").dt.tz_localize
 ev.to_parquet(P / "events.parquet", index=False)
 out = ev.copy()
 out["event_time"] = out["event_time"].dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-out.to_csv(P / "events.csv.gz", index=False)
+out.to_csv(P / "events.csv.gz", index=False, lineterminator="\n")
 us = pd.DataFrame(users).sort_values("user_id")
 us["signup_time"] = pd.to_datetime(us["signup_time"]).dt.floor("s").dt.tz_localize("UTC").dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-us.to_csv(P / "users.csv", index=False)
+us.to_csv(P / "users.csv", index=False, lineterminator="\n")
 
 print(ev.shape, "событий;", us.shape[0], "аккаунтов;", len(people), "человек (с героем)")
 print("герой:", hero_ids)

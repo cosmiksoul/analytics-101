@@ -1,6 +1,6 @@
 // Считает ложные победы в ста показанных тестах так же, как интерактив страницы 11.5: по данным, вшитым в page.js.
 const fs = require('fs'); const src = fs.readFileSync(process.argv[2], 'utf8');
-const m = src.match(/\/\*data:start\*\/const DATA = (\{.*?\});\n/s); const DATA = JSON.parse(m[1]); const SQ = DATA.seq;
+const m = src.match(/\/\*data:start\*\/const DATA = (\{.*?\});\r?\n/s); const DATA = JSON.parse(m[1]); const SQ = DATA.seq;
 const B64 = src.match(/const B64 = '([^']+)'/) || src.match(/B64\s*=\s*"([^"]+)"/);
 const alph = B64 ? B64[1] : 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 const dec = s => [...s].reduce((a, c) => a * 64 + alph.indexOf(c), 0);
@@ -15,3 +15,4 @@ for (const mth of ['naive', 'pocock', 'obf', 'av']) for (const K of SQ.ks) {
   if (aa !== want[0] || ab !== want[1]) { bad++; console.log('расхождение', mth, K, [aa, ab], want); }
 }
 console.log(bad ? 'ЕСТЬ РАСХОЖДЕНИЯ: ' + bad : 'счёт интерактива совпал с Python во всех 24 сочетаниях; ежедневно без поправки: ' + SQ.shown.naive[28][0] + ', Pocock ' + SQ.shown.pocock[28][0] + ', OBF ' + SQ.shown.obf[28][0] + ', always-valid ' + SQ.shown.av[28][0]);
+if (bad) process.exitCode = 1;

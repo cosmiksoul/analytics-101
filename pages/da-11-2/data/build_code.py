@@ -6,7 +6,7 @@ code/design.py, code/power_sm.py и code/simulate.py — ячейки одног
 меткой. code/design_doc.txt — шаблон документа дизайна, он не запускается.
 Код и вывод попадают в PAGE.code между /*code:start*/ и /*code:end*/.
 """
-import json, re, subprocess, sys, tempfile
+import json, re, subprocess, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -16,20 +16,18 @@ C = HERE / "code"
 
 cells = [(C / f).read_text(encoding="utf-8").rstrip() for f in ("design.py", "power_sm.py", "simulate.py")]
 src = "\n".join(f"print('<<<cell{i}>>>')\n{c}" for i, c in enumerate(cells))
-with tempfile.TemporaryDirectory() as tmp:
-    (Path(tmp) / "data").symlink_to(AB.parent)                  # путь в коде: data/ab/…
-    run = subprocess.run([sys.executable, "-c", src], cwd=tmp, capture_output=True, text=True, check=True)
+run = subprocess.run([sys.executable, "-c", src], cwd=AB.parent.parent, capture_output=True, text=True, check=True)
 assert not run.stderr.strip(), run.stderr
 outs = [o.strip("\n") for o in re.split(r"<<<cell\d>>>\n", run.stdout)[1:]]
 assert len(outs) == 3
 
 CODE = {
-    "manual": {"title": "Параметры из данных, MDE из денег и размер выборки вручную",
+    "manual": {"title": "Параметры из данных, порог окупаемости и расчёт выборки",
                "badge": "проверено: Python 3.13", "lang": "python", "code": cells[0], "out": outs[0],
                "note": "Базой служит группа A самого checkout_v2: это и есть «4 недели без изменения». В жизни её берут "
-                       "из прошлого периода той же длины. 783 ₽ — маржинальный доход обычного заказа своего товара "
+                       "из исторических данных за сопоставимый период. 783 ₽ — маржинальный доход обычного заказа своего товара "
                        "из учебной выгрузки темы 10, 5 млн ₽ — условная цена изменения."},
-    "sm": {"title": "То же в statsmodels: размер выборки, MDE по выборке, мощность по факту",
+    "sm": {"title": "То же в statsmodels: размер выборки и MDE для заданного числа участников",
            "badge": "проверено: statsmodels 0.15.0", "lang": "python", "code": cells[1], "out": outs[1],
            "note": "Ячейка продолжает предыдущую: p0, p1, mde, d_rev, sd, users уже в памяти. solve_power возвращает "
                    "nobs1 — людей в первой группе; вторая — nobs1 · ratio."},

@@ -10,14 +10,15 @@ ses = pd.read_parquet("data/ab/sessions.parquet")
 users = (ses.groupby(["experiment", "user_id"])
             .agg(conv=("converted", "max"), revenue=("revenue", "sum"))
             .reset_index()
-            .merge(exp, on=["experiment", "user_id"]))
+            .merge(exp, on=["experiment", "user_id"], how="right", validate="one_to_one")
+            .fillna({"conv": 0, "revenue": 0}))
 
-# 2. База — 4 недели без изменения: группа A checkout_v2
+# 2. Параметры завершённого checkout_v2 для учебного расчёта. До запуска берут исторические данные.
 a = users[(users.experiment == "checkout_v2") & (users.group == "A")]
 p0, mu, sd = a.conv.mean(), a.revenue.mean(), a.revenue.std()
 print(f"конверсия A: {p0:.4f}   выручка на человека: {mu:.1f} ₽, σ = {sd:.0f} ₽, σ/среднее = {sd / mu:.2f}")
 
-# 3. MDE из денег: цена пункта конверсии против цены изменения
+# 3. Выбираем целевой MDE на уровне оценённого порога окупаемости
 people = (users.experiment == "checkout_v2").sum()   # участников за 4 недели
 margin = 783                         # маржинальный доход обычного заказа, ₽ (страница 10.1)
 point = people * 0.01 * margin * 13  # +1 п. п. за год: 13 окон по 4 недели
