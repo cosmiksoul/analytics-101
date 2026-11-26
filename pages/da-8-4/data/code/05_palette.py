@@ -18,18 +18,18 @@ def lab(hex_, deut=False):
     return np.array([116 * f[1] - 16, 500 * (f[0] - f[1]), 200 * (f[1] - f[2])])
 
 def merged(pal, thr=10):
-    """Пары цветов, которые при дейтеранопии ближе thr по ΔE (CIELAB)."""
+    """Пары цветов, которые после моделирования дейтеранопии ближе thr по ΔE (CIELAB)."""
     return [f"{a}~{b}" for a, b in combinations(pal, 2)
             if np.linalg.norm(lab(a, True) - lab(b, True)) < thr]
 
 palettes = {
     "tab10 (по умолчанию)": ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
                              "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"],
-    "токены учебника": ["#2f6db5", "#d27a12", "#17895f", "#c2417a",
+    "цвета интерфейса": ["#2f6db5", "#d27a12", "#17895f", "#c2417a",
                         "#7b5bd6", "#a8860f", "#23919f"],
     "стиль учебника": plt.rcParams["axes.prop_cycle"].by_key()["color"],
     "серый + акцент": [GREY, ACCENT],
 }
 for name, pal in palettes.items():
     pairs = merged(pal)
-    print(f"{name:21} {len(pal):2} цв., сливаются {len(pairs)}: {' '.join(pairs) or '—'}")
+    print(f"{name:21} {len(pal):2} цветов, близких пар {len(pairs)}: {' '.join(pairs) or '—'}")

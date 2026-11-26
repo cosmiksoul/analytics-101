@@ -15,11 +15,11 @@ fig = px.line(by_ch, x="month", y="mln", color="channel", title="Выручка 
 fig.update_layout(separators=", ")
 fig.write_image("plain.svg")  # то, что уйдёт в письмо или на слайд
 hover = [ru(v, 2) for v in by_ch["mln"]]  # числа, которые видны только при наведении
-print("чисел в подсказках:", len(hover), "| из них на картинке:", sum(h in words("plain.svg") for h in hover))
+print("Значений выручки в подсказках:", len(hover), "| подписано на картинке:", sum(h in words("plain.svg") for h in hover))
 
 app = by_ch[by_ch["channel"] == "приложение"].set_index("month")["mln"]
-fig.update_layout(title=f"Приложение: {ru(app['2025-05'])} → {ru(app['2025-07'])} млн ₽ в месяц "
-                        "после релиза в июне 2025")
+fig.update_layout(title=f"С мая по июль 2025 года выручка приложения выросла "
+                        f"с {ru(app['2025-05'])} до {ru(app['2025-07'])} млн ₽")
 fig.add_annotation(x="2025-06", y=app["2025-06"], text="релиз", ay=-40)
 fig.write_image("titled.svg")
-print("надписи с числами:", [w for w in words("titled.svg") if "→" in w or w == "релиз"])
+print("Заголовок и отметка на графике:", [w for w in words("titled.svg") if "выручка приложения" in w or w == "релиз"])

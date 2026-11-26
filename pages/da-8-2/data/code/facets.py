@@ -15,8 +15,8 @@ g.map_dataframe(sns.lineplot, x="month", y="млн ₽", color="#0d7468")
 g.set_titles("{col_name}")
 g.set_axis_labels("", "")
 g.set(xticks=["2024-01", "2025-01"], xticklabels=["2024", "2025"], ylim=(0, None))
-g.figure.suptitle("Приложение выросло на две трети, колл-центр потерял пятую часть "
-                  "(шкалы Y у клеток разные)", x=0.02, ha="left", fontsize=8.5)
+g.figure.suptitle("Годовая выручка приложения выросла, а колл-центра снизилась "
+                  "(у каждой панели своя шкала в млн ₽)", x=0.02, ha="left", fontsize=8.5)
 g.figure.subplots_adjust(top=0.84)
 g.savefig("facets.svg")
 

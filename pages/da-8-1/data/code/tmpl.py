@@ -23,7 +23,7 @@ TEXTBOOK = {                                   # стиль учебника: о
 
 
 def yoy_chart(ax, t, title, unit="млн ₽"):
-    """Год к году: линия на каждый год, месяцы по оси X, запятая в дробях."""
+    """Сравнивает выручку по месяцам. Каждая линия соответствует одному году."""
     for year in t.columns:
         ax.plot(t.index, t[year], label=year, linewidth=2.5 if year == t.columns[-1] else 1.5)
     ax.set_xticks(t.index, MONTHS)
@@ -46,6 +46,6 @@ with plt.style.context(TEXTBOOK):              # стиль действует �
         fig, ax = plt.subplots()
         yoy_chart(ax, tc, f"{ch.capitalize()}: {delta} к 2024 году")
         fig.savefig(f"charts/{i:02d}.png")
-        plt.close(fig)                         # десятки фигур не копятся в памяти
+        plt.close(fig)                         # освобождаем память после сохранения
         print(f"charts/{i:02d}.png  {ax.get_title(loc='left')}")
 print("открытых фигур:", len(plt.get_fignums()))

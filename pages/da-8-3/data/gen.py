@@ -23,8 +23,8 @@ share25 = (sales[sales["month"] >= "2025-01"].groupby("channel")["revenue"].sum(
 DATA = {
     "months": wide.index.tolist(),
     "ch": TOP5,
-    "y": [[round(v / 1e6, 2) for v in wide[c]] for c in TOP5],                 # млн ₽
-    "share": [[round(v, 3) for v in wide[c] / total] for c in TOP5],           # доля в выручке месяца (10 каналов)
+    "y": [(wide[c] / 1e6).tolist() for c in TOP5],                             # округляем при показе
+    "share": [(wide[c] / total).tolist() for c in TOP5],                       # доля в выручке всех десяти каналов
     "top5_2025": round(float(share25[TOP5].sum()), 3),                        # доля пяти каналов в выручке 2025
     "rows": int(len(sales)),
 }

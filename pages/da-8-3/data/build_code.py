@@ -22,27 +22,29 @@ NOTEBOOKS = {
     "code": ["express", "hover", "anim", "export"],
 }
 META = {
-    "weight": ("Миллион точек — 26 МБ данных даже без библиотеки", "проверено: Python 3.13, NumPy 2.5.3, plotly 7.1.0",
-               "С <code>include_plotlyjs=True</code> к каждой строке прибавьте ещё {full_mb} МБ библиотеки. Числа хранятся "
-               "в JSON как двоичные массивы в base64, поэтому байтов на точку почти не зависит от того, какие это числа."),
-    "title": ("Из 120 чисел подсказок на картинку не попало ни одного", PX + ", kaleido 1.5.0",
-              "Надписи ищутся в SVG из kaleido: всё, что plotly.js нарисовал текстом, лежит там в тегах &lt;text&gt;."),
-    "a11y": ("Легенда под графиком, свайп без рамки и текст вместо наведения", PX,
+    "weight": ("HTML с миллионом точек занимает около 26 МБ без библиотеки", "проверено: Python 3.13, NumPy 2.5.3, plotly 7.1.0",
+               "При <code>include_plotlyjs=True</code> в каждый файл добавится около {full_mb} МБ. В этом примере "
+               "у точки две числовые координаты. Дополнительные подписи и столбцы увеличат размер файла."),
+    "title": ("На графике по умолчанию не подписано ни одно из 120 значений выручки", PX + ", kaleido 1.5.0",
+              "Код ищет округлённые значения выручки в текстовых элементах SVG, а затем проверяет заголовок и подпись к июньской точке."),
+    "a11y": ("Выручку по месяцам можно прочитать в таблице под графиком", PX,
              "{touch}"),
-    "express": ("Пять каналов — пять трасс, а подсказку px собрал из подписей", PX, None),
-    "hover": ("Подсказка говорит по-русски: месяц словами, запятая и доля месяца", PX,
+    "express": ("Каждому из пяти каналов соответствует отдельная линия", PX, None),
+    "hover": ("В подсказке видны выручка канала и его доля в продажах магазина", PX,
               "{hover}"),
-    "anim": ("24 кадра, кнопки ▶ и ◼ и ползунок по месяцам", PX,
+    "anim": ("В анимации можно выбрать любой из 24 месяцев", PX,
              "<code>&amp;#9654;</code> и <code>&amp;#9724;</code> — коды символов ▶ и ◼ в HTML. {anim}"),
-    "export": ("Файл с библиотекой весит {full_mb} МБ, сама фигура — {json_kb} КБ", PX + ", kaleido 1.5.0",
-               "Рисунок ниже — <code>channels.svg</code> из этого блока, вставлен в страницу без правок."),
+    "export": ("HTML с библиотекой занимает {full_mb} МБ, а описание графика в JSON — около {json_kb} КБ", PX + ", kaleido 1.5.0",
+               "Ниже показан график из файла <code>channels.svg</code>, который создаёт этот пример."),
 }
 
 
-def run_notebook(keys):
+def run_notebook(keys, checks):
     out = {}
     with tempfile.TemporaryDirectory() as tmp:
-        os.symlink(PAGE.parents[1] / "data", Path(tmp) / "data")     # путь в коде: data/viz/sales_monthly.csv
+        target = Path(tmp) / "data" / "viz"
+        target.mkdir(parents=True)
+        shutil.copy(VIZ / "sales_monthly.csv", target)
         cwd = os.getcwd(); os.chdir(tmp)
         ns = {"__name__": "__main__"}
         try:
@@ -57,15 +59,15 @@ def run_notebook(keys):
             if "export" in keys:
                 extra["svg"] = Path("channels.svg").read_bytes()
                 extra["sizes"] = {f: os.path.getsize(f) for f in ["channels.html", "channels_cdn.html", "channels.json", "channels.png", "channels.svg"]}
-                shutil.copy("channels.html", PAGE / "data" / "_hover_check.html")
+                shutil.copy("channels.html", checks / "_hover_check.html")
                 ns["px"].bar(ns["by_ch"], x="channel", y="mln", color="channel", animation_frame="month",
-                             category_orders={"channel": ns["top5"]}).write_html(PAGE / "data" / "_anim_check.html")
+                             category_orders={"channel": ns["top5"]}).write_html(checks / "_anim_check.html")
             if "a11y" in keys:
                 fig = ns["fig"]
                 for name, dm in [("zoom", "zoom"), ("off", False)]:
                     fig.update_layout(dragmode=dm, height=480)
                     body = fig.to_html(include_plotlyjs=True, full_html=False, config={"displayModeBar": False})
-                    (PAGE / "data" / f"_touch_{name}.html").write_text(
+                    (checks / f"_touch_{name}.html").write_text(
                         "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width'></head>"
                         f"<body><div style='height:300px'></div>{body}<div style='height:2000px'></div></body></html>", encoding="utf-8")
         finally:
@@ -74,30 +76,27 @@ def run_notebook(keys):
 
 
 code, sizes, svg = {}, {}, b""
-for nb, keys in NOTEBOOKS.items():
-    res, extra = run_notebook(keys)
-    for k, (src, out) in res.items():
-        code[k] = {"src": src, "out": out}
-    sizes.update(extra.get("sizes", {}))
-    svg = extra.get("svg", svg)
-
-# проверка в браузере настоящим plotly.js
-chk = json.loads(subprocess.run(["node", str(HERE / "check_browser.js"), str(HERE)], capture_output=True, text=True, check=True).stdout)
-for f in ["_hover_check.html", "_touch_zoom.html", "_touch_off.html", "_anim_check.html"]:
-    (HERE / f).unlink()
+with tempfile.TemporaryDirectory() as work:
+    for keys in NOTEBOOKS.values():
+        res, extra = run_notebook(keys, Path(work))
+        for k, (src, out) in res.items():
+            code[k] = {"src": src, "out": out}
+        sizes.update(extra.get("sizes", {}))
+        svg = extra.get("svg", svg)
+    chk = json.loads(subprocess.check_output(["node", str(HERE / "check_browser.js"), work], encoding="utf-8"))
 print("браузер:", chk)
 fmt = {
     "full_mb": f"{sizes['channels.html'] / 1024 / 1024:.1f}".replace(".", ","),
     "json_kb": f"{sizes['channels.json'] / 1024:.0f}",
-    "hover": "Проверено в Chromium настоящим plotly.js из <code>channels.html</code>: подсказка у приложения в июле 2025 — "
+    "hover": "В Chromium подсказка для приложения за июль 2025 года содержит две строки — "
              f"«{chk['hover'][0]}» и строкой ниже «{chk['hover'][1]}». "
-             "У маркетплейса за июль 2025 в подсказке 5,71, а в таблице pandas из нюанса про телефон — 5,72: выручка 5 715 000 ₽ стоит ровно посередине, "
-             "и JavaScript с pandas округляют её в разные стороны.",
-    "anim": "Без <code>range_y</code> диапазон оси в фигуре не записан, и plotly.js подбирает его сам: при проигрывании кнопкой ▶ "
-            f"в Chromium верх оси сдвинулся с {chk['anim'][0]} до {chk['anim'][1]} млн ₽, и одна высота столбика в разных кадрах значила бы разные деньги.",
-    "touch": "Проверено в Chromium на эмуляции Pixel 5: со стандартным <code>dragmode</code> вертикальный свайп по графику "
-             f"приблизил {chk['zoom']['range']} и не прокрутил страницу, "
-             f"с <code>dragmode=False</code> страница прокрутилась{'' if chk['off']['scroll'] > 100 else ' (не прокрутилась!)'}, а оси остались прежними.",
+             "Выручка маркетплейса за тот же месяц составила 5 715 000 ₽. При округлении до сотых миллиона "
+             "в подсказке Plotly получилось 5,71, а в таблице pandas — 5,72.",
+    "anim": "В проверке без <code>range_y</code> верхняя граница шкалы за время показа изменилась "
+            f"с {chk['anim'][0]} до {chk['anim'][1]} млн ₽. В основном примере шкала фиксирована.",
+    "touch": "В Chromium в режиме эмуляции Pixel 5 вертикальный жест по графику менял масштаб. "
+             "После отключения перетаскивания тот же жест прокручивал страницу. В файле <code>mobile.html</code> "
+             "есть описание графика и таблица за все 24 месяца. Их можно прочитать, даже если библиотека не загрузилась.",
 }
 CODE = {}
 for k, (title, badge, note) in META.items():
@@ -123,10 +122,10 @@ for i, uid in enumerate(dict.fromkeys(re.findall(rb"trace([0-9a-f]{6})", svg))):
     svg = svg.replace(b"trace" + uid, b"trace" + b"d83t%d" % i)
 uri = "data:image/svg+xml;base64," + base64.b64encode(svg).decode()
 fig_html = ('<!--fig:export:start--><figure class="d83-fig wide"><img src="' + uri + '" width="900" height="480" '
-            'alt="Линейный график Plotly: выручка пяти каналов по месяцам 2024–2025, линия приложения после июня 2025 '
-            'поднимается с 3 до 6 млн ₽ и обгоняет маркетплейс; заголовок «Приложение удвоило выручку после релиза в июне 2025»">'
-            '<figcaption><b>Вывод кода выше: статичный экспорт через kaleido.</b> Тот же график, что в интерактивной версии, '
-            'но подсказки, легенда и рамка здесь больше не работают. SVG, ' + f'{SIZES["svg_kb"]:.1f}'.replace(".", ",") + '&nbsp;КБ.'
+            'alt="Выручка пяти каналов в 2024–2025 годах. С мая по июль 2025 года выручка приложения выросла '
+            'с 2,98 до 5,91 млн ₽ и в июле впервые превысила выручку маркетплейса.">'
+            '<figcaption>С мая по июль 2025 года выручка приложения почти удвоилась. Заголовок сохраняется и в '
+            'статическом файле SVG размером ' + f'{SIZES["svg_kb"]:.1f}'.replace(".", ",") + '&nbsp;КБ.'
             '</figcaption></figure><!--fig:export:end-->')
 a = re.sub(r"<!--fig:export:start-->.*?<!--fig:export:end-->", lambda _: fig_html, a, flags=re.S)
 art.write_text(a, encoding="utf-8")

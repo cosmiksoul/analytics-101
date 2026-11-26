@@ -22,23 +22,23 @@ RUN = HERE / "run"
 BASE = "проверено: Python 3.13, pandas 3.0.5, matplotlib 3.10.0"
 BLOCKS = [
     # ключ, файл, заголовок, бейдж, svg, подпись к рисунку
-    ("highlight", "01_highlight.py", "Выделить одну серию: девять линий уходят в фон, одна — в цвет", BASE,
-     "highlight.svg", "Вывод кода выше: десять каналов, в цвете только приложение"),
-    ("labels", "02_labels.py", "Прямые подписи: имя у конца линии, близкие подписи раздвинуты", BASE,
-     "labels.svg", "Вывод кода выше: легенды нет, каждая линия подписана там, где кончается"),
-    ("annotate", "03_annotate.py", "Аннотация события и заголовок, который сначала проверен числами", BASE,
-     "annotated.svg", "Вывод кода выше: событие, заголовок-вывод, единицы и источник"),
+    ("highlight", "01_highlight.py", "Как выделить выручку приложения", BASE,
+     "highlight.svg", "Синим выделена месячная выручка приложения, серым — остальных девяти каналов"),
+    ("labels", "02_labels.py", "Как разместить подписи у правых концов линий", BASE,
+     "labels.svg", "Названия у правого края показывают, какому каналу принадлежит каждая линия"),
+    ("annotate", "03_annotate.py", "Как проверить заголовок и отметить месяц обновления", BASE,
+     "annotated.svg", "С мая по июль 2025 года выручка приложения выросла с 2,98 до 5,91 млн ₽"),
     ("style_file", "textbook.mplstyle", "Файл стиля textbook.mplstyle: всё оформление в одном месте", "проверено: matplotlib 3.10.0, подключается в блоке ниже",
      None, None),
     ("style", "04_style.py", "Стиль подключается одной строкой и действует на все графики", BASE,
-     "styled.svg", "Вывод кода выше: тот же график, оформление — из файла стиля"),
-    ("palette", "05_palette.py", "Палитра под дейтеранопией: у tab10 сливаются четыре пары, у стиля учебника — ни одной", BASE + ", NumPy 2.5.3",
+     "styled.svg", "Параметры оформления графика загружены из textbook.mplstyle"),
+    ("palette", "05_palette.py", "В модели дейтеранопии четыре пары оттенков tab10 близки по цвету", BASE + ", NumPy 2.5.3",
      None, None),
 ]
 
 NOTES = {  # откуда блок берёт имена, определённые выше (блоки идут как ячейки одного ноутбука)
-    "labels": "Продолжение первого блока: highlight, wide, ACCENT, plt и pd — оттуда.",
-    "annotate": "Продолжение: highlight, label_ends и wide — из блоков выше.",
+    "labels": "Выполните первый блок, чтобы определить highlight, wide, ACCENT, plt и pd.",
+    "annotate": "Функции highlight и label_ends и таблица wide определены в предыдущих блоках.",
     "style": "Продолжение: highlight, label_ends, wide и release — из блоков выше; файл textbook.mplstyle должен лежать в рабочей папке.",
     "palette": "Продолжение: plt, GREY и ACCENT — из первого блока, палитра стиля — из подключённого textbook.mplstyle.",
 }
@@ -55,7 +55,7 @@ def minify_svg(svg: str, key: str, label: str) -> str:
     def path_d(m):  # координаты линий — до целых: на экране это доли пикселя
         d = re.sub(r"-?\d+(?:\.\d+)?", lambda n: str(round(float(n.group()))), m.group(1))
         return 'd="' + re.sub(r"\s*([MLZz])\s*", r"\1", d).strip() + '"'
-    svg = re.sub(r'd="([^"]*)"', path_d, svg)
+    svg = re.sub(r'(?<=\s)d="([^"]*)"', path_d, svg)
     svg = re.sub(r"-?\d+\.\d+", lambda m: f"{float(m.group()):.1f}".rstrip("0").rstrip("."), svg)
     svg = re.sub(r";\s*stroke-linecap: square|stroke-linecap: square;?\s*", "", svg)
     svg = re.sub(r"font-family: [^;\"]*;?\s*", "", svg)

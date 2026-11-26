@@ -6,7 +6,7 @@ plt.rcParams["svg.fonttype"] = "none"  # текст в SVG остаётся те
 GREY, ACCENT = "#BBBBBB", "#0072B2"  # фон и акцент: синий из палитры Окабе — Ито
 
 def highlight(ax, wide, key):
-    """Все столбцы wide — серым фоном, столбец key — цветом поверх них."""
+    """Выделяет линию key цветом и рисует её поверх остальных линий."""
     for name, s in wide.items():
         on = name == key
         ax.plot(s.index, s.values, color=ACCENT if on else GREY,

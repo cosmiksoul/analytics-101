@@ -1,4 +1,4 @@
-# Нюанс 4: две оси Y рисуют любую связь — проверяем на двух заведомо несвязанных рядах
+# Нюанс 4: пределы правой оси меняют видимую амплитуду случайного ряда
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -10,8 +10,8 @@ noise = 100 + np.random.default_rng(8).normal(0, 3, 24).cumsum()  # случай
 x = np.arange(24)
 
 fig, axes = plt.subplots(1, 2, figsize=(6.4, 2.2), layout="constrained")
-limits = {"Подогнали правую ось: «растут вместе»": (noise.min() - 1, noise.max() + 1),
-          "Сдвинули правую ось: «связи нет»": (0, 220)}
+limits = {"Правая ось в пределах случайного ряда": (noise.min() - 1, noise.max() + 1),
+          "Правая ось от 0 до 220": (0, 220)}
 for ax, (title, lim) in zip(axes, limits.items()):
     ax.plot(x, sales.values, color="#0d7468", linewidth=1.4)
     ax.set_ylabel("выручка, млн ₽", color="#0d7468")

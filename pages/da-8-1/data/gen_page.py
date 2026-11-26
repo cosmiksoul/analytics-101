@@ -112,6 +112,9 @@ def compact(s):
         root.set("text-anchor", common[1])
         for t in texts:
             st = style_of(t)
+            # У строк многострочного заголовка Matplotlib задаёт координаты левого края.
+            if "text-anchor" not in st and common[1] != "start":
+                t.set("text-anchor", "start")
             if (st.get("font-size"), st.get("text-anchor")) == common:
                 st.pop("font-size"); st.pop("text-anchor")
                 if st:
@@ -126,7 +129,10 @@ def compact(s):
 
 # ---------------------------------------------------------------- 1. анатомия
 tmp = Path(tempfile.mkdtemp())
-(tmp / "data").symlink_to(ROOT / "data")      # пути в коде: data/viz/… и data/eda/…
+for relative in ("viz/sales_monthly.csv", "eda/daily_metrics.csv"):
+    target = tmp / "data" / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(ROOT / "data" / relative, target)
 
 
 def run(block, prelude=False, merge=False):
@@ -195,7 +201,7 @@ legend.set_gid("mp-legend")
 buf = io.StringIO()
 with matplotlib.rc_context({"svg.fonttype": "none", "svg.hashsalt": "da-8-1"}):
     fig.savefig(buf, format="svg", metadata={"Date": None})
-ana_svg = clean_svg(buf.getvalue(), "ANA-", label="График «2025-й выше 2024-го в каждом месяце»: две линии выручки по месяцам")
+ana_svg = clean_svg(buf.getvalue(), "ANA-", label="Месячная выручка в 2024 и 2025 годах. В каждом месяце выручка за 2025 год выше.")
 for gid in ["fig", "axes", "xaxis", "yaxis", "l2024", "l2025", "title", "ylabel", "legend", "grid-0", "sp-left"]:
     assert f'id="ANA-{gid}"' in ana_svg, gid
 
@@ -237,15 +243,15 @@ DATA = {
 B = "проверено: Python 3.13, matplotlib 3.10.0"
 BLOCKS = {
     # ключ: (заголовок, бейдж, prelude, номер SVG для рисунка или None, подпись вывода)
-    "pub": ("С нуля до публикации: данные → фигура → оси → подписи → файл", B + ", pandas 3.0.5", False, 2, None),
-    "grid": ("Сетка 2 × 2: четыре типа графика и общая ось у каждого столбца", B, True, 1, None),
-    "tmpl": ("Функция-шаблон и стиль учебника: десять одинаковых графиков за один цикл", B, True, 7, None),
-    "sns": ("Тот же график в pandas и seaborn: обе обёртки возвращают Axes", "проверено: Python 3.13, matplotlib 3.10.0, seaborn 0.13.2", True, 1, None),
-    "dpi": ("Один figsize, разные dpi: сколько пикселей в PNG", B, True, None, None),
-    "fonts": ("Кириллица: шрифта нет — подмена, глифа нет — квадратики", B, True, None,
-              "Вывод: stdout и предупреждения; повторы строки про Arial свёрнуты, пути к файлу убраны"),
-    "dates": ("Даты на оси: строки против дат", B + ", pandas 3.0.5", True, 1, None),
-    "twice": ("Второй plt.plot ложится на первый график", B, True, 2, None),
+    "pub": ("Как подготовить график выручки для публикации", B + ", pandas 3.0.5", False, 2, None),
+    "grid": ("Как разместить четыре графика на одной фигуре", B, True, 1, None),
+    "tmpl": ("Как построить десять графиков в одном стиле", B, True, 7, None),
+    "sns": ("Как построить один и тот же график с помощью pandas и seaborn", "проверено: Python 3.13, matplotlib 3.10.0, seaborn 0.13.2", True, 1, None),
+    "dpi": ("Как разрешение влияет на размер PNG", B, True, None, None),
+    "fonts": ("Что происходит, если нет шрифта или нужного символа", B, True, None,
+              "Вывод программы и предупреждения Matplotlib. Повторяющиеся сообщения показаны один раз."),
+    "dates": ("Как показать пропущенные дни на оси времени", B + ", pandas 3.0.5", True, 1, None),
+    "twice": ("Почему в файле за 2025 год оказались обе линии", B, True, 2, None),
 }
 CODE_OUT, FIGS = {}, {}
 for key, (title, badge, prelude, svg_n, olabel) in BLOCKS.items():
@@ -253,9 +259,9 @@ for key, (title, badge, prelude, svg_n, olabel) in BLOCKS.items():
     if key == "fonts":
         lines, res = out.split("\n"), []
         for l in lines:
-            if l.strip() == "fig.canvas.draw()":
+            if l.strip() in ("fig.canvas.draw()", "fig, ax = plt.subplots()"):
                 continue
-            l = re.sub(r"^\S*/(fonts\.py:\d+:)", r"\1", l)
+            l = re.sub(r"^.*[\\/](fonts\.py:\d+:)", r"\1", l)
             if res and res[-1][0] == l:
                 res[-1][1] += 1
             else:

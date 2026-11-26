@@ -8,12 +8,12 @@ df = pd.read_csv("data/viz/sales_monthly.csv")
 s = df[df["month"].str.startswith("2025")].groupby("channel")["revenue"].sum().div(1e6)
 
 fig, (a, b) = plt.subplots(1, 2, figsize=(6.4, 2.3), layout="constrained")
-abc = s.sort_index(ascending=False)                    # барх рисует снизу вверх: «а» окажется наверху
+abc = s.sort_index(ascending=False)                    # barh располагает категории снизу вверх
 a.barh(abc.index, abc.values, color="#9aa3b2")
-a.set_title("По алфавиту: место надо искать", loc="left", fontsize=8.5)
+a.set_title("Каналы по алфавиту", loc="left", fontsize=8.5)
 val = s.sort_values()
 b.barh(val.index, val.values, color="#0d7468")
-b.set_title("По убыванию: порядок сразу", loc="left", fontsize=8.5)
+b.set_title("Каналы по убыванию выручки", loc="left", fontsize=8.5)
 for ax in (a, b):
     ax.set_xlabel("выручка за 2025 год, млн ₽")
 fig.savefig("nu_sort.svg")

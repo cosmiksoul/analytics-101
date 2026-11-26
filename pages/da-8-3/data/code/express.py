@@ -12,10 +12,10 @@ print(by_ch.head(3).to_string(index=False))
 fig = px.line(by_ch, x="month", y="mln", color="channel",   # столбец → роль на графике
               category_orders={"channel": top5},             # порядок в легенде
               labels={"month": "месяц", "mln": "млн ₽", "channel": "канал"},
-              title="Приложение удвоило выручку после релиза в июне 2025")
+              title="С мая по июль 2025 года выручка приложения почти удвоилась")
 fig.update_xaxes(tickformat="%m.%Y")  # 01.2025 вместо Jan 2025
 
 app = fig.data[2]
-print(type(fig).__name__, "из", len(fig.data), "трасс;", app.type, app.name, len(app.x), "точки")
-print(list(fig.to_dict()), "— в браузер уходит этот словарь в виде JSON")
+print(f"{type(fig).__name__}: трасс — {len(fig.data)}; у трассы «{app.name}» тип {app.type}, точек — {len(app.x)}")
+print("Разделы описания графика:", list(fig.to_dict()))
 print(app.hovertemplate)

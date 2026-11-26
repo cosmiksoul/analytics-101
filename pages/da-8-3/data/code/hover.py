@@ -4,9 +4,9 @@ by_ch["month_ru"] = [f"{MONTHS[int(m[5:]) - 1]} {m[:4]}" for m in by_ch["month"]
 by_ch["share"] = by_ch["revenue"] / by_ch["month"].map(total)
 
 fig = px.line(by_ch, x="month", y="mln", color="channel", category_orders={"channel": top5},
-              custom_data=["month_ru", "share"],  # столбцы, которые нужны только подсказке
+              custom_data=["month_ru", "share"],  # дополнительные значения для каждой точки
               labels={"month": "месяц", "mln": "млн ₽", "channel": "канал"},
-              title="Приложение удвоило выручку после релиза в июне 2025")
+              title="С мая по июль 2025 года выручка приложения почти удвоилась")
 fig.update_traces(hovertemplate="<b>%{fullData.name}</b> · %{customdata[0]}<br>"
                                 "%{y:.2f} млн ₽ · %{customdata[1]:.0%} выручки месяца"
                                 "<extra></extra>")  # пустой extra убирает второй ярлык с именем

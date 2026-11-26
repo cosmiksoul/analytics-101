@@ -9,10 +9,10 @@ c = df[df["month"].str.startswith("2025")].groupby("country")["revenue"].sum().d
 
 fig, (a, b) = plt.subplots(1, 2, figsize=(6.4, 1.9), layout="constrained")
 a.barh(c.index, c.values, color="#0d7468")
-a.set_title(f"С нуля: BY больше UZ в {c['BY'] / c['UZ']:.1f} раза".replace(".", ","), loc="left", fontsize=8.5)
+a.set_title(f"От нуля: отношение длин {c['BY'] / c['UZ']:.1f}".replace(".", ","), loc="left", fontsize=8.5)
 b.barh(c.index, c.values, color="#bf3a2e")
 b.set_xlim(40, None)                                   # ось с 40 млн ₽
-b.set_title(f"С 40 млн: кажется, что в {(c['BY'] - 40) / (c['UZ'] - 40):.0f} раз", loc="left", fontsize=8.5)
+b.set_title(f"От 40 млн ₽: отношение длин {(c['BY'] - 40) / (c['UZ'] - 40):.1f}".replace(".", ","), loc="left", fontsize=8.5)
 for ax in (a, b):
     ax.set_xlabel("выручка за 2025 год, млн ₽")
 fig.savefig("nu_zero.svg")

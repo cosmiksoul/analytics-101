@@ -21,8 +21,8 @@ def build(m):
     # оба кода «Анатомии» страница берёт из data/code/ и вставляет в интерактив; в ноутбук идут те же файлы
     code = m.pdir / "data" / "code"
     js = (m.pdir / "page.js").read_text("utf-8")
-    for key, title in (("anatomy_oo", "Объектный стиль: фигура и оси названы явно"),
-                       ("anatomy_pyplot", "Стиль pyplot: команды обращаются к текущим фигуре и осям")):
+    for key, title in (("anatomy_oo", "Объектный интерфейс Matplotlib"),
+                       ("anatomy_pyplot", "Работа с текущей фигурой через pyplot")):
         src = (code / f"{key}.py").read_text("utf-8").rstrip()
         m.code[key] = {"title": title, "code": src, "out": ""}
         m.check(f"код «{key}» в ноутбуке тот же, что в интерактиве страницы", json.dumps(src, ensure_ascii=False) in js)
@@ -59,8 +59,8 @@ def build(m):
     m.same("matplotlib_anatomy.ipynb: блок «fonts», строки вывода без предупреждений", so, "\n".join(page))
     glyphs = set(re.findall(r"Glyph (\d+) ", se))
     page_glyphs = set(re.findall(r"Glyph (\d+) ", m.page_out("fonts")))
-    m.check("блок «fonts»: Arial не найден и заменён на DejaVu Sans; в cmr10 нет тех же 11 знаков, что на странице",
-            "Font family 'Arial' not found." in se and "Falling back to DejaVu Sans." in se
+    m.check("блок «fonts»: Analytics101MissingFont не найден и заменён на DejaVu Sans; в cmr10 нет тех же 11 знаков, что на странице",
+            "Font family 'Analytics101MissingFont' not found." in se and "Falling back to DejaVu Sans." in se
             and glyphs == page_glyphs and len(glyphs) == 11, f"{sorted(glyphs)} / {sorted(page_glyphs)}\n{se[:600]}")
 
     two = [c for c in cells if 'plt.savefig("y2025.png")' in c.source][-1]

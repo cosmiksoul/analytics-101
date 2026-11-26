@@ -1486,25 +1486,25 @@
   "da-8-1": {
    "file": "da-8-1-matplotlib-anatomy",
    "zip": "materials/da-8-1-matplotlib-anatomy.zip",
-   "zipBytes": 435187,
+   "zipBytes": 444210,
    "files": [
     {
      "path": "materials/da-8-1-matplotlib-anatomy/README.md",
      "name": "README.md",
-     "bytes": 1677,
+     "bytes": 1629,
      "about": ""
     },
     {
      "path": "materials/da-8-1-matplotlib-anatomy/da-8-1-matplotlib-anatomy.md",
      "name": "da-8-1-matplotlib-anatomy.md",
-     "bytes": 46597,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 50400,
+     "about": "Текст урока с примерами кода, вопросами и глоссарием"
     },
     {
      "path": "materials/da-8-1-matplotlib-anatomy/matplotlib_anatomy.ipynb",
      "name": "matplotlib_anatomy.ipynb",
-     "bytes": 598289,
-     "about": "Ноутбук: оба кода «Анатомии», блоки раздела «Код» и нюансы по ячейкам"
+     "bytes": 610717,
+     "about": "Ноутбук с обоими вариантами кода из интерактива и всеми примерами урока"
     }
    ],
    "shared": [
@@ -1515,31 +1515,31 @@
   "da-8-2": {
    "file": "da-8-2-chart-types",
    "zip": "materials/da-8-2-chart-types.zip",
-   "zipBytes": 132160,
+   "zipBytes": 132370,
    "files": [
     {
      "path": "materials/da-8-2-chart-types/README.md",
      "name": "README.md",
-     "bytes": 1535,
+     "bytes": 1447,
      "about": ""
     },
     {
      "path": "materials/da-8-2-chart-types/chart_types.ipynb",
      "name": "chart_types.ipynb",
-     "bytes": 159105,
-     "about": "Три блока кода страницы с рисунками: вопрос → график, FacetGrid, круг в столбцы"
+     "bytes": 160086,
+     "about": "Ноутбук с тремя примерами и рисунками выручки по каналам"
     },
     {
      "path": "materials/da-8-2-chart-types/da-8-2-chart-types.md",
      "name": "da-8-2-chart-types.md",
-     "bytes": 41244,
+     "bytes": 42378,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-8-2-chart-types/nuances.py",
      "name": "nuances.py",
-     "bytes": 7808,
-     "about": "Четыре рисунка нюансов: ось с нуля, сортировка, число категорий, две оси Y"
+     "bytes": 7783,
+     "about": "Скрипт для четырёх рисунков о шкалах, порядке и числе категорий"
     }
    ],
    "shared": [
@@ -1549,25 +1549,25 @@
   "da-8-3": {
    "file": "da-8-3-plotly",
    "zip": "materials/da-8-3-plotly.zip",
-   "zipBytes": 35250,
+   "zipBytes": 35768,
    "files": [
     {
      "path": "materials/da-8-3-plotly/README.md",
      "name": "README.md",
-     "bytes": 1368,
+     "bytes": 1397,
      "about": ""
     },
     {
      "path": "materials/da-8-3-plotly/da-8-3-plotly.md",
      "name": "da-8-3-plotly.md",
-     "bytes": 42759,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 46266,
+     "about": "Текст урока, примеры кода, вопросы и глоссарий в Markdown"
     },
     {
      "path": "materials/da-8-3-plotly/plotly_channels.ipynb",
      "name": "plotly_channels.ipynb",
-     "bytes": 200142,
-     "about": "Ноутбук с блоками кода страницы: px, подсказка, анимация, экспорт и нюансы"
+     "bytes": 201470,
+     "about": "Семь примеров на Python с графиками Plotly, экспортом и таблицей выручки"
     }
    ],
    "shared": [
@@ -1577,24 +1577,24 @@
   "da-8-4": {
    "file": "da-8-4-chart-argument",
    "zip": "materials/da-8-4-chart-argument.zip",
-   "zipBytes": 190594,
+   "zipBytes": 190037,
    "files": [
     {
      "path": "materials/da-8-4-chart-argument/README.md",
      "name": "README.md",
-     "bytes": 1529,
+     "bytes": 1554,
      "about": ""
     },
     {
      "path": "materials/da-8-4-chart-argument/chart_argument.ipynb",
      "name": "chart_argument.ipynb",
-     "bytes": 240002,
+     "bytes": 238333,
      "about": "Блоки кода страницы одним ноутбуком: выделение серии, подписи, аннотация, стиль, проверка палитры"
     },
     {
      "path": "materials/da-8-4-chart-argument/da-8-4-chart-argument.md",
      "name": "da-8-4-chart-argument.md",
-     "bytes": 42523,
+     "bytes": 42641,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
@@ -2008,15 +2008,15 @@
   },
   "viz": {
    "zip": "materials/data-viz.zip",
-   "zipBytes": 8167,
+   "zipBytes": 7979,
    "files": [
     {
      "path": "materials/data/viz/README.md",
-     "bytes": 3104
+     "bytes": 2859
     },
     {
      "path": "materials/data/viz/gen.py",
-     "bytes": 2353
+     "bytes": 2442
     },
     {
      "path": "materials/data/viz/sales_monthly.csv",

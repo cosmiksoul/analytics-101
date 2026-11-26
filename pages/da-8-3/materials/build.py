@@ -8,16 +8,20 @@ MADE = ["channels.html", "channels_cdn.html", "channels.json", "channels.png", "
 
 def build(m):
     m.use_data("viz")
-    m.versions = "Код проверен на Python 3.13, NumPy 2.5, pandas 3.0, plotly 7.1 и kaleido 1.5; для PNG и SVG нужен Chrome."
+    m.versions = "Код проверен на Python 3.13 с NumPy 2.5, pandas 3.0, Plotly 7.1 и Kaleido 1.5. Для сохранения PNG и SVG нужен Chrome или Chromium."
 
     nb = m.notebook("plotly_channels.ipynb", "plotly_channels.nb.py", "main")
     made = [n for n in MADE if (m.work / n).exists()]
-    m.check("ноутбук сохранил в рабочую папку девять файлов, которые называет его первая ячейка", made == MADE, str(made))
+    m.check("ноутбук сохранил в рабочую папку девять файлов, перечисленных в разделе «Где лежат данные»", made == MADE, str(made))
     mb = lambda n: (m.work / n).stat().st_size / 1024 / 1024 if (m.work / n).exists() else 0
     m.check("channels.html с библиотекой весит почти 5 МБ, points.html с миллионом точек — 26 МБ, как сказано в ноутбуке",
             4.4 < mb("channels.html") < 5 and 25.5 < mb("points.html") < 26.5, f"{mb('channels.html'):.2f} и {mb('points.html'):.2f} МБ")
     m.from_reader_folder("plotly_channels.ipynb")
     m.check("ноутбук не оставил файлы экспорта в материалах страницы", not any((m.out / n).exists() for n in MADE))
+    mobile = (m.work / "mobile.html").read_text(encoding="utf-8")
+    m.check("сохранённая версия для телефона содержит описание и таблицу выручки за 24 месяца",
+            "График показывает выручку пяти каналов" in mobile
+            and mobile.split("<tbody>")[-1].split("</tbody>")[0].count("<tr>") == 24)
 
     shows = [c for c in nb.cells if c.cell_type == "code" and c.source.startswith(("fig.show(", "fig_a.show("))]
     kinds = [sorted(o["data"]) for c in shows for o in c.outputs if o.output_type == "display_data"]

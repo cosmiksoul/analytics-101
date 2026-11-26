@@ -27,22 +27,22 @@ def chart_for(question, ax):
         ax.hist(wide.to_numpy().ravel(), bins=np.arange(0, 11.5, 0.5),
                 color=ACC, edgecolor="white", linewidth=0.5)
         ax.set_xlabel("выручка канала за месяц, млн ₽")
-        ax.set_ylabel("месяцев")
+        ax.set_ylabel("число наблюдений")
     elif question == "связь":          # меняется ли одно вместе с другим → рассеяние
         ax.scatter(y24.to_numpy().ravel(), y25.to_numpy().ravel(), s=7, color=ACC)
         ax.axline((0, 0), slope=1, color=GREY, linewidth=0.8)  # линия «2025 = 2024»
-        ax.set_xlabel("месяц 2024 года, млн ₽")
-        ax.set_ylabel("тот же месяц 2025-го, млн ₽")
+        ax.set_xlabel("выручка за месяц в 2024 году, млн ₽")
+        ax.set_ylabel("тот же месяц в 2025 году, млн ₽")
     else:
         raise ValueError(f"нет графика для вопроса «{question}»")
     return ax
 
 
-TITLES = {  # заголовок — вывод, а не название осей
-    "сравнение": "Сравнение: сайт — первый",
-    "динамика": "Динамика: пик в декабре",
-    "распределение": "Распределение: чаще до 2,5 млн",
-    "связь": "Связь: 2025-й повторяет 2024-й",
+TITLES = {  # заголовки панелей
+    "сравнение": "По годовой выручке лидирует сайт",
+    "динамика": "Максимум в декабре 2025 года",
+    "распределение": "Чаще встречаются суммы до 2,5 млн ₽",
+    "связь": "Выручка в том же месяце год спустя",
 }
 fig, axes = plt.subplots(2, 2, figsize=(6.4, 4.6), layout="constrained")
 for (q, title), ax in zip(TITLES.items(), axes.flat):
@@ -52,7 +52,7 @@ fig.savefig("question_to_chart.svg")
 total = wide.sum(axis=1)
 values = wide.to_numpy().ravel()
 print("сравнение:", y25.sum().nlargest(3).round(1).to_dict())
-print("динамика: пик", total.idxmax(), round(total.max(), 1),
-      "| провал", total.idxmin(), round(total.min(), 1))
-print("распределение: меньше 2,5 млн —", f"{(values < 2.5).mean():.0%}", "месяцев канала")
+print("максимум выручки, млн ₽:", total.idxmax(), round(total.max(), 1),
+      "| минимум:", total.idxmin(), round(total.min(), 1))
+print("распределение: меньше 2,5 млн —", f"{(values < 2.5).mean():.0%}", "наблюдений по каналам и месяцам")
 print("связь: r =", np.corrcoef(y24.to_numpy().ravel(), y25.to_numpy().ravel())[0, 1].round(3))
