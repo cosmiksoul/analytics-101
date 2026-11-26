@@ -246,7 +246,7 @@ def index_html():
     ids = ' '.join(p['id'] for p in pages)
     mins = [p['minutes'] for p in pages if p.get('minutes')]
     hours = round(total / 60)
-    hero = (f'<section class="hero">\n  <p class="eyebrow">Курс о работе с данными · модуль «{esc(da["name"])}» готов</p>\n'
+    hero = ('<section class="hero">\n'
             f'  <h1>{esc(COURSE["title"])}</h1>\n  <p class="lead">{esc(typo(course_lead()))}</p>\n'
             f'  <div class="acts"><a class="btn accent" href="{first["file"]}.html">Начать с первой страницы</a>'
             f'<a class="btn ghost" id="resume" hidden></a>'
