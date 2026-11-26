@@ -61,11 +61,11 @@
     for (const v of x) { if (v < bot || v > top) out++; else { if (lo === null) lo = v; hi = v; } }
     return { q1, med, q3, lo, hi, top, bot, out };
   }
-  // что видно на гистограмме: отдельный столбик нулей, пик на 5 000 ₽, второй горб в зоне 25–70 тыс. ₽
+  // что видно на гистограмме: отдельный столбец нулей, пик на 5 000 ₽, второй пик в зоне 25–70 тыс. ₽
   function feats(c, e, log, zeros) {
     const k = c.length, w = e[1] - e[0];
     const cen = i => { const m = (e[i] + e[i + 1]) / 2; return log ? Math.pow(10, m) : m; };
-    const zero = !zeros ? null : log ? true : w <= 1500 && c[0] >= 1.5 * c[1];
+    const zero = !zeros ? null : log || c[0] === zeros;
     const t = log ? Math.log10(5000) : 5000;
     let b = -1;
     for (let i = 0; i < k; i++) if (e[i] <= t) b = i;
@@ -97,7 +97,7 @@
   const memo = {};
   function H(set, sc, k) {
     const key = `${set}|${sc}|${k}`;
-    if (!memo[key]) { const D = SETS[set], h = hist(sc === 'log' ? D.lg : D.x, k); h.f = feats(h.c, h.e, sc === 'log', D.zeros > 0); memo[key] = h; }
+    if (!memo[key]) { const D = SETS[set], h = hist(sc === 'log' ? D.lg : D.x, k); h.f = feats(h.c, h.e, sc === 'log', D.zeros); memo[key] = h; }
     return memo[key];
   }
 
@@ -115,22 +115,22 @@
   const LOGT = [1e3, 2e3, 5e3, 1e4, 2e4, 5e4, 1e5, 1e6, 1e7];
 
   /* ===================== Сцена: один столбец четырьмя способами ===================== */
-  const FOUND = ['выбросы', 'нули', 'пик 5 000', 'второй горб'];
+  const FOUND = ['выбросы', 'нули', 'пик 5 000', 'второй пик'];
   const LOGH = hist(SETS.all.lg, binsFD(SETS.all.lg));          // 50 корзин по Фридману — Диаконису в логарифме
   const LOGO = histEdges(SETS.o12.lg, LOGH.e);                   // клиенты с 1–2 заказами на тех же границах
   const STEPS = [
-    { title: 'Средние траты — 12 379 ₽', dur: 4200, body: '<p>Руководитель спрашивает, сколько тратит клиент за&nbsp;квартал. <b>mean()</b> по&nbsp;столбцу spend_q1 учебной выгрузки отвечает: 12&nbsp;379&nbsp;₽. Одно число, и&nbsp;никакой формы.</p><p>Медиана — 5&nbsp;020&nbsp;₽, в&nbsp;2,5&nbsp;раза меньше. Значит, что-то тянет среднее вверх.</p>' },
-    { title: 'describe: максимум 19,9 млн', dur: 4400, body: '<p><b>describe()</b> добавляет квартили, минимум и&nbsp;максимум. Четверть клиентов потратила не&nbsp;больше 2&nbsp;560&nbsp;₽, три четверти — не&nbsp;больше 9&nbsp;800&nbsp;₽, а&nbsp;максимум — 19&nbsp;931&nbsp;000&nbsp;₽.</p><p>Стандартное отклонение почти в&nbsp;21&nbsp;раз больше среднего. Восемь чисел тревожат, но&nbsp;формы ещё не&nbsp;видно.</p>' },
-    { title: 'Ящик с усами на всю шкалу', dur: 4200, body: '<p>Ящик с&nbsp;усами рисует квартили, медиану и&nbsp;точки за&nbsp;усами. Ось — до&nbsp;20&nbsp;млн, и&nbsp;ящик сплющился в&nbsp;чёрточку у&nbsp;нуля.</p><p>Видно одно: пять точек в&nbsp;миллионах, далеко от&nbsp;всех. Это первая находка — выбросы, но&nbsp;что они такое, ящик не&nbsp;говорит.</p>' },
-    { title: 'Ящик крупным планом', dur: 4600, body: '<p>Приблизим ось до&nbsp;110&nbsp;тыс. Ящик от&nbsp;2&nbsp;560 до&nbsp;9&nbsp;800&nbsp;₽, ус до&nbsp;20&nbsp;660&nbsp;₽, правее — <b>839 точек</b> и&nbsp;ещё пять за&nbsp;краем. Выбросами названы все подряд.</p><p>Нижний ус упирается в&nbsp;ноль, и&nbsp;1&nbsp;717 клиентов с&nbsp;нулевыми тратами в&nbsp;ящике не&nbsp;видны.</p>' },
-    { title: 'Гистограмма: один столбик', dur: 4000, body: '<p>Гистограмма режет ось на&nbsp;корзины и&nbsp;считает суммы в&nbsp;каждой. По&nbsp;правилу Стёрджеса корзин 15, каждая шириной 1,3&nbsp;млн&nbsp;₽.</p><p>В&nbsp;первую попали 12&nbsp;035 клиентов из&nbsp;12&nbsp;040: пять сумм растянули ось, и&nbsp;форма пропала.</p>' },
-    { title: '15 корзин без пяти сумм', dur: 4200, body: '<p>Отложим пять сумм больше миллиона и&nbsp;снова возьмём 15&nbsp;корзин — теперь по&nbsp;6&nbsp;988&nbsp;₽. Горб у&nbsp;нуля и&nbsp;длинный хвост вправо: асимметрия.</p><p>В&nbsp;первой корзине 7&nbsp;501&nbsp;клиент: нули смешались с&nbsp;обычными покупками.</p>' },
-    { title: '166 корзин по Фридману — Диаконису', dur: 4800, body: '<p>Правило Фридмана — Диакониса даёт 166&nbsp;корзин по&nbsp;631&nbsp;₽. Проступили две детали: отдельный столбик <b>1&nbsp;717 нулей</b> и&nbsp;узкий <b>пик на&nbsp;5&nbsp;000&nbsp;₽</b> — ровно эту сумму потратил 381&nbsp;клиент.</p><p>Хвост до&nbsp;105&nbsp;тыс. спадает плавно, что в&nbsp;нём — пока не&nbsp;разобрать.</p>' },
-    { title: 'Логарифм: хвост сжался', dur: 4800, body: '<p>На&nbsp;логарифмической шкале 1, 10 и&nbsp;100&nbsp;тыс. стоят через равные шаги. Хвост сжался, горб розницы встал в&nbsp;середину, а&nbsp;после 25&nbsp;тыс. спад замедляется: в&nbsp;лупе видно <b>плечо</b>.</p><p>Нули стоят отдельно: логарифма нуля нет.</p>' },
-    { title: 'Второй горб', dur: 4800, body: '<p>Оставим клиентов с&nbsp;одним-двумя заказами: их&nbsp;розничные траты почти не&nbsp;доходят до&nbsp;20&nbsp;тыс. Плечо превращается во&nbsp;<b>второй горб</b> около 40&nbsp;тыс.&nbsp;₽ — это оптовики, другая популяция.</p><p>У&nbsp;всех клиентов горб заливал хвост розницы с&nbsp;пятью-десятью заказами.</p>' },
-    { title: 'Вся шкала: пять сумм отдельно', dur: 4600, body: '<p>Растянем логарифмическую ось до&nbsp;30&nbsp;млн. Между 105&nbsp;тыс. и&nbsp;2,5&nbsp;млн нет ни&nbsp;одного клиента, а&nbsp;за&nbsp;пустотой — <b>пять сумм</b> от&nbsp;2,5 до&nbsp;19,9&nbsp;млн.</p><p>Все пять оканчиваются на&nbsp;1&nbsp;000, как сумма, умноженная на&nbsp;1000, с&nbsp;лишней тысячей. Это ошибки ввода.</p>' },
-    { title: 'Решение для каждой находки', dur: 5200, body: '<p><b>Ошибки</b> ×1000 исправляют по&nbsp;первоисточнику или ставят NaN. <b>Нули</b> и&nbsp;<b>оптовики</b> — отдельные группы, их&nbsp;считают отдельно. <b>Пик на&nbsp;5&nbsp;000&nbsp;₽</b> — вопрос владельцу данных: похоже на&nbsp;подарочные сертификаты.</p><p>Розница с&nbsp;8–10 заказами в&nbsp;хвосте — редкие, но&nbsp;настоящие клиенты: их&nbsp;оставляют.</p>' },
-    { title: 'Сводки, которые не сдвинуть', dur: 5200, next: 'Читать страницу', body: '<p>Уберём пять ошибок. Среднее упало с&nbsp;12&nbsp;379 до&nbsp;7&nbsp;936&nbsp;₽, на&nbsp;36%, стандартное отклонение — в&nbsp;26&nbsp;раз. Медиана, усечённое среднее и&nbsp;MAD не&nbsp;сдвинулись: это <b>робастные</b> сводки.</p><p>Но&nbsp;и&nbsp;они — одно число на&nbsp;смесь групп. Честный ответ руководителю — по&nbsp;сегментам.</p>' }
+    { title: 'Средние траты и медиана', dur: 4200, body: '<p>Среднее по всем 12&nbsp;040 строкам столбца <b>spend_q1</b> равно 12&nbsp;379&nbsp;₽ за квартал. Медиана заметно ниже — 5&nbsp;020&nbsp;₽.</p><p>Крупные суммы могут сильно влиять на среднее. Проверим, какие значения есть в выгрузке.</p>' },
+    { title: 'Максимум почти в 20 млн рублей', dur: 4400, body: '<p>Сводка <b>describe()</b> показывает, что в четверти строк сумма не превышает 2&nbsp;560&nbsp;₽, а в трёх четвертях — 9&nbsp;800&nbsp;₽. Максимум составляет 19&nbsp;931&nbsp;000&nbsp;₽.</p><p>Стандартное отклонение почти в 21 раз больше среднего. Посмотрим на графике, сколько значений находится далеко от основной группы.</p>' },
+    { title: 'Пять точек далеко от ящика', dur: 4200, body: '<p>Если показать все квартальные суммы на оси от нуля до 20&nbsp;млн&nbsp;₽, ящик и его усы почти сливаются у начала оси.</p><p>Справа видны пять отдельных точек. Чтобы понять, откуда взялись миллионные суммы, придётся проверить сами записи.</p>' },
+    { title: 'Что видно при увеличении масштаба', dur: 4600, body: '<p>Ограничим ось суммой 110&nbsp;тыс.&nbsp;₽. Ящик занимает интервал от 2&nbsp;560 до 9&nbsp;800&nbsp;₽. Верхний ус заканчивается на 20&nbsp;660&nbsp;₽. Справа видны <b>839 точек</b>, ещё пять находятся за пределами графика.</p><p>Нижний ус доходит до нуля, но по нему нельзя узнать, в скольких строках указаны нулевые траты.</p>' },
+    { title: 'В первом интервале почти все суммы', dur: 4000, body: '<p>По правилу Стёрджеса диапазон трат разбит на 15 интервалов шириной примерно 1,3&nbsp;млн&nbsp;₽. Высота столбца показывает число записей в интервале.</p><p>Пять миллионных сумм так увеличили размах, что 12&nbsp;035 из 12&nbsp;040 записей попали в первый столбец.</p>' },
+    { title: 'Та же гистограмма без пяти миллионных сумм', dur: 4200, body: '<p>Временно исключим пять сумм выше миллиона. При тех же 15 интервалах ширина уменьшилась примерно до 6&nbsp;988&nbsp;₽. Теперь хорошо виден длинный правый хвост.</p><p>В первом столбце 7&nbsp;501 запись. Сюда попали и нулевые, и положительные суммы.</p>' },
+    { title: 'В узких интервалах видны нули и пик около 5 000 ₽', dur: 4800, body: '<p>Правило Фридмана — Диакониса дало 166 интервалов шириной примерно 631&nbsp;₽. В первом теперь только <b>1&nbsp;717 нулевых сумм</b>. Столбец, в который попала сумма 5&nbsp;000&nbsp;₽, заметно выше соседних.</p><p>В исходной таблице сумма ровно 5&nbsp;000&nbsp;₽ встречается 381 раз.</p>' },
+    { title: 'Логарифмическая шкала', dur: 4800, body: '<p>На такой оси расстояние от 1&nbsp;000 до 10&nbsp;000&nbsp;₽ такое же, как от 10&nbsp;000 до 100&nbsp;000&nbsp;₽. В увеличенном фрагменте видно, что после 25&nbsp;тыс.&nbsp;₽ частота снижается медленнее.</p><p>Нулевые траты показаны слева отдельным столбцом. Логарифм нуля не определён.</p>' },
+    { title: 'У клиентов с одним-двумя заказами виден второй пик', dur: 4800, body: '<p>Бирюзовым показаны суммы в строках с одним-двумя заказами. В этой группе сравнительно мало значений около 20&nbsp;тыс.&nbsp;₽ и есть <b>второй пик около 40&nbsp;тыс.&nbsp;₽</b>.</p><p>В учебном наборе этот пик возникает из-за оптовых покупок. На общей гистограмме в тот же диапазон попадают и траты розничных клиентов со множеством заказов.</p>' },
+    { title: 'Пять сумм выше миллиона', dur: 4600, body: '<p>Расширим ось до 30&nbsp;млн&nbsp;₽. После 104&nbsp;820&nbsp;₽ следующая сумма — 2&nbsp;491&nbsp;000&nbsp;₽. Ещё четыре записи лежат дальше справа.</p><p>По графику можно заметить разрыв. Причина известна из генератора данных: исходные суммы умножили на 1&nbsp;000 и прибавили ещё 1&nbsp;000&nbsp;₽. В рабочем отчёте это нужно было бы подтвердить по истории платежей.</p>' },
+    { title: 'Как проверить необычные суммы', dur: 5200, body: '<p>Ошибочную сумму исправляют по первоисточнику или отмечают как пропущенную. Крупные подтверждённые покупки сохраняют. Для руководителя полезно отдельно показать траты розничных и оптовых клиентов.</p><p>Для записей с нулевыми тратами проверяют число заказов. Для пика на 5&nbsp;000&nbsp;₽ полезно проверить версию о сертификатах по данным об оплате.</p>' },
+    { title: 'Какие показатели изменились после проверки', dur: 5200, next: 'Читать страницу', body: '<p>Если исключить пять миллионных сумм, среднее снизится с 12&nbsp;379 до 7&nbsp;936&nbsp;₽. Стандартное отклонение уменьшится примерно в 26 раз.</p><p>Медиана и MAD останутся прежними. Усечённое среднее уменьшится с 6&nbsp;080 до 6&nbsp;075&nbsp;₽. Эти показатели <b>устойчивы к крайним значениям</b>, но один показатель всё равно не описывает различия между группами клиентов.</p>' }
   ];
   const VIEW = [[1, 'среднее'], [1, 'среднее'], [2, 'ящик'], [2, 'ящик'], [3, 'гистогр.'], [3, 'гистогр.'], [3, 'гистогр.'], [4, 'логарифм'], [4, 'логарифм'], [4, 'логарифм'], [4, 'логарифм'], [4, 'логарифм']];
   const FOUNDAT = [0, 0, 1, 1, 1, 1, 3, 3, 4, 4, 4, 4];
@@ -157,7 +157,7 @@
       const big = clamp(W / 7.5, 34, 84), cy = H * 0.44;
       g += `<text class="d72-sm" x="${W / 2}" y="${f1(cy - big * 0.95)}" text-anchor="middle">df["spend_q1"].mean()</text>`;
       g += `<text class="d72-big" x="${W / 2}" y="${f1(cy)}" text-anchor="middle" style="font-size:${f1(big)}px;opacity:${0.25 + 0.75 * st.grow}">${num(S.desc.mean)}${NB}₽</text>`;
-      g += `<text class="d72-sm" x="${W / 2}" y="${f1(cy + 26)}" text-anchor="middle">среднее по ${num(S.n)} клиентам</text>`;
+      g += `<text class="d72-sm" x="${W / 2}" y="${f1(cy + 26)}" text-anchor="middle">среднее по ${num(S.n)} строкам</text>`;
       if (st.a) g += `<text class="d72-mid" x="${W / 2}" y="${f1(H * 0.74)}" text-anchor="middle" style="font-size:${f1(big * 0.42)}px">медиана ${rub(S.desc['50%'])}</text>`;
       if (st.b) g += callout(W, H, W / 2 + big * 1.1, H * 0.74 - big * 0.2, 'в 2,5 раза меньше среднего', 16, -30, 'acc', fs);
       return g;
@@ -171,7 +171,7 @@
         const y = y0 + rh * (i + 1.6), hot = st.b && (n === 'std' || n === 'max');
         g += `<line class="d72-row" x1="${f1(x0)}" x2="${f1(x0 + bw)}" y1="${f1(y + rh * 0.38)}" y2="${f1(y + rh * 0.38)}"/><text class="d72-key" x="${f1(x0)}" y="${f1(y)}">${n}</text><text class="d72-val${hot ? ' bad' : ''}" x="${f1(x0 + bw)}" y="${f1(y)}" text-anchor="end">${num(v, n === 'mean' ? 1 : 0)}</text>`;
       });
-      if (st.b) g += callout(W, H, x0 + bw * 0.62, y0 + rh * 8.4, '19,9 млн за квартал?', -10, 16, 'bad', fs);
+      if (st.b) g += callout(W, H, x0 + bw * 0.62, y0 + rh * 8.4, '19,9 млн ₽ за квартал', -10, 16, 'bad', fs);
       return g;
     }
     if (k === 2 || k === 3) {
@@ -186,13 +186,13 @@
       g += `<line class="d72-wh" x1="${f1(X(b.lo))}" x2="${f1(X(b.hi))}" y1="${cy}" y2="${cy}"/><line class="d72-wh" x1="${f1(X(b.lo))}" x2="${f1(X(b.lo))}" y1="${cy - bh / 4}" y2="${cy + bh / 4}"/><line class="d72-wh" x1="${f1(X(b.hi))}" x2="${f1(X(b.hi))}" y1="${cy - bh / 4}" y2="${cy + bh / 4}"/>`;
       g += `<rect class="d72-box" x="${f1(bx0)}" y="${cy - bh / 2}" width="${f1(bx1 - bx0)}" height="${bh}"/><line class="d72-med" x1="${f1(X(b.med))}" x2="${f1(X(b.med))}" y1="${cy - bh / 2}" y2="${cy + bh / 2}"/>`;
       if (k === 2) {
-        if (st.a) g += callout(W, H, X(0) + 3, cy - bh / 2, 'ящик, усы и 839 точек —\nв первых пикселях', 18, -40, '', fs);
-        if (st.b) g += callout(W, H, X(ERR[2]), cy, '5 точек в миллионах', 0, 36, 'bad', fs);
+        if (st.a) g += callout(W, H, X(0) + 3, cy - bh / 2, 'ящик и 839 точек\nу начала оси', 18, -40, '', fs);
+        if (st.b) g += callout(W, H, X(ERR[2]), cy, '5 сумм выше миллиона', 0, 36, 'bad', fs);
       } else {
-        g += `<text class="d72-tk" x="${R}" y="${f1(cy - bh)}" text-anchor="end">ещё 5 за краем →</text>`;
+        g += `<text class="d72-tk" x="${R}" y="${f1(cy - bh)}" text-anchor="end">ещё 5 точек справа →</text>`;
         if (!nar) g += `<text class="d72-tk" x="${f1(bx0)}" y="${f1(cy - bh / 2 - 7)}" text-anchor="middle">Q1</text><text class="d72-tk" x="${f1(X(b.q3))}" y="${f1(cy - bh / 2 - 7)}" text-anchor="middle">Q3</text>`;
-        if (st.a) g += callout(W, H, X(0), cy + bh / 4, 'ус упёрся в ноль:\nгде 1 717 нулей?', 14, 44, 'warn', fs);
-        if (st.b) g += callout(W, H, X(48000), cy - bh * 0.6, '839 «выбросов»: и оптовики,\nи розница с многими заказами', 0, -44, '', fs);
+        if (st.a) g += callout(W, H, X(0), cy + bh / 4, 'нижний ус доходит до 0 ₽', 14, 44, 'warn', fs);
+        if (st.b) g += callout(W, H, X(48000), cy - bh * 0.6, '839 точек за усом\nв пределах рисунка', 0, -44, '', fs);
       }
       return g;
     }
@@ -206,14 +206,14 @@
       if (k === 6) { g += `<path class="d72-bar z" d="${barsPath(h.c, h.e, X, Y, Bt, i => i === zb)}"/><path class="d72-bar p" d="${barsPath(h.c, h.e, X, Y, Bt, i => i === pb)}"/>`; }
       if (k === 4) {
         h.c.forEach((c, i) => { if (i > 0 && c > 0) g += `<circle class="d72-errdot" cx="${f1((X(h.e[i]) + X(h.e[i + 1])) / 2)}" cy="${Bt - 6}" r="4"/>`; });
-        if (st.a) g += callout(W, H, X(h.e[1]) - 2, Y(h.c[0]) + 20, '12 035 из 12 040 —\nв первой корзине', 18, 10, '', fs);
-        if (st.b) g += callout(W, H, X(ERR[3]), Bt - 10, 'по одному клиенту', 0, -46, 'bad', fs);
+        if (st.a) g += callout(W, H, X(h.e[1]) - 2, Y(h.c[0]) + 20, '12 035 из 12 040 —\nв первом интервале', 18, 10, '', fs);
+        if (st.b) g += callout(W, H, X(ERR[3]), Bt - 10, 'по одной записи', 0, -46, 'bad', fs);
       } else if (k === 5) {
-        if (st.a) g += callout(W, H, X(h.e[1]) - 4, Y(h.c[0]) + 10, '7 501: нули вместе\nс покупками до 6 988 ₽', 20, 6, 'warn', fs);
-        if (st.b) g += callout(W, H, X(60000), Y(h.c[8]) - 4, 'один горб и хвост вправо', 0, -40, '', fs);
+        if (st.a) g += callout(W, H, X(h.e[1]) - 4, Y(h.c[0]) + 10, '7 501 запись, включая\nнулевые траты', 20, 6, 'warn', fs);
+        if (st.b) g += callout(W, H, X(60000), Y(h.c[8]) - 4, 'длинный правый хвост', 0, -40, '', fs);
       } else {
-        if (st.a) g += callout(W, H, X(h.e[1]), Y(h.c[0]) + 4, '1 717 нулей —\nотдельный столбик', 26, -4, 'warn', fs);
-        if (st.b) g += callout(W, H, X(5000), Y(h.c[pb]), 'пик на 5 000 ₽:\n381 клиент ровно', 30, -34, 'pink', fs);
+        if (st.a) g += callout(W, H, X(h.e[1]), Y(h.c[0]) + 4, '1 717 нулей —\nотдельный столбец', 26, -4, 'warn', fs);
+        if (st.b) g += callout(W, H, X(5000), Y(h.c[pb]), 'ровно 5 000 ₽\nв 381 строке', 30, -34, 'pink', fs);
         if (st.b) g += callout(W, H, X(60000), Y(h.c[Math.round(60000 / (max / nb))]) - 4, 'хвост до 105 тыс.', 0, -40, '', fs);
       }
       return g;
@@ -246,25 +246,25 @@
         const ex = ERR.map(v => X(Math.log10(v)));
         ex.forEach(x => { g += `<rect class="d72-bar e" x="${f1(x - 2)}" y="${Bt - 14}" width="4" height="14"/>`; });
         if (k === 9 && st.a) g += callout(W, H, (X(LOGH.e[LOGH.e.length - 1]) + ex[0]) / 2, Bt - 4, 'пусто: от 105 тыс.\nдо 2,5 млн', nar ? -10 : 0, nar ? -120 : -64, '', fs);
-        if (k === 9 && st.b) g += callout(W, H, ex[3], Bt - 14, '5 сумм ×1000', 0, -40, 'bad', fs);
+        if (k === 9 && st.b) g += callout(W, H, ex[3], Bt - 14, '5 ошибочных сумм', 0, -40, 'bad', fs);
       }
       if (k === 7) {
         if (st.a && !(nar && st.b)) g += callout(W, H, L + zw / 2, Y(S.zeros), '1 717 нулей: логарифма\nу нуля нет', nar ? 12 : 22, nar ? ih + 2 : 6, 'warn', fs);
-        if (st.b) { const ay = IY(tc[Math.round(tc.length * 0.45)]); g += callout(W, H, IX(Math.log10(40000)), ay, 'плечо: спад замедлился', 0, iy + ih + 12 - ay, '', fs); }
+        if (st.b) { const ay = IY(tc[Math.round(tc.length * 0.45)]); g += callout(W, H, IX(Math.log10(40000)), ay, 'частота снижается медленнее', 0, iy + ih + 12 - ay, '', fs); }
       } else if (k === 8) {
         const hi = tco.indexOf(Math.max(...tco.slice(Math.floor(tco.length * 0.3))));
-        if (st.a) { const ay = IY(tco[hi]); g += callout(W, H, IX((te[hi] + te[hi + 1]) / 2), ay, '1–2 заказа: второй горб\nоколо 40 тыс. ₽', 0, iy + ih + 12 - ay, 'acc', fs); }
+        if (st.a) { const ay = IY(tco[hi]); g += callout(W, H, IX((te[hi] + te[hi + 1]) / 2), ay, '1–2 заказа: второй пик\nоколо 40 тыс. ₽', 0, iy + ih + 12 - ay, 'acc', fs); }
       } else if (k === 10) {
         if (nar) {
-          const rows = [['warn', 'нули → отдельная группа'], ['pink', '5 000 ₽ → спросить владельца'], ['acc', 'оптовики → свой сегмент'], ['bad', 'ошибки ×1000 → исправить']];
+          const rows = [['warn', 'нули → сверить с заказами'], ['pink', '5 000 ₽ → проверить оплаты'], ['acc', 'оптовики → выделить группу'], ['bad', 'ошибки → уточнить суммы']];
           g += `<g class="d72-dec"><rect class="d72-ib" x="${f1(x0 + 6)}" y="${T}" width="${f1(R - x0 - 6)}" height="${rows.length * 19 + 10}" rx="8"/>`;
           rows.slice(0, st.b ? 4 : st.a ? 3 : 2).forEach(([c, t], i) => { g += `<circle class="d72-dd ${c}" cx="${f1(x0 + 18)}" cy="${f1(T + 15 + i * 19)}" r="4"/><text class="d72-dt" x="${f1(x0 + 28)}" y="${f1(T + 19 + i * 19)}">${esc(t)}</text>`; });
           g += '</g>';
         } else {
-          g += callout(W, H, L + zw / 2, Y(S.zeros) + 6, 'нули: отдельная\nгруппа', 14, 30, 'warn', fs);
-          g += callout(W, H, X(Math.log10(5000)), Y(LOGH.c[pb]), '5 000 ₽: спросить\nвладельца', -14, -6, 'pink', fs);
-          if (st.a) g += callout(W, H, IX(Math.log10(42000)), iy + ih, 'оптовики:\nсвой сегмент', 0, 26, 'acc', fs);
-          if (st.b) g += callout(W, H, ERR.map(v => X(Math.log10(v)))[2], Bt - 14, 'ошибки:\nисправить', -10, -(Bt - T) * 0.33, 'bad', fs);
+          g += callout(W, H, L + zw / 2, Y(S.zeros) + 6, 'сверить нули\nс заказами', 14, 30, 'warn', fs);
+          g += callout(W, H, X(Math.log10(5000)), Y(LOGH.c[pb]), 'проверить оплаты\nна 5 000 ₽', -14, -6, 'pink', fs);
+          if (st.a) g += callout(W, H, IX(Math.log10(42000)), iy + ih, 'выделить оптовых\nклиентов', 0, 26, 'acc', fs);
+          if (st.b) g += callout(W, H, ERR.map(v => X(Math.log10(v)))[2], Bt - 14, 'уточнить ошибочные\nсуммы', -10, -(Bt - T) * 0.33, 'bad', fs);
         }
       }
       return g;
@@ -278,17 +278,17 @@
       if (!show) return;
       g += `<line class="d72-row" x1="${f1(x0)}" x2="${f1(c2)}" y1="${f1(y + rh * 0.36)}" y2="${f1(y + rh * 0.36)}"/><text class="d72-key" x="${f1(x0)}" y="${f1(y)}">${lbl}</text><text class="d72-val" x="${f1(c1)}" y="${f1(y)}" text-anchor="end">${num(a)}</text><text class="d72-val ${moved ? 'bad' : 'good'}" x="${f1(c2)}" y="${f1(y)}" text-anchor="end">${num(b)}</text>`;
     });
-    if (st.b) g += callout(W, H, x0 + tw * 0.5, y0 + rh * 6.25, 'медиана, усечённое среднее\nи MAD не сдвинулись', 0, 16, 'acc', fs);
+    if (st.b) g += callout(W, H, x0 + tw * 0.5, y0 + rh * 6.25, 'медиана и MAD прежние,\nусечённое среднее ниже на 5 ₽', 0, 16, 'acc', fs);
     return g;
   }
 
   const scene = {
     parts: [{ n: '01', name: 'Одно число', s: [0, 1] }, { n: '02', name: 'Ящик с усами', s: [2, 3] }, { n: '03', name: 'Гистограмма', s: [4, 5, 6] }, { n: '04', name: 'Логарифм', s: [7, 8, 9] }, { n: '05', name: 'Решения', s: [10, 11] }],
     steps: STEPS,
-    hud: [{ id: 'view', label: 'Способ' }, { id: 'found', label: 'Находок' }, { id: 'bins', label: 'Корзин' }],
-    legend: '<span><i style="background:#6fa2ea"></i>все клиенты</span><span><i style="background:#36b8a6"></i>1–2 заказа</span><span><i style="background:#e3c04d"></i>нули</span><span><i style="background:#f06ba5"></i>5 000 ₽</span><span><i style="background:#f2756a"></i>суммы ×1000</span>',
+    hud: [{ id: 'view', label: 'Способ' }, { id: 'found', label: 'Находок' }, { id: 'bins', label: 'Интервалов' }],
+    legend: '<span><i style="background:#6fa2ea"></i>все клиенты</span><span><i style="background:#36b8a6"></i>1–2 заказа</span><span><i style="background:#e3c04d"></i>нули</span><span><i style="background:#f06ba5"></i>5 000 ₽</span><span><i style="background:#f2756a"></i>ошибочные суммы</span>',
     info: 'SPEND_Q1',
-    aiNote: 'В анимации один столбец spend_q1 учебной выгрузки clients_export.csv (12 040 клиентов интернет-магазина, траты за I квартал 2026) показан четырьмя способами: среднее (12 379 ₽ при медиане 5 020 ₽), ящик с усами (Q1 2 560, Q3 9 800, ус до 20 660, за усом 844 точки), гистограмма (15 корзин по Стёрджесу и 166 по Фридману — Диаконису: видны 1 717 нулей и пик на 5 000 ₽, 381 клиент) и гистограмма в логарифме (плечо после 25 тыс.; у клиентов с 1–2 заказами — второй горб оптовиков около 40 тыс.; пять ошибок ×1000 от 2,5 до 19,9 млн за пустотой). В конце — решения по каждой находке и робастные сводки: без ошибок среднее 7 936 ₽, медиана 5 020 ₽, усечённое среднее 6 075 ₽, MAD 3 160 ₽.',
+    aiNote: 'Квартальные траты показаны по 12 040 строкам выгрузки, включая повторы. Среднее — 12 379 ₽, медиана — 5 020 ₽. Пять сумм в миллионах отделены от остальных. Без них среднее по 12 035 записям равно 7 936 ₽. При 166 интервалах на линейной шкале отдельно видны 1 717 нулей и пик около 5 000 ₽. В группе с одним-двумя заказами на логарифмической шкале есть второй пик около 40 тыс. ₽. Медиана и MAD устойчивы к пяти миллионным суммам, усечённое среднее изменилось примерно на 5 ₽.',
     mount(root, api) {
       root.innerHTML = '<div class="d72-sc"><svg class="d72-cv" aria-hidden="true"></svg></div>';
       const host = root.firstChild, svg = host.firstChild;
@@ -314,21 +314,21 @@
   const SNAME = { all: 'все клиенты', o12: 'клиенты с 1–2 заказами' };
   function buildBins(box, api) {
     const { $ } = api;
-    box.innerHTML = `<div class="block-hd"><span class="t">Ширина корзины решает, что видно на гистограмме <i>интерактив</i></span><div class="ctrls"><button type="button" class="btn ghost small" id="bw-reset">Сбросить</button></div></div>
-<p class="hint bw-do">Двигайте число корзин, включайте логарифм и меняйте группу клиентов. Ящик справа посчитан по тем же суммам: следите, меняется ли он.</p>
+    box.innerHTML = `<div class="block-hd"><span class="t">Что видно при разной ширине интервала <i>интерактив</i></span><div class="ctrls"><button type="button" class="btn ghost small" id="bw-reset">Сбросить</button></div></div>
+<p class="hint bw-do">Меняйте число интервалов, шкалу и группу клиентов. Сравните гистограмму с ящиком справа. Оба графика построены по одним и тем же суммам.</p>
 <div class="bw-ctl">
-<div class="bw-grp"><label class="bw-lb" for="bw-k">Корзин</label><span class="krange bw-range"><input type="range" id="bw-k" min="3" max="200" step="1"><b id="bw-kv"></b></span></div>
+<div class="bw-grp"><label class="bw-lb" for="bw-k">Интервалов</label><span class="krange bw-range"><input type="range" id="bw-k" min="3" max="200" step="1"><b id="bw-kv"></b></span></div>
 <div class="bw-grp"><span class="bw-lb">Правило</span><button type="button" class="btn ghost small" data-rule="st">Стёрджес: <b id="bw-st"></b></button><button type="button" class="btn ghost small" data-rule="fd">Фридман — Диаконис: <b id="bw-fd"></b></button></div>
-<div class="bw-grp"><span class="bw-lb">Шкала</span><span class="seg" role="group" aria-label="Шкала"><button type="button" data-sc="lin">обычная</button><button type="button" data-sc="log">логарифм</button></span></div>
+<div class="bw-grp"><span class="bw-lb">Шкала</span><span class="seg" role="group" aria-label="Шкала"><button type="button" data-sc="lin">обычная</button><button type="button" data-sc="log">логарифмическая</button></span></div>
 <div class="bw-grp"><span class="bw-lb">Клиенты</span><span class="seg" role="group" aria-label="Клиенты"><button type="button" data-set="all">все</button><button type="button" data-set="o12">1–2 заказа</button></span></div>
 </div>
 <div class="stage bw-stage"><div class="bw-main"><div class="bw-plot" id="bw-plot"></div><div class="bw-tail" id="bw-tail"></div></div>
-<div class="narr"><p class="cap">Ящик с усами: тот же при любых корзинах</p><div class="bw-box" id="bw-box"></div><p class="cap">Что видно сейчас</p><ul class="bw-see" id="bw-see"></ul><div class="narr-text" id="bw-msg"></div><p class="cap">Задания</p><ol class="bw-tasks" id="bw-tasks"></ol></div></div>
+<div class="narr"><p class="cap">Ящик с усами для выбранной группы</p><div class="bw-box" id="bw-box"></div><p class="cap">Что видно сейчас</p><ul class="bw-see" id="bw-see"></ul><div class="narr-text" id="bw-msg"></div><p class="cap">Задания</p><ol class="bw-tasks" id="bw-tasks"></ol></div></div>
 <div class="status"><span><span class="dot live"></span><span id="bw-s1"></span></span><span id="bw-s2"></span><span class="grow"></span><span id="bw-s3"></span></div>`;
     const TASKS = [
-      'Все клиенты, обычная шкала: сколько нужно корзин, чтобы нули встали отдельно, а на 5 000 ₽ вырос пик?',
-      'Клиенты с 1–2 заказами, логарифм: найдите второй горб.',
-      'Уменьшайте число корзин, пока горб не исчезнет. Изменился ли ящик?'
+      'На линейной шкале подберите число интервалов, при котором видны отдельный столбец нулей и пик около 5 000 ₽.',
+      'Перейдите к клиентам с 1–2 заказами. Найдите второй пик на логарифмической шкале.',
+      'Уменьшайте число интервалов, пока второй пик не исчезнет. Посмотрите, изменился ли ящик с усами.'
     ];
     let s;
     const fresh = () => ({ k: 15, sc: 'lin', set: 'all', done: [false, false, false], boxSeen: '' });
@@ -354,7 +354,7 @@
       g += `<line class="bw-ax" x1="${L}" x2="${R}" y1="${B}" y2="${B}"/>`;
       if (zb === 0) g += `<text class="bw-lab z" x="${f1(X(h.e[1]) + 4)}" y="${f1(Y(h.c[0]) + 11)}">нули: ${num(h.c[0])}</text>`;
       if (pb >= 0) g += `<text class="bw-lab p" x="${f1(X(h.e[pb + 1]) + 4)}" y="${f1(Y(h.c[pb]) + 4)}">5 000 ₽</text>`;
-      host.innerHTML = `<svg width="${W}" height="${Ht}" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Гистограмма трат: ${s.k} корзин, шкала ${log ? 'логарифмическая' : 'обычная'}, ${SNAME[s.set]}">${g}</svg>`;
+      host.innerHTML = `<svg width="${W}" height="${Ht}" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Гистограмма трат, число интервалов ${s.k}, шкала ${log ? 'логарифмическая' : 'обычная'}, ${SNAME[s.set]}">${g}</svg>`;
       // хвост крупнее: корзины от 15 тыс. ₽
       const tail = $('bw-tail'), tH = nar ? 104 : 118, tT = 22, tB = tH - 20, t15 = log ? Math.log10(15000) : 15000;
       let i0 = h.e.findIndex(v => v >= t15); if (i0 < 0) i0 = h.c.length - 1;
@@ -363,7 +363,7 @@
       const zx0 = TX(log ? Math.log10(25000) : 25000), zx1 = TX(log ? Math.log10(70000) : 70000);
       let t = `<rect class="bw-zone${f.hump ? ' on' : ''}" x="${f1(Math.max(L, zx0))}" y="${tT}" width="${f1(Math.max(0, Math.min(R, zx1) - Math.max(L, zx0)))}" height="${tB - tT}"/>`;
       t += `<text class="bw-tt" x="${L}" y="13">${nar ? 'Хвост от 15 тыс. ₽' : 'Хвост от 15 тыс. ₽ крупнее'}: по высоте ×${num(top / ttop)}</text>`;
-      t += `<text class="bw-zl${f.hump ? ' on' : ''}" x="${f1((Math.max(L, zx0) + Math.min(R, zx1)) / 2)}" y="${tT + 12}" text-anchor="middle">${f.hump ? 'второй горб' : 'зона оптовиков'}</text>`;
+      t += `<text class="bw-zl${f.hump ? ' on' : ''}" x="${f1((Math.max(L, zx0) + Math.min(R, zx1)) / 2)}" y="${tT + 12}" text-anchor="middle">${f.hump ? 'второй пик' : 'зона оптовиков'}</text>`;
       t += `<path class="bw-b" d="${barsPath(tc, te, TX, TY, tB)}"/><line class="bw-ax" x1="${L}" x2="${R}" y1="${tB}" y2="${tB}"/>`;
       (log ? [2e4, 5e4, 1e5] : nar ? [20000, 50000, 100000] : [20000, 40000, 60000, 80000, 100000]).forEach(v => { const lv = log ? Math.log10(v) : v; if (lv >= tlo && lv <= thi) t += `<text class="bw-tk" x="${f1(TX(lv))}" y="${tB + 14}" text-anchor="middle">${short(v)}</text>`; });
       tail.innerHTML = `<svg width="${W}" height="${tH}" viewBox="0 0 ${W} ${tH}" role="img" aria-label="Хвост гистограммы от 15 тысяч рублей в крупном масштабе">${t}</svg>`;
@@ -386,13 +386,13 @@
     function message(h) {
       const f = h.f, log = s.sc === 'log', w = width(h, s.sc);
       if (s.set === 'all') {
-        if (log) return `Логарифм сжал хвост, горб розницы встал в середину. Нули — отдельным столбиком слева: логарифма нуля нет. После 25 тыс. ₽ спад замедляется — это плечо, но не горб.${f.peak ? ' Пик на 5 000 ₽ виден.' : ' Пик на 5 000 ₽ тонет в широкой корзине.'}`;
-        if (!f.zero) return `Корзины по ${w}: первая смешивает 1 717 нулей с обычными покупками, ${f.peak ? 'хотя пик на 5 000 ₽ уже виден' : 'а пик на 5 000 ₽ тонет в соседях'}. Видны горб у нуля и хвост.`;
-        if (!f.peak) return `Корзина ${w} уже, чем самая маленькая покупка в 720 ₽, — нули встали отдельно. Пик на 5 000 ₽ ещё размазан по корзине.`;
-        return 'Видны нули и пик на 5 000 ₽. А горба оптовиков нет — только плавный хвост: клиенты с 5–10 заказами заливают впадину. Переключитесь на клиентов с 1–2 заказами.';
+        const peak = f.peak ? 'Столбец около 5 000 ₽ заметно выше соседних.' : 'При этой ширине пик около 5 000 ₽ не выделяется.';
+        if (log) return `Нули показаны отдельно слева. На горизонтальной оси равным расстояниям соответствует одинаковое отношение сумм. ${peak}`;
+        if (!f.zero) return `Первый интервал шириной ${w} включает нулевые и положительные суммы. Всего записей в нём — ${num(h.c[0])}, с нулевыми тратами — ${num(S.zeros)}. ${peak}`;
+        return `Первый интервал шириной ${w} содержит только нулевые суммы. Наименьшая положительная сумма — 720 ₽. ${peak}`;
       }
-      if (f.hump) return `Второй горб около 40 тыс. ₽ — оптовики. Розница с 1–2 заказами почти не доходит до 20 тыс., и между группами есть впадина.${log ? '' : ' В логарифме горб заметнее.'}`;
-      return `Оптовики в этих данных есть, но при ${s.k} корзинах${log ? '' : ` по ${w}`} их горб слился с хвостом розницы. ${log ? 'Добавьте корзин.' : 'Добавьте корзин или включите логарифм.'}`;
+      if (f.hump) return 'Около 40 тыс. ₽ виден второй пик. В учебных данных в этот диапазон попадают оптовые покупки. Сравните с гистограммой для всех записей.';
+      return 'При выбранном числе интервалов второй пик не выделяется. Измените ширину интервала или переключите шкалу.';
     }
 
     function render() {
@@ -405,17 +405,17 @@
       plot();
       const bkey = s.set; if (s.boxSeen !== bkey) { boxPlot(); s.boxSeen = bkey; }
       const item = (ok, t) => `<li class="${ok === true ? 'y' : ok === false ? 'n' : 'na'}"><b>${ok === true ? '✓' : ok === false ? '×' : '—'}</b>${t}</li>`;
-      const zeroTxt = !D.zeros ? 'нулей в этой группе нет' : log ? 'нули: отдельный столбик слева' : f.zero ? 'нули стоят отдельно' : 'нули слиты с покупками';
-      $('bw-see').innerHTML = item(D.zeros ? f.zero : null, zeroTxt) + item(f.peak, f.peak ? 'пик на 5 000 ₽ виден' : 'пика на 5 000 ₽ не видно') + item(f.hump, f.hump ? 'второй горб виден' : s.set === 'all' ? 'второго горба нет, только плечо' : 'второй горб слился с хвостом');
+      const zeroTxt = !D.zeros ? 'нулей в этой группе нет' : log ? 'нули показаны отдельно слева' : f.zero ? 'нулевые суммы в отдельном столбце' : 'в первом интервале есть нулевые и положительные суммы';
+      $('bw-see').innerHTML = item(D.zeros ? f.zero : null, zeroTxt) + item(f.peak, f.peak ? 'пик на 5 000 ₽ виден' : 'пика на 5 000 ₽ не видно') + item(f.hump, f.hump ? 'второй пик виден' : 'второй пик не выделяется');
       $('bw-msg').textContent = message(h);
       if (s.set === 'all' && !log && f.zero && f.peak) s.done[0] = true;
       if (s.set === 'o12' && log && f.hump) s.done[1] = true;
       if (s.done[1] && s.set === 'o12' && !f.hump) s.done[2] = true;
       $('bw-tasks').innerHTML = TASKS.map((t, i) => `<li class="${s.done[i] ? 'on' : ''}"><b>${s.done[i] ? '✓' : i + 1}</b>${t}</li>`).join('');
       const seen = [D.zeros ? f.zero : null, f.peak, f.hump].filter(v => v === true).length, total = D.zeros ? 3 : 2;
-      $('bw-s1').textContent = `Корзин: ${s.k} · ${log ? 'шаг' : 'ширина'} ${width(h, s.sc)}`;
-      $('bw-s2').textContent = `${SNAME[s.set]}: ${num(D.x.length)}`;
-      $('bw-s3').textContent = `видно ${seen} из ${total} · ящик не менялся`;
+      $('bw-s1').textContent = `Интервалов: ${s.k} · ${log ? 'шаг' : 'ширина'} ${width(h, s.sc)}`;
+      $('bw-s2').textContent = `${SNAME[s.set]} · строк: ${num(D.x.length)}`;
+      $('bw-s3').textContent = `признаков на гистограмме: ${seen} из ${total}`;
     }
 
     box.addEventListener('click', e => {
@@ -431,7 +431,7 @@
     return {
       describe() {
         const h = H(s.set, s.sc, s.k), f = h.f;
-        return `${SNAME[s.set]}; шкала ${s.sc === 'log' ? 'логарифмическая' : 'обычная'}; ${s.k} корзин, ширина ${width(h, s.sc)}; нули ${SETS[s.set].zeros ? (f.zero ? 'видны отдельно' : 'слиты с покупками') : 'отсутствуют'}; пик на 5 000 ₽ ${f.peak ? 'виден' : 'не виден'}; второй горб ${f.hump ? 'виден' : 'не виден'}; ящик с усами не меняется (Q1 ${num(SETS[s.set].box.q1)}, медиана ${num(SETS[s.set].box.med)}, Q3 ${num(SETS[s.set].box.q3)})`;
+        return `${SNAME[s.set]}; шкала ${s.sc === 'log' ? 'логарифмическая' : 'обычная'}; ${s.k} корзин, ширина ${width(h, s.sc)}; нули ${SETS[s.set].zeros ? (f.zero ? 'видны отдельно' : 'слиты с покупками') : 'отсутствуют'}; пик на 5 000 ₽ ${f.peak ? 'виден' : 'не виден'}; второй пик ${f.hump ? 'виден' : 'не виден'}; ящик с усами не меняется (Q1 ${num(SETS[s.set].box.q1)}, медиана ${num(SETS[s.set].box.med)}, Q3 ${num(SETS[s.set].box.q3)})`;
       }
     };
   }
@@ -442,57 +442,57 @@
     short: 'DA-07',
     title: 'Распределения и выбросы',
     where: 'блок «Дата аналитика», тема 07 «Разведочный анализ», страница 7.2',
-    aiData: 'учебная выгрузка clients_export.csv интернет-магазина (12 040 клиентов за I квартал 2026): траты spend_q1 с 14% нулей, пиком на 5 000 ₽, плечом оптовиков около 40 тыс. ₽ и пятью ошибками ×1000; возраст age с заглушкой 99; число заказов orders_q1 с кодом −1',
+    aiData: 'В clients_export.csv 12 040 строк за I квартал 2026 года, в том числе повторные записи. Квартальные траты в spend_q1 включают 1 717 нулевых сумм, 381 сумму ровно 5 000 ₽ и пять ошибочных сумм в миллионах. В age число 99 обозначает пропуск, в orders_q1 неизвестное число заказов записано как −1.',
     scene,
     widgets: { bins: buildBins },
-    code: /*code:start*/{"c1_describe": {"title": "describe: траты от 0 до 19,9 млн, медиана в 2,5 раза ниже среднего", "badge": "проверено: Python 3.13, pandas 3.0.5, SciPy 1.18.1", "lang": "python", "code": "import numpy as np\nimport pandas as pd\nfrom scipy import stats\n\ndf = pd.read_csv(\"data/eda/clients_export.csv\")\nnum = df.select_dtypes(\"number\").drop(columns=\"client_id\")  # id — ярлык, а не величина\npct = [0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99]\nprint(num.describe(percentiles=pct).round(1).to_string())\n\ns = df[\"spend_q1\"]\nprint(\"\\nусечённое среднее, по 10% с краёв:\", round(stats.trim_mean(s, 0.1)))\nprint(\"MAD — медиана |x − медиана|:\", stats.median_abs_deviation(s))", "out": "           age     tier  visits_q1  orders_q1    spend_q1\ncount  12040.0  12040.0    12040.0    12040.0     12040.0\nmean      38.3      2.2        8.2        2.0     12379.2\nstd       14.8      1.2        3.3        1.5    259131.0\nmin       18.0      1.0        0.0       -1.0         0.0\n1%        18.0      1.0        2.0       -1.0         0.0\n5%        18.0      1.0        3.0        0.0         0.0\n25%       29.0      1.0        6.0        1.0      2560.0\n50%       37.0      2.0        8.0        2.0      5020.0\n75%       44.0      3.0       10.0        3.0      9800.0\n95%       59.0      5.0       14.0        5.0     25470.0\n99%       99.0      5.0       18.0        6.0     52227.6\nmax       99.0      5.0       24.0       10.0  19931000.0\n\nусечённое среднее, по 10% с краёв: 6080\nMAD — медиана |x − медиана|: 3160.0"}, "c2_hist_all": {"title": "Одна строка — пять гистограмм, и у трат вышел один столбик", "badge": "проверено: Python 3.13, pandas 3.0.5, matplotlib 3.10.0", "lang": "python", "code": "axes = num.hist(bins=30, figsize=(12, 6), layout=(2, 3))  # пять гистограмм одним вызовом\n\nfor ax in axes.flat[:num.shape[1]]:               # что нарисовано: высоты столбиков\n    h = np.array([bar.get_height() for bar in ax.patches])\n    lo = round(ax.patches[0].get_x(), 6) + 0.0   # + 0.0 убирает «−0»\n    hi = ax.patches[-1].get_x() + ax.patches[-1].get_width()\n    print(f\"{ax.get_title():10} {lo:>4,.0f} … {hi:<11,.0f} пустых корзин: {(h == 0).sum():>2}\"\n          f\"   в самой высокой: {h.max() / h.sum():>4.0%}\")", "out": "age          18 … 99          пустых корзин:  7   в самой высокой:  10%\ntier          1 … 5           пустых корзин: 25   в самой высокой:  40%\nvisits_q1     0 … 24          пустых корзин:  5   в самой высокой:  12%\norders_q1    -1 … 10          пустых корзин: 18   в самой высокой:  26%\nspend_q1      0 … 19,931,000  пустых корзин: 24   в самой высокой: 100%"}, "c3_round_peaks": {"title": "На 5 000 ₽ клиентов в 44 раза больше, чем на соседних суммах", "badge": "проверено: Python 3.13, pandas 3.0.5, NumPy 2.5.3", "lang": "python", "code": "pos = s[(s > 0) & (s < 1_000_000)]                # покупатели, без пяти ошибок ×1000\ncnt = pos.value_counts().reindex(np.arange(10, 105_000, 10), fill_value=0)\nnear = (cnt.rolling(61, center=True, min_periods=1).sum() - cnt) / 60  # соседи ±300 ₽\nratio = (cnt / near).where((cnt.index % 500 == 0) & (cnt >= 10))  # круглые и не редкие\n\ntop = ratio.nlargest(4).index\nprint(pd.DataFrame({\"клиентов\": cnt[top], \"у соседа\": near[top].round(1),\n                    \"во сколько раз\": ratio[top].round(1)}).to_string())\nround1000 = pos % 1000 == 0\nprint(f\"кратны 1 000: {round1000.mean():.1%} сумм, без 5 000 ₽: \"\n      f\"{(round1000 & (pos != 5000)).mean():.1%} (случайно ждём около 1%)\")", "out": "          клиентов  у соседа  во сколько раз\nspend_q1                                    \n5000           381       8.6            44.0\n6500            13       6.5             2.0\n6000            11       7.9             1.4\n2500            15      12.0             1.2\nкратны 1 000: 4.6% сумм, без 5 000 ₽: 0.9% (случайно ждём около 1%)"}, "c4_rules": {"title": "Три правила — от 5 до 844 флагов на одном столбце", "badge": "проверено: Python 3.13, pandas 3.0.5, SciPy 1.18.1", "lang": "python", "code": "q1, q3 = s.quantile([0.25, 0.75])\nmad = stats.median_abs_deviation(s)\nbounds = {\"IQR\": q3 + 1.5 * (q3 - q1),              # правило Тьюки\n          \"z > 3\": s.mean() + 3 * s.std(),           # три стандартных отклонения\n          \"MAD > 3,5\": s.median() + 3.5 * mad / 0.6745}  # модифицированная z-оценка\nerr = s > 1_000_000                                  # пять ошибок ×1000 с логарифмической шкалы\n\nrows = {rule: {\"граница, ₽\": round(b), \"флагов\": (s > b).sum(),\n               \"из 5 ошибок\": (s[err] > b).sum()} for rule, b in bounds.items()}\nprint(pd.DataFrame(rows).T.to_string())\n\nclean = s[~err]                                      # без ошибок маскировка уходит\nz_bound = clean.mean() + 3 * clean.std()\nprint(f\"\\nz > 3 без ошибок: граница {z_bound:,.0f} ₽, флагов {(clean > z_bound).sum()}\")\nboth = (s > bounds[\"IQR\"]) & (s > bounds[\"MAD > 3,5\"])\nprint(\"общих флагов у IQR и MAD:\", both.sum(), \"из\", (s > bounds[\"IQR\"]).sum())", "out": "           граница, ₽  флагов  из 5 ошибок\nIQR             20660     844            5\nz > 3          789772       5            5\nMAD > 3,5       21417     795            5\n\nz > 3 без ошибок: граница 37,329 ₽, флагов 298\nобщих флагов у IQR и MAD: 795 из 844"}, "n1_zeros": {"title": "Нули — клиенты без заказов, и логарифм их не берёт", "badge": "проверено: Python 3.13, pandas 3.0.5, NumPy 2.5.3", "lang": "python", "code": "import numpy as np\nimport pandas as pd\n\ndf = pd.read_csv(\"data/eda/clients_export.csv\")\ns = df[\"spend_q1\"]\nzero = s == 0\nprint(f\"нулей: {zero.sum()} из {len(s)} ({zero.mean():.1%})\")\nprint(\"заказов у них:\", df.loc[zero, \"orders_q1\"].value_counts().to_dict())\nprint(\"медиана: все\", s.median(), \"| купившие\", s[~zero].median())\n\nfirst = s.head(4).to_numpy()                  # 0, 0, 0 и 9 710 ₽\nprint(np.log10(first))\nprint(np.log1p(first).round(2))               # log(1 + x): ноль остаётся нулём\nprint(np.log1p(df[\"orders_q1\"].to_numpy()).min())  # но −1 заказ из 7.1 даёт −inf", "out": "нулей: 1717 из 12040 (14.3%)\nзаказов у них: {0.0: 1690, -1.0: 27}\nмедиана: все 5020.0 | купившие 6060.0\nn1_zeros.py:12: RuntimeWarning: divide by zero encountered in log10\n  print(np.log10(first))\n[      -inf       -inf       -inf 3.98721923]\n[0.   0.   0.   9.18]\nn1_zeros.py:14: RuntimeWarning: divide by zero encountered in log1p\n  print(np.log1p(df[\"orders_q1\"].to_numpy()).min())  # но −1 заказ из 7.1 даёт −inf\n-inf", "note": "Строки RuntimeWarning — предупреждения NumPy о делении на ноль внутри логарифма. В Jupyter они такие же, только с другим именем файла."}, "n2_age": {"title": "99 — не возраст, а код «не указан»: в пропуск, строку оставить", "badge": "проверено: Python 3.13, pandas 3.0.5", "lang": "python", "code": "import pandas as pd\n\ndf = pd.read_csv(\"data/eda/clients_export.csv\")\nage = df[\"age\"]\nvc = age.value_counts().sort_index()\nprint(vc.iloc[[0, 1, 2, -3, -2, -1]].to_string())   # края: 18, 19, 20 … 74, 75, 99\nprint(f\"среднее {age.mean():.1f}, без 99 — {age[age != 99].mean():.1f}\")\n\ndf[\"age_missing\"] = age == 99              # 99 — код «не указан», то есть пропуск\ndf[\"age\"] = age.mask(df[\"age_missing\"])    # 99 → NaN, строка и другие столбцы остаются\nprint(\"пропусков:\", df[\"age\"].isna().sum(), \"| медиана:\", df[\"age\"].median())", "out": "age\n18.0    627\n19.0    125\n20.0    138\n74.0      3\n75.0      2\n99.0    360\nсреднее 38.3, без 99 — 36.4\nпропусков: 360 | медиана: 36.0"}, "n3_combo": {"title": "1 000 ₽ без единого заказа: по отдельности всё нормально", "badge": "проверено: Python 3.13, pandas 3.0.5", "lang": "python", "code": "import pandas as pd\n\ndf = pd.read_csv(\"data/eda/clients_export.csv\")\nd = df[df[\"spend_q1\"] < 1_000_000]                   # пять ошибок ×1000 уже нашли\n\n\ndef iqr_out(x):                                      # флаг по одной переменной\n    q1, q3 = x.quantile([0.25, 0.75])\n    return (x < q1 - 1.5 * (q3 - q1)) | (x > q3 + 1.5 * (q3 - q1))\n\n\nodd = d[(d[\"orders_q1\"] == 0) & (d[\"spend_q1\"] > 0)]  # траты без единого заказа\nprint(odd[[\"client_id\", \"visits_q1\", \"orders_q1\", \"spend_q1\"]].to_string(index=False))\nprint(\"флаг по spend_q1:\", iqr_out(d[\"spend_q1\"])[odd.index].any(),\n      \"| по orders_q1:\", iqr_out(d[\"orders_q1\"])[odd.index].any())\nprint(\"заказы есть, трат нет:\", ((d[\"orders_q1\"] > 0) & (d[\"spend_q1\"] == 0)).sum())\n\nper = d[\"spend_q1\"] / d[\"orders_q1\"].where(d[\"orders_q1\"] > 0)  # траты на один заказ\nprint(f\"на заказ: медиана {per.median():,.0f} ₽, дороже 20 000 ₽ — {(per > 20_000).sum()} клиента\")", "out": " client_id  visits_q1  orders_q1  spend_q1\n  101263.0          5        0.0    1000.0\nфлаг по spend_q1: False | по orders_q1: False\nзаказы есть, трат нет: 0\nна заказ: медиана 2,983 ₽, дороже 20 000 ₽ — 202 клиента"}}/*code:end*/,
+    code: /*code:start*/{"c1_describe": {"title": "Среднее по выгрузке в 2,5 раза больше медианы", "badge": "проверено: Python 3.13, pandas 3.0.5, SciPy 1.18.1", "lang": "python", "code": "import numpy as np\nimport pandas as pd\nfrom scipy import stats\n\ndf = pd.read_csv(\"data/eda/clients_export.csv\")\nnum = df.select_dtypes(\"number\").drop(columns=\"client_id\")  # id — ярлык, а не величина\npct = [0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99]\nprint(num.describe(percentiles=pct).round(1).to_string())\n\ns = df[\"spend_q1\"]\nprint(\"\\nусечённое среднее, по 10% с краёв:\", round(stats.trim_mean(s, 0.1)))\nprint(\"MAD — медиана |x − медиана|:\", stats.median_abs_deviation(s))", "out": "           age     tier  visits_q1  orders_q1    spend_q1\ncount  12040.0  12040.0    12040.0    12040.0     12040.0\nmean      38.3      2.2        8.2        2.0     12379.2\nstd       14.8      1.2        3.3        1.5    259131.0\nmin       18.0      1.0        0.0       -1.0         0.0\n1%        18.0      1.0        2.0       -1.0         0.0\n5%        18.0      1.0        3.0        0.0         0.0\n25%       29.0      1.0        6.0        1.0      2560.0\n50%       37.0      2.0        8.0        2.0      5020.0\n75%       44.0      3.0       10.0        3.0      9800.0\n95%       59.0      5.0       14.0        5.0     25470.0\n99%       99.0      5.0       18.0        6.0     52227.6\nmax       99.0      5.0       24.0       10.0  19931000.0\n\nусечённое среднее, по 10% с краёв: 6080\nMAD — медиана |x − медиана|: 3160.0"}, "c2_hist_all": {"title": "В первом интервале гистограммы трат оказались почти все суммы", "badge": "проверено: Python 3.13, pandas 3.0.5, matplotlib 3.10", "lang": "python", "code": "axes = num.hist(bins=30, figsize=(12, 6), layout=(2, 3))  # пять гистограмм одним вызовом\n\nfor ax in axes.flat[:num.shape[1]]:               # что нарисовано: высоты столбиков\n    h = np.array([bar.get_height() for bar in ax.patches])\n    lo = round(ax.patches[0].get_x(), 6) + 0.0   # + 0.0 убирает «−0»\n    hi = ax.patches[-1].get_x() + ax.patches[-1].get_width()\n    print(f\"{ax.get_title():10} {lo:>4,.0f} … {hi:<11,.0f} пустых интервалов: {(h == 0).sum():>2}\"\n          f\"   доля записей в самом высоком столбце: {h.max() / h.sum():>6.2%}\")", "out": "age          18 … 99          пустых интервалов:  7   доля записей в самом высоком столбце: 10.47%\ntier          1 … 5           пустых интервалов: 25   доля записей в самом высоком столбце: 40.00%\nvisits_q1     0 … 24          пустых интервалов:  5   доля записей в самом высоком столбце: 12.18%\norders_q1    -1 … 10          пустых интервалов: 18   доля записей в самом высоком столбце: 26.10%\nspend_q1      0 … 19,931,000  пустых интервалов: 24   доля записей в самом высоком столбце: 99.96%"}, "c3_round_peaks": {"title": "Сумма 5 000 ₽ встречается в 44 раза чаще, чем в среднем соседние суммы", "badge": "проверено: Python 3.13, pandas 3.0.5, NumPy 2.5.3", "lang": "python", "code": "pos = s[(s > 0) & (s < 1_000_000)]                # строки с положительными тратами без пяти миллионных сумм\ncnt = pos.value_counts().reindex(np.arange(10, 105_000, 10), fill_value=0)\nnear = (cnt.rolling(61, center=True, min_periods=1).sum() - cnt) / 60  # соседи ±300 ₽\nratio = (cnt / near).where((cnt.index % 500 == 0) & (cnt >= 10))  # круглые и не редкие\n\ntop = ratio.nlargest(4).index\nprint(pd.DataFrame({\"записей\": cnt[top], \"среднее у соседей\": near[top].round(1),\n                    \"во сколько раз\": ratio[top].round(1)}).to_string())\nround1000 = pos % 1000 == 0\nprint(f\"Среди положительных сумм {round1000.mean():.1%} кратны 1 000 ₽.\")\nprint(f\"Кратны 1 000 ₽ и отличаются от 5 000 ₽: {(round1000 & (pos != 5000)).mean():.1%} всех положительных сумм в расчёте.\")", "out": "          записей  среднее у соседей  во сколько раз\nspend_q1                                            \n5000          381                8.6            44.0\n6500           13                6.5             2.0\n6000           11                7.9             1.4\n2500           15               12.0             1.2\nСреди положительных сумм 4.6% кратны 1 000 ₽.\nКратны 1 000 ₽ и отличаются от 5 000 ₽: 0.9% всех положительных сумм в расчёте."}, "c4_rules": {"title": "Число сумм выше порога зависит от правила", "badge": "проверено: Python 3.13, pandas 3.0.5, SciPy 1.18.1", "lang": "python", "code": "q1, q3 = s.quantile([0.25, 0.75])\nmad = stats.median_abs_deviation(s)\nbounds = {\"IQR\": q3 + 1.5 * (q3 - q1),              # правило Тьюки\n          \"z > 3\": s.mean() + 3 * s.std(),           # три стандартных отклонения\n          \"модиф. z > 3,5\": s.median() + 3.5 * mad / 0.6745}  # модифицированная z-оценка\nerr = s > 1_000_000                                  # пять миллионных сумм, видимых на логарифмической шкале\n\nrows = {rule: {\"граница, ₽\": round(b), \"выше границы\": (s > b).sum(),\n               \"из пяти миллионных сумм\": (s[err] > b).sum()} for rule, b in bounds.items()}\nprint(pd.DataFrame(rows).T.to_string())\n\nclean = s[~err]                                      # повторяем расчёт без пяти миллионных сумм\nz_bound = clean.mean() + 3 * clean.std()\nprint(f\"\\nz > 3 без пяти миллионных сумм: граница {z_bound:,.0f} ₽, выше неё {(clean > z_bound).sum()} записей\")\nboth = (s > bounds[\"IQR\"]) & (s > bounds[\"модиф. z > 3,5\"])\nprint(\"выше обеих границ, IQR и MAD:\", both.sum(), \"из\", (s > bounds[\"IQR\"]).sum())", "out": "                граница, ₽  выше границы  из пяти миллионных сумм\nIQR                  20660           844                        5\nz > 3               789772             5                        5\nмодиф. z > 3,5       21417           795                        5\n\nz > 3 без пяти миллионных сумм: граница 37,329 ₽, выше неё 298 записей\nвыше обеих границ, IQR и MAD: 795 из 844"}, "n1_zeros": {"title": "В 27 строках с нулевыми тратами число заказов неизвестно", "badge": "проверено: Python 3.13, pandas 3.0.5, NumPy 2.5.3", "lang": "python", "code": "import numpy as np\nimport pandas as pd\n\ndf = pd.read_csv(\"data/eda/clients_export.csv\")\ns = df[\"spend_q1\"]\nzero = s == 0\nprint(f\"нулей: {zero.sum()} из {len(s)} ({zero.mean():.1%})\")\nprint(\"число заказов в строках с нулевыми тратами (−1 — пропуск):\", df.loc[zero, \"orders_q1\"].value_counts().to_dict())\nprint(\"медиана: все\", s.median(), \"| строки с положительными тратами\", s[~zero].median())\n\nfirst = s.head(4).to_numpy()                  # 0, 0, 0 и 9 710 ₽\nprint(np.log10(first))\nprint(np.log1p(first).round(2))               # log(1 + x): ноль остаётся нулём\nprint(np.log1p(df[\"orders_q1\"].to_numpy()).min())  # код пропуска −1 даёт −inf", "out": "нулей: 1717 из 12040 (14.3%)\nчисло заказов в строках с нулевыми тратами (−1 — пропуск): {0.0: 1690, -1.0: 27}\nмедиана: все 5020.0 | строки с положительными тратами 6060.0\nn1_zeros.py:12: RuntimeWarning: divide by zero encountered in log10\n  print(np.log10(first))\n[      -inf       -inf       -inf 3.98721923]\n[0.   0.   0.   9.18]\nn1_zeros.py:14: RuntimeWarning: divide by zero encountered in log1p\n  print(np.log1p(df[\"orders_q1\"].to_numpy()).min())  # код пропуска −1 даёт −inf\n-inf", "note": "При вычислении log10(0) и log1p(−1) NumPy возвращает −inf и выводит предупреждение. Имя файла в тексте предупреждения зависит от среды запуска."}, "n2_age": {"title": "После замены кода 99 на пропуск средний возраст снижается", "badge": "проверено: Python 3.13, pandas 3.0.5", "lang": "python", "code": "import pandas as pd\n\ndf = pd.read_csv(\"data/eda/clients_export.csv\")\nage = df[\"age\"]\nvc = age.value_counts().sort_index()\nprint(vc.iloc[[0, 1, 2, -3, -2, -1]].to_string())   # края: 18, 19, 20 … 74, 75, 99\nprint(f\"среднее {age.mean():.1f}, без 99 — {age[age != 99].mean():.1f}\")\n\ndf[\"age_missing\"] = age == 99              # 99 — код «не указан», то есть пропуск\ndf[\"age\"] = age.mask(df[\"age_missing\"])    # 99 → NaN, строка и другие столбцы остаются\nprint(\"пропусков:\", df[\"age\"].isna().sum(), \"| медиана:\", df[\"age\"].median())", "out": "age\n18.0    627\n19.0    125\n20.0    138\n74.0      3\n75.0      2\n99.0    360\nсреднее 38.3, без 99 — 36.4\nпропусков: 360 | медиана: 36.0"}, "n3_combo": {"title": "В одной строке указаны траты при нуле заказов", "badge": "проверено: Python 3.13, pandas 3.0.5", "lang": "python", "code": "import pandas as pd\n\ndf = pd.read_csv(\"data/eda/clients_export.csv\")\nd = df[df[\"spend_q1\"] < 1_000_000]                   # исключаем пять миллионных сумм\n\n\ndef iqr_out(x):                                      # выход за границу по одному столбцу\n    q1, q3 = x.quantile([0.25, 0.75])\n    return (x < q1 - 1.5 * (q3 - q1)) | (x > q3 + 1.5 * (q3 - q1))\n\n\nodd = d[(d[\"orders_q1\"] == 0) & (d[\"spend_q1\"] > 0)]  # траты без единого заказа\nprint(odd[[\"client_id\", \"visits_q1\", \"orders_q1\", \"spend_q1\"]].to_string(index=False))\nprint(\"за границами IQR по spend_q1:\", iqr_out(d[\"spend_q1\"])[odd.index].any(),\n      \"| по orders_q1:\", iqr_out(d[\"orders_q1\"])[odd.index].any())\nprint(\"заказы есть, трат нет:\", ((d[\"orders_q1\"] > 0) & (d[\"spend_q1\"] == 0)).sum())\n\nper = d[\"spend_q1\"] / d[\"orders_q1\"].where(d[\"orders_q1\"] > 0)  # траты на один заказ\nprint(f\"Медиана трат на заказ: {per.median():,.0f} ₽. Число строк с тратами выше 20 000 ₽ на заказ: {(per > 20_000).sum()}\")", "out": " client_id  visits_q1  orders_q1  spend_q1\n  101263.0          5        0.0    1000.0\nза границами IQR по spend_q1: False | по orders_q1: False\nзаказы есть, трат нет: 0\nМедиана трат на заказ: 2,983 ₽. Число строк с тратами выше 20 000 ₽ на заказ: 202"}}/*code:end*/,
     questions: {
-    q1: { sec: 'bins', title: 'Сначала предскажите', q: 'Гистограмма трат всех клиентов при 15 корзинах по Стёрджесу — один горб у нуля и хвост. Что появится, если поднять число корзин до 166 по правилу Фридмана — Диакониса?', opts: [['Ничего нового: форма та же, только столбики зубчатее'], ['Отдельный столбик нулей и узкий пик на 5 000 ₽', 1], ['Второй горб оптовиков около 40 тыс. ₽ встанет отдельной вершиной'], ['Ящик с усами рядом тоже покажет нули и пик']],
-      why: 'При 166 корзинах ширина корзины — 631 ₽, уже самой маленькой покупки в 720 ₽, поэтому 1 717 нулей встают отдельным столбиком, а 381 сумма ровно 5 000 ₽ — пиком над соседями. Форма не та же: широкие корзины эти детали сливали. Второй горб на всех клиентах не встаёт ни при каком числе корзин: хвост розницы с 5–10 заказами заливает впадину, остаётся плечо. Ящик с усами считается из пяти чисел и от корзин не зависит.' },
-    q2: { sec: 'idea', q: 'В анимации ящик с усами построен по тратам всех 12 040 клиентов. Что из этого он показать не может?', opts: [['Пять сумм в миллионах далеко от остальных'], ['Медиану и квартили'], ['Группу нулей, пик на 5 000 ₽ и плечо оптовиков', 1], ['Что значения за усом вообще есть']],
-      why: 'Ящик — это квартили, медиана, усы на 1,5 IQR и точки за ними. Далёкие точки, медиану и сам факт выбросов он показывает. Но форма между квартилями и за усами ему не видна: 1 717 нулей прячутся за нижним усом, упёртым в ноль, пик на 5 000 ₽ — внутри ящика, а оптовики смешаны с розницей в куче из 839 точек.' },
-    q3: { sec: 'nuances', q: 'Когда логарифмическую шкалу нельзя применить к столбцу как есть?', opts: [['Когда значения больше миллиона'], ['Когда в столбце есть нули или отрицательные числа', 1], ['Когда распределение симметричное'], ['Когда строк меньше тысячи']],
-      why: 'Логарифм определён только для положительных чисел: log10(0) даёт −inf с предупреждением, логарифм отрицательного — NaN. Нули показывают отдельной группой или берут log1p, логарифм от x + 1; но и log1p ломается на −1, как у кода «неизвестно» в orders_q1. Большие значения логарифм как раз сжимает, а симметрия и размер выборки ему не мешают — просто на симметричных данных он мало что даёт.' },
-    q4: { sec: 'nuances', q: 'У 360 клиентов возраст 99, а владелец данных подтвердил, что так CRM пишет «не указан». Что сделать?', opts: [['Удалить эти строки'], ['Считать выбросами и обрезать до 75'], ['Заменить 99 на NaN и добавить флаг, строки оставить', 1], ['Заменить 99 на средний возраст']],
-      why: '99 — не возраст, а код пропуска, поэтому место ему среди пропусков: NaN плюс флаг age_missing. Строки остаются, и их траты и заказы участвуют в анализе. Удаление теряет 360 клиентов целиком, обрезка до 75 и среднее придумывают возраст, которого никто не называл; к тому же среднее с 99 завышено — 38,3 года вместо 36,4.' },
-    q5: { sec: 'code', q: 'Почему эта строка на spend_q1 отметила только 5 клиентов, а правило IQR — 844?', code: 'flag = (s - s.mean()).abs() / s.std() > 3', lang: 'python', opts: [['Правило трёх сигм работает только с логарифмом'], ['Пять ошибок раздули стандартное отклонение до 259 131 ₽, и граница уехала к 790 тыс.', 1], ['abs() отбрасывает половину значений'], ['IQR ошибочно считает выбросами нули']],
-      why: 'z-оценка меряет расстояние в стандартных отклонениях, а их считают по тем же данным вместе с выбросами. Пять сумм в миллионах подняли std до 259 131 ₽, и граница среднее + 3 std оказалась около 789 772 ₽ — выше всех настоящих сумм. Это маскировка. Без пяти ошибок граница — 37 329 ₽, и флагов уже 298. abs() нужен, чтобы ловить оба хвоста, а IQR нули не отмечает: нижняя граница отрицательна.' },
-    q6: { sec: 'idea', q: 'NumPy с bins="fd" на сыром столбце spend_q1 строит 31 548 корзин. Почему так много?', opts: [['Правило Фридмана — Диакониса всегда даёт больше 10 000 корзин'], ['Ширина корзины 2 · IQR · n^(−1/3) около 632 ₽, а пять ошибок растянули размах до 20 млн', 1], ['В столбце 31 548 разных значений'], ['NumPy считает корзины по числу строк']],
-      why: 'Ширина по Фридману — Диаконису зависит только от IQR и n, поэтому выбросы её не трогают: 2 · 7 240 · 12 040^(−1/3) ≈ 632 ₽. Но число корзин — размах, делённый на ширину, а размах из-за ошибок — 19,9 млн. Отсюда 31 548 корзин, почти все пустые. Правило устойчиво к хвостам, пока считает ширину, но не когда считает число корзин.' },
-    q7: { sec: 'outliers', q: 'Оптовиков с тратами 25–70 тыс. ₽ правило IQR отметило выбросами. Что с ними делать в отчёте о тратах?', opts: [['Удалить: правило их нашло'], ['Заменить на медиану, чтобы не портили среднее'], ['Выделить в отдельный сегмент и показывать отдельно от розницы', 1], ['Ничего: логарифм решит проблему']],
-      why: 'Оптовики — не ошибка и не случайный хвост розницы, а другая популяция со своим чеком: у клиентов с 1–2 заказами они дают отдельный горб. Удаление занизит выручку, замена на медиану придумает траты, а логарифм только изменит картинку. Честный отчёт — по сегментам: нули, розница, оптовики.' }
+    q1: { sec: 'bins', title: 'Сначала предскажите', q: 'В интерактиве пять миллионных сумм исключены. Что изменится на линейной гистограмме для всех записей, если увеличить число интервалов с 15 до 166?', opts: [['Станет виден только длинный правый хвост'], ['Нули окажутся в отдельном столбце, а около 5 000 ₽ станет заметен пик', 1], ['Появится отдельный пик оптовых покупок около 40 000 ₽'], ['Изменятся квартили на соседнем ящике с усами']],
+      why: 'Ширина интервала уменьшится примерно с 6 988 до 631 ₽. Минимальная положительная сумма равна 720 ₽, поэтому первый столбец будет содержать только 1 717 нулей. Ещё один столбец окажется выше соседних благодаря 381 записи на сумму ровно 5 000 ₽. Квартили рассчитаны по тем же записям и остаются прежними.' },
+    q2: { sec: 'idea', q: 'Какую особенность трат нельзя определить по ящику с усами?', opts: [['Есть ли значения значительно выше верхнего уса'], ['Где находятся медиана и квартили'], ['Сколько записей с нулевыми тратами и есть ли пик на 5 000 ₽', 1], ['На каком значении заканчивается верхний ус']],
+      why: 'Ящик показывает квартили и медиану. За усами отмечены отдельные значения, в том числе пять сумм в миллионах. Однако по положению нижнего уса у нуля нельзя определить частоту нулевых трат. Для этого подойдут таблица частот, гистограмма или эмпирическая функция распределения.' },
+    q3: { sec: 'nuances', q: 'Какие значения нельзя разместить на обычной логарифмической оси?', opts: [['Суммы свыше миллиона'], ['Ноль и отрицательные суммы', 1], ['Значения из симметричного распределения'], ['Значения из выборки меньше тысячи строк']],
+      why: 'Для конечного действительного логарифма аргумент должен быть положительным. Нули можно показать отдельным столбцом. Преобразование log1p(x) сохраняет ноль, но требует x > −1. Поэтому код пропуска −1 в числе заказов нужно обработать до преобразования.' },
+    q4: { sec: 'nuances', q: 'В 360 строках указан возраст 99 лет. Владелец CRM подтвердил, что этим числом обозначают неизвестный возраст. Как обработать записи?', opts: [['Удалить все 360 строк'], ['Заменить 99 на максимальный допустимый возраст'], ['Отметить возраст как пропуск и сохранить остальные сведения о клиентах', 1], ['Записать всем 360 клиентам средний возраст']],
+      why: 'У этих клиентов неизвестен возраст. Их заказы и траты можно анализировать. Сохраните признак исходного пропуска age_missing и замените 99 на NaN. Включение кода 99 в расчёт завышает средний возраст: 38,3 года вместо 36,4.' },
+    q5: { sec: 'code', q: 'Почему правило из примера отметило пять сумм, хотя по правилу IQR за верхней границей лежат 844 суммы?', code: 'flag = (s - s.mean()).abs() / s.std() > 3', lang: 'python', opts: [['Для этого расчёта нужен логарифм'], ['Миллионные суммы увеличили стандартное отклонение, и верхняя граница поднялась почти до 790 тыс. ₽', 1], ['abs() исключает большие положительные отклонения'], ['По правилу IQR все нули попали в выбросы']],
+      why: 'Расстояние до среднего здесь выражено в стандартных отклонениях. Пять миллионных сумм увеличили стандартное отклонение до 259 131 ₽. Выше границы «среднее плюс три стандартных отклонения» оказались лишь эти пять сумм. После их исключения граница снижается примерно до 37,3 тыс. ₽, выше неё лежат 298 записей.' },
+    q6: { sec: 'idea', q: 'Почему NumPy с bins="fd" на исходном столбце трат строит 31 548 интервалов?', opts: [['Это минимальное число интервалов для больших выборок'], ['Рекомендуемая ширина около 632 ₽, а полный диапазон трат достигает почти 20 млн ₽', 1], ['В столбце ровно 31 548 различных сумм'], ['Число интервалов всегда совпадает с числом строк']],
+      why: 'Пять миллионных сумм почти не изменили межквартильный размах, поэтому рекомендуемая ширина осталась около 632 ₽. Число интервалов получают, деля полный размах на эту ширину и округляя вверх. В исходной выгрузке размах равен 19 931 000 ₽, поэтому большинство интервалов пусты.' },
+    q7: { sec: 'outliers', q: 'Правило IQR отметило крупные суммы. По первичным документам это реальные оптовые покупки. Как учесть их в отчёте о тратах клиентов?', opts: [['Исключить из выручки все суммы выше границы IQR'], ['Заменить крупные суммы медианой розничных покупок'], ['Сохранить суммы в общем итоге и отдельно показать показатели по сегментам', 1], ['Показать только логарифмы сумм']],
+      why: 'Оптовые покупки входят в выручку магазина. Однако оптовые и розничные клиенты различаются по размеру заказов. Сегментация позволяет описать обе группы и сохранить верный общий итог. Само превышение границы IQR служит поводом для проверки записи.' }
     },
     glossary: {
-      hist: { t: 'Гистограмма', en: 'histogram', d: 'График, где ось значений разрезана на корзины, а высота столбика — число значений в корзине.' },
-      bin: { t: 'Корзина', en: 'bin', d: 'Отрезок оси значений в гистограмме. Её ширина решает, какие детали формы видны.' },
-      sturges: { t: 'Правило Стёрджеса', en: "Sturges' rule", d: 'Число корзин ⌈log₂ n⌉ + 1. На больших скошенных данных даёт слишком мало корзин.' },
-      fd: { t: 'Правило Фридмана — Диакониса', en: 'Freedman–Diaconis rule', d: 'Ширина корзины 2 · IQR · n^(−1/3): зависит от середины данных и размера выборки, но не от хвостов.' },
-      box: { t: 'Ящик с усами', en: 'box plot', d: 'Квартили, медиана, усы до 1,5 IQR и точки за ними. Форму распределения не показывает.' },
-      kde: { t: 'Оценка плотности ядром', en: 'kernel density estimate, KDE', d: 'Гладкая кривая плотности: над каждым значением ставят маленький колокол и складывают их.' },
-      bandwidth: { t: 'Ширина окна', en: 'bandwidth', d: 'Ширина колокола в KDE. Играет ту же роль, что ширина корзины в гистограмме.' },
+      hist: { t: 'Гистограмма', en: 'histogram', d: 'График распределения числовых данных. В этом уроке интервалы равны по ширине, а высота столбца равна числу наблюдений в интервале.' },
+      bin: { t: 'Корзина', en: 'bin', d: 'Интервал значений, которым соответствует один столбец гистограммы. Его ширина влияет на то, насколько хорошо различимы пики.' },
+      sturges: { t: 'Правило Стёрджеса', en: "Sturges' rule", d: 'Правило выбора числа равных интервалов гистограммы по числу наблюдений n. Для 12 035 строк оно даёт 15 интервалов.' },
+      fd: { t: 'Правило Фридмана — Диакониса', en: 'Freedman–Diaconis rule', d: 'Правило выбора ширины интервала по межквартильному размаху IQR и числу наблюдений n. Рекомендуемая ширина равна 2 · IQR / ∛n.' },
+      box: { t: 'Ящик с усами', en: 'box plot', d: 'Диаграмма, на которой ящик ограничен первым и третьим квартилями, а линия внутри отмечает медиану. В варианте Тьюки каждый ус доходит до крайнего наблюдения в пределах 1,5 IQR от ближайшего края ящика.' },
+      kde: { t: 'Ядерная оценка плотности', en: 'kernel density estimate, KDE', d: 'Гладкая оценка плотности распределения, полученная усреднением ядер с центрами в наблюдаемых значениях. В примере используются гауссовы ядра.' },
+      bandwidth: { t: 'Ширина окна', en: 'bandwidth', d: 'Параметр сглаживания ядерной оценки плотности. Чем шире окно, тем менее заметны небольшие локальные пики.' },
       ecdf: { t: 'Эмпирическая функция распределения', en: 'empirical CDF, ECDF', d: 'Для каждого x — доля значений не больше x. Настроек не требует.' },
-      multimodal: { t: 'Многомодальность', en: 'multimodality', d: 'Несколько вершин у распределения. Обычно значит, что в данных смешаны разные группы.' },
-      heaping: { t: 'Пик на круглом значении', en: 'heaping', d: 'Лишние значения на круглой сумме или коде: 5 000, 99. След того, как данные записывали.' },
-      logscale: { t: 'Логарифмическая шкала', en: 'log scale', d: 'Ось, на которой равные отношения стоят на равных расстояниях.' },
-      log1p: { t: 'log1p', en: 'log(1 + x)', d: 'Логарифм от x + 1: ноль переходит в ноль, но −1 и меньше не годятся.' },
-      outlier: { t: 'Выброс', en: 'outlier', d: 'Значение, далёкое от остальных: ошибка, редкое настоящее значение или представитель другой группы.' },
-      population: { t: 'Другая популяция', en: 'mixture component', d: 'Группа объектов, устроенная иначе, чем основная: оптовики среди розничных клиентов.' },
-      robust: { t: 'Робастная статистика', en: 'robust statistic', d: 'Сводка, которую мало сдвигают крайние значения: медиана, усечённое среднее, MAD.' },
-      trimmed: { t: 'Усечённое среднее', en: 'trimmed mean', d: 'Среднее после того, как с каждого края отброшена заданная доля значений, например по 10%.' },
-      mad: { t: 'MAD', en: 'median absolute deviation', d: 'Медиана расстояний от значений до медианы. Устойчивая замена стандартному отклонению.' },
-      masking: { t: 'Маскировка', en: 'masking', d: 'Крайние значения раздувают среднее и стандартное отклонение и прячут другие выбросы от z-оценки.' },
-      sentinel: { t: 'Значение-заглушка', en: 'sentinel value', d: 'Число, которым система кодирует «нет данных»: 99 в возрасте, −1 в заказах.' },
-      combo: { t: 'Выброс по комбинации', en: 'multivariate outlier', d: 'Строка, где каждое значение обычное, а их сочетание невозможно или редко: траты без заказов.' }
+      multimodal: { t: 'Многомодальность', en: 'multimodality', d: 'Наличие у распределения нескольких пиков. Один из возможных источников — смешение нескольких групп наблюдений.' },
+      heaping: { t: 'Пик на круглом значении', en: 'heaping', d: 'Повышенная частота отдельных значений, например круглых сумм. Возможные причины — округление при записи или фиксированный номинал.' },
+      logscale: { t: 'Логарифмическая шкала', en: 'log scale', d: 'Шкала для положительных величин, на которой равным расстояниям соответствуют одинаковые отношения значений.' },
+      log1p: { t: 'log1p', en: 'log(1 + x)', d: 'Натуральный логарифм суммы 1 + x. При x = 0 возвращает 0. Для конечного действительного результата требуется x > −1.' },
+      outlier: { t: 'Выброс', en: 'outlier', d: 'Наблюдение, которое заметно отличается от остальных в выбранной группе. Причину выясняют по другим признакам и первичным данным.' },
+      population: { t: 'Подгруппа наблюдений', en: 'mixture component', d: 'Подгруппа наблюдений со своим распределением. Например, у оптовых и розничных покупателей могут различаться типичные суммы заказов.' },
+      robust: { t: 'Робастная статистика', en: 'robust statistic', d: 'Статистический показатель, на который слабо влияют несколько крайних наблюдений. Примеры — медиана, усечённое среднее и MAD.' },
+      trimmed: { t: 'Усечённое среднее', en: 'trimmed mean', d: 'Среднее по оставшимся значениям после удаления заданной доли наблюдений с каждого края упорядоченного ряда.' },
+      mad: { t: 'MAD', en: 'median absolute deviation', d: 'Медиана абсолютных отклонений от медианы выборки. Показывает типичное расстояние от наблюдения до медианы.' },
+      masking: { t: 'Маскировка', en: 'masking', d: 'Ситуация, когда одни крайние наблюдения мешают обнаружить другие. Например, они увеличивают стандартное отклонение и тем самым повышают верхний порог z-оценки.' },
+      sentinel: { t: 'Значение-заглушка', en: 'sentinel value', d: 'Специальное значение, которым в источнике обозначают отсутствие данных. В учебной выгрузке 99 в столбце возраста означает, что возраст неизвестен.' },
+      combo: { t: 'Многомерная аномалия', en: 'multivariate outlier', d: 'Необычное сочетание значений нескольких признаков. Каждое из значений по отдельности может быть вполне обычным.' }
     },
     materials: [
       ['da-7-2-distributions-outliers.md', 'Страница целиком в Markdown: текст, код, вопросы и глоссарий'],
-      ['data/eda/', 'Учебные данные темы 07 — общий набор: здесь нужна выгрузка clients_export.csv'],
+      ['data/eda/', 'Общий набор данных главы 7. Для этого урока нужен файл clients_export.csv'],
       ['distributions_outliers.ipynb', 'Ячейки раздела «Код» и три проверки из «Нюансов»'],
-      ['bin_width.py', 'Гистограммы интерактива «Ширина корзины» на NumPy при любом числе корзин']
+      ['bin_width.py', 'Гистограммы на NumPy для сравнения с интерактивом']
     ],
     prompts: [
-      ['Разбор формы моей переменной', 'Я вставлю describe() и value_counts().head(10) столбца из своих данных. Помоги вопросами решить, какой график показать первым, нужен ли логарифм и какие хвосты проверить.'],
-      ['Ошибка, редкость или другая популяция', 'Дай по очереди пять подозрительных значений из выгрузки интернет-магазина с соседними столбцами. Я скажу, ошибка это, редкость или другая популяция и что делать. Проверяй по источникам блокнота.'],
+      ['Как исследовать распределение', 'Я пришлю результат describe() и десять самых частых значений столбца. Помоги выбрать график и предложи, какие записи стоит проверить. Объясни, чего пока нельзя узнать по этой сводке.'],
+      ['Проверка необычных покупок', 'Предложи по очереди пять записей с необычными суммами. Приведи число заказов и другие доступные сведения. Спроси, какие данные мне понадобятся для проверки, и обсуди моё решение.'],
       ['Робастные сводки', 'Задай три вопроса о том, когда медиана, усечённое среднее и MAD лучше среднего и стандартного отклонения, и разбери мои ответы.']
     ]
   };

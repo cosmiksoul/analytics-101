@@ -2,7 +2,7 @@ import pandas as pd
 
 df = pd.read_csv("data/eda/clients_export.csv")
 print("полных дублей строк:", df.duplicated().sum())
-print("duplicated() по client_id:", df["client_id"].duplicated().sum())        # NaN тоже «совпадают» друг с другом
+print("duplicated() по client_id:", df["client_id"].duplicated().sum())        # повторяющиеся пропуски тоже учитываются
 key = df.dropna(subset=["client_id"])
 print("повторов среди непустых id:", key["client_id"].duplicated().sum())
 

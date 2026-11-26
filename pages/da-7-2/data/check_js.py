@@ -32,7 +32,7 @@ def feats(c, e, log, zeros):
     """То же правило, что feats() в page.js."""
     k, w = len(c), e[1] - e[0]
     cen = lambda i: 10 ** ((e[i] + e[i + 1]) / 2) if log else (e[i] + e[i + 1]) / 2  # noqa: E731
-    zero = None if not zeros else True if log else bool(w <= 1500 and c[0] >= 1.5 * c[1])
+    zero = None if not zeros else True if log else bool(c[0] == zeros)
     t = np.log10(5000) if log else 5000.0
     b = int(np.searchsorted(e[:-1], t, side="right") - 1)
     peak = False
@@ -64,14 +64,14 @@ for (const [name, x] of Object.entries(SETS)) {{
   r.box = boxStats(x); r.fd = binsFD(x); r.st = binsSturges(x); r.fdLog = binsFD(lg); r.stLog = binsSturges(lg);
   r.h = {{}}; r.f = {{}};
   for (const k of {json.dumps(KS)}) {{ r.h['lin' + k] = hist(x, k).c; r.h['log' + k] = hist(lg, k).c; }}
-  for (let k = 3; k <= 200; k++) for (const sc of ['lin', 'log']) {{ const h = hist(sc === 'log' ? lg : x, k), f = feats(h.c, h.e, sc === 'log', zeros > 0); r.f[sc + k] = [f.zero, f.peak, f.hump]; }}
+  for (let k = 3; k <= 200; k++) for (const sc of ['lin', 'log']) {{ const h = hist(sc === 'log' ? lg : x, k), f = feats(h.c, h.e, sc === 'log', zeros); r.f[sc + k] = [f.zero, f.peak, f.hump]; }}
   out.sets[name] = r;
 }}
 const lgAll = ALL.filter(v => v > 0).map(v => Math.log10(v)), lgO = O12.filter(v => v > 0).map(v => Math.log10(v));
 const H = hist(lgAll, binsFD(lgAll)); out.logH = H.c; out.logO = histEdges(lgO, H.e).c;
 console.log(JSON.stringify(out));
 """
-res = json.loads(subprocess.run(["node", "-e", node], capture_output=True, text=True, check=True).stdout)
+res = json.loads(subprocess.run(["node", "-"], input=node, capture_output=True, text=True, encoding="utf-8", check=True).stdout)
 
 bad = 0
 
@@ -112,7 +112,7 @@ for name, x in SETS.items():
     for k in range(3, 201):
         for sc in ("lin", "log"):
             c, e = np.histogram(lg if sc == "log" else x, bins=k)
-            f = feats(c, e, sc == "log", (x == 0).any())
+            f = feats(c, e, sc == "log", np.count_nonzero(x == 0))
             js = r["f"][f"{sc}{k}"]
             if [f["zero"], f["peak"], f["hump"]] != js:
                 nf += 1

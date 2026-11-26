@@ -98,14 +98,14 @@ DATA["sample"] = {"seed": seed, "n": len(smp)}
 # ---------------------------------------------------------------- 3. код
 B = "проверено: Python 3.13, pandas 3.0.5"
 BLOCKS = {
-    "na": ("«N/A» стал NaN сам, «-», −1 и 99 остались данными", B, None, None),
-    "dups": ("40 повторов ключа, а duplicated() насчитал 64", B, None, None),
-    "dates": ("Смесь поясов pandas не разберёт сам, а «угадай формат» портит даты", B, None, None),
-    "checklist": ("Десять проверок первого взгляда: семь подозрений до первого графика", B, None, None),
-    "missmap": ("Пропуски last_order_at стоят там, где заказов ноль", B + ", matplotlib 3.10",
-                "Тепловая карта ниже нарисована SVG по missing_map.csv, который сохраняет этот код; файл missing_map.svg от matplotlib в страницу не вшит.", None),
-    "ydata": ("Девять предупреждений отчёта, и только одно задевает подложенную проблему", "проверено: fg-data-profiling 4.20.0, pandas 2.3.3 (отдельное окружение)",
-              "Запущено в отдельном окружении: пакет требует pandas ниже 3.0. Прежняя версия, ydata-profiling 4.18.4 с импортом <code>from ydata_profiling import ProfileReport</code>, выдаёт те же девять предупреждений. Но в чистом окружении Python 3.13 она не импортируется, пока не поставить setuptools ниже 81: ей нужен модуль pkg_resources.", PROFILE_PY),
+    "na": ("Какие коды пропусков распознал pandas", B, None, None),
+    "dups": ("Почему duplicated() отметил 64 строки вместо 40", B, None, None),
+    "dates": ("Как формат и смещение от UTC влияют на дату", B, None, None),
+    "checklist": ("Как проверить структуру выгрузки в pandas", B, None, None),
+    "missmap": ("Где отсутствует дата последнего заказа", B + ", matplotlib 3.10",
+                "График ниже построен по долям пропусков из missing_map.csv. Скрипт также сохраняет отдельный рисунок missing_map.svg.", None),
+    "ydata": ("О чём предупреждает автоматический отчёт", "проверено: fg-data-profiling 4.20.0, pandas 2.3.3 (отдельное окружение)",
+              "Для этого примера использовано отдельное окружение с pandas 2.3.3. Прежняя версия, ydata-profiling 4.18.4 с импортом <code>from ydata_profiling import ProfileReport</code>, выдаёт те же девять предупреждений. Но в чистом окружении Python 3.13 она не импортируется, пока не поставить setuptools ниже 81: ей нужен модуль pkg_resources.", PROFILE_PY),
 }
 code, heat = {}, None
 with tempfile.TemporaryDirectory() as tmp:

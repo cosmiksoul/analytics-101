@@ -7,12 +7,12 @@ X = rng.normal(size=(n, k))
 pairs = [(i, j) for i in range(k) for j in range(i + 1, k)]
 res = [stats.pearsonr(X[:, i], X[:, j]) for i, j in pairs]
 hits = [pr for pr, rr in zip(pairs, res) if rr.pvalue < 0.05]
-print(len(pairs), "пар,", len(hits), "«значимых» при p < 0,05")
-print("сильнейшая |r| =", round(max(abs(rr.statistic) for rr in res), 2))
+print(f"Из {len(pairs)} пар значение p < 0,05 получили для {len(hits)}")
+print("максимум |r| =", round(max(abs(rr.statistic) for rr in res), 2))
 
 Y = rng.normal(size=(n, k))           # те же 20 метрик, следующие 86 дней
 again = sum(stats.pearsonr(Y[:, i], Y[:, j]).pvalue < 0.05 for i, j in hits)
-print("подтвердились на новых днях:", again, "из", len(hits))
+print("снова дали p < 0,05 на новых данных:", again, "из", len(hits))
 
 def finds(X):                         # число «находок» в одной матрице
     r = np.corrcoef(X, rowvar=False)[np.triu_indices(k, 1)]

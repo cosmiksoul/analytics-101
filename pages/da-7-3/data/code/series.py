@@ -5,7 +5,7 @@ cal = pd.date_range("2026-01-01", "2026-03-31", freq="D")    # какие дни
 print("строк:", len(d), "| дней в квартале:", len(cal))
 print("нет в выгрузке:", cal.difference(d.index).strftime("%d.%m").tolist())
 
-d = d.reindex(cal)                    # дыра — явные NaN, а не склейка 9 и 14 февраля
+d = d.reindex(cal)                    # добавляем строки с NaN за 10–13 февраля
 d["flag"] = "ok"
 d.loc[d["revenue"].isna(), "flag"] = "разрыв"
 d.loc[d.index[-1], "flag"] = "неполный день"            # выгрузка снята днём 31.03

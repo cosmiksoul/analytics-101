@@ -7,4 +7,4 @@ m["per_day_vs_jan_%"] = (m["per_day"] / m["per_day"].iloc[0] - 1) * 100
 print(m.assign(total=m["total"] / 1e6, per_day=m["per_day"] / 1e3).round(1))   # млн ₽ и тыс. ₽
 
 w = d.set_index("date")["revenue"].resample("W").agg(["sum", "size"])
-print(w.loc["2026-02-02":"2026-02-22"])         # неделя с разрывом
+print(w.loc["2026-02-02":"2026-02-22"])         # сравниваем суммы и число учтённых дней

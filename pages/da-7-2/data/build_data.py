@@ -100,7 +100,7 @@ ticks = "".join(f'<line class="d72-fg" x1="{fx(t):.1f}" x2="{fx(t):.1f}" y1="{T 
                 f'<text class="d72-fa" x="{fx(t):.1f}" y="{base + 15:.1f}" text-anchor="{"end" if t == 60000 else "middle"}">{num(t / 1000)}{" тыс." if t == 60000 else ""}</text>'
                 for t in range(0, 60001, 20000))
 k5 = float(kde(5000)[0])
-svg_kde = (f'<svg class="d72-fsvg" viewBox="0 0 {W} {H}" role="img" aria-label="Оценка плотности трат ядром: гладкая кривая с вершиной около {num(S["kde"]["peak"])} рублей, '
+svg_kde = (f'<svg class="d72-fsvg" viewBox="0 0 {W} {H}" role="img" aria-label="Ядерная оценка плотности трат: гладкая кривая с вершиной около {num(S["kde"]["peak"])} рублей, '
            f'пика на 5 000 рублей нет, а {num(below0 * 100, 1)} процента площади лежит левее нуля">'
            f'<text class="d72-ft" x="{L}" y="15">KDE, окно ≈ {num(bw)} ₽</text>'
            f'<text class="d72-fs" x="{L}" y="30">плотность по 12{NB}035 суммам</text>{ticks}'
@@ -110,14 +110,14 @@ svg_kde = (f'<svg class="d72-fsvg" viewBox="0 0 {W} {H}" role="img" aria-label="
            f'<text class="d72-fl" x="{fx(5000) + 5:.1f}" y="{fy(k5) - 18:.1f}">5{NB}000 ₽: пика нет</text>'
            f'<line class="d72-fm d72-fbadl" x1="{fx(-1500):.1f}" y1="{base - 4:.1f}" x2="{fx(15000) - 3:.1f}" y2="{T + 52:.1f}"/>'
            f'<text class="d72-fl d72-fbad" x="{fx(15000):.1f}" y="{T + 50:.1f}">{num(below0 * 100, 1)}% площади</text>'
-           f'<text class="d72-fl d72-fbad" x="{fx(15000):.1f}" y="{T + 63:.1f}">левее нуля: траты &lt; 0 ₽</text></svg>')
+           f'<text class="d72-fl d72-fbad" x="{fx(15000):.1f}" y="{T + 63:.1f}">слева от нуля</text></svg>')
 
-# ECDF: ломаная по сетке 200 ₽; точные скачки на 0 и 5 000 ₽ (точки 0 и 4 990 ₽ добавлены в сетку)
-egrid = np.unique(np.r_[np.arange(0, 60_001, 200), 4990])
+# Ступенчатая ECDF меняется только в наблюдаемых точках.
+egrid = np.unique(np.r_[X[X <= XMAX], XMAX])
 Fv = F(egrid)
 gx = lambda v: L + v / XMAX * (W - L - R)  # noqa: E731
 gy = lambda v: T + (1 - v) * (H - T - B)  # noqa: E731
-path = f"M{gx(0):.1f},{gy(0):.1f}" + "".join(f"L{gx(g):.1f},{gy(v):.1f}" for g, v in zip(egrid, Fv))
+path = f"M{gx(0):.1f},{gy(0):.1f}" + "".join(f"H{gx(g):.1f}V{gy(v):.1f}" for g, v in zip(egrid, Fv))
 F0, F49, F50 = float(F(0)), float(F(4990)), float(F(5000))
 S["ecdf"] = {"f0": r(F0 * 100, 1), "jump": r((F50 - F49) * 100, 1), "f4990": r(F49 * 100, 1), "f5000": r(F50 * 100, 1),
              "fHi": r(F(S["box"]["hi"]) * 100, 1)}
@@ -125,10 +125,10 @@ eticks = "".join(f'<line class="d72-fg" x1="{gx(t):.1f}" x2="{gx(t):.1f}" y1="{T
                  f'<text class="d72-fa" x="{gx(t):.1f}" y="{gy(0) + 15:.1f}" text-anchor="{"end" if t == 60000 else "middle"}">{num(t / 1000)}{" тыс." if t == 60000 else ""}</text>'
                  for t in range(0, 60001, 20000))
 eticks += "".join(f'<line class="d72-fg" x1="{L}" x2="{W - R}" y1="{gy(v):.1f}" y2="{gy(v):.1f}"/>' for v in (0.5, 1.0))
-svg_ecdf = (f'<svg class="d72-fsvg" viewBox="0 0 {W} {H}" role="img" aria-label="Эмпирическая функция распределения трат: ступенька {num(F0 * 100, 1)} процента на нуле, '
-            f'ступенька {num((F50 - F49) * 100, 1)} процента на 5 000 рублей, медиана 5 020 рублей">'
-            f'<text class="d72-ft" x="{L}" y="15">ECDF, без настроек</text>'
-            f'<text class="d72-fs" x="{L}" y="30">доля клиентов с тратами ≤ x</text>{eticks}'
+svg_ecdf = (f'<svg class="d72-fsvg" viewBox="0 0 {W} {H}" role="img" aria-label="Эмпирическая функция распределения трат: доля нулевых сумм {num(F0 * 100, 1)}%, '
+            f'на 5 000 рублей накопленная доля увеличивается на {num((F50 - F49) * 100, 1)} процентного пункта, медиана 5 020 рублей">'
+            f'<text class="d72-ft" x="{L}" y="15">ECDF</text>'
+            f'<text class="d72-fs" x="{L}" y="30">доля сумм не выше x</text>{eticks}'
             f'<text class="d72-fa" x="{W - R}" y="{gy(0.5) - 4:.1f}" text-anchor="end">50%</text>'
             f'<text class="d72-fa" x="{W - R}" y="{gy(1.0) + 12:.1f}" text-anchor="end">100%</text>'
             f'<line class="d72-fb" x1="{L}" x2="{W - R}" y1="{gy(0):.1f}" y2="{gy(0):.1f}"/>'
@@ -136,16 +136,16 @@ svg_ecdf = (f'<svg class="d72-fsvg" viewBox="0 0 {W} {H}" role="img" aria-label=
             f'<circle class="d72-fdot" cx="{gx(0):.1f}" cy="{gy(F0):.1f}" r="3"/>'
             f'<text class="d72-fl" x="{gx(0) + 7:.1f}" y="{gy(F0) + 4:.1f}">нули: {num(F0 * 100, 1)}%</text>'
             f'<circle class="d72-fdot" cx="{gx(5000):.1f}" cy="{gy(F50):.1f}" r="3"/>'
-            f'<text class="d72-fl" x="{gx(5000) + 7:.1f}" y="{gy(F50) + 4:.1f}">5{NB}000 ₽: +{num((F50 - F49) * 100, 1)}% сразу</text></svg>')
+            f'<text class="d72-fl" x="{gx(5000) + 7:.1f}" y="{gy(F50) + 4:.1f}">5{NB}000 ₽: +{num((F50 - F49) * 100, 1)} п. п.</text></svg>')
 
 fig_dens = (f'<figure class="d72-fig wide"><div class="d72-fgrid"><div>{svg_kde}</div><div>{svg_ecdf}</div></div>'
-            f'<figcaption><b>KDE сгладила пик на 5{NB}000{NB}₽ и отдала {num(below0 * 100, 1)}% клиентов отрицательным тратам, ECDF показала обе ступеньки.</b> '
-            f'Учебные траты без пяти ошибок ×1000. KDE — <code>scipy.stats.gaussian_kde</code>, окно по правилу Скотта.</figcaption></figure>')
+            f'<figcaption><b>У сглаженной модели {num(below0 * 100, 1)}% площади лежит левее нуля. В самой выгрузке отрицательных трат нет.</b> '
+            f'На графике ECDF видны скачки на нуле и на 5{NB}000{NB}₽. Оба графика построены по 12{NB}035 строкам без пяти миллионных сумм. KDE — <code>scipy.stats.gaussian_kde</code>, окно по правилу Скотта.</figcaption></figure>')
 
 # ---------- рисунок 2: что рисует num.hist(bins=30) ----------
 num_cols = df.select_dtypes("number").drop(columns="client_id")
-NOTE = {"age": "99 стоит отдельно", "tier": "пять значений — это категория", "visits_q1": "без сюрпризов",
-        "orders_q1": "−1 слева — код пропуска", "spend_q1": "всё в первой корзине"}
+NOTE = {"age": "99 — код пропуска", "tier": "пять уровней лояльности", "visits_q1": "чаще всего 8 визитов",
+        "orders_q1": "−1 — код пропуска", "spend_q1": "12 035 строк в первом интервале"}
 panels = []
 PW, PH, PT, PB, PL, PR = 220, 120, 34, 20, 8, 8
 S["hall"] = {}
@@ -157,13 +157,13 @@ for col in num_cols.columns:
     bars = "".join(f"M{PL + i * bw_:.1f},{PH - PB}V{ys(v):.1f}h{bw_ - 0.6:.1f}V{PH - PB}Z" for i, v in enumerate(c) if v > 0)
     lo, hi_ = e[0], e[-1]
     lab = lambda v: num(v) if abs(v) < 1e6 else f"{num(v / 1e6, 1)} млн"  # noqa: E731
-    panels.append(f'<svg class="d72-hsvg" viewBox="0 0 {PW} {PH}" role="img" aria-label="Гистограмма {col}, 30 корзин: {NOTE[col]}">'
+    panels.append(f'<svg class="d72-hsvg" viewBox="0 0 {PW} {PH}" role="img" aria-label="Гистограмма {col}, 30 интервалов: {NOTE[col]}">'
                   f'<text class="d72-ft" x="{PL}" y="14">{col}</text><text class="d72-fs" x="{PL}" y="27">{NOTE[col]}</text>'
                   f'<path class="d72-hb" d="{bars}"/><line class="d72-fb" x1="{PL}" x2="{PW - PR}" y1="{PH - PB}" y2="{PH - PB}"/>'
                   f'<text class="d72-fa" x="{PL}" y="{PH - 7}">{lab(lo)}</text><text class="d72-fa" x="{PW - PR}" y="{PH - 7}" text-anchor="end">{lab(hi_)}</text></svg>')
 fig_hall = (f'<figure class="d72-fig d72-hall wide"><div class="d72-hgrid">{"".join(panels)}</div>'
-            f'<figcaption><b>Одна строка кода — и видны возраст 99, заказы −1 и траты, сжатые в один столбик.</b> '
-            f'Высоты — <code>numpy.histogram(…, bins=30)</code>, те же корзины, что у <code>num.hist</code>.</figcaption></figure>')
+            f'<figcaption><b>В возрасте и числе заказов видны коды пропусков. Для трат почти все записи попали в один интервал.</b> '
+            f'Для каждого столбца выбран свой диапазон из 30 интервалов. Частоты рассчитаны с помощью <code>numpy.histogram</code> и совпадают с графиками <code>num.hist</code>.</figcaption></figure>')
 
 
 def put(text, tag, html):

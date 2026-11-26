@@ -3,14 +3,14 @@ from data_profiling import ProfileReport     # пакет fg-data-profiling; п�
 
 df = pd.read_csv("data/eda/clients_export.csv")
 profile = ProfileReport(df, title="clients_export", progress_bar=False)
-profile.to_file("clients_profile.html")        # черновик: большой HTML-отчёт
+profile.to_file("clients_profile.html")        # отчёт по всем столбцам выгрузки
 
 desc = profile.get_description()
 print(f"предупреждений: {len(desc.alerts)}")
 for alert in desc.alerts:
     print(" ", alert)
 
-v = desc.variables                             # цифры в отчёте есть, предупреждений нет
+v = desc.variables                             # отдельно читаем сводку по каждому столбцу
 print("client_id:", v["client_id"]["type"], "| пустых", v["client_id"]["n_missing"],
       "| разных", v["client_id"]["n_distinct"], "на", v["client_id"]["count"])
 print("signup_date:", v["signup_date"]["type"], v["signup_date"]["min"].date(), "—", v["signup_date"]["max"].date())

@@ -1,6 +1,8 @@
-"""Учебная «сырая» выгрузка для темы 07 «Разведочный анализ». seed 707. Тот же интернет-магазин.
-clients_export.csv — клиенты за I квартал 2026, как её отдал бы CRM: с подложенными проблемами (см. README)
-daily_metrics.csv  — дневные метрики января–марта 2026: тренды, разрыв в данных, неполный последний день"""
+"""Учебные данные интернет-магазина для главы «Разведочный анализ».
+clients_export.csv — выгрузка из CRM за I квартал 2026 года с пропусками и повторными записями.
+daily_metrics.csv — дневные показатели за тот же квартал. В ряду есть пропущенные даты и неполный день.
+Начальное значение генератора случайных чисел — 707.
+"""
 import numpy as np, pandas as pd, pathlib
 rng = np.random.default_rng(707); P = pathlib.Path(__file__).parent
 n = 12_000
@@ -35,7 +37,7 @@ i = rng.choice(n, 120, replace=False); df.loc[i, "channel"] = "-"               
 i = rng.choice(n, 150, replace=False); df.loc[i, "orders_q1"] = -1                           # 6. пропуск, закодированный −1
 dup = df.sample(40, random_state=7).copy(); dup["visits_q1"] += 1                            # 7. дубли ключа «которых не может быть»
 df = pd.concat([df, dup]).sample(frac=1, random_state=8).reset_index(drop=True)
-df.to_csv(P / "clients_export.csv", index=False)
+df.to_csv(P / "clients_export.csv", index=False, lineterminator="\n")
 # --- дневные метрики ---
 days = pd.date_range("2026-01-01", "2026-03-31", freq="D"); t = np.arange(len(days))
 installs = np.round(300 + 2.2 * t + rng.normal(0, 25, len(t))).astype(int)                 # тренд вверх
@@ -45,9 +47,14 @@ revenue = np.round((380_000 + 900 * t) * np.where(weekday >= 5, 1.25, 1.0) * rng
 d = pd.DataFrame({"date": days.date, "app_installs": installs, "support_tickets": tickets, "revenue": revenue})
 d = d[~d.date.astype(str).between("2026-02-10", "2026-02-13")]                               # разрыв: 4 дня выгрузки потеряны
 d.loc[d.index[-1], ["app_installs", "support_tickets", "revenue"]] = [int(installs[-1] * 0.4), int(tickets[-1] * 0.4), round(revenue[-1] * 0.4, -2)]  # последний день неполный
-d.to_csv(P / "daily_metrics.csv", index=False)
-r = pd.read_csv(P / "clients_export.csv"); print(r.dtypes.to_string()); print(r.shape, "дублей client_id:", r.client_id.duplicated(keep=False).sum())
+d.to_csv(P / "daily_metrics.csv", index=False, lineterminator="\n")
+r = pd.read_csv(P / "clients_export.csv")
+print(r.dtypes.to_string())
+print(r.shape, "повторных строк среди заполненных client_id:", r.client_id.dropna().duplicated().sum())
 print(r.spend_q1.describe().round(0).to_string()); print("нулей:", (r.spend_q1 == 0).sum(), "ровно 5000:", (r.spend_q1 == 5000).sum())
 print(r.groupby("channel").apply(lambda g: (g.spend_q1 / g.orders_q1.where(g.orders_q1 > 0)).median()).round(0).to_string())
 print("corr visits-orders:", r[r.orders_q1 >= 0][["visits_q1", "orders_q1"]].corr().iloc[0, 1].round(3))
-dm = pd.read_csv(P / "daily_metrics.csv"); print(dm.shape, "corr installs-tickets:", dm.app_installs.corr(dm.support_tickets).round(3), "по разностям:", dm.app_installs.diff().corr(dm.support_tickets.diff()).round(3))
+dm = pd.read_csv(P / "daily_metrics.csv", parse_dates=["date"]).set_index("date")
+changes = dm.asfreq("D").iloc[:-1].diff()  # после восстановления календаря пропускаем неполное 31 марта
+print("Корреляция числа установок и обращений:", dm.app_installs.corr(dm.support_tickets).round(3))
+print("Корреляция изменений за соседние полные дни:", changes.app_installs.corr(changes.support_tickets).round(3))

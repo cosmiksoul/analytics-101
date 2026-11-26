@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("data/eda/clients_export.csv", na_values={"channel": ["-"]})  # «-» — тоже пропуск
 df["age"] = df["age"].mask(df["age"] == 99)                              # 99 — «не указан»
 df["orders_q1"] = df["orders_q1"].mask(df["orders_q1"] == -1)            # −1 — «неизвестно»
-df = df.sort_values("orders_q1", na_position="first", kind="stable")     # сверху неизвестные заказы, за ними нули
+df = df.sort_values("orders_q1", na_position="first", kind="stable")     # сначала неизвестное число заказов, затем строки с нулём заказов
 
 miss = df.isna()
 bands = miss.groupby(np.arange(len(df)) // 301).mean()   # 40 полос по 301 строке: доля пропусков в полосе
@@ -19,5 +19,5 @@ print((bands * 100).round().astype(int).iloc[[0, 1, 5, 6, 20, 39]].to_string())
 fig, ax = plt.subplots(figsize=(6, 4))
 ax.imshow(bands, aspect="auto", cmap="Greys", vmin=0, vmax=1)
 ax.set_xticks(range(len(df.columns)), df.columns, rotation=60, ha="right")
-ax.set_ylabel("полосы по 301 строке, по возрастанию orders_q1")
+ax.set_ylabel("Группы по 301 строке в порядке возрастания orders_q1")
 fig.savefig("missing_map.svg", bbox_inches="tight")

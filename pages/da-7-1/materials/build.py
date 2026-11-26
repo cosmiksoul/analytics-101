@@ -10,15 +10,15 @@ YDATA = "/home/claude/venvs/ydata/bin/python"    # ydata-profiling 4.18.4, panda
 
 HEAD = '''"""Черновик автоматического отчёта по учебной выгрузке: пакет fg-data-profiling (прежнее имя — ydata-profiling).
 
-Страница 7.1 «Первый взгляд: формы, типы, пропуски» курса «Аналитика 101».
-Скрипту нужно отдельное окружение: пакет требует pandas ниже 3.0, а остальной код темы написан под pandas 3.
+Страница 7.1 «Как познакомиться с таблицей» курса «Аналитика 101».
+Скрипту нужно отдельное окружение: в примере используется pandas 2.3.3, а остальной код урока рассчитан на pandas 3.
 
   python -m venv profile-env
   profile-env/bin/pip install "fg-data-profiling==4.20.0"         (в Windows: profile-env\\\\Scripts\\\\pip)
   profile-env/bin/python da-7-1-first-look/profile_report.py      (из корня папки материалов)
 
 Нужен общий набор data/eda/ (clients_export.csv). Скрипт сохраняет отчёт clients_profile.html в папку,
-из которой запущен, и печатает предупреждения отчёта и цифры, о которых отчёт промолчал.
+из которой запущен, и печатает предупреждения отчёта и значения из сводок по столбцам.
 С прежним пакетом ydata-profiling 4.18.4 замените импорт на «from ydata_profiling import ProfileReport»:
 вывод тот же, но в чистом окружении Python 3.13 пакету нужен ещё setuptools ниже 81.
 """
@@ -28,7 +28,7 @@ HEAD = '''"""Черновик автоматического отчёта по �
 def build(m):
     m.use_data("eda")
     m.versions = ("Код проверен на Python 3.13, pandas 3.0 и matplotlib 3.10; profile_report.py — на fg-data-profiling 4.20.0 "
-                  "с pandas 2.3 в отдельном окружении.")
+                  "с pandas 2.3 в отдельном окружении. Для расчёта объёма памяти в ноутбуке использовался PyArrow.")
 
     m.notebook("first_look.ipynb", "first_look.nb.py", "main")
     m.from_reader_folder("first_look.ipynb")

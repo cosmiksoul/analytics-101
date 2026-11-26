@@ -3,9 +3,9 @@
 Запуск из папки страницы:  python3 data/check_passport.py [page.js]
 Код паспорта берётся из page.js между метками /*passport:start*/ и /*passport:end*/ и запускается в node
 на data/passport_sample.csv (300 строк, встроенный пример) и на ../../data/eda/clients_export.csv (12 040 строк).
-С pandas 3.0.5 сравниваются: dtype, число пропусков, число уникальных, min и max чисел, память
+С pandas 3.0.5 сравниваются: dtype, число пропусков, число уникальных, минимум, максимум и медиана чисел, память
 memory_usage(deep=True), а также то, на чём стоят эвристики: пропуски в ключе, повторы ключа без NaN,
-форматы дат, часовые пояса, коды −1 и 99, строки «N/A» и «-», мало уникальных у чисел.
+форматы дат, смещения от UTC, коды −1 и 99, строки «N/A» и «-», мало уникальных у чисел.
 """
 import json, re, subprocess, sys
 from pathlib import Path
@@ -31,6 +31,7 @@ for label, path in FILES.items():
         num = pd.api.types.is_numeric_dtype(s)
         exp = {"dtype": str(s.dtype), "na": int(s.isna().sum()), "uniq": int(s.nunique()),
                "min": float(s.min()) if num else None, "max": float(s.max()) if num else None,
+               "med": float(s.median()) if num and s.notna().any() else None,
                "mem": int(s.memory_usage(deep=True, index=False))}
         got = {k: c.get(k) for k in exp}
         for k in exp:
@@ -48,7 +49,7 @@ for label, path in FILES.items():
     checks = {
         "1 ключ — число с пропусками": (df["client_id"].dtype == "float64" and df["client_id"].isna().sum() > 0, "id-na" in flags("client_id")),
         "2 даты строкой, два формата": (df["signup_date"].dtype == "str" and pd.to_datetime(df["signup_date"], format="%Y-%m-%d", errors="coerce").isna().sum() > 0, {"date-str", "date-fmt"} <= flags("signup_date")),
-        "3 разные часовые пояса": ((tail == "Z").sum() > 0 and (tail == "+03:00").sum() > 0, "date-tz" in flags("last_order_at")),
+        "3 разные смещения от UTC": ((tail == "Z").sum() > 0 and (tail == "+03:00").sum() > 0, "date-tz" in flags("last_order_at")),
         "4 age = 99": ((df["age"] == 99).sum() >= 3, [99, int((df["age"] == 99).sum())] in F["age"]["sent"]),
         "5 «N/A» и «-»": ((raw["country"] == "N/A").sum() > 0 and (df["channel"] == "-").sum() > 0,
                           ["N/A", int((raw["country"] == "N/A").sum())] in F["country"]["naTok"] and ["-", int((df["channel"] == "-").sum())] in F["channel"]["fake"]),

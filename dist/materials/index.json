@@ -1378,36 +1378,36 @@
   "da-7-1": {
    "file": "da-7-1-first-look",
    "zip": "materials/da-7-1-first-look.zip",
-   "zipBytes": 38162,
+   "zipBytes": 39766,
    "files": [
     {
      "path": "materials/da-7-1-first-look/README.md",
      "name": "README.md",
-     "bytes": 1841,
+     "bytes": 2103,
      "about": ""
     },
     {
      "path": "materials/da-7-1-first-look/da-7-1-first-look.md",
      "name": "da-7-1-first-look.md",
-     "bytes": 45943,
+     "bytes": 54504,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-7-1-first-look/first_look.ipynb",
      "name": "first_look.ipynb",
-     "bytes": 63414,
-     "about": "Пять блоков кода страницы: чек-лист первого взгляда, карта пропусков и три нюанса"
+     "bytes": 64269,
+     "about": "Пять блоков кода страницы: первичная проверка таблицы, карта пропусков, проверка повторов и разбор дат"
     },
     {
      "path": "materials/da-7-1-first-look/passport_sample.csv",
      "name": "passport_sample.csv",
      "bytes": 24058,
-     "about": "300 строк выгрузки — встроенный пример паспорта; загрузите полную выгрузку, чтобы сравнить"
+     "about": "300 строк для интерактива. Загрузите полную выгрузку, чтобы сравнить результаты"
     },
     {
      "path": "materials/da-7-1-first-look/profile_report.py",
      "name": "profile_report.py",
-     "bytes": 2432,
+     "bytes": 2446,
      "about": "Черновик отчёта fg-data-profiling — для отдельного окружения с pandas ниже 3.0"
     }
    ],
@@ -1418,30 +1418,30 @@
   "da-7-2": {
    "file": "da-7-2-distributions-outliers",
    "zip": "materials/da-7-2-distributions-outliers.zip",
-   "zipBytes": 62909,
+   "zipBytes": 24368,
    "files": [
     {
      "path": "materials/da-7-2-distributions-outliers/README.md",
      "name": "README.md",
-     "bytes": 1452,
+     "bytes": 1544,
      "about": ""
     },
     {
      "path": "materials/da-7-2-distributions-outliers/bin_width.py",
      "name": "bin_width.py",
-     "bytes": 8473,
-     "about": "Гистограммы интерактива «Ширина корзины» на NumPy при любом числе корзин"
+     "bytes": 8435,
+     "about": "Гистограммы на NumPy для сравнения с интерактивом"
     },
     {
      "path": "materials/da-7-2-distributions-outliers/da-7-2-distributions-outliers.md",
      "name": "da-7-2-distributions-outliers.md",
-     "bytes": 41978,
+     "bytes": 49086,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-7-2-distributions-outliers/distributions_outliers.ipynb",
      "name": "distributions_outliers.ipynb",
-     "bytes": 72372,
+     "bytes": 18561,
      "about": "Ячейки раздела «Код» и три проверки из «Нюансов»"
     }
    ],
@@ -1452,31 +1452,31 @@
   "da-7-3": {
    "file": "da-7-3-relationships",
    "zip": "materials/da-7-3-relationships.zip",
-   "zipBytes": 164674,
+   "zipBytes": 23739,
    "files": [
     {
      "path": "materials/da-7-3-relationships/README.md",
      "name": "README.md",
-     "bytes": 1577,
+     "bytes": 1753,
      "about": ""
     },
     {
      "path": "materials/da-7-3-relationships/da-7-3-relationships.md",
      "name": "da-7-3-relationships.md",
-     "bytes": 40921,
+     "bytes": 50880,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-7-3-relationships/eda_template.ipynb",
      "name": "eda_template.ipynb",
-     "bytes": 2761,
-     "about": "Шаблон ноутбука: вопрос → график → вывод → следующий вопрос, дневник и список гипотез"
+     "bytes": 4258,
+     "about": "Шаблон ноутбука с примером графика, дневником наблюдений и таблицей гипотез"
     },
     {
      "path": "materials/da-7-3-relationships/relationships.ipynb",
      "name": "relationships.ipynb",
-     "bytes": 209076,
-     "about": "Шесть блоков кода страницы: матрица пар, сегменты, разметка ряда, три нюанса"
+     "bytes": 18264,
+     "about": "Шесть исполняемых примеров для сравнения клиентов, проверки календаря, сумм выручки и случайных корреляций"
     }
    ],
    "shared": [
@@ -1820,11 +1820,11 @@
   },
   "eda": {
    "zip": "materials/data-eda.zip",
-   "zipBytes": 234094,
+   "zipBytes": 237355,
    "files": [
     {
      "path": "materials/data/eda/README.md",
-     "bytes": 4188
+     "bytes": 5876
     },
     {
      "path": "materials/data/eda/clients_export.csv",
@@ -1836,7 +1836,7 @@
     },
     {
      "path": "materials/data/eda/gen.py",
-     "bytes": 6157
+     "bytes": 6587
     }
    ]
   },
