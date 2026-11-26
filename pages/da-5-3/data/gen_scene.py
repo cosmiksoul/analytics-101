@@ -33,6 +33,7 @@ scene = {
     "m30": np.round(means[30]).astype(int).tolist(),
     "m120": np.round(means[120]).astype(int).tolist(),
     "m480": np.round(means[480]).astype(int).tolist(),
+    "within500": {str(n): int((np.abs(m - mu) <= 500).sum()) for n, m in means.items()},
     "top": top.tolist(), "topOver": int((amount >= 16_000).sum()),
 }
 
@@ -66,7 +67,7 @@ print(f"чеки: μ = {mu:.2f}, σ = {sigma:.2f}, асимметрия {skew(am
 for n, m in means.items():
     mr = np.round(m)
     print(f"n = {n}: среднее средних {mr.mean():.1f}, разброс {mr.std():.1f}, σ/√n {sigma / np.sqrt(n):.1f}, "
-          f"асимметрия {skew(mr):.2f}, в μ ± 500: {np.mean(np.abs(mr - mu) < 500):.3f}, в μ ± 2σ/√n: {np.mean(np.abs(mr - mu) < 2 * sigma / np.sqrt(n)):.3f}")
+          f"асимметрия {skew(mr):.2f}, в μ ± 500: {np.mean(np.abs(m - mu) <= 500):.3f}, в μ ± 2σ/√n: {np.mean(np.abs(mr - mu) < 2 * sigma / np.sqrt(n)):.3f}")
 print("первые 10 средних по 30:", np.round(S30[:10].mean(axis=1)).astype(int).tolist())
 for k in (10, 100):
     mr = np.round(means[30][:k]); print(f"k = {k}: среднее {mr.mean():.0f}, разброс {mr.std():.0f}")

@@ -3,7 +3,7 @@ import pandas as pd
 from scipy import stats
 
 amount = pd.read_csv("data/probability/checks.csv")["amount"]
-s, loc, scale = stats.lognorm.fit(amount, floc=0)   # loc = 0: чек не бывает меньше нуля
+s, loc, scale = stats.lognorm.fit(amount, floc=0)   # модель для положительных сумм без сдвига
 print(f"сигма {s:.3f}, медиана модели {scale:.0f} ₽")
 model = stats.lognorm(s, scale=scale)
 

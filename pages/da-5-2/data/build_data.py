@@ -47,7 +47,7 @@ gaps = pd.read_csv(DATA / 'order_gaps.csv')['gap_days'].to_numpy()
 amount = pd.read_csv(DATA / 'checks.csv')['amount'].to_numpy()
 
 
-def grow(x, edges, steps=25):
+def grow(x, edges, steps=25, *, include_last=True):
     """Гистограмма первых n наблюдений при n = N/steps … N, бегущие среднее и медиана."""
     n_all = len(x)
     out = {'n': [], 'h': [], 'mean': [], 'med': []}
@@ -55,7 +55,8 @@ def grow(x, edges, steps=25):
         n = round(n_all * j / steps)
         part = x[:n]
         out['n'].append(n)
-        out['h'].append(np.histogram(part, bins=edges)[0].astype(int).tolist())
+        visible = part if include_last else part[part < edges[-1]]
+        out['h'].append(np.histogram(visible, bins=edges)[0].astype(int).tolist())
         out['mean'].append(r(part.mean(), 3))
         out['med'].append(r(np.median(part), 3))
     return out
@@ -95,23 +96,22 @@ scene = {
     'gapFrames': gap_frames,
     'gapStats': {'mean': r(gaps.mean(), 2), 'med': r(np.median(gaps), 2), 'p95': r(np.quantile(gaps, 0.95), 2),
                  'le7': r((gaps <= 7).mean(), 4), 'le7model': r(stats.expon(scale=12).cdf(7), 4), 'over60': r((gaps > 60).mean(), 4)},
-    'chkGrow': grow(amount, chk_edges),
+    'chkGrow': grow(amount, chk_edges, include_last=False),
     'chkFrames': chk_frames,
     'chkStats': {'mean': round(float(amount.mean())), 'med': int(np.median(amount)), 'p95': round(float(np.quantile(amount, 0.95))),
                  'max': int(amount.max()), 'over30': r((amount >= 30000).mean(), 4)},
 }
 
 # ---------- 3. интерактив: чеки ----------
-hist = np.histogram(amount, bins=chk_edges)[0] / len(amount)
+hist = np.histogram(amount[amount < chk_edges[-1]], bins=chk_edges)[0] / len(amount)
 tail_edges = [10000, 15000, 25000, 50000, np.inf]
 tail = [r(((amount >= a) & (amount < b)).mean(), 4) for a, b in zip(tail_edges[:-1], tail_edges[1:])]
 
 
 def tv(dist):
     m = np.diff(dist.cdf(chk_edges))
-    m[0] += dist.cdf(0)
     m = np.append(m, dist.sf(30000))
-    return 0.5 * np.abs(np.append(hist, (amount >= 30000).mean()) - m).sum()
+    return 0.5 * (dist.cdf(0) + np.abs(np.append(hist, (amount >= 30000).mean()) - m).sum())
 
 
 best_ln = min((tv(stats.lognorm(s, scale=md)), md, s) for md in range(2000, 5001, 50) for s in np.round(np.arange(0.3, 1.21, 0.01), 2))
@@ -137,7 +137,7 @@ Y = lambda v: H - B - (np.log10(v) - lo) / (hi - lo) * (H - T - B)
 ticks = [100, 300, 1000, 3000, 10000, 30000, 100000]
 lab = lambda v: f'{v:,}'.replace(',', ' ')
 tlab = lambda v: f'{v / 1000:g}'.replace('.', ',')   # подписи осей в тысячах рублей
-svg = [f'<svg class="d52-qq" viewBox="0 0 {W} {H}" role="img" aria-label="Q–Q-график: квантили логнормальной модели по горизонтали и квантили чеков по вертикали, обе оси в логарифмическом масштабе. Точки лежат на диагонали примерно до 10 тысяч рублей, выше уходят над ней.">']
+svg = [f'<svg class="d52-qq" viewBox="0 0 {W} {H}" role="img" aria-label="Q–Q-график: квантили логнормальной модели по горизонтали и квантили чеков по вертикали, обе оси в логарифмическом масштабе. На уровне 0,95 значения близки. На уровне 0,99 выборочный квантиль выше модельного.">']
 for v in ticks:
     svg.append(f'<line class="d52-gr" x1="{X(v):.1f}" y1="{T}" x2="{X(v):.1f}" y2="{H - B}"/><line class="d52-gr" x1="{L}" y1="{Y(v):.1f}" x2="{W - R}" y2="{Y(v):.1f}"/>')
     anc = 'end' if v == ticks[-1] else 'middle'
@@ -148,12 +148,12 @@ svg.append(f'<path class="d52-pts" d="{path}"/>')
 mx99, dy99 = model.ppf(0.99), np.quantile(amount, 0.99)          # те же числа, что в таблице fit_qq.py
 svg.append(f'<text class="d52-an" x="{X(mx99) - 12:.1f}" y="{Y(dy99) - 30:.1f}" text-anchor="end"><tspan>99-й перцентиль:</tspan><tspan x="{X(mx99) - 12:.1f}" dy="1.2em">чеки {lab(int(round(dy99, -1)))} ₽, модель {lab(int(round(mx99, -1)))} ₽</tspan></text>')
 svg.append(f'<circle class="d52-hl" cx="{X(mx99):.1f}" cy="{Y(dy99):.1f}" r="6"/>')
-svg.append(f'<text class="d52-an d52-an2" x="{X(1500):.1f}" y="{Y(600):.1f}">тело чеков —</text><text class="d52-an d52-an2" x="{X(1500):.1f}" y="{Y(600) + 16:.1f}">на диагонали</text>')
+svg.append(f'<text class="d52-an d52-an2" x="{X(1500):.1f}" y="{Y(600):.1f}">средние квантили</text><text class="d52-an d52-an2" x="{X(1500):.1f}" y="{Y(600) + 16:.1f}">близки к модели</text>')
 svg.append(f'<text class="d52-ax" x="{(L + W - R) / 2:.0f}" y="{H - 8}" text-anchor="middle">квантиль модели, тыс. ₽ (шкала логарифмическая)</text>')
 svg.append(f'<text class="d52-ax" transform="translate(14 {(T + H - B) / 2:.0f}) rotate(-90)" text-anchor="middle">квантиль чеков, тыс. ₽</text>')
 svg.append('</svg>')
-qq_html = ('<figure class="d52-fig wide"><figcaption>Тело чеков легло на прямую, а хвост ушёл вверх: опт дороже, чем обещает модель</figcaption>\n'
-           + ''.join(svg) + '\n<p class="d52-figsub">399 точек из блока кода выше: уровни p = (i − 0,5) / 399. Диагональ — «данные совпали с моделью».</p></figure>')
+qq_html = ('<figure class="d52-fig wide"><figcaption>Модель занижает 99-й перцентиль суммы покупки</figcaption>\n'
+           + ''.join(svg) + '\n<p class="d52-figsub">Каждая из 399 точек соответствует уровню p = (i − 0,5) / 399, где i меняется от 1 до 399. На диагонали квантиль модели равен выборочному квантилю.</p></figure>')
 
 # ---------- запись ----------
 gen = {'scene': scene, 'checks': checks, 'code': code}

@@ -1104,31 +1104,31 @@
   "da-5-1": {
    "file": "da-5-1-conditional-bayes",
    "zip": "materials/da-5-1-conditional-bayes.zip",
-   "zipBytes": 19889,
+   "zipBytes": 20820,
    "files": [
     {
      "path": "materials/da-5-1-conditional-bayes/README.md",
      "name": "README.md",
-     "bytes": 1456,
+     "bytes": 1561,
      "about": ""
     },
     {
      "path": "materials/da-5-1-conditional-bayes/conditional_bayes.ipynb",
      "name": "conditional_bayes.ipynb",
-     "bytes": 13571,
-     "about": "Три блока кода страницы: симуляция, таблица сопряжённости, хи-квадрат"
+     "bytes": 14170,
+     "about": "Ноутбук с симуляцией, таблицей сопряжённости и проверкой независимости"
     },
     {
      "path": "materials/da-5-1-conditional-bayes/da-5-1-conditional-bayes.md",
      "name": "da-5-1-conditional-bayes.md",
-     "bytes": 37778,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 44538,
+     "about": "Текст урока, код, вопросы и глоссарий в Markdown"
     },
     {
      "path": "materials/da-5-1-conditional-bayes/scene_points.py",
      "name": "scene_points.py",
-     "bytes": 7955,
-     "about": "Пропорциональная тысяча визитов для анимации и интерактива, seed 505"
+     "bytes": 8023,
+     "about": "Как отобрали 1 000 визитов и разместили их на диаграмме"
     }
    ],
    "shared": [
@@ -1138,31 +1138,31 @@
   "da-5-2": {
    "file": "da-5-2-distributions",
    "zip": "materials/da-5-2-distributions.zip",
-   "zipBytes": 17040,
+   "zipBytes": 18194,
    "files": [
     {
      "path": "materials/da-5-2-distributions/README.md",
      "name": "README.md",
-     "bytes": 1373,
+     "bytes": 1499,
      "about": ""
     },
     {
      "path": "materials/da-5-2-distributions/da-5-2-distributions.md",
      "name": "da-5-2-distributions.md",
-     "bytes": 42973,
+     "bytes": 50121,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-5-2-distributions/distributions.py",
      "name": "distributions.py",
-     "bytes": 3695,
-     "about": "Блоки кода страницы: scipy.stats, Пуассон для заказов, подбор логнормального и точки Q–Q-графика"
+     "bytes": 3701,
+     "about": "Примеры scipy.stats, модели для числа заказов и суммы покупки, данные для Q–Q-графика"
     },
     {
      "path": "materials/da-5-2-distributions/nuances.py",
      "name": "nuances.py",
-     "bytes": 3709,
-     "about": "Четыре нюанса запуском: плотность и единицы, дисперсия суммы, логарифм, среднее против медианы"
+     "bytes": 3630,
+     "about": "Четыре примера для самостоятельного запуска. Плотность, дисперсия суммы, логарифм, среднее и медиана."
     }
    ],
    "shared": [
@@ -1172,31 +1172,31 @@
   "da-5-3": {
    "file": "da-5-3-lln-clt",
    "zip": "materials/da-5-3-lln-clt.zip",
-   "zipBytes": 17571,
+   "zipBytes": 18974,
    "files": [
     {
      "path": "materials/da-5-3-lln-clt/README.md",
      "name": "README.md",
-     "bytes": 1227,
+     "bytes": 1356,
      "about": ""
     },
     {
      "path": "materials/da-5-3-lln-clt/clt_simulations.py",
      "name": "clt_simulations.py",
-     "bytes": 7505,
-     "about": "Шесть блоков кода страницы одним скриптом: средние, σ/√n, конверсия, нюансы"
+     "bytes": 7470,
+     "about": "Шесть примеров Python с расчётами для среднего чека и конверсии"
     },
     {
      "path": "materials/da-5-3-lln-clt/da-5-3-lln-clt.md",
      "name": "da-5-3-lln-clt.md",
-     "bytes": 43626,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 53259,
+     "about": "Текст урока, примеры кода, вопросы и глоссарий в формате Markdown"
     },
     {
      "path": "materials/da-5-3-lln-clt/gen_scene.py",
      "name": "gen_scene.py",
-     "bytes": 3177,
-     "about": "Выборки сцены: зерно 5300, средние и их разброс"
+     "bytes": 3388,
+     "about": "Воспроизведение выборок из анимации и расчёт разброса средних"
     }
    ],
    "shared": [

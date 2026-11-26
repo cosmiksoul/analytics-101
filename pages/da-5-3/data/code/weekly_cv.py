@@ -16,7 +16,7 @@ for week in range(2_000):                # 2 000 учебных недель
 conv, check = np.array(conv), np.array(check)
 
 print(f"неделя: {visits} визитов, ≈ {visits * p:.0f} покупок")
-print(f"CV одного визита {np.sqrt((1 - p) / p):.2f}, CV одного чека {cv(amount):.2f}")
-print(f"CV недельной конверсии   {cv(conv):.3f}, формула √(1 − p)/√покупок = {np.sqrt((1 - p) / (visits * p)):.3f}")
-print(f"CV недельного среднего чека {cv(check):.3f}, формула CV чека/√покупок = {cv(amount) / np.sqrt(visits * p):.3f}")
-print(f"средний чек скачет сильнее в {cv(check) / cv(conv):.2f} раза")
+print(f"CV индикатора покупки {np.sqrt((1 - p) / p):.2f}, CV одного чека {cv(amount):.2f}")
+print(f"CV недельной конверсии   {cv(conv):.3f}, формула √(1 − p)/√(ожидаемое число покупок) = {np.sqrt((1 - p) / (visits * p)):.3f}")
+print(f"CV недельного среднего чека {cv(check):.3f}, формула CV чека/√(ожидаемое число покупок) = {cv(amount) / np.sqrt(visits * p):.3f}")
+print(f"Отношение CV среднего чека к CV конверсии: {cv(check) / cv(conv):.2f}")

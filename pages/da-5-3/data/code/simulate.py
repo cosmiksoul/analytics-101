@@ -4,7 +4,7 @@ amount = pd.read_csv("data/probability/checks.csv")["amount"].to_numpy(float)
 rng = np.random.default_rng(53)
 
 def sample_means(x, n, k=10_000):
-    """k случайных выборок по n значений (с возвращением) и среднее каждой"""
+    """Возвращает средние по k случайным выборкам из n значений с возвращением."""
     return rng.choice(x, size=(k, n)).mean(axis=1)
 
 print(f"чеки: μ = {amount.mean():.0f} ₽, медиана {np.median(amount):.0f} ₽")
@@ -17,4 +17,4 @@ m = sample_means(amount, 30)                  # текстовая гистог�
 counts, edges = np.histogram(m, bins=np.arange(2000, 9001, 500))
 for c, e in zip(counts, edges):
     print(f"{e:4.0f}–{e + 500:<4.0f} {'█' * round(c / 50):<34} {c}")
-print(f"вне 2000–9000: {np.sum((m < 2000) | (m >= 9000))}")
+print(f"вне 2000–9000: {np.sum((m < 2000) | (m > 9000))}")

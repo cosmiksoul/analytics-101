@@ -1,11 +1,11 @@
-"""Распределения в scipy.stats, Пуассон для заказов за день, подбор логнормального к чекам.
+"""Распределения в scipy.stats, число заказов за день и модель суммы покупки.
 
-Страница 5.2 «Случайные величины и распределения» курса «Аналитика 101». Три блока раздела «Код» подряд: общие методы распределений, сравнение заказов за день с Пуассоном, подбор логнормального распределения к чекам и точки Q–Q-графика.
+Страница 5.2 «Случайные величины и распределения» курса «Аналитика 101». Три блока раздела «Код» подряд: общие методы распределений, сравнение числа заказов за день с распределением Пуассона, оценка параметров логнормального распределения по чекам и точки Q–Q-графика.
 Запуск из корня папки материалов: python da-5-2-distributions/distributions.py
 Нужен общий набор data/probability/.
 """
 
-# ===== У всех распределений scipy.stats одни и те же методы =====
+# ===== Общие методы распределений в scipy.stats =====
 from scipy import stats
 
 buys = stats.binom(n=100, p=0.034)          # покупок из 100 визитов
@@ -25,7 +25,7 @@ print("среднее", check.mean().round())
 sample = check.rvs(size=5, random_state=505) # генерация с зерном
 print("пять чеков:", sample.round(-1))
 
-# ===== Заказы за день похожи на Пуассона: среднее близко к дисперсии =====
+# ===== Распределение Пуассона и число заказов за день =====
 import pandas as pd
 from scipy import stats
 
@@ -33,20 +33,20 @@ orders = pd.read_csv("data/probability/daily_orders.csv")["orders"]
 print(len(orders), "дней: среднее", round(orders.mean(), 2),
       "дисперсия", round(orders.var(), 2))
 
-model = stats.poisson(mu=orders.mean())      # у Пуассона среднее = дисперсии
+model = stats.poisson(mu=orders.mean())      # в модели Пуассона среднее и дисперсия равны λ
 bins = [(0, 32), (33, 37), (38, 42), (43, 47), (48, 100)]
 for lo, hi in bins:
     fact = orders.between(lo, hi).mean()
     theory = model.cdf(hi) - model.cdf(lo - 1)
     print(f"{lo:>3}–{hi:<3} заказов: дни {fact:.3f}  Пуассон {theory:.3f}")
 
-# ===== Логнормальное повторяет медиану чеков и промахивается в хвосте =====
+# ===== Где расходятся квантили модели и суммы покупок =====
 import numpy as np
 import pandas as pd
 from scipy import stats
 
 amount = pd.read_csv("data/probability/checks.csv")["amount"]
-s, loc, scale = stats.lognorm.fit(amount, floc=0)   # loc = 0: чек не бывает меньше нуля
+s, loc, scale = stats.lognorm.fit(amount, floc=0)   # модель для положительных сумм без сдвига
 print(f"сигма {s:.3f}, медиана модели {scale:.0f} ₽")
 model = stats.lognorm(s, scale=scale)
 
