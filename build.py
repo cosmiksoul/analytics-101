@@ -47,7 +47,7 @@ def nlm_parts(block, topic):
     nb = NOTEBOOKS.get(f'{block["key"]}-{topic["n"]}') or {}
     url, title = nb.get('url', '').strip(), nb.get('title') or f'Аналитика 101 · {topic["n"]} {topic["name"]}'
     if url:
-        item = (f'<a class="mi" href="{esc(url)}" target="_blank" rel="noopener"><b>NotebookLM</b>'
+        item = (f'<a class="mi mi-notebook" href="{esc(url)}" target="_blank" rel="noopener"><b>NotebookLM</b>'
                 f'<small>Блокнот темы «{esc(topic["name"])}»: все страницы темы уже загружены</small></a>')
         inline = f'<a href="{esc(url)}" target="_blank" rel="noopener">«{esc(title)}»</a>'
     else:

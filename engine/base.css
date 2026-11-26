@@ -252,6 +252,13 @@ pre.code { margin: 0; padding: 14px 16px; background: var(--sunk); font: 13.5px/
 .mi:hover, .mi:focus-visible { background: var(--sunk); }
 .mi b { font-size: 14px; font-weight: 600; }
 .mi small { font-size: 12.5px; color: var(--muted); line-height: 1.35; }
+.mi-notebook {
+  margin-top: 4px;
+  border: 1px solid color-mix(in srgb, var(--accent) 52%, var(--line));
+  background: linear-gradient(120deg, color-mix(in srgb, var(--accent) 11%, var(--surface)), var(--surface) 85%);
+}
+.mi-notebook small { color: var(--ink-2); }
+.mi-notebook:is(:hover, :focus-visible) { border-color: var(--accent); }
 .menu-links { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; border-top: 1px solid var(--line); margin-top: 6px; padding: 10px 10px 4px; font-size: 13px; }
 .menu-links span { color: var(--muted); }
 .menu-links a { font-weight: 600; text-decoration: none; }
