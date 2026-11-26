@@ -1,4 +1,4 @@
-/* Страница 6.3 · Проверка гипотез: p-value и ошибки двух родов */
+/* Страница 6.3 · Проверка гипотез и ошибки первого и второго рода */
 (() => {
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
   const seg = (p, a, b) => clamp((p - a) / (b - a), 0, 1);
@@ -134,23 +134,23 @@
   }
 
   const scene = {
-    parts: [{ n: '01', name: 'Пилот', s: [0, 1] }, { n: '02', name: 'Мир без разницы', s: [2, 3, 4] }, { n: '03', name: 'p-value', s: [5, 6] }, { n: '04', name: 'Ошибки', s: [7, 8] }, { n: '05', name: 'Вывод', s: [9] }],
+    parts: [{ n: '01', name: 'Пилот', s: [0, 1] }, { n: '02', name: 'Модель без эффекта', s: [2, 3, 4] }, { n: '03', name: 'p-значение', s: [5, 6] }, { n: '04', name: 'Ошибки', s: [7, 8] }, { n: '05', name: 'Вывод', s: [9] }],
     steps: [
-      { title: 'Пилот: 40 оплат против 40', dur: 5200, body: '<p>Магазин показал старую кнопку «Оплатить» 40&nbsp;покупателям, а&nbsp;новую «Оплатить частями»&nbsp;— другим 40. Каждая точка&nbsp;— чек одной оплаты.</p><p>Средний чек со&nbsp;старой кнопкой 3&nbsp;763&nbsp;₽, с&nbsp;новой 4&nbsp;857&nbsp;₽, разница <b>+1&nbsp;094&nbsp;₽</b>. Это кнопка или&nbsp;случай?</p>' },
-      { title: 'Нулевая гипотеза: кнопка ни при чём', dur: 5600, body: '<p>Проверка начинается с&nbsp;обратного допущения&nbsp;— <b>нулевой гипотезы</b>: кнопка не&nbsp;меняет чек, у&nbsp;обеих групп одно распределение чеков.</p><p>Даже тогда разница средних не&nbsp;будет нулём: в&nbsp;группы попадают разные покупатели. Вопрос&nbsp;— какие разницы выдаёт такой мир.</p>' },
-      { title: 'Мир без разницы: первая пара', dur: 6000, body: '<p>В&nbsp;учебном мире распределение чеков известно: медиана 3&nbsp;000&nbsp;₽ и&nbsp;хвост вправо. Достаём из&nbsp;него две группы по&nbsp;40&nbsp;чеков&nbsp;— обе как&nbsp;со&nbsp;старой кнопкой.</p><p>Средние всё равно разошлись: разница −414&nbsp;₽. Она падает в&nbsp;гистограмму разниц.</p>' },
-      { title: 'Десять пар — десять разниц', dur: 6400, body: '<p>Ещё девять пар. Разницы то&nbsp;в&nbsp;плюс, то&nbsp;в&nbsp;минус: от&nbsp;−654 до&nbsp;+785&nbsp;₽. Кнопки одинаковые, а&nbsp;сотни рублей разницы&nbsp;— обычное дело.</p>' },
-      { title: 'Пять тысяч пар — нулевое распределение', dur: 6000, body: '<p>После 5&nbsp;000&nbsp;пар гистограмма&nbsp;— колокол вокруг нуля с&nbsp;разбросом 534&nbsp;₽. Это <b>нулевое распределение</b>: какие разницы бывают, когда эффекта нет.</p><p>Разница средних здесь&nbsp;— <b>статистика критерия</b>: число, которое сравнивают с&nbsp;этим колоколом.</p>' },
-      { title: 'Флажок: наша разница', dur: 5200, body: '<p>Возвращаем настоящий пилот. Его разница +1&nbsp;094&nbsp;₽ втыкается флажком в&nbsp;гистограмму. Флажок не&nbsp;в&nbsp;середине колокола и&nbsp;не&nbsp;за&nbsp;его краем, а&nbsp;на&nbsp;правом склоне.</p>' },
-      { title: 'Хвост за флажком — это p-value', dur: 6400, body: '<p>Считаем пары мира без разницы, где разница не&nbsp;ближе к&nbsp;нулю, чем наша: 105&nbsp;справа и&nbsp;94&nbsp;слева, всего 199 из&nbsp;5&nbsp;000.</p><p>Эта доля, <b>p&nbsp;=&nbsp;0,040</b>, и&nbsp;есть p-value: насколько удивительны наши данные, если эффекта нет.</p>' },
-      { title: 'Порог 0,05 и ложная тревога', dur: 6000, body: '<p>Заранее договоримся: эффект объявляем, если p&nbsp;&lt;&nbsp;0,05. Это <b>уровень значимости</b> α. Порог отрезает 5% самых далёких разниц: левее −1&nbsp;023 и&nbsp;правее +1&nbsp;048&nbsp;₽.</p><p>Но&nbsp;и&nbsp;в&nbsp;мире без разницы туда падает 5% пар. Объявить эффект, которого нет,&nbsp;— <b>ошибка первого рода</b>.</p>' },
-      { title: 'Мир с эффектом: мощность', dur: 6400, body: '<p>Теперь мир, где новая кнопка правда прибавляет к&nbsp;чеку 1&nbsp;000&nbsp;₽. Разницы его пилотов ложатся колоколом вокруг +1&nbsp;000.</p><p>За&nbsp;порог попадают 47% из&nbsp;них&nbsp;— это <b>мощность</b>. В&nbsp;остальных 53% эффект есть, а&nbsp;тест его не&nbsp;видит: <b>ошибка второго рода</b>.</p>' },
-      { title: 'Чего p-value не говорит', dur: 5600, next: 'Читать страницу', body: '<p>p&nbsp;=&nbsp;0,040 не&nbsp;значит «кнопка бесполезна с&nbsp;вероятностью 4%». Это вероятность получить такую или&nbsp;более далёкую разницу, если эффекта нет,&nbsp;— а&nbsp;не&nbsp;вероятность гипотезы.</p><p>О&nbsp;величине эффекта p тоже молчит. Её&nbsp;показывает интервал: от&nbsp;+90 до&nbsp;+2&nbsp;097&nbsp;₽.</p>' }
+      { title: 'Средний чек в двух группах', dur: 5200, body: '<p>Магазин случайно разделил 80 покупателей поровну. Одни увидели привычную кнопку «Оплатить», другие — «Оплатить частями». Каждая точка на рисунке обозначает сумму одного чека.</p><p>В первой группе средний чек составил 3&nbsp;763&nbsp;₽, во второй — 4&nbsp;857&nbsp;₽. Могла ли разница в <b>1&nbsp;094&nbsp;₽</b> возникнуть случайно?</p>' },
+      { title: 'Что предполагает нулевая гипотеза', dur: 5600, body: '<p>Допустим, кнопка никак не меняет чек. Это <b>нулевая гипотеза</b>. Тогда суммы в обеих группах взяты из одного распределения.</p><p>Даже в этом случае средние чеки могут различаться. Посмотрим, какие разницы получаются при случайном отборе покупателей.</p>' },
+      { title: 'Первые две группы без эффекта', dur: 6000, body: '<p>В модели мы знаем распределение чеков со старой кнопкой. Медиана равна 3&nbsp;000&nbsp;₽, а редкие крупные покупки образуют длинный правый хвост. Наберём из этого распределения две группы по 40 чеков.</p><p>Вычтем среднее первой группы из среднего второй. Получилось −414&nbsp;₽. Отметим это значение на гистограмме.</p>' },
+      { title: 'Десять повторов без эффекта', dur: 6400, body: '<p>Наберём ещё девять пар групп тем же способом. Для первых десяти пар разница средних менялась от −654 до +785&nbsp;₽. Даже при одинаковых кнопках она может составить несколько сотен рублей в любую сторону.</p>' },
+      { title: 'Как распределены разницы при H0', dur: 6000, body: '<p>После 5&nbsp;000 повторов видна форма <b>нулевого распределения</b>. Большинство разниц сосредоточено около нуля, стандартное отклонение составляет 534&nbsp;₽.</p><p>Разница средних — наша <b>статистика критерия</b>. Теперь можно сравнить результат исходного пилота с тем, что получалось в модели без эффекта.</p>' },
+      { title: 'Где на графике результат пилота', dur: 5200, body: '<p>Флажок отмечает разницу в исходном эксперименте, +1&nbsp;094&nbsp;₽. Она попала в правый хвост гистограммы. Посчитаем, сколько раз при одинаковых кнопках отклонение от нуля оказалось хотя бы таким же большим.</p>' },
+      { title: 'Как посчитать двустороннее p-значение', dur: 6400, body: '<p>В 105 повторах разница составила не меньше +1&nbsp;094&nbsp;₽, ещё в 94 — не больше −1&nbsp;094&nbsp;₽. В двусторонней проверке учитываем оба направления.</p><p>Итого 199 повторов из 5&nbsp;000. Доля таких результатов даёт оценку <b>p ≈ 0,040</b>.</p>' },
+      { title: 'Какие результаты тест признает значимыми', dur: 6000, body: '<p>Заранее выберем <b>уровень значимости</b> α = 0,05. В нашей симуляции по 2,5% разниц попало в каждый хвост. Границы хвостов составили примерно −1&nbsp;023 и +1&nbsp;048&nbsp;₽.</p><p>Разница в пилоте выше верхней границы. Если на самом деле кнопка ничего не меняет, решение отвергнуть H0 будет <b>ошибкой первого рода</b>.</p>' },
+      { title: 'Как часто тест обнаруживает прибавку', dur: 6400, body: '<p>Теперь прибавим к чекам с новой кнопкой по 1&nbsp;000&nbsp;₽ и повторим эксперимент. Разницы средних распределены вокруг +1&nbsp;000&nbsp;₽.</p><p>В 47% повторов разница вышла за критические границы. Это оценка <b>мощности</b>. В остальных 53% случаев тест пропустил прибавку и допустил <b>ошибку второго рода</b>.</p>' },
+      { title: 'Что известно о величине эффекта', dur: 5600, next: 'Читать страницу', body: '<p>При гипотезе об одинаковых кнопках разница не меньше нашей по модулю получилась примерно в 4% повторов. Вероятность самой гипотезы по этому числу определить нельзя.</p><p>В пилоте средний чек с новой кнопкой выше на 1&nbsp;094&nbsp;₽. По тесту Уэлча 95-процентный интервал для разницы средних составляет от +90 до +2&nbsp;097&nbsp;₽.</p>' }
     ],
-    hud: [{ id: 'k', label: 'Пар' }, { id: 't', label: 'Дальше флажка' }, { id: 'p', label: 'p-value' }],
-    legend: '<span><i style="background:#6fa2ea"></i>старая</span><span><i style="background:#f0a247"></i>новая</span><span><i class="sq" style="background:#36b8a6"></i>без разницы</span><span><i class="sq" style="background:#f06ba5"></i>p-value</span>',
+    hud: [{ id: 'k', label: 'Пар' }, { id: 't', label: 'В хвостах' }, { id: 'p', label: 'p-значение' }],
+    legend: '<span><i style="background:#6fa2ea"></i>старая кнопка</span><span><i style="background:#f0a247"></i>новая кнопка</span><span><i class="sq" style="background:#36b8a6"></i>без эффекта</span><span><i class="sq" style="background:#f06ba5"></i>два хвоста</span>',
     info: 'ПРОВЕРКА ГИПОТЕЗЫ',
-    aiNote: 'В анимации учебный пилот: 40 чеков со старой кнопкой (среднее 3 763 ₽) и 40 с новой «Оплатить частями» (4 857 ₽), разница +1 094 ₽. Мир без разницы: обе группы из одного логнормального распределения чеков (медиана 3 000 ₽, σ логарифма 0,6); NumPy, seed 6300, 5 000 пар по 40 + 40, разброс разниц 534 ₽. Дальше флажка ±1 094 ₽: 105 справа и 94 слева, p = 0,040. Порог α = 0,05: −1 023 и +1 048 ₽. Мир с эффектом +1 000 ₽ (seed 6301): за порог попадает 46,5% пар — мощность. 95-процентный интервал Уэлча для разницы: от +90 до +2 097 ₽.',
+    aiNote: 'Для пилота случайно сформировали две группы по 40 покупателей. Средние чеки составили 3 763 и 4 857 ₽. При одинаковом распределении чеков в модели разница 1 094 ₽ или больше по модулю встретилась в 199 из 5 000 повторов. Оценка двустороннего p равна 0,040. При истинной прибавке в 1 000 ₽ около 47% повторов вышли за критические границы. По данным исходного пилота 95-процентный интервал Уэлча для разницы средних составляет от +90 до +2 097 ₽.',
     mount(root, api) {
       root.innerHTML = '<div class="pv-sc"><canvas class="pv-cv" aria-hidden="true"></canvas></div>';
       const box = root.firstChild, cv = box.firstChild, g = cv.getContext('2d');
@@ -216,7 +216,7 @@
         g.lineTo(Xt(XTOP), tBase); g.closePath();
         g.fillStyle = 'rgba(54, 184, 166, .16)'; g.fill(); g.strokeStyle = SC.nul; g.lineWidth = 1.5; g.stroke();
         g.restore();
-        if (label) txt(mob ? 'мир без разницы' : 'мир без разницы: одно распределение чеков', PL + PW, tTop + fs, SC.nul, a, 'right');
+        if (label) txt(mob ? 'модель без эффекта' : 'распределение чеков при одинаковых кнопках', PL + PW, tTop + fs, SC.nul, a, 'right');
       }
       function bottomAxis(a) {
         if (!(a > 0)) return;
@@ -273,7 +273,7 @@
         }
         // низ: гистограмма разниц
         bottomAxis(s.axisB);
-        if (s.ask > 0) txt(mob ? 'какие разницы даёт этот мир?' : 'какие разницы выдаёт мир без разницы?', Xb(0), (bTop + bBase) / 2 + 6, SC.mut, s.ask * .9, 'center', 'middle', `500 ${fs + 1}px ${FONT}`);
+        if (s.ask > 0) txt(mob ? 'Как различаются средние?' : 'Как различаются средние чеки при одинаковых кнопках?', Xb(0), (bTop + bBase) / 2 + 6, SC.mut, s.ask * .9, 'center', 'middle', `500 ${fs + 1}px ${FONT}`);
         const h = s.kc === K0 ? HALL : histK(s.kc);
         let maxC = 1; h.forEach(c => { if (c > maxC) maxC = c; }); if (s.alt > 0) maxC = Math.max(maxC, AMAX);
         const u = Math.min(mob ? 9 : 12, (bBase - bTop - fs - 14) * .9 / maxC);
@@ -319,19 +319,19 @@
         s.calls.forEach(([id, a]) => {
           if (!(a > 0)) return;
           if (id === 'diff') C(Xt(MN), my, mob ? rub(OBS) : `разница ${rub(OBS)}`, 'r', SC.yel, a);
-          else if (id === 'h0') C(Xt(5200), tBase - (tBase - tTop) * .45, mob ? 'H0: одно распределение' : 'нулевая гипотеза: у обеих кнопок одно распределение', 'r', SC.nul, a);
+          else if (id === 'h0') C(Xt(5200), tBase - (tBase - tTop) * .45, mob ? 'H0: одно распределение' : 'H0: распределения чеков одинаковы', 'r', SC.nul, a);
           else if (id === 'pd') { const [pa, pb] = PAIRS[0]; C(Math.max(Xt(avg(pa)), Xt(avg(pb))), my, mob ? rub(D0[0]) : `разница ${rub(D0[0])}`, 'r', SC.yel, a); }
           else if (id === 'spread') C(Xb(785), bBase - 2 * u, mob ? 'от −654 до +785' : 'разницы от −654 до +785 ₽', 'r', SC.nul, a);
-          else if (id === 'bell') C(Xb(380), bBase - HMAX * u * .62, mob ? 'разброс 534 ₽' : 'нулевое распределение: разброс 534 ₽', 'r', SC.nul, a);
+          else if (id === 'bell') C(Xb(380), bBase - HMAX * u * .62, mob ? 'разброс 534 ₽' : 'стандартное отклонение 534 ₽', 'r', SC.nul, a);
           else if (id === 'flag') C(Xb(OBS) + 6, fTop + 5, mob ? `наша: ${rub(OBS)}` : `наш пилот: ${rub(OBS)}`, 'r', SC.yel, a);
-          else if (id === 'tr') C(Xb(1500), bBase - 10, mob ? `${DATA.right} справа` : `${DATA.right} пар дальше флажка`, 'u', SC.tail, a);
-          else if (id === 'tl') C(Xb(-1500), bBase - 10, mob ? `${DATA.left} слева` : `${DATA.left} — с другой стороны`, 'u', SC.tail, a);
+          else if (id === 'tr') C(Xb(1500), bBase - 10, mob ? `${DATA.right} справа` : `${DATA.right} пар в правом хвосте`, 'u', SC.tail, a);
+          else if (id === 'tl') C(Xb(-1500), bBase - 10, mob ? `${DATA.left} слева` : `${DATA.left} пар в левом хвосте`, 'u', SC.tail, a);
           else if (id === 'pv') C(Xb(OBS) + 6, fTop + 5, `p = ${BEYOND} / ${num(K0)} = ${pv(DATA.p)}`, 'r', SC.tail, a);
-          else if (id === 'alpha') C(Xb(CR[0]), bBase - 30, mob ? 'α = 5%: ложная тревога' : 'за порогами 5% пар: ложная тревога', 'u', SC.crit, a);
-          else if (id === 'reject') C(Xb(OBS) + 6, fTop + 5, mob ? 'за порогом' : 'флажок за порогом: эффект', 'r', SC.yel, a);
+          else if (id === 'alpha') C(Xb(CR[0]), bBase - 30, mob ? 'α = 5%: ложная тревога' : 'при H0 за границами около 5% пар', 'u', SC.crit, a);
+          else if (id === 'reject') C(Xb(OBS) + 6, fTop + 5, mob ? 'за порогом' : 'результат значим при α = 0,05', 'r', SC.yel, a);
           else if (id === 'pow') C(Xb(1500), bBase - AMAX * u * .5, `мощность ${pct(DATA.power)}`, 'r', SC.neu, a);
           else if (id === 'beta') C(Xb(700), bBase - AMAX * u * .82, mob ? `пропуск ${pct(1 - DATA.power)}` : `пропуск эффекта ${pct(1 - DATA.power)}`, 'l', SC.neu, a);
-          else if (id === 'ci') C(Xb((CI[0] + CI[1]) / 2), fTop + 30, mob ? `от ${sgn(CI[0])} до ${sgn(CI[1])}` : `95% интервал: от ${sgn(CI[0])} до ${sgn(CI[1])} ₽`, 'd', SC.ink, a);
+          else if (id === 'ci') C(Xb((CI[0] + CI[1]) / 2), fTop + 30, mob ? `от ${sgn(CI[0])} до ${sgn(CI[1])}` : `95%-й интервал от ${sgn(CI[0])} до ${sgn(CI[1])} ₽`, 'd', SC.ink, a);
           else if (id === 'est') C(Xb(OBS) - 6, fTop + 26, mob ? 'оценка' : `оценка ${rub(OBS)}`, 'l', SC.yel, a);
         });
       }
@@ -392,8 +392,8 @@
 
   function buildPerm(box, api) {
     const { css, reduced } = api;
-    box.innerHTML = `<div class="block-hd"><span class="t">Перемешанные метки показывают, обычна ли настоящая разница <i>интерактив</i></span><button type="button" class="btn ghost small" id="pm-reset">Сбросить</button></div>
-<p class="hint pm-do">Жмите «Перемешать метки»: разница новой раздачи падает в гистограмму. Потом двигайте истинный эффект и листайте пилоты.</p>
+    box.innerHTML = `<div class="block-hd"><span class="t">Как меняется разница средних после перестановки меток <i>интерактив</i></span><button type="button" class="btn ghost small" id="pm-reset">Сбросить</button></div>
+<p class="hint pm-do">Нажмите «Перемешать метки». На гистограмме появится разница средних при новом распределении чеков по группам. Затем измените прибавку к чеку и сравните несколько пилотов.</p>
 <div class="pm-ctl">
   <span class="wbtns"><button type="button" class="btn small" id="pm-one">Перемешать метки</button><button type="button" class="btn small ghost" id="pm-k">Ещё 1 000</button><button type="button" class="btn small ghost" id="pm-new">Другой пилот</button></span>
   <label class="krange pm-eff"><span>истинный эффект</span><input type="range" min="0" max="${EFF.length - 1}" step="1" value="${E0}" id="pm-e" aria-label="Истинный эффект новой кнопки, рублей к чеку"><b id="pm-ev"></b></label>
@@ -403,13 +403,13 @@
   <div class="pm-side">
     <p class="pm-cap" id="pm-cap" aria-live="polite"></p>
     <div class="readout pm-ro">
-      <div><span class="big" id="pm-obs">—</span><span class="lbl">настоящая разница</span></div>
+      <div><span class="big" id="pm-obs">—</span><span class="lbl">исходная разница</span></div>
       <div><span class="big" id="pm-n">0</span><span class="lbl">перемешиваний</span></div>
-      <div><span class="big" id="pm-p">—</span><span class="lbl">p-value: доля не ближе к нулю</span></div>
+      <div><span class="big" id="pm-p">—</span><span class="lbl">оценка двустороннего p</span></div>
       <div><span class="big" id="pm-pw">—</span><span class="lbl" id="pm-pwl">мощность</span></div>
     </div>
     <div class="pm-grid"><canvas id="pm-g" role="img" aria-label="400 учебных пилотов: закрашены те, где перестановочный тест дал p меньше 0,05"></canvas><p class="pm-gn" id="pm-gn"></p></div>
-    <div class="pm-curve"><canvas id="pm-c" role="img" aria-label="Мощность для каждого истинного эффекта, который вы открыли"></canvas></div>
+    <div class="pm-curve"><canvas id="pm-c" role="img" aria-label="Доля пилотов с p меньше 0,05 при каждой выбранной прибавке к чеку"></canvas></div>
   </div>
 </div>
 <div class="status"><span><span class="dot" id="pm-dot"></span><span id="pm-s1"></span></span><span class="grow"></span><span id="pm-s2"></span></div>`;
@@ -498,7 +498,7 @@
       // легенда цвета: настоящая кнопка
       g.font = `500 ${fs}px ${FONT}`; g.textBaseline = 'middle'; g.textAlign = 'left'; let lx0 = pl;
       [[C.c[0], 'старая'], [C.c[1], 'новая']].forEach(([col, t]) => { g.fillStyle = col; g.beginPath(); g.arc(lx0 + 4, 9, 4, 0, 7); g.fill(); g.fillStyle = C.ink2; g.fillText(t, lx0 + 12, 9.5); lx0 += 20 + g.measureText(t).width; });
-      g.fillStyle = C.muted; g.fillText(mob ? '— цвет по настоящей кнопке' : '— цвет точки по настоящей кнопке, строка — по текущей метке', lx0, 9.5);
+      g.fillStyle = C.muted; g.fillText(mob ? '— исходная кнопка' : '— цвет обозначает исходную кнопку, строка — текущую группу', lx0, 9.5);
       // гистограмма перемешанных разниц
       g.font = `500 ${fs}px ${FONT}`; g.fillStyle = C.muted; g.textAlign = 'left'; g.textBaseline = 'bottom';
       g.fillText(mob ? 'разницы после перемешиваний' : 'разница средних после каждого перемешивания: «новая» минус «старая», ₽', pl, b0 - 8);
@@ -514,15 +514,15 @@
       (mob ? [-3000, 0, 3000] : [-3000, -2000, -1000, 0, 1000, 2000, 3000]).forEach(t => g.fillText(t ? sgn(t) : '0', XB(t), b1 + 11));
       if (st.last !== null) { const x = XB(st.last); g.fillStyle = C.ink; g.beginPath(); g.moveTo(x, b1 + 2); g.lineTo(x - 4, b1 + 9); g.lineTo(x + 4, b1 + 9); g.closePath(); g.fill(); }
       if (!st.n) { g.font = `500 ${fs + 1}px ${FONT}`; g.fillStyle = C.muted; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('Нажмите «Перемешать метки»', pl + pw / 2, (b0 + b1) / 2 + 10); }
-      // флажки: настоящая разница и её зеркало
+      // флажки: исходная разница и её зеркало
       const ft = b0 + 6;
       flag(g, XB(st.obs), ft, b1, C.accent, 1);
       flag(g, XB(-st.obs), ft, b1, C.accent, .7, true);
       g.font = `600 ${fs}px ${FONT}`; g.fillStyle = C.accent; g.textBaseline = 'middle';
-      const lab = mob ? rub(st.obs) : `настоящая ${rub(st.obs)}`, lx = XB(st.obs);
+      const lab = mob ? rub(st.obs) : `исходная ${rub(st.obs)}`, lx = XB(st.obs);
       if (st.obs >= 0) { g.textAlign = lx + 18 + g.measureText(lab).width > pl + pw ? 'right' : 'left'; g.fillText(lab, g.textAlign === 'left' ? lx + 17 : lx - 6, ft + 5); }
       else { g.textAlign = 'right'; g.fillText(lab, lx - 17, ft + 5); }
-      if (Math.abs(st.obs) > -PLO) { g.fillStyle = C.bad; g.textAlign = 'right'; g.fillText('флажок за краем →', pl + pw, ft + fs + 12); }
+      if (Math.abs(st.obs) > -PLO) { g.fillStyle = C.bad; g.textAlign = 'right'; g.fillText(st.obs < 0 ? '← разница за границей шкалы' : 'разница за границей шкалы →', pl + pw, ft + fs + 12); }
     }
     function drawSide() {
       const C = css(), P = powerVal(st.ei), Pd = pow.get(st.ei);
@@ -535,13 +535,13 @@
           if (k + 1 === st.pilot) { g.strokeStyle = C.ink; g.lineWidth = 1.5; g.strokeRect(x - .2, y - .2, cell + .4, cell + .4); }
         }
       }
-      q('#pm-gn').textContent = P ? `${P.done < PILOTS ? `считаю: ${P.done} из 400 пилотов; ` : '400 пилотов по 40 + 40; '}закрашены ${num(P.s)} с p < 0,05. Рамка — пилот №${st.pilot}` : 'Мощность считается…';
+      q('#pm-gn').textContent = P ? `${P.done < PILOTS ? `Готово ${P.done} из 400 пилотов. ` : '400 пилотов по 40 оплат в каждой группе. '}Число пилотов с p < 0,05 — ${num(P.s)}. В рамке пилот №${st.pilot}.` : 'Идёт расчёт…';
       q('#pm-pw').textContent = P ? pct(P.pw) : '—';
-      q('#pm-pwl').textContent = `мощность при ${rub(EFF[st.ei])}${st.ei === 0 ? ' — ложные тревоги' : ''}`;
+      q('#pm-pwl').textContent = st.ei === 0 ? 'ложные срабатывания при нулевом эффекте' : `мощность при прибавке ${rub(EFF[st.ei])}`;
       // кривая мощности по открытым эффектам
       const cw = ccv.parentNode.clientWidth; if (cw) {
         const ch = 92, g = setCanvas(ccv, cw, ch), fs = 10.5, top = 16, bot = ch - 16, bw = (cw - 30) / EFF.length;
-        g.font = `500 ${fs}px ${FONT}`; g.fillStyle = C.muted; g.textBaseline = 'top'; g.textAlign = 'left'; g.fillText('мощность при каждом эффекте', 0, 0);
+        g.font = `500 ${fs}px ${FONT}`; g.fillStyle = C.muted; g.textBaseline = 'top'; g.textAlign = 'left'; g.fillText('доля пилотов с p < 0,05', 0, 0);
         const Y = v => bot - v * (bot - top);
         EFF.forEach((e, i) => {
           const v = powerVal(i), x = i * bw + bw * .18, w = bw * .64;
@@ -557,12 +557,12 @@
     }
     function caption() {
       const p = pOf();
-      if (!st.n) return 'Флажок — настоящая разница. Перемешайте метки, чтобы увидеть, какие разницы даёт случай';
-      if (st.n < 100) return 'Гистограмма ещё набирается: перемешайте больше';
-      if (!st.c) return `Флажок далеко в хвосте: ни одно из ${num(st.n)} перемешиваний не ушло от нуля так далеко`;
-      if (p < .05) return `Флажок в хвосте: так же далеко от нуля ушли только ${pct(p, 1)} перемешиваний`;
-      if (p < .2) return `Флажок на склоне: так же далеко ушли ${pct(p, 0)} перемешиваний — при α = 0,05 эффект не доказан`;
-      return `Флажок в середине: ${pct(p, 0)} перемешиваний ушли не ближе к нулю — такая разница обычна и без эффекта`;
+      if (!st.n) return 'Флажок отмечает исходную разницу средних. Перемешайте метки, чтобы получить первую разницу при случайном распределении чеков по группам.';
+      if (st.n < 100) return 'Пока перестановок мало, оценка p нестабильна. Добавьте ещё 1 000.';
+      if (!st.c) return `Среди ${num(st.n)} перестановок ни разу не встретилась разница с модулем хотя бы как у исходной. Точное p по этому результату неизвестно.`;
+      if (p < .05) return `Доля разниц не меньше исходной по модулю — ${pct(p, 1)}. Оценка p ниже 0,05.`;
+      if (p < .2) return `Доля разниц не меньше исходной по модулю — ${pct(p, 0)}. При α = 0,05 оснований отвергнуть H0 недостаточно.`;
+      return `После ${pct(p, 0)} перестановок модуль разницы не меньше исходного. Такое отклонение часто встречается и при одинаковых кнопках.`;
     }
     function draw(now) {
       const C = css(); drawMain(C, now || performance.now()); drawSide();
@@ -573,8 +573,8 @@
       q('#pm-p').textContent = st.n ? (st.c ? num(p, 3) : `0 из ${num(st.n)}`) : '—';
       q('#pm-ev').textContent = `${rub(EFF[st.ei])} (${sgn(EFF[st.ei] / MU_OLD * 100)}%)`;
       q('#pm-e').value = String(st.ei);
-      q('#pm-s1').textContent = `пилот №${st.pilot} · эффект ${rub(EFF[st.ei])} · ${num(st.n)} ${wordSh(st.n)}${st.n ? ` · дальше флажка ${num(st.c)}` : ''}`;
-      q('#pm-s2').textContent = `зерно «perm|${st.pilot}|${EFF[st.ei]}»`;
+      q('#pm-s1').textContent = `пилот №${st.pilot} · эффект ${rub(EFF[st.ei])} · ${num(st.n)} ${wordSh(st.n)}${st.n ? ` · в обоих хвостах ${num(st.c)}` : ''}`;
+      q('#pm-s2').textContent = `начальное значение «perm|${st.pilot}|${EFF[st.ei]}»`;
       q('#pm-dot').classList.toggle('live', !!raf || !!praf);
       q('#pm-one').disabled = q('#pm-k').disabled = st.n >= CAP;
     }
@@ -594,75 +594,75 @@
       describe() {
         const p = pOf(), P = powerVal(st.ei);
         const curve = EFF.map((e, i) => { const v = powerVal(i); return v && v.done >= PILOTS ? `${rub(e)}: ${pct(v.pw)}` : null; }).filter(Boolean).join('; ');
-        return `пилот №${st.pilot}, истинный эффект ${rub(EFF[st.ei])}, настоящая разница ${rub(st.obs)}, перемешиваний ${st.n}${st.n ? `, дальше флажка ${st.c}, p-value ${num(p, 3)}` : ''}; мощность при этом эффекте ${P ? pct(P.pw) : 'ещё не посчитана'}${curve ? `; кривая мощности: ${curve}` : ''}; на экране: «${caption()}»`;
+        return `пилот №${st.pilot}, истинный эффект ${rub(EFF[st.ei])}, исходная разница ${rub(st.obs)}, перемешиваний ${st.n}${st.n ? `, в обоих хвостах ${st.c}, оценка p ${st.c ? num(p, 3) : 'по этой серии не уточняется'}` : ''}; доля пилотов с p < 0,05 ${P ? pct(P.pw) : 'ещё неизвестна'}${curve ? `; кривая мощности: ${curve}` : ''}; на экране: «${caption()}»`;
       },
       redraw() { draw(); }
     };
   }
 
-  const CODE = /*code:start*/{"perm": {"title": "Перестановочный тест с нуля: дальше нашей разницы ушли 2,9% перемешиваний", "badge": "проверено: Python 3.13, NumPy 2.5.3, pandas 3.0.5", "lang": "python", "code": "import numpy as np, pandas as pd\n\npilot = pd.read_csv(\"data/inference/pilot.csv\")       # учебный пилот: 40 + 40 оплат\nold = pilot.loc[pilot.button == \"старая\", \"amount\"].to_numpy(float)\nnew = pilot.loc[pilot.button == \"новая\", \"amount\"].to_numpy(float)\nobs = new.mean() - old.mean()                         # статистика критерия: разница средних\n\nrng = np.random.default_rng(63)\npooled = np.concatenate([old, new])\ndiffs = np.empty(10_000)\nfor i in range(diffs.size):\n    shuffled = rng.permutation(pooled)                # метки «старая/новая» раздаём заново\n    diffs[i] = shuffled[40:].mean() - shuffled[:40].mean()\n\np_two = np.mean(np.abs(diffs) >= abs(obs))            # не ближе к нулю, чем наша, с любой стороны\np_one = np.mean(diffs >= obs)                         # только «новая больше»\nlo, hi = np.percentile(diffs, [2.5, 97.5])\n\nprint(f\"наша разница: {obs:+.0f} ₽\")\nprint(f\"перемешанные: среднее {diffs.mean():+.1f} ₽, разброс {diffs.std():.0f} ₽\")\nprint(f\"5% самых далёких от нуля: дальше {lo:+.0f} и {hi:+.0f} ₽\")\nprint(f\"дальше нашей с любой стороны: {np.sum(np.abs(diffs) >= abs(obs))} из {diffs.size}\")\nprint(f\"p-value двусторонний = {p_two:.4f}, односторонний = {p_one:.4f}\")", "out": "наша разница: +1094 ₽\nперемешанные: среднее -0.3 ₽, разброс 511 ₽\n5% самых далёких от нуля: дальше -975 и +985 ₽\nдальше нашей с любой стороны: 293 из 10000\np-value двусторонний = 0.0293, односторонний = 0.0148"}, "ttest": {"title": "t-тест Уэлча отвечает на тот же вопрос почти тем же p и даёт интервал для эффекта", "badge": "проверено: Python 3.13, SciPy 1.18.1, pandas 3.0.5", "lang": "python", "code": "import pandas as pd\nfrom scipy import stats\n\npilot = pd.read_csv(\"data/inference/pilot.csv\")\nold = pilot.loc[pilot.button == \"старая\", \"amount\"]\nnew = pilot.loc[pilot.button == \"новая\", \"amount\"]\n\nres = stats.ttest_ind(new, old, equal_var=False)      # t-тест Уэлча, H1: средние различаются\nci = res.confidence_interval(confidence_level=0.95)  # интервал для разницы средних\none = stats.ttest_ind(new, old, equal_var=False, alternative=\"greater\")  # H1: новая больше\n\nprint(f\"t = {res.statistic:.3f}, степеней свободы {res.df:.1f}\")\nprint(f\"p-value двусторонний = {res.pvalue:.4f}, односторонний = {one.pvalue:.4f}\")\nprint(f\"разница {new.mean() - old.mean():+.0f} ₽, 95% интервал от {ci.low:+.0f} до {ci.high:+.0f} ₽\")\nprint(f\"в процентах от старого чека: {(new.mean() / old.mean() - 1):+.1%}, \"\n      f\"интервал от {ci.low / old.mean():+.1%} до {ci.high / old.mean():+.1%}\")", "out": "t = 2.169, степеней свободы 78.0\np-value двусторонний = 0.0331, односторонний = 0.0165\nразница +1094 ₽, 95% интервал от +90 до +2097 ₽\nв процентах от старого чека: +29.1%, интервал от +2.4% до +55.7%"}, "false_alarms": {"title": "Без эффекта тест срабатывает примерно в 5% проверок, а p распределён равномерно", "badge": "проверено: Python 3.13, NumPy 2.5.3, SciPy 1.18.1", "lang": "python", "code": "import numpy as np\nfrom scipy import stats\n\nrng = np.random.default_rng(7)\n\ndef null_pilots(k):                                   # k пилотов в мире без разницы\n    old = np.round(rng.lognormal(np.log(3000), 0.6, (k, 40)), -1)\n    new = np.round(rng.lognormal(np.log(3000), 0.6, (k, 40)), -1)   # та же кнопка по сути\n    return stats.ttest_ind(new, old, axis=1, equal_var=False).pvalue\n\np = null_pilots(100)\nprint(\"ложных срабатываний, p < 0,05:\", np.sum(p < 0.05), \"из 100\")\nprint(\"самые маленькие p:\", np.sort(p)[:6].round(3))\nprint(\"p по десятым долям от 0 до 1:\", np.histogram(p, bins=10, range=(0, 1))[0])\n\np = null_pilots(10_000)\nprint(f\"на 10 000 тестах: p < 0,05 у {np.mean(p < 0.05):.2%}, p < 0,01 у {np.mean(p < 0.01):.2%}\")\nprint(\"p по десятым долям от 0 до 1:\", np.histogram(p, bins=10, range=(0, 1))[0])", "out": "ложных срабатываний, p < 0,05: 5 из 100\nсамые маленькие p: [0.01  0.038 0.039 0.042 0.048 0.052]\np по десятым долям от 0 до 1: [11  9 10  5  9 12 13 13 10  8]\nна 10 000 тестах: p < 0,05 у 5.05%, p < 0,01 у 0.99%\np по десятым долям от 0 до 1: [ 982 1025 1068  998 1009 1012  962 1069  943  932]"}, "power": {"title": "Вдвое меньший эффект — мощность почти втрое ниже, вчетверо больше оплат её возвращают", "badge": "проверено: Python 3.13, SciPy 1.18.1, statsmodels 0.15.0", "lang": "python", "code": "import numpy as np\nfrom scipy import stats\nfrom statsmodels.stats.power import TTestIndPower\n\nrng = np.random.default_rng(5)\n\ndef power(effect, n=40, pilots=5_000, alpha=0.05):\n    old = rng.lognormal(np.log(3000), 0.6, (pilots, n))\n    new = rng.lognormal(np.log(3000), 0.6, (pilots, n)) + effect   # истинный эффект в рублях\n    p = stats.ttest_ind(new, old, axis=1, equal_var=False).pvalue  # 5 000 пилотов разом\n    return np.mean(p < alpha)\n\nfull, half = power(1000), power(500)\nprint(f\"эффект +1 000 ₽, по 40 оплат:  мощность {full:.3f}\")\nprint(f\"эффект   +500 ₽, по 40 оплат:  мощность {half:.3f} — в {full / half:.1f} раза ниже\")\nprint(f\"эффект   +500 ₽, по 160 оплат: мощность {power(500, n=160):.3f}\")\nprint(f\"эффекта нет,     по 40 оплат:  «значимых» {power(0):.3f}\")\n\nsigma = 3000 * np.exp(0.6**2 / 2) * np.sqrt(np.exp(0.6**2) - 1)   # σ чека, ≈ 2 364 ₽\nd = TTestIndPower().power(effect_size=1000 / sigma, nobs1=40, alpha=0.05)\nprint(f\"формула statsmodels для +1 000 ₽ (d Коэна = {1000 / sigma:.2f}): {d:.3f}\")", "out": "эффект +1 000 ₽, по 40 оплат:  мощность 0.481\nэффект   +500 ₽, по 40 оплат:  мощность 0.168 — в 2.9 раза ниже\nэффект   +500 ₽, по 160 оплат: мощность 0.471\nэффекта нет,     по 40 оплат:  «значимых» 0.047\nформула statsmodels для +1 000 ₽ (d Коэна = 0.42): 0.464"}}/*code:end*/;
+  const CODE = /*code:start*/{"perm": {"title": "В 293 из 10 000 перестановок разница не меньше исходной по модулю", "badge": "проверено: Python 3.13, NumPy 2.5.3, pandas 3.0.5", "lang": "python", "code": "import numpy as np, pandas as pd\n\npilot = pd.read_csv(\"data/inference/pilot.csv\")       # учебный пилот: 40 + 40 оплат\nold = pilot.loc[pilot.button == \"старая\", \"amount\"].to_numpy(float)\nnew = pilot.loc[pilot.button == \"новая\", \"amount\"].to_numpy(float)\nobs = new.mean() - old.mean()                         # статистика критерия: разница средних\n\nrng = np.random.default_rng(63)\npooled = np.concatenate([old, new])\ndiffs = np.empty(10_000)\nfor i in range(diffs.size):\n    shuffled = rng.permutation(pooled)                # метки «старая/новая» раздаём заново\n    diffs[i] = shuffled[40:].mean() - shuffled[:40].mean()\n\np_two = np.mean(np.abs(diffs) >= abs(obs))            # разница не меньше исходной по модулю\np_one = np.mean(diffs >= obs)                         # правый хвост\nlo, hi = np.percentile(diffs, [2.5, 97.5])\n\nprint(f\"исходная разница: {obs:+.0f} ₽\")\nprint(f\"после перестановок: среднее {diffs.mean():+.1f} ₽, разброс {diffs.std():.0f} ₽\")\nprint(f\"границы центральных 95% разниц: {lo:+.0f} и {hi:+.0f} ₽\")\nprint(f\"разница не меньше исходной по модулю: {np.sum(np.abs(diffs) >= abs(obs))} из {diffs.size}\")\nprint(f\"двустороннее p = {p_two:.4f}, одностороннее p = {p_one:.4f}\")", "out": "исходная разница: +1094 ₽\nпосле перестановок: среднее -0.3 ₽, разброс 511 ₽\nграницы центральных 95% разниц: -975 и +985 ₽\nразница не меньше исходной по модулю: 293 из 10000\nдвустороннее p = 0.0293, одностороннее p = 0.0148"}, "ttest": {"title": "Тест Уэлча даёт p = 0,033 и интервал для разницы средних", "badge": "проверено: Python 3.13, SciPy 1.18.1, pandas 3.0.5", "lang": "python", "code": "import pandas as pd\nfrom scipy import stats\n\npilot = pd.read_csv(\"data/inference/pilot.csv\")\nold = pilot.loc[pilot.button == \"старая\", \"amount\"]\nnew = pilot.loc[pilot.button == \"новая\", \"amount\"]\n\nres = stats.ttest_ind(new, old, equal_var=False)      # t-тест Уэлча, H1: средние различаются\nci = res.confidence_interval(confidence_level=0.95)  # интервал для разницы средних\none = stats.ttest_ind(new, old, equal_var=False, alternative=\"greater\")  # H1: новая больше\n\nprint(f\"t = {res.statistic:.3f}, степеней свободы {res.df:.1f}\")\nprint(f\"двустороннее p = {res.pvalue:.4f}, одностороннее p = {one.pvalue:.4f}\")\nprint(f\"разница {new.mean() - old.mean():+.0f} ₽, 95%-й интервал от {ci.low:+.0f} до {ci.high:+.0f} ₽\")\nprint(f\"относительно среднего чека исходной группы: {(new.mean() / old.mean() - 1):+.1%}, \"\n      f\"границы интервала в рублях, поделённые на это выборочное среднее: {ci.low / old.mean():+.1%} и {ci.high / old.mean():+.1%}\")", "out": "t = 2.169, степеней свободы 78.0\nдвустороннее p = 0.0331, одностороннее p = 0.0165\nразница +1094 ₽, 95%-й интервал от +90 до +2097 ₽\nотносительно среднего чека исходной группы: +29.1%, границы интервала в рублях, поделённые на это выборочное среднее: +2.4% и +55.7%"}, "false_alarms": {"title": "При одинаковых кнопках около 5% пилотов дают p < 0,05", "badge": "проверено: Python 3.13, NumPy 2.5.3, SciPy 1.18.1", "lang": "python", "code": "import numpy as np\nfrom scipy import stats\n\nrng = np.random.default_rng(7)\n\ndef null_pilots(k):                                   # k пилотов без эффекта\n    old = np.round(rng.lognormal(np.log(3000), 0.6, (k, 40)), -1)\n    new = np.round(rng.lognormal(np.log(3000), 0.6, (k, 40)), -1)   # то же распределение сумм\n    return stats.ttest_ind(new, old, axis=1, equal_var=False).pvalue\n\np = null_pilots(100)\nprint(\"ложных срабатываний, p < 0,05:\", np.sum(p < 0.05), \"из 100\")\nprint(\"шесть наименьших p:\", np.sort(p)[:6].round(3))\nprint(\"число p в десяти интервалах от 0 до 1:\", np.histogram(p, bins=10, range=(0, 1))[0])\n\np = null_pilots(10_000)\nprint(f\"на 10 000 тестах: p < 0,05 у {np.mean(p < 0.05):.2%}, p < 0,01 у {np.mean(p < 0.01):.2%}\")\nprint(\"число p в десяти интервалах от 0 до 1:\", np.histogram(p, bins=10, range=(0, 1))[0])", "out": "ложных срабатываний, p < 0,05: 5 из 100\nшесть наименьших p: [0.01  0.038 0.039 0.042 0.048 0.052]\nчисло p в десяти интервалах от 0 до 1: [11  9 10  5  9 12 13 13 10  8]\nна 10 000 тестах: p < 0,05 у 5.05%, p < 0,01 у 0.99%\nчисло p в десяти интервалах от 0 до 1: [ 982 1025 1068  998 1009 1012  962 1069  943  932]"}, "power": {"title": "Тест обнаруживает прибавку в 500 ₽ реже, чем в 1 000 ₽", "badge": "проверено: Python 3.13, SciPy 1.18.1, statsmodels 0.15.0", "lang": "python", "code": "import numpy as np\nfrom scipy import stats\nfrom statsmodels.stats.power import TTestIndPower\n\nrng = np.random.default_rng(5)\n\ndef power(effect, n=40, pilots=5_000, alpha=0.05):\n    old = rng.lognormal(np.log(3000), 0.6, (pilots, n))\n    new = rng.lognormal(np.log(3000), 0.6, (pilots, n)) + effect   # истинный эффект в рублях\n    p = stats.ttest_ind(new, old, axis=1, equal_var=False).pvalue  # 5 000 пилотов разом\n    return np.mean(p < alpha)\n\nfull, half = power(1000), power(500)\nprint(f\"эффект +1 000 ₽, по 40 оплат:  мощность {full:.3f}\")\nprint(f\"эффект   +500 ₽, по 40 оплат:  мощность {half:.3f} — в {full / half:.1f} раза ниже\")\nprint(f\"эффект   +500 ₽, по 160 оплат: мощность {power(500, n=160):.3f}\")\nprint(f\"эффекта нет,     по 40 оплат:  «значимых» {power(0):.3f}\")\n\nsigma = 3000 * np.exp(0.6**2 / 2) * np.sqrt(np.exp(0.6**2) - 1)   # σ чека, ≈ 2 364 ₽\nd = TTestIndPower().power(effect_size=1000 / sigma, nobs1=40, alpha=0.05)\nprint(f\"формула statsmodels для +1 000 ₽ (d Коэна = {1000 / sigma:.2f}): {d:.3f}\")", "out": "эффект +1 000 ₽, по 40 оплат:  мощность 0.481\nэффект   +500 ₽, по 40 оплат:  мощность 0.168 — в 2.9 раза ниже\nэффект   +500 ₽, по 160 оплат: мощность 0.471\nэффекта нет,     по 40 оплат:  «значимых» 0.047\nформула statsmodels для +1 000 ₽ (d Коэна = 0.42): 0.464"}}/*code:end*/;
 
   window.PAGE = {
     id: 'da-6-3',
     short: 'DA-06',
-    title: 'Проверка гипотез: p-value и ошибки двух родов',
+    title: 'Проверка гипотез и ошибки первого и второго рода',
     where: 'блок «Дата аналитика», тема 06 «Статистический вывод», страница 6.3',
-    aiData: 'учебный пилот новой кнопки оплаты «Оплатить частями»: 40 чеков со старой кнопкой (среднее 3 763 ₽) и 40 с новой (4 857 ₽), разница +1 094 ₽; перестановочный тест даёт p ≈ 0,029, t-тест Уэлча 0,033; в учебном мире новая кнопка прибавляет к чеку 1 000 ₽, мощность при 40 + 40 оплатах около 48%',
+    aiData: 'Кнопку «Оплатить частями» сравнивают с обычной кнопкой оплаты, по 40 чеков на группу. Разница средних +1 094 ₽. Для исходных чеков перестановочный тест даёт p ≈ 0,029, тест Уэлча даёт p ≈ 0,033. В модели при истинной прибавке в 1 000 ₽ мощность теста Уэлча составляет около 48%.',
     scene,
     widgets: { perm: buildPerm },
     code: CODE,
     questions: {
-    q1: { sec: 'method', title: 'Сначала предскажите', q: 'В учебном мире новая кнопка правда прибавляет к чеку 1 000 ₽, около 28%. Пилот по 40 + 40 оплат повторяют много раз и проверяют при α = 0,05. В какой доле пилотов тест найдёт эффект?', opts: [['Почти во всех, около 95%: эффект большой'], ['Примерно в половине', 1], ['Примерно в 5%, как задаёт α'], ['Ни в одном: 40 оплат слишком мало для любого вывода']],
-      why: 'Это мощность теста, и при 40 + 40 оплатах она близка к половине: 48% в симуляции t-тестов из раздела «Нюансы». Разброс разницы средних в мире без эффекта — около 530 ₽, а эффект 1 000 ₽ лишь вдвое больше. Колокол разниц мира с эффектом стоит почти на пороге, и за порог уходит его половина. 95% — это 1 − α, доля верных решений, когда эффекта нет, а не мощность. 5% — доля ложных тревог в мире без разницы. «Ни в одном» неверно: половина пилотов эффект всё-таки ловит.' },
-    q2: { sec: 'idea', q: 'В сцене хвосты за флажком +1 094 ₽ и его зеркалом — 199 пар из 5 000, то есть 0,040. Что это за число?', opts: [['Вероятность, что кнопка не влияет на чек'], ['Доля пар мира без разницы, где разница средних не ближе к нулю, чем у нашего пилота', 1], ['Доля чеков, которые попали в пилот случайно'], ['Вероятность, что при повторе пилота разница снова будет +1 094 ₽']],
-      why: 'Хвосты считают в мире, где нулевая гипотеза верна: какая доля его пар даёт разницу не меньше нашей по модулю. Это и есть p-value. Вероятность того, что кнопка бесполезна, из него не получить: для этого нужно знать, как часто вообще бывают работающие кнопки, — та же разница между P(данные | гипотеза) и P(гипотеза | данные), что на странице 5.1. Чеки не делятся на «случайные» и «настоящие». Повтор пилота даст другую разницу: она гуляет с разбросом около 530 ₽.' },
-    q3: { sec: 'idea', q: 'Какая фраза для менеджера верно передаёт p = 0,03 и обходится без слова «вероятность»?', opts: [['«В 97 случаях из 100 кнопка работает»'], ['«Если бы кнопка ничего не меняла, такая или ещё большая разница получалась бы примерно в трёх пилотах из ста»', 1], ['«Эффект кнопки — 3%»'], ['«Только 3% нашей разницы объясняется случаем»']],
-      why: 'p-value отвечает на вопрос «насколько удивительны данные, если эффекта нет», и вторая фраза говорит ровно это через частоту в воображаемых повторах. Первая переворачивает условие: она говорит о кнопке при данных, а p — о данных при «пустой» кнопке. Третья путает p с размером эффекта: эффект здесь около +1 100 ₽, или +29%. Четвёртая делит разницу на «случайную» и «настоящую» части, а p такого деления не делает.' },
-    q4: { sec: 'nuances', q: 'При эффекте +1 000 ₽ и 40 + 40 оплатах мощность — 48%. Что будет с мощностью, если эффект вдвое меньше, +500 ₽?', opts: [['Тоже вдвое меньше, около 24%'], ['Почти втрое меньше, около 17%', 1], ['Не изменится: мощность зависит от α, а не от эффекта'], ['Станет 5%: такой эффект тест не видит вообще']],
-      why: 'Мощность — доля колокола мира с эффектом за порогом. При эффекте +1 000 ₽ колокол стоит почти на пороге, и за ним половина; сдвиньте колокол вдвое ближе к нулю, и за порогом останется только правый хвост: 16,8% в симуляции, в 2,9 раза меньше. Мощность нелинейна, поэтому «вдвое» неверно. От размера эффекта она зависит прямо. 5% получится только при нулевом эффекте. Вернуть мощность к 47% можно вчетверо большей выборкой: 160 + 160 оплат.' },
-    q5: { sec: 'nuances', q: 'Другой пилот того же размера дал +600 ₽ и p = 0,26. Аналитик пишет: «Незначимо, кнопка не работает». Почему это не вывод?', opts: [['Незначимость значит лишь, что данные совместимы с нулём, но и с заметным эффектом: при мощности около 50% тест пропускает половину эффектов в 1 000 ₽', 1], ['Ошибки нет: p больше 0,05, значит эффекта нет с вероятностью 74%'], ['Нужно было взять α = 0,30, тогда разница стала бы значимой и вывод — верным'], ['Ошибки нет, если перестановочный тест даст то же p']],
-      why: 'Большой p-value говорит, что данные не противоречат нулевой гипотезе, но не доказывает её. У пилота 40 + 40 разброс разницы около 530 ₽, поэтому интервал для эффекта при разнице +600 ₽ — примерно от −450 до +1 650 ₽: в нём и ноль, и весь интересный эффект. 74% — то же переворачивание условия, что и с маленьким p. Подгонять α под данные нельзя: порог выбирают до проверки. Совпадение двух тестов не прибавляет мощности.' },
-    q6: { sec: 'code', q: 'В блоке перестановочного теста из раздела «Код» после цикла стоят две строки. Что изменится, если в первой убрать оба abs?', code: 'p_two = np.mean(np.abs(diffs) >= abs(obs))\np_one = np.mean(diffs >= obs)', lang: 'python', opts: [['Ничего: разница положительная, abs ни на что не влияет'], ['p_two станет равным p_one: учитываться будет только правый хвост, p уменьшится примерно вдвое', 1], ['p_two станет равным 1 − p_one'], ['Код упадёт: abs нужен, чтобы сравнивать массив с числом']],
-      why: 'np.abs(diffs) >= abs(obs) отбирает перемешивания, ушедшие от нуля не меньше нашего в любую сторону, — это двусторонний p, 0,0293. Без abs остаётся diffs >= obs, только правый хвост, — это односторонний p_one, 0,0148, почти вдвое меньше. Разница положительная, но отрицательные перемешанные разницы abs переворачивает, поэтому влияние есть. 1 − p_one — доля перемешиваний меньше нашей разницы. NumPy сравнивает массив с числом поэлементно, abs для этого не нужен.' },
-    q7: { sec: 'nuances', q: 'Двусторонний тест дал p = 0,07. Увидев, что чек с новой кнопкой больше, аналитик переходит на одностороннюю гипотезу и получает p = 0,035. Что не так?', opts: [['Всё верно: односторонний тест мощнее, им и надо пользоваться'], ['Сторону выбрали, посмотрев на данные: так ложные тревоги случаются не в 5%, а примерно в 10% пилотов без эффекта', 1], ['Односторонний p всегда больше двустороннего, значит, он ошибся в расчёте'], ['Односторонние гипотезы годятся только для конверсии, а не для чека']],
-      why: 'Односторонняя гипотеза честна, если её сторону выбрали до данных и разница в обратную сторону вас правда не интересует. Если выбирать сторону по тому, куда легла разница, вы по сути требуете двусторонний p < 0,10, и в мире без эффекта «значимыми» окажутся около 10% пилотов вместо 5%. Односторонний p для симметричного нулевого распределения как раз вдвое меньше. Тип метрики на выбор стороны не влияет.' }
+    q1: { sec: 'method', title: 'Сначала предскажите', q: 'В модели кнопка прибавляет к чеку 1 000 ₽. В каждом пилоте по 40 оплат в группе, уровень значимости 0,05. Примерно в какой доле пилотов тест обнаружит прибавку?', opts: [["Почти в 95%"], ["Примерно в половине", 1], ["Примерно в 5%"], ["Ни в одном пилоте"]],
+      why: 'Для прибавки в 1 000 ₽ стандартная ошибка разницы составляет около 530 ₽. В симуляции из раздела «Нюансы» тест Уэлча дал p < 0,05 в 48% повторов. Это оценка мощности именно для такого эффекта и размера групп. Уровень 5% относится к проверкам при верной H0.' },
+    q2: { sec: 'idea', q: 'Из 5 000 пар групп в анимации 199 дали разницу средних не менее 1 094 ₽ по модулю. Что оценивает доля 199/5 000?', opts: [["Вероятность, что кнопка не влияет на чек"], ["Вероятность такой же или большей по модулю разницы при модели без эффекта", 1], ["Долю чеков, которые случайно включили в пилот"], ["Вероятность получить ровно +1 094 ₽ при повторном запуске кнопки"]],
+      why: 'Мы с самого начала задали одинаковое распределение чеков для обеих групп. Среди смоделированных разниц посчитали отклонения от нуля в обе стороны. Доля около 0,040 оценивает двустороннее p-значение. Вероятность истинности H0 или вероятность точного повторения результата здесь не вычисляли.' },
+    q3: { sec: 'idea', q: 'Как объяснить менеджеру двустороннее p = 0,03 на примере разницы средних?', opts: [["«В 97 случаях из 100 кнопка работает»"], ["«Если кнопка ничего не меняет, разница не меньше нашей по модулю встречается примерно в трёх экспериментах из ста»", 1], ["«Средний чек вырос на 3%»"], ["«Случаем объясняются ровно 3% разницы»"]],
+      why: 'В таком объяснении названы условие, при котором считают p, и результаты, которые учитывает двусторонняя проверка. В наших данных средний чек выше на 29%, а p ≈ 0,03. Для оценки размера эффекта и для проверки гипотезы здесь используют разные числа.' },
+    q4: { sec: 'nuances', q: 'При прибавке в 1 000 ₽ и 40 оплатах на группу мощность теста Уэлча составила 48%. Как она изменится, если прибавка будет 500 ₽?', opts: [["Снизится примерно до 24%"], ["Снизится примерно до 17%", 1], ["Останется прежней при том же уровне значимости"], ["Снизится ровно до 5%"]],
+      why: 'При прежних размерах групп стандартная ошибка почти та же. Разности средних теперь сосредоточены ближе к нулю и реже выходят за критические границы. В симуляции мощность снизилась с 48,1% до 16,8%. При 160 оплатах на группу тест обнаружил прибавку в 500 ₽ примерно в 47% повторов.' },
+    q5: { sec: 'nuances', q: 'В другом пилоте средний чек с новой кнопкой выше на 600 ₽ при p = 0,26. Почему рано говорить, что кнопка бесполезна?', opts: [["Эксперимент допускает и отсутствие эффекта, и заметную прибавку", 1], ["С вероятностью 74% эффекта нет"], ["Нужно заменить порог 0,05 на 0,30 и принять результат"], ["Вывод станет верным, если перестановочный тест даст такое же p"]],
+      why: 'При 40 оплатах на группу и стандартной ошибке около 530 ₽ грубая оценка 95-процентного интервала для разницы — от −450 до +1 650 ₽. В него входят и ноль, и прибавка в 1 000 ₽. Результата недостаточно, чтобы различить эти возможности. Изменение порога после эксперимента или повторный анализ тех же чеков эту неопределённость не устранит.' },
+    q6: { sec: 'code', q: 'Что изменится, если в первой строке убрать np.abs и abs?', code: 'p_two = np.mean(np.abs(diffs) >= abs(obs))\np_one = np.mean(diffs >= obs)', lang: 'python', opts: [["Результат останется прежним, потому что obs положительно"], ["Обе строки будут считать правый хвост, и на этих данных p уменьшится примерно вдвое", 1], ["Первая строка даст 1 − p_one"], ["NumPy больше не сможет сравнить массив с числом"]],
+      why: 'С модулем учитываются и большие положительные, и большие по модулю отрицательные разницы. В пилоте это 293 перестановки из 10 000. Без модуля остаётся только условие diffs >= obs, его выполняют 148 перестановок. Поэтому получаем 0,0148 вместо 0,0293.' },
+    q7: { sec: 'nuances', q: 'Двусторонний тест дал p = 0,07. Увидев, что чек с новой кнопкой выше, аналитик выбирает правосторонний тест и сообщает p = 0,035. В чём ошибка?', opts: [["Односторонний тест всегда надо предпочитать двустороннему"], ["Направление проверки выбрано по наблюдаемым данным", 1], ["Одностороннее p всегда больше двустороннего"], ["Для суммы чека допустим только двусторонний тест"]],
+      why: 'Если каждый раз проверять отклонение именно в наблюдаемую сторону, то при симметричном непрерывном нулевом распределении правило p < 0,05 соответствует двустороннему порогу 0,10. Вместо 5% ложных срабатываний можно получить около 10%. Направление проверки должно следовать из вопроса, сформулированного до эксперимента.' }
     },
     glossary: {
-      pval: { t: 'p-value', en: 'p-value', d: 'Вероятность при нулевой гипотезе и допущениях модели получить статистику, равную наблюдаемой или более экстремальную.' },
-      hyp0: { t: 'Нулевая гипотеза', en: 'null hypothesis, H0', d: 'Утверждение «эффекта нет», которое проверка пытается опровергнуть данными.' },
-      nulldist: { t: 'Нулевое распределение', en: 'null distribution', d: 'Распределение статистики критерия в мире, где нулевая гипотеза верна.' },
+      pval: { t: 'p-значение', en: 'p-value', d: 'При заданных допущениях и верной H0 — вероятность получить значение статистики не менее экстремальное, чем наблюдаемое. Направление сравнения зависит от альтернативной гипотезы.' },
+      hyp0: { t: 'Нулевая гипотеза', en: 'null hypothesis, H0', d: 'Предположение, при котором рассчитывают распределение статистики для проверки. В примере кнопка не влияет на сумму чека.' },
+      nulldist: { t: 'Нулевое распределение', en: 'null distribution', d: 'Распределение значений статистики критерия при верной нулевой гипотезе.' },
       lognorm: { t: 'Логнормальное распределение', en: 'lognormal distribution', d: 'Распределение величины, логарифм которой нормален: только положительные значения и длинный хвост вправо.' },
-      hyp1: { t: 'Альтернативная гипотеза', en: 'alternative hypothesis, H1', d: 'Утверждение, которое принимают, если нулевую отвергли: например, «средние различаются».' },
-      stat: { t: 'Статистика критерия', en: 'test statistic', d: 'Число, которое сжимает данные в меру расхождения с нулевой гипотезой; здесь — разница средних.' },
-      se: { t: 'Стандартная ошибка', en: 'standard error, SE', d: 'Стандартное отклонение оценки по всем возможным выборкам; у разницы двух средних по n — σ·√(2/n).' },
-      alpha: { t: 'Уровень значимости', en: 'significance level, α', d: 'Порог, выбранный до проверки: нулевую гипотезу отвергают при p меньше него, обычно 0,05.' },
+      hyp1: { t: 'Альтернативная гипотеза', en: 'alternative hypothesis, H1', d: 'Предположение, описывающее интересующее отклонение от нулевой гипотезы, например различие средних чеков.' },
+      stat: { t: 'Статистика критерия', en: 'test statistic', d: 'Число, которое вычисляют по данным для проверки гипотезы. В нашем перестановочном тесте это разница средних чеков.' },
+      se: { t: 'Стандартная ошибка', en: 'standard error, SE', d: 'Стандартное отклонение оценки при повторном получении выборок по той же схеме. Для разницы независимых средних с одинаковыми n и σ оно равно σ·√(2/n).' },
+      alpha: { t: 'Уровень значимости', en: 'significance level, α', d: 'Заранее заданная верхняя граница вероятности отвергнуть верную H0 при выполнении условий теста. В уроке α = 0,05.' },
       signif: { t: 'Статистическая значимость', en: 'statistical significance', d: 'Результат «p меньше α»: данные плохо согласуются с нулевой гипотезой.' },
-      err1: { t: 'Ошибка первого рода', en: 'type I error', d: 'Отвергнуть верную нулевую гипотезу — объявить эффект, которого нет; вероятность — α.' },
-      err2: { t: 'Ошибка второго рода', en: 'type II error', d: 'Не отвергнуть ложную нулевую гипотезу — пропустить эффект, который есть; вероятность — β.' },
+      err1: { t: 'Ошибка первого рода', en: 'type I error', d: 'Решение отвергнуть H0, когда она верна. При корректной проверке вероятность такой ошибки не превышает выбранного уровня α.' },
+      err2: { t: 'Ошибка второго рода', en: 'type II error', d: 'Ситуация, когда H0 ложна, но тест её не отвергает. Вероятность такой ошибки для заданного эффекта обозначают β.' },
       power: { t: 'Мощность', en: 'power, 1 − β', d: 'Вероятность отвергнуть нулевую гипотезу, если эффект заданного размера есть.' },
-      practical: { t: 'Практическая значимость', en: 'practical significance', d: 'Достаточно ли велик эффект, чтобы ради него что-то менять.' },
-      effect: { t: 'Размер эффекта', en: 'effect size', d: 'Насколько велико различие: в рублях, процентах или стандартных отклонениях.' },
-      cohend: { t: 'd Коэна', en: "Cohen's d", d: 'Разница средних, делённая на стандартное отклонение наблюдений.' },
-      ci: { t: 'Доверительный интервал', en: 'confidence interval', d: 'Диапазон значений параметра, совместимых с данными; процедура 95% накрывает истину в 95% выборок.' },
+      practical: { t: 'Практическая значимость', en: 'practical significance', d: 'Величина изменения, достаточная, чтобы оправдать затраты и риски решения.' },
+      effect: { t: 'Размер эффекта', en: 'effect size', d: 'Величина различия между группами, например прибавка к среднему чеку в рублях или в процентах.' },
+      cohend: { t: 'd Коэна', en: "Cohen's d", d: 'Стандартизованная разница средних. В нашей модели разницу делят на общее стандартное отклонение чеков.' },
+      ci: { t: 'Доверительный интервал', en: 'confidence interval', d: 'Интервал для неизвестного параметра. При выполнении предпосылок около 95% интервалов, построенных таким способом по повторным выборкам, содержат истинное значение.' },
       perm: { t: 'Перестановочный тест', en: 'permutation test', d: 'Проверка, которая строит нулевое распределение, многократно перемешивая метки групп.' },
-      exch: { t: 'Перестановочность', en: 'exchangeability', d: 'Свойство данных, при котором любая раздача меток групп равновозможна.' },
-      prng: { t: 'Генератор псевдослучайных чисел', en: 'PRNG', d: 'Формула, выдающая похожие на случайные числа; одно зерно (seed) даёт одну и ту же последовательность.' },
-      welch: { t: 't-тест Уэлча', en: "Welch's t-test", d: 'Проверка равенства двух средних через t = разница / стандартная ошибка, без допущения равных дисперсий.' },
+      exch: { t: 'Перестановочность', en: 'exchangeability', d: 'Свойство, при котором допустимая перестановка наблюдений между группами не меняет их совместного распределения при H0.' },
+      prng: { t: 'Генератор псевдослучайных чисел', en: 'PRNG', d: 'Алгоритм, который строит воспроизводимую последовательность чисел, похожих на случайные. Для повторения используют то же начальное значение (seed).' },
+      welch: { t: 't-тест Уэлча', en: "Welch's t-test", d: 'Критерий равенства средних в двух независимых группах. Разброс в каждой группе оценивают отдельно.' },
       twosided: { t: 'Двусторонняя гипотеза', en: 'two-sided alternative', d: 'Альтернатива без направления, «средние различаются»: p считают по обоим хвостам.' },
       onesided: { t: 'Односторонняя гипотеза', en: 'one-sided alternative', d: 'Альтернатива с направлением, например «новая больше»: p считают по одному хвосту.' },
-      multiple: { t: 'Множественные сравнения', en: 'multiple comparisons', d: 'Много проверок на одних данных: доля ложных тревог среди них выше α.' },
+      multiple: { t: 'Множественные сравнения', en: 'multiple comparisons', d: 'Одновременная проверка нескольких гипотез. Без поправки возрастает риск получить хотя бы один значимый результат случайно.' },
       peeking: { t: 'Подглядывание', en: 'peeking', d: 'Проверка p по ходу эксперимента с остановкой при первом p < α.' }
     },
     materials: [
       ['da-6-3-p-value.md', 'Страница целиком в Markdown: текст, код, вопросы и глоссарий'],
-      ['data/inference/', 'Учебные данные темы 06 — общий набор: здесь нужны pilot.csv и gen_pilot.py — генератор пилота и перебор зёрен 600–999'],
+      ['data/inference/', 'Учебные данные темы 06 — общий набор: здесь нужны pilot.csv и gen_pilot.py — генератор пилота с начальными значениями от 600 до 999'],
       ['hypothesis_tests.py', 'Четыре блока кода страницы одним скриптом'],
-      ['gen_scene.py', 'Два мира анимации: без разницы и с эффектом']
+      ['gen_scene.py', 'Две модели для анимации: одинаковые кнопки и прибавка к чеку 1 000 ₽']
     ],
     prompts: [
-      ['p-value для менеджера', 'Дай пять фраз из рабочих чатов про p-value и «значимость». Я скажу, какие верны, и перепишу неверные. Сверяй мои формулировки с заявлением ASA 2016 года и веди вопросами.'],
-      ['Где ошибка рода', 'Опиши шесть коротких историй с решениями по данным. Я скажу, где ошибка первого рода, где второго, а где ошибки нет. Спрашивай, чего стоит каждая ошибка.'],
-      ['Мощность на пальцах', 'Дай три задачи: эффект, разброс метрики и число наблюдений. Я прикину мощность через отношение эффекта к стандартной ошибке, а ты проверишь.']
+      ['Как объяснить p-значение', 'Предложи пять фраз о p-значениях из рабочих обсуждений. Я объясню, какие фразы верны, и исправлю остальные. После каждого ответа задай уточняющий вопрос с опорой на заявление ASA 2016 года.'],
+      ['Ошибки первого и второго рода', 'Опиши шесть коротких историй с решениями по данным. Я скажу, где ошибка первого рода, где второго, а где ошибки нет. Спрашивай, чего стоит каждая ошибка.'],
+      ['Как оценить мощность', 'Дай три задачи: эффект, разброс метрики и число наблюдений. Я прикину мощность через отношение эффекта к стандартной ошибке, а ты проверишь.']
     ]
   };
 })();

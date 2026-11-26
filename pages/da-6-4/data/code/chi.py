@@ -11,7 +11,7 @@ print(f"хи-квадрат = {res.statistic:.1f}, степеней свобод
 print("ожидаемые покупки без связи:", res.expected_freq[:, 1].round(1))
 print("доля покупок:", (table[1] / table.sum(axis=1)).round(3).to_dict())
 
-# 2. Доля оплативших в A/B-тесте: z-тест и хи-квадрат 2 × 2 — один и тот же тест
+# 2. Доля оплативших в A/B-тесте: двусторонний z-тест с общей оценкой доли и хи-квадрат без поправки дают одинаковое p
 ab = pd.read_csv("data/inference/ab.csv")
 paid = ab.groupby("group").paid.agg(["sum", "count"])
 z, p = proportions_ztest(paid["sum"], paid["count"])

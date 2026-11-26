@@ -9,11 +9,11 @@ rng = np.random.default_rng(61)
 def random_pick(n):                          # простая случайная выборка
     return rng.choice(N, n, replace=False)
 
-def survey(n):                               # опрос в приложении: отвечает, кто захотел
+def survey(n):                               # ответ с индивидуальной вероятностью p_answer
     answered = rng.random(N) < users["p_answer"].to_numpy()
     return rng.choice(np.flatnonzero(answered), n, replace=False)
 
-def first_visitors(n):                       # «первые сто»: первые n из зашедших сегодня
+def first_visitors(n):                       # случайные n пользователей из посетителей за день
     visited = rng.random(N) < users["active_days"].to_numpy() / 90
     return rng.choice(np.flatnonzero(visited), n, replace=False)
 

@@ -14,12 +14,12 @@ wholesale = pd.DataFrame({"income": [30_000], "spend": [1_500_000]})
 out = pd.concat([df, wholesale], ignore_index=True)
 print("плюс один выброс: ", both(out))
 
-# Спирмен — это Пирсон, посчитанный по рангам: у выброса ранг 41, а не 1,5 млн
+# По тратам оптовый покупатель занимает 41-е место из 41.
 ranks = out.rank()
 print(ranks.tail(2))
 print(f"Пирсон по рангам: {ranks['income'].corr(ranks['spend']):+.3f}")
 
-# монотонная, но не линейная связь: Спирмен видит её целиком
+# При x от 1 до 20 значения 2**x строго возрастают. Ранги x и y совпадают.
 x = pd.Series(range(1, 21))
 y = 2.0 ** x
 print(f"y = 2^x:          Пирсон {x.corr(y):+.3f}   Спирмен {x.corr(y, method='spearman'):+.3f}")

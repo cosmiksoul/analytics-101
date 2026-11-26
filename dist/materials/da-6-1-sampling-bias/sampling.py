@@ -1,11 +1,11 @@
-"""Смещённый отбор, стандартные ошибки, n − 1 и веса — четыре блока кода страницы подряд.
+"""Четыре примера расчёта по данным пользователей магазина.
 
-Страница 6.1 «Выборка, оценка, стандартная ошибка» курса «Аналитика 101». Сначала три блока раздела «Код»: смещённый отбор при разных n, стандартная ошибка по одной выборке, деление на n и на n − 1. Затем блок из «Нюансов»: веса по активности.
+Страница 6.1 «Выборка, оценка и стандартная ошибка» курса «Аналитика 101». Сначала сравним способы отбора при разных размерах выборки, оценим стандартную ошибку и проверим, как влияет деление на n или на n − 1. Затем учтём активность участников опроса с помощью весов.
 Запуск из корня папки материалов: python da-6-1-sampling-bias/sampling.py
 Нужен общий набор data/inference/ (users.csv).
 """
 
-# ===== Смещённый отбор: в 16 раз больше выборка — вчетверо меньше разброс, а смещение то же =====
+# ===== При увеличении выборки в 16 раз разброс средних уменьшается примерно вчетверо =====
 import numpy as np, pandas as pd
 
 users = pd.read_csv("data/inference/users.csv")    # учебная совокупность: 100 000 пользователей
@@ -17,11 +17,11 @@ rng = np.random.default_rng(61)
 def random_pick(n):                          # простая случайная выборка
     return rng.choice(N, n, replace=False)
 
-def survey(n):                               # опрос в приложении: отвечает, кто захотел
+def survey(n):                               # ответ с индивидуальной вероятностью p_answer
     answered = rng.random(N) < users["p_answer"].to_numpy()
     return rng.choice(np.flatnonzero(answered), n, replace=False)
 
-def first_visitors(n):                       # «первые сто»: первые n из зашедших сегодня
+def first_visitors(n):                       # случайные n пользователей из посетителей за день
     visited = rng.random(N) < users["active_days"].to_numpy() / 90
     return rng.choice(np.flatnonzero(visited), n, replace=False)
 
@@ -32,7 +32,7 @@ for name, pick in [("случайно", random_pick), ("кто ответил", 
         est = np.array([spend[pick(n)].mean() for _ in range(1000)])   # 1 000 выборок — 1 000 оценок
         print(f"{name:<12} {n:>5} {est.mean():13.0f} {est.mean() - mu:+10.0f} {est.std():8.0f}")
 
-# ===== Стандартная ошибка по одной выборке: s/√n для среднего, √(p̂(1 − p̂)/n) для доли =====
+# ===== Как оценить стандартную ошибку средних трат и доли покупателей =====
 import numpy as np, pandas as pd
 from scipy import stats
 from statsmodels.stats.weightstats import DescrStatsW
@@ -40,7 +40,7 @@ from statsmodels.stats.weightstats import DescrStatsW
 spend = pd.read_csv("data/inference/users.csv")["spend"].to_numpy()
 rng = np.random.default_rng(62)
 n = 400
-x = spend[rng.choice(len(spend), n, replace=False)]   # одна выборка: в жизни есть только она
+x = spend[rng.choice(len(spend), n, replace=False)]   # одна случайная выборка пользователей
 
 s = x.std(ddof=1)                                      # оценка σ по выборке
 print(f"оценка среднего       x̄ = {x.mean():.0f} ₽")
@@ -49,7 +49,7 @@ print(f"стандартная ошибка  s/√n = {s / np.sqrt(n):.0f} ₽")
 print(f"scipy.stats.sem          = {stats.sem(x):.0f} ₽")
 print(f"statsmodels std_mean     = {DescrStatsW(x).std_mean:.0f} ₽")
 
-p_hat = (x > 0).mean()                                 # доля купивших за квартал
+p_hat = (x > 0).mean()                                 # доля пользователей с покупкой за квартал
 print(f"\nдоля покупателей     p̂ = {p_hat:.3f}")
 print(f"стандартная ошибка доли = {np.sqrt(p_hat * (1 - p_hat) / n):.4f}")
 
@@ -59,7 +59,7 @@ p = (spend > 0).mean()
 print(f"\nразброс 10 000 средних  = {X.mean(axis=1).std():.0f} ₽,   σ/√n = {spend.std() / np.sqrt(n):.0f} ₽")
 print(f"разброс 10 000 долей    = {(X > 0).mean(axis=1).std():.4f},  √(p(1 − p)/n) = {np.sqrt(p * (1 - p) / n):.4f}")
 
-# ===== Деление на n занижает дисперсию в (n − 1)/n раз, деление на n − 1 — нет =====
+# ===== При n = 5 делитель n занижает дисперсию в среднем на 20% =====
 import numpy as np, pandas as pd
 
 spend = pd.read_csv("data/inference/users.csv")["spend"].to_numpy()
@@ -74,7 +74,7 @@ for n in [2, 3, 5, 10, 30]:
     sd = X.std(axis=1, ddof=1).mean() / np.sqrt(sigma2)
     print(f"{n:>2} {v0:15.3f} {v1:22.3f} {(n - 1) / n:15.3f} {sd:7.3f}")
 
-# ===== Веса по активности срезают смещение опроса вдвое, но не до нуля =====
+# ===== После взвешивания средние траты в опросе всё ещё выше истинных на 14,5% =====
 import numpy as np, pandas as pd
 from statsmodels.stats.weightstats import DescrStatsW
 

@@ -5,10 +5,10 @@ matplotlib.use("Agg")                       # рисуем в файл, без �
 import matplotlib.pyplot as plt
 
 df = pd.read_csv("data/clients/clients.csv").drop(columns="client_id")
-corr = df.corr()                            # Пирсон для всех пар столбцов
+corr = df.corr()                            # коэффициенты Пирсона для всех пар столбцов
 print(corr.round(2), end="\n\n")
 
-# одна пара с нуля: средний вклад (x − x̄)(y − ȳ), делённый на σx·σy
+# Для одной пары столбцов рассчитаем выборочную ковариацию и коэффициент Пирсона вручную.
 x, y = df["income"], df["spend"]
 cov = ((x - x.mean()) * (y - y.mean())).sum() / (len(df) - 1)
 print(f"ковариация = {cov:,.0f}".replace(",", " "))

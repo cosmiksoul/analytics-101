@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 rng = np.random.default_rng(6521)
-push = rng.integers(0, 7, 300)                     # пушей в неделю у 300 учебных пользователей
+push = rng.integers(0, 7, 300)                     # уведомлений в неделю у 300 пользователей
 days = 20 - 1.5 * (push - 3) ** 2 + rng.normal(0, 2, 300)   # активных дней за месяц
 df = pd.DataFrame({"push": push, "days": days.clip(0, 30).round()})
 

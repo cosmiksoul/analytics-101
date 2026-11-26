@@ -25,5 +25,5 @@ for name, pv in p.items():
     print(f"{name:13s} p = {pv:.3f}")
 
 u = stats.mannwhitneyu(b, a).statistic
-print(f"P(чек Б > чек А) = {u / (len(a) * len(b)):.3f}")
+print(f"U/(nА·nБ) с половинным весом совпадений = {u / (len(a) * len(b)):.3f}")
 print(f"чеков дороже 15 000 ₽: А {(a > 15_000).mean():.1%}, Б {(b > 15_000).mean():.1%}")

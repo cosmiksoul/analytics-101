@@ -12,12 +12,12 @@ for i in range(diffs.size):
     shuffled = rng.permutation(pooled)                # метки «старая/новая» раздаём заново
     diffs[i] = shuffled[40:].mean() - shuffled[:40].mean()
 
-p_two = np.mean(np.abs(diffs) >= abs(obs))            # не ближе к нулю, чем наша, с любой стороны
-p_one = np.mean(diffs >= obs)                         # только «новая больше»
+p_two = np.mean(np.abs(diffs) >= abs(obs))            # разница не меньше исходной по модулю
+p_one = np.mean(diffs >= obs)                         # правый хвост
 lo, hi = np.percentile(diffs, [2.5, 97.5])
 
-print(f"наша разница: {obs:+.0f} ₽")
-print(f"перемешанные: среднее {diffs.mean():+.1f} ₽, разброс {diffs.std():.0f} ₽")
-print(f"5% самых далёких от нуля: дальше {lo:+.0f} и {hi:+.0f} ₽")
-print(f"дальше нашей с любой стороны: {np.sum(np.abs(diffs) >= abs(obs))} из {diffs.size}")
-print(f"p-value двусторонний = {p_two:.4f}, односторонний = {p_one:.4f}")
+print(f"исходная разница: {obs:+.0f} ₽")
+print(f"после перестановок: среднее {diffs.mean():+.1f} ₽, разброс {diffs.std():.0f} ₽")
+print(f"границы центральных 95% разниц: {lo:+.0f} и {hi:+.0f} ₽")
+print(f"разница не меньше исходной по модулю: {np.sum(np.abs(diffs) >= abs(obs))} из {diffs.size}")
+print(f"двустороннее p = {p_two:.4f}, одностороннее p = {p_one:.4f}")

@@ -5,7 +5,7 @@ from statsmodels.stats.weightstats import DescrStatsW
 spend = pd.read_csv("data/inference/users.csv")["spend"].to_numpy()
 rng = np.random.default_rng(62)
 n = 400
-x = spend[rng.choice(len(spend), n, replace=False)]   # одна выборка: в жизни есть только она
+x = spend[rng.choice(len(spend), n, replace=False)]   # одна случайная выборка пользователей
 
 s = x.std(ddof=1)                                      # оценка σ по выборке
 print(f"оценка среднего       x̄ = {x.mean():.0f} ₽")
@@ -14,7 +14,7 @@ print(f"стандартная ошибка  s/√n = {s / np.sqrt(n):.0f} ₽")
 print(f"scipy.stats.sem          = {stats.sem(x):.0f} ₽")
 print(f"statsmodels std_mean     = {DescrStatsW(x).std_mean:.0f} ₽")
 
-p_hat = (x > 0).mean()                                 # доля купивших за квартал
+p_hat = (x > 0).mean()                                 # доля пользователей с покупкой за квартал
 print(f"\nдоля покупателей     p̂ = {p_hat:.3f}")
 print(f"стандартная ошибка доли = {np.sqrt(p_hat * (1 - p_hat) / n):.4f}")
 

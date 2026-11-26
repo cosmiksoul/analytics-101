@@ -58,23 +58,23 @@
   }
 
   const scene = {
-    parts: [{ n: '01', name: 'Круг и прямая', s: [0, 1, 2] }, { n: '02', name: 'Ковариация', s: [3, 4] }, { n: '03', name: 'Энскомб', s: [5, 6] }, { n: '04', name: 'Две стрелки', s: [7] }, { n: '05', name: 'Скрытая причина', s: [8, 9] }],
+    parts: [{ n: '01', name: 'От облака к прямой', s: [0, 1, 2] }, { n: '02', name: 'Ковариация', s: [3, 4] }, { n: '03', name: 'Энскомб', s: [5, 6] }, { n: '04', name: 'Визиты и траты', s: [7] }, { n: '05', name: 'Стаж клиента', s: [8, 9] }],
     steps: [
-      { title: 'Две величины без связи', dur: 2600, body: '<p>Тридцать точек, у&nbsp;каждой две координаты: x и&nbsp;y. Пусть это заходы клиента в&nbsp;приложение и&nbsp;его траты. Здесь y от&nbsp;x не&nbsp;зависит, облако круглое.</p><p>Коэффициент корреляции Пирсона <b>r = 0</b>. Счётчики сверху посчитаны NumPy на&nbsp;этих самых точках.</p>' },
-      { title: 'Облако вытягивается', dur: 3200, body: '<p>Подмешаем в&nbsp;y часть x: y = r·x + шум. Чем больше доля x, тем уже облако вдоль наклонной оси.</p><p>При <b>r = 0,5</b> связь заметна, но&nbsp;по&nbsp;x можно лишь примерно угадать y.</p>' },
-      { title: 'Облако становится прямой', dur: 3000, body: '<p>При <b>r = 1</b> шума не&nbsp;осталось: точки легли на&nbsp;прямую, и&nbsp;y однозначно задан x.</p><p>Знак r — направление. Облако, идущее вниз, дало&nbsp;бы минус, вплоть до&nbsp;r = −1.</p>' },
-      { title: 'Ковариация: плюсы и минусы', dur: 4200, body: '<p>Проведём линии через средние x̄ и&nbsp;ȳ. У&nbsp;каждой точки прямоугольник со&nbsp;сторонами (x − x̄) и&nbsp;(y − ȳ): справа сверху и&nbsp;слева снизу его площадь со&nbsp;знаком «плюс», в&nbsp;двух других четвертях — «минус».</p><p>Средняя площадь — <b>ковариация</b>, здесь 1,80.</p>' },
-      { title: 'Деление на σ убирает единицы', dur: 4200, body: '<p>Запишем x в&nbsp;рублях вместо тысяч. Облако то&nbsp;же, а&nbsp;ковариация выросла в&nbsp;1&nbsp;000 раз: она в&nbsp;единицах x, умноженных на&nbsp;единицы y.</p><p>Поэтому её делят на&nbsp;стандартные отклонения: <b>r = cov / (σx·σy)</b> = 1&nbsp;800 / (2&nbsp;000 · 1,5) = 0,60.</p>' },
-      { title: 'Четыре облака, одно r', dur: 4400, body: '<p>Квартет Энскомба, 1973: четыре набора по&nbsp;11 точек, значения из&nbsp;статьи. Средние, дисперсии, линия y = 3 + 0,5x и&nbsp;<b>r = 0,82</b> у&nbsp;всех одинаковые.</p><p>А&nbsp;формы разные: прямая с&nbsp;шумом, дуга, прямая с&nbsp;выбросом, столбик и&nbsp;одна далёкая точка.</p>' },
-      { title: 'Ранги видят разницу', dur: 4000, body: '<p>Корреляция Спирмена считает то&nbsp;же r, но&nbsp;по&nbsp;<b>рангам</b> — местам точек в&nbsp;сортировке. Выходит 0,82, 0,69, 0,99 и&nbsp;0,50.</p><p>В&nbsp;III выброс перестал мешать, во&nbsp;II дуга — не&nbsp;прямая. График всё равно нужен: числа не&nbsp;скажут, что&nbsp;именно не&nbsp;так.</p>' },
-      { title: 'Две стрелки', dur: 3600, body: '<p>Учебные клиенты: кто чаще заходит в&nbsp;приложение, тот больше тратит, <b>r = 0,67</b>.</p><p>Стрелок две. Приложение повышает траты — или наоборот: кто много покупает, чаще заходит проверить заказ. Второе называют <b>обратной причинностью</b>.</p>' },
-      { title: 'Третья переменная', dur: 4200, body: '<p>Из-за кадра выходит стаж клиента. Давние клиенты и&nbsp;заходят чаще (r = 0,89), и&nbsp;тратят больше (r = 0,75).</p><p>Обе стрелки теперь начинаются у&nbsp;стажа. Это <b>скрытая переменная</b>: она сама создаёт связь двух других.</p>' },
-      { title: 'При равном стаже связи нет', dur: 4400, next: 'Читать страницу', body: '<p>Сравним клиентов с&nbsp;похожим стажем. Внутри трёх групп r = −0,17, 0,19 и&nbsp;0,16 — шум для&nbsp;8–12 точек. Частная корреляция при&nbsp;равном стаже — <b>0,03</b>.</p><p>r = 0,67 честно описывает данные, но&nbsp;о&nbsp;причине ничего не&nbsp;говорит.</p>' }
+      { title: 'Облако с нулевой корреляцией', dur: 2600, body: '<p>У&nbsp;каждой из&nbsp;30 точек есть две координаты, x и&nbsp;y. Мы&nbsp;подобрали их&nbsp;так, чтобы коэффициент Пирсона равнялся нулю.</p><p>У&nbsp;этого облака нет заметного наклона. Само значение <b>r = 0</b> ещё не&nbsp;означает, что переменные независимы.</p>' },
+      { title: 'Как появляется наклон', dur: 3200, body: '<p>Оставим x без изменений. Каждую координату y вычислим как сумму двух слагаемых. Одно пропорционально x, другое задаёт разброс вокруг прямой.</p><p>При <b>r = 0,5</b> большим x чаще соответствуют большие y. Точки при этом заметно отклоняются от&nbsp;линии.</p>' },
+      { title: 'Все точки на прямой', dur: 3000, body: '<p>При <b>r = 1</b> слагаемое, которое задавало разброс, равно нулю. Все точки лежат на&nbsp;возрастающей прямой.</p><p>Если бы&nbsp;все точки лежали на&nbsp;убывающей прямой, коэффициент был бы&nbsp;равен −1.</p>' },
+      { title: 'Как складываются отклонения', dur: 4200, body: '<p>Линии через средние x̄ и&nbsp;ȳ делят диаграмму на&nbsp;четыре части. В&nbsp;правой верхней и&nbsp;левой нижней частях отклонения от&nbsp;средних имеют один знак, поэтому их&nbsp;произведение положительно. В&nbsp;двух других частях произведение отрицательно.</p><p>Площадь каждого прямоугольника показывает модуль произведения. Сложим площади с&nbsp;учётом знака и&nbsp;разделим на&nbsp;29, то&nbsp;есть на&nbsp;n − 1. Выборочная <b>ковариация</b> равна 1,80.</p>' },
+      { title: 'Как единицы влияют на ковариацию', dur: 4200, body: '<p>Переведём x из&nbsp;тысяч рублей в&nbsp;рубли. Ковариация вырастет с&nbsp;1,80 до&nbsp;1 800. Стандартное отклонение x тоже увеличится в&nbsp;тысячу раз, с&nbsp;2 до&nbsp;2 000.</p><p>Коэффициент Пирсона сохранится. Делим ковариацию на&nbsp;произведение стандартных отклонений и&nbsp;получаем <b>r = 1 800 / (2 000 · 1,5) = 0,60</b>.</p>' },
+      { title: 'Четыре набора с r около 0,82', dur: 4400, body: '<p>Фрэнсис Энскомб подобрал четыре набора по&nbsp;11 точек. После округления у&nbsp;всех <b>r = 0,82</b>. Средние, дисперсии и&nbsp;уравнения прямых регрессии тоже почти совпадают.</p><p>В&nbsp;первом наборе точки разбросаны вдоль прямой, во&nbsp;втором образуют дугу. В&nbsp;третьем одна точка отклоняется от&nbsp;прямой, а&nbsp;в&nbsp;четвёртом только у&nbsp;одной точки значение x отличается от&nbsp;остальных.</p>' },
+      { title: 'Те же точки в рангах', dur: 4000, body: '<p>Заменим значения каждой переменной их&nbsp;местами в&nbsp;упорядоченном ряду&nbsp;— <b>рангами</b>. Корреляция Пирсона между рангами и&nbsp;есть коэффициент Спирмена.</p><p>В&nbsp;четырёх наборах он&nbsp;равен 0,82, 0,69, 0,99 и&nbsp;0,50. В&nbsp;третьем наборе выброс мало меняет порядок точек. Во&nbsp;втором после вершины дуги y начинает убывать, хотя x продолжает расти.</p>' },
+      { title: 'Что появилось раньше?', dur: 3600, body: '<p>Теперь каждая точка&nbsp;— клиент учебного магазина. По&nbsp;горизонтали отложено число визитов в&nbsp;приложение за&nbsp;месяц, по&nbsp;вертикали&nbsp;— траты за&nbsp;тот же&nbsp;месяц. Коэффициент Пирсона равен <b>0,67</b>.</p><p>Возможно, после визита клиент делает покупку. Возможно и&nbsp;<b>обратное направление связи</b>. Сделав заказ, покупатель открывает приложение, чтобы проверить доставку.</p>' },
+      { title: 'Что меняется со стажем клиента', dur: 4200, body: '<p>Стаж показывает, сколько лет человек остаётся клиентом магазина. В&nbsp;учебных данных он&nbsp;связан и&nbsp;с&nbsp;числом визитов (r = 0,89), и&nbsp;с&nbsp;тратами (r = 0,75).</p><p>Так устроен генератор данных. Чем больше стаж, тем выше в&nbsp;среднем оба показателя. В&nbsp;этом примере стаж&nbsp;— их&nbsp;<b>общая причина</b>.</p>' },
+      { title: 'Как связаны визиты и траты после учёта стажа', dur: 4400, next: 'Читать страницу', body: '<p>Разделим клиентов на&nbsp;три группы по&nbsp;стажу. Внутри групп коэффициенты равны −0,17, 0,19 и&nbsp;0,16. В&nbsp;каждой группе всего от&nbsp;8 до&nbsp;12 клиентов.</p><p>Если учесть стаж с&nbsp;помощью линейной регрессии, частная корреляция составит <b>0,03</b>. В&nbsp;этой выборке после такой поправки линейная связь близка к&nbsp;нулю.</p>' }
     ],
     hud: [{ id: 'r', label: 'Пирсон' }, { id: 'sp', label: 'Спирмен' }, { id: 'cov', label: 'Ковариация' }],
-    legend: '<span><i style="background:#b7c0d2"></i>точка</span><span><i class="sq" style="background:#36b8a6"></i>вклад +</span><span><i class="sq" style="background:#f06ba5"></i>вклад −</span><span><i style="background:#f2d36b"></i>стаж</span>',
+    legend: '<span><i style="background:#b7c0d2"></i>точка</span><span><i class="sq" style="background:#36b8a6"></i>положительный вклад</span><span><i class="sq" style="background:#f06ba5"></i>отрицательный вклад</span><span><i style="background:#f2d36b"></i>стаж</span>',
     info: 'КОРРЕЛЯЦИЯ',
-    aiNote: 'В анимации: 30 точек, у которых r растёт от 0 до 1; ковариация как средняя площадь прямоугольников (x − x̄)(y − ȳ), при r = 0,6 она 1,80, а при x в 1 000 раз крупнее — 1 800; квартет Энскомба (r = 0,82 у всех четырёх, Спирмен 0,82, 0,69, 0,99, 0,50); 30 учебных клиентов: заходы в приложение и траты, r = 0,67, стаж влияет на оба (r = 0,89 и 0,75), частная корреляция при равном стаже 0,03.',
+    aiNote: 'На первом графике корреляция 30 точек меняется от нуля до единицы. Выборочная ковариация равна сумме произведений отклонений от средних, делённой на 29. При r = 0,6 она равна 1,80, а после перевода x из тысяч рублей в рубли — 1 800. В квартете Энскомба r округляется до 0,82 во всех четырёх наборах. У 30 учебных клиентов r между числом визитов и тратами равен 0,67, а частная корреляция после линейного учёта стажа равна 0,03.',
     mount(root, api) {
       root.innerHTML = '<div class="cc-sc"><svg class="cc-svg" aria-hidden="true"></svg><div class="cc-calls"></div></div>';
       const box = root.firstChild, svg = box.firstChild, layer = box.lastChild;
@@ -119,11 +119,11 @@
         const TL = [x0 + 12, y0 + 30], BR = [x0 + S - 12, y0 + S - 30];
         s.calls.forEach(([id, a]) => {
           if (!(a > 0)) return;
-          if (id === 'zero') calls.push({ x: TL[0], y: TL[1], d: 'tl', t: 'связи нет: облако круглое', a });
-          if (id === 'half') calls.push({ x: BR[0], y: BR[1], d: 'br', t: mob ? 'r = 0,5: тренд и большой разброс' : 'r = 0,50: тренд виден, разброс большой', a });
+          if (id === 'zero') calls.push({ x: TL[0], y: TL[1], d: 'tl', t: 'r = 0: линейной связи нет', a });
+          if (id === 'half') calls.push({ x: BR[0], y: BR[1], d: 'br', t: mob ? 'r = 0,5: заметен наклон' : 'r = 0,50: наклон заметен, разброс велик', a });
           if (id === 'one') calls.push({ x: BR[0], y: BR[1], d: 'br', t: 'r = 1: все точки на прямой', a });
-          if (id === 'plus') calls.push({ x: TL[0], y: TL[1], d: 'tl', t: `${CI.pos} из 30 вкладов — «плюс»`, a, c: SC.acc });
-          if (id === 'cov') calls.push({ x: BR[0], y: BR[1], d: 'br', t: `средний вклад: cov = ${num(CI.cov)}`, a });
+          if (id === 'plus') calls.push({ x: TL[0], y: TL[1], d: 'tl', t: `Положительных вкладов: ${CI.pos} из 30`, a, c: SC.acc });
+          if (id === 'cov') calls.push({ x: BR[0], y: BR[1], d: 'br', t: `ковариация ≈ ${num(CI.cov)}`, a });
           if (id === 'kilo') calls.push({ x: BR[0], y: BR[1], d: 'br', t: `x ×1 000: cov = ${num(CI.covK, 0)}`, a });
           if (id === 'r') calls.push({ x: TL[0], y: TL[1], d: 'tl', t: `r = ${num(CI.covK, 0)} / (2 000 · 1,5) = ${num(CI.r06k)}`, a, c: SC.yel });
         });
@@ -132,7 +132,7 @@
 
       // ---------- квартет Энскомба ----------
       function ans(s) {
-        const g = mob ? 10 : 16, pw = (W - g) / 2, ph = (H - g) / 2, cap = ['прямая с шумом', 'дуга', 'прямая и выброс', mob ? 'столбик и точка' : 'столбик и одна точка'];
+        const g = mob ? 10 : 16, pw = (W - g) / 2, ph = (H - g) / 2, cap = ['прямая с шумом', 'дуга', 'прямая и выброс', mob ? 'одна точка в стороне' : 'одна точка вдали от остальных'];
         let o = '';
         AN.forEach((A, i) => {
           const px = (i % 2) * (pw + g), py = Math.floor(i / 2) * (ph + g), pad = mob ? 10 : 16, top = mob ? 30 : 36;
@@ -178,7 +178,7 @@
         s.calls.forEach(([id, a]) => {
           if (!(a > 0)) return;
           if (id === 'r67') calls.push({ x: sx + sw - 12, y: sy + sh - bot - 26, d: 'br', t: `r = ${num(CF.r)}`, a });
-          if (id === 'part') calls.push({ x: sx + sw - 12, y: sy + sh - bot - 26, d: 'br', t: `при равном стаже r = ${num(CF.partial)}`, a, c: SC.yel });
+          if (id === 'part') calls.push({ x: sx + sw - 12, y: sy + sh - bot - 26, d: 'br', t: `с учётом стажа r ≈ ${num(CF.partial)}`, a, c: SC.yel });
         });
         // схема причин
         const nw = mob ? 92 : 112, nh = mob ? 26 : 32, ny = dy + dh * .28;
@@ -235,10 +235,10 @@
           api.hud('r', num(CI.circR[s.ri])); api.hud('sp', num(CI.circSp[s.ri]));
           api.hud('cov', kilo ? num(CI.covK, 0) : num(CI.circCov[s.ri]), k >= 3 ? (kilo ? 'x в рублях' : 'x в тыс.') : '');
         } else if (s.mode === 'ans') {
-          api.hud('r', num(AN[0].r), 'у всех'); api.hud('cov', num(AN[0].cov), 'у всех');
+          api.hud('r', num(AN[0].r), 'у всех'); api.hud('cov', num(AN[0].cov), 'после округления');
           api.hud('sp', k === 6 && p >= .2 ? `${num(Math.min(...AN.map(a => a.sp)))}–${num(Math.max(...AN.map(a => a.sp)))}` : '—');
         } else {
-          api.hud('r', num(CF.r), k === 9 && p >= .66 ? `при равном стаже ${num(CF.partial)}` : '');
+          api.hud('r', num(CF.r), k === 9 && p >= .66 ? `с учётом стажа ${num(CF.partial)}` : '');
           api.hud('sp', num(CF.sp)); api.hud('cov', num(CF.cov));
         }
       }
@@ -293,11 +293,11 @@
       <label class="cap" for="cg-num">Ваша оценка r</label>
       <div class="cg-in"><input type="range" id="cg-range" min="-1" max="1" step="0.01" value="0" aria-label="Оценка r ползунком"><input type="text" id="cg-num" inputmode="decimal" autocomplete="off" value="0,00" aria-describedby="cg-msg"></div>
       <div class="wbtns"><button type="button" class="btn small" id="cg-check">Проверить</button><button type="button" class="btn ghost small" id="cg-next">Следующее облако</button></div>
-      <div class="readout cg-ro"><div><span class="big" id="cg-r">?</span><span class="lbl">настоящее r</span></div><div><span class="big" id="cg-pts">—</span><span class="lbl">очков за облако</span></div></div>
+      <div class="readout cg-ro"><div><span class="big" id="cg-r">?</span><span class="lbl">выборочный r</span></div><div><span class="big" id="cg-pts">—</span><span class="lbl">очков за раунд</span></div></div>
       <ol class="cg-hist" id="cg-hist"></ol>
     </div>
     <div id="cg-simp" hidden>
-      <button type="button" class="btn small" id="cg-color" aria-pressed="false">Раскрасить по категориям</button>
+      <button type="button" class="btn small" id="cg-color" aria-pressed="false">Выделить категории</button>
       <div class="readout cg-ro"><div><span class="big" id="cg-all">${num(SIM.r, 2, true)}</span><span class="lbl">r по всем заказам</span></div><div><span class="big" id="cg-inr">?</span><span class="lbl">r внутри категорий</span></div></div>
       <ul class="cg-leg" id="cg-leg"></ul>
     </div>
@@ -311,7 +311,7 @@
     const fresh = () => ({ mode: 'guess', round: 1, cloud: makeCloud(1), guess: 0, shown: false, pts: null, hist: [], score: 0, err: 0, color: false, msg: '' });
 
     const parse = t => { const v = parseFloat(String(t).trim().replace(',', '.').replace('−', '-').replace('–', '-')); return isFinite(v) ? v : NaN; };
-    const grade = e => (e <= .05 ? 'в точку' : e <= .15 ? 'близко' : e <= .3 ? 'мимо' : 'далеко');
+    const grade = e => (e <= .05 ? 'очень близко' : e <= .15 ? 'близко' : e <= .3 ? 'приблизительно' : 'далеко от рассчитанного r');
 
     function dims() { const w = Math.max(240, plot.clientWidth - 24), h = Math.round(clamp(w * .72, 250, 380)); return { w, h }; }
     function drawGuess() {
@@ -329,7 +329,7 @@
       c.xs.forEach((v, i) => { o += `<circle cx="${X(v).toFixed(1)}" cy="${Y(c.ys[i]).toFixed(1)}" r="4.5" fill="var(--c1)" fill-opacity=".78" stroke="var(--surface)" stroke-width="1.2"/>`; });
       o += `<defs><clipPath id="cg-clip"><rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="10"/></clipPath></defs>`;
       svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.setAttribute('width', w); svg.setAttribute('height', h);
-      svg.setAttribute('aria-label', `Облако номер ${st.round}: ${N_CLOUD} точек${st.shown ? `, настоящее r = ${num(c.r)}` : ''}`);
+      svg.setAttribute('aria-label', `Облако номер ${st.round}: ${N_CLOUD} точек${st.shown ? `, выборочный r = ${num(c.r)}` : ''}`);
       svg.innerHTML = vs(o);
     }
     function drawSimp() {
@@ -342,7 +342,7 @@
       SIM.pts.forEach(([c, d, k]) => { o += st.color ? mark(c, X(d), Y(k), 4.3, `var(--c${c + 1})`, 'var(--surface)') : mark(0, X(d), Y(k), 4.3, 'var(--muted)', 'var(--surface)').replace('stroke-width', 'fill-opacity=".7" stroke-width'); });
       const [a, b] = SIM.fit;
       o += `<line x1="${X(0)}" y1="${Y(b)}" x2="${X(30)}" y2="${Y(a * 30 + b)}" stroke="var(--ink)" stroke-width="2" stroke-dasharray="7 5" opacity="${st.color ? .45 : .9}"/>`;
-      if (!mobile()) o += `<text x="${X(30) + 6}" y="${Y(a * 30 + b) + 4}" font-size="11.5" fill="var(--ink)">все: ${num(SIM.r, 2, true)}</text>`;
+      if (!mobile()) o += `<text x="${X(30) + 6}" y="${Y(a * 30 + b) + 4}" font-size="11.5" fill="var(--ink)">r = ${num(SIM.r, 2, true)}</text>`;
       if (st.color) SIM.fits.forEach(([s, i0], c) => {
         const [lo, hi] = SIM.ranges[c];
         o += `<line x1="${X(lo)}" y1="${Y(s * lo + i0)}" x2="${X(hi)}" y2="${Y(s * hi + i0)}" stroke="var(--c${c + 1})" stroke-width="3" stroke-linecap="round"/>`;
@@ -356,24 +356,24 @@
     function sync() {
       const g = st.mode === 'guess';
       box.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === st.mode)));
-      q('#cg-title').textContent = g ? 'Чем ближе r к ±1, тем уже облако: угадайте r' : 'Раскрасьте по категориям — и знак связи сменится';
-      q('#cg-hint').textContent = g ? 'Оцените r облака ползунком или числом от −1 до 1 и нажмите «Проверить». Очки: 100 − 200 × ошибка.' : '120 учебных заказов: скидка и сумма чека. Включите раскраску по категориям и сравните наклон линий.';
+      q('#cg-title').textContent = g ? 'Оцените корреляцию по расположению точек' : 'Как связаны скидка и чек в каждой категории?';
+      q('#cg-hint').textContent = g ? 'Передвиньте ползунок или введите число от −1 до 1. Нажмите «Проверить». За точную оценку можно получить 100 очков. За каждые 0,01 абсолютной ошибки вычитаются 2 очка, минимум — 0.' : 'Каждая точка — заказ. Выделите категории и сравните наклоны общей прямой и прямых для отдельных категорий.';
       q('#cg-guess').hidden = !g; q('#cg-simp').hidden = g;
       if (g) {
         q('#cg-r').textContent = st.shown ? num(st.cloud.r, 2) : '?';
         q('#cg-pts').textContent = st.shown ? String(st.pts) : '—';
         q('#cg-check').disabled = st.shown;
-        q('#cg-hist').innerHTML = st.hist.slice(-5).reverse().map(h => `<li><b>№${h.n}</b><span>ваше ${num(h.g)} · r ${num(h.r)}</span><em>${h.p}</em></li>`).join('');
+        q('#cg-hist').innerHTML = st.hist.slice(-5).reverse().map(h => `<li><b>№${h.n}</b><span>оценка ${num(h.g)} · r = ${num(h.r)}</span><em>${h.p}</em></li>`).join('');
         const n = st.hist.length;
         q('#cg-s1').textContent = `Облако ${st.round} · ${N_CLOUD} точек`;
         q('#cg-s2').textContent = n ? `${n} ${plural(n, ['ответ', 'ответа', 'ответов'])} · очков ${st.score} · средняя ошибка ${num(st.err / n)}` : 'Ответов пока нет';
         drawGuess();
       } else {
-        const cb = q('#cg-color'); cb.setAttribute('aria-pressed', String(st.color)); cb.textContent = st.color ? 'Убрать раскраску' : 'Раскрасить по категориям';
-        q('#cg-inr').textContent = st.color ? `${num(Math.max(...SIM.within))}…${num(Math.min(...SIM.within))}` : '?';
+        const cb = q('#cg-color'); cb.setAttribute('aria-pressed', String(st.color)); cb.textContent = st.color ? 'Объединить категории' : 'Выделить категории';
+        q('#cg-inr').textContent = st.color ? `${num(Math.min(...SIM.within))}…${num(Math.max(...SIM.within))}` : '?';
         q('#cg-leg').innerHTML = vs(SIM.cats.map((c, i) => `<li><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">${mark(i, 7, 7.5, 4.6, st.color ? `var(--c${i + 1})` : 'var(--muted)', 'var(--surface)')}</svg><span>${c}</span><b>${st.color ? num(SIM.within[i], 2, true) : '?'}</b></li>`).join(''));
-        q('#cg-s1').textContent = `Одна линия по всем заказам: r = ${num(SIM.r, 2, true)}`;
-        q('#cg-s2').textContent = st.color ? `Внутри категорий: ${SIM.within.map(v => num(v, 2, true)).join(' · ')}` : 'Внутри категорий: скрыто';
+        q('#cg-s1').textContent = `По всем заказам r = ${num(SIM.r, 2, true)}`;
+        q('#cg-s2').textContent = st.color ? `Внутри категорий: ${SIM.within.map(v => num(v, 2, true)).join(' · ')}` : 'Коэффициенты по категориям пока скрыты';
         drawSimp();
       }
       q('#cg-msg').textContent = st.msg;
@@ -391,14 +391,14 @@
       const e = Math.abs(st.guess - st.cloud.r), p = Math.max(0, Math.round(100 - 200 * e));
       st.shown = true; st.pts = p; st.score += p; st.err += e;
       st.hist.push({ n: st.round, g: st.guess, r: st.cloud.r, p });
-      st.msg = `${grade(e)[0].toUpperCase() + grade(e).slice(1)}: ошибка ${num(e)}. ${Math.abs(st.cloud.r) < .3 ? 'При |r| < 0,3 облако почти круглое, связь слабая.' : Math.abs(st.cloud.r) > .8 ? 'При |r| > 0,8 облако — узкая полоса вдоль линии.' : 'Пунктир — прямая, которую описывает r.'} r² = ${num(st.cloud.r ** 2)}: столько разброса y объясняет прямая.`;
+      st.msg = `${grade(e)[0].toUpperCase() + grade(e).slice(1)}: ошибка ${num(e)}. ${Math.abs(st.cloud.r) < .3 ? 'У этого облака слабая линейная связь.' : Math.abs(st.cloud.r) > .8 ? 'Точки располагаются близко к прямой.' : 'Пунктир показывает прямую регрессии.'} Прямая описывает около ${num(100 * st.cloud.r ** 2, 0)}% разброса y в выборке.`;
       sync();
     }
     function next() { st.round++; st.cloud = makeCloud(st.round); st.shown = false; st.pts = null; setGuess(0); st.msg = ''; sync(); }
 
     box.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
       st.mode = b.dataset.m;
-      st.msg = st.mode === 'simpson' ? (st.color ? '' : 'Одна линия по всем 120 заказам идёт вверх: чем больше скидка, тем больше чек. Что покажет каждая категория?') : '';
+      st.msg = st.mode === 'simpson' ? (st.color ? '' : 'Общая прямая идёт вверх. Как изменится её наклон, если рассмотреть каждую категорию отдельно?') : '';
       sync();
     }));
     q('#cg-range').addEventListener('input', e => setGuess(+e.target.value, 'range'));
@@ -408,7 +408,7 @@
     q('#cg-next').addEventListener('click', next);
     q('#cg-color').addEventListener('click', () => {
       st.color = !st.color;
-      st.msg = st.color ? `Внутри каждой категории линия идёт вниз: глубже скидка — меньше чек. Общую линию вверх тянут категории: на свет скидка в среднем 22% и чек 7 006 ₽, на посуду — 6% и 2 204 ₽.` : 'Без раскраски видна одна линия вверх.';
+      st.msg = st.color ? `В каждой категории большим скидкам соответствуют в среднем меньшие чеки. Категории различаются по обоим показателям. Для товаров категории «свет» средняя скидка равна 22%, средний чек — 7 006 ₽. Для посуды это 6% и 2 204 ₽.` : 'На общей диаграмме прямая идёт вверх.';
       sync();
     });
     q('#cg-reset').addEventListener('click', () => { st = fresh(); setGuess(0); sync(); });
@@ -417,9 +417,9 @@
     return {
       redraw: sync,
       describe() {
-        if (st.mode === 'simpson') return `режим «Парадокс Симпсона», раскраска по категориям ${st.color ? 'включена' : 'выключена'}; r по всем 120 заказам ${num(SIM.r, 2, true)}, внутри категорий ${SIM.cats.map((c, i) => `${c} ${num(SIM.within[i], 2, true)}`).join(', ')}.`;
+        if (st.mode === 'simpson') return `режим «Парадокс Симпсона», разбивка по категориям ${st.color ? 'включена' : 'выключена'}; r по всем 120 заказам ${num(SIM.r, 2, true)}, внутри категорий ${SIM.cats.map((c, i) => `${c} ${num(SIM.within[i], 2, true)}`).join(', ')}.`;
         const n = st.hist.length;
-        return `режим «Угадай корреляцию», облако № ${st.round}${st.shown ? `: моя оценка ${num(st.guess)}, настоящее r ${num(st.cloud.r)}` : ', ещё не ответил'}; ответов ${n}, очков ${st.score}${n ? `, средняя ошибка ${num(st.err / n)}` : ''}.`;
+        return `режим «Угадай корреляцию», облако № ${st.round}${st.shown ? `: моя оценка ${num(st.guess)}, выборочный r ${num(st.cloud.r)}` : ', ещё не ответил'}; ответов ${n}, очков ${st.score}${n ? `, средняя ошибка ${num(st.err / n)}` : ''}.`;
       }
     };
   }
@@ -428,19 +428,20 @@
   function heatmap(el) {
     const { cols, m } = DATA.heat, n = cols.length, c = 64, L = 64, Tp = 30, w = L + n * c + 10, h = Tp + n * c + 46;
     let o = '';
-    cols.forEach((name, j) => { o += `<text x="${L + j * c + c / 2}" y="${Tp - 10}" text-anchor="middle" font-size="12" fill="var(--ink-2)" font-family="var(--mono)">${name}</text><text x="${L - 8}" y="${Tp + j * c + c / 2 + 4}" text-anchor="end" font-size="12" fill="var(--ink-2)" font-family="var(--mono)">${name}</text>`; });
+    const names = { age: 'возраст', income: 'доход', orders: 'заказы', spend: 'траты' };
+    cols.map(col => names[col]).forEach((name, j) => { o += `<text x="${L + j * c + c / 2}" y="${Tp - 10}" text-anchor="middle" font-size="12" fill="var(--ink-2)" font-family="var(--mono)">${name}</text><text x="${L - 8}" y="${Tp + j * c + c / 2 + 4}" text-anchor="end" font-size="12" fill="var(--ink-2)" font-family="var(--mono)">${name}</text>`; });
     m.forEach((row, i) => row.forEach((v, j) => {
       const pct = Math.round(Math.abs(v) * 88), base = v >= 0 ? 'var(--c1)' : 'var(--c2)';
-      o += `<g><title>${cols[i]} и ${cols[j]}: r = ${num(v)}</title><rect x="${L + j * c + 1}" y="${Tp + i * c + 1}" width="${c - 2}" height="${c - 2}" rx="4" style="fill: color-mix(in srgb, ${base} ${pct}%, var(--surface))"/><text x="${L + j * c + c / 2}" y="${Tp + i * c + c / 2 + 5}" text-anchor="middle" font-size="14" font-weight="600" style="fill: ${Math.abs(v) > .55 ? 'var(--paper)' : 'var(--ink)'}" font-family="var(--mono)">${num(v)}</text></g>`;
+      o += `<g><title>${names[cols[i]]} и ${names[cols[j]]}: r = ${num(v)}</title><rect x="${L + j * c + 1}" y="${Tp + i * c + 1}" width="${c - 2}" height="${c - 2}" rx="4" style="fill: color-mix(in srgb, ${base} ${pct}%, var(--surface))"/><text x="${L + j * c + c / 2}" y="${Tp + i * c + c / 2 + 5}" text-anchor="middle" font-size="14" font-weight="600" style="fill: ${Math.abs(v) > .55 ? 'var(--paper)' : 'var(--ink)'}" font-family="var(--mono)">${num(v)}</text></g>`;
     }));
     const by = Tp + n * c + 18, bw = n * c;
     o += `<defs><linearGradient id="hm-g"><stop offset="0" style="stop-color: color-mix(in srgb, var(--c2) 88%, var(--surface))"/><stop offset=".5" style="stop-color: var(--surface)"/><stop offset="1" style="stop-color: color-mix(in srgb, var(--c1) 88%, var(--surface))"/></linearGradient></defs>`;
     o += `<rect x="${L}" y="${by}" width="${bw}" height="8" rx="4" fill="url(#hm-g)" stroke="var(--line)"/>`;
     [[-1, '−1'], [0, '0'], [1, '+1']].forEach(([v, t]) => { o += `<text x="${L + (v + 1) / 2 * bw}" y="${by + 24}" text-anchor="middle" font-size="11" fill="var(--muted)">${t}</text>`; });
-    el.innerHTML = `<figcaption>Траты держатся на&nbsp;заказах, r = 0,84, а&nbsp;возраст почти ни&nbsp;с&nbsp;чем не&nbsp;связан</figcaption><svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="Тепловая карта корреляций Пирсона четырёх столбцов учебных клиентов: те же числа, что в выводе кода">${vs(o)}</svg>`;
+    el.innerHTML = `<figcaption>Чем больше заказов у&nbsp;клиента, тем выше в&nbsp;среднем его траты (r = 0,84)</figcaption><svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="Матрица корреляций Пирсона для возраста, дохода, числа заказов и трат клиентов. Для числа заказов и трат r = 0,84, для возраста и трат r = 0,04.">${vs(o)}</svg>`;
   }
 
-  /*code:start*/const CODE = {"matrix": {"title": "Траты сильнее всего связаны с заказами, возраст — почти ни с чем", "badge": "проверено: Python 3.13, pandas 3.0.5, matplotlib 3.10.0", "lang": "python", "code": "import matplotlib\nimport pandas as pd\n\nmatplotlib.use(\"Agg\")                       # рисуем в файл, без окна\nimport matplotlib.pyplot as plt\n\ndf = pd.read_csv(\"data/clients/clients.csv\").drop(columns=\"client_id\")\ncorr = df.corr()                            # Пирсон для всех пар столбцов\nprint(corr.round(2), end=\"\\n\\n\")\n\n# одна пара с нуля: средний вклад (x − x̄)(y − ȳ), делённый на σx·σy\nx, y = df[\"income\"], df[\"spend\"]\ncov = ((x - x.mean()) * (y - y.mean())).sum() / (len(df) - 1)\nprint(f\"ковариация = {cov:,.0f}\".replace(\",\", \" \"))\nprint(f\"r вручную = {cov / (x.std() * y.std()):.4f}, pandas = {x.corr(y):.4f}\")\n\nfig, ax = plt.subplots(figsize=(4.6, 4))\nim = ax.imshow(corr, cmap=\"RdBu_r\", vmin=-1, vmax=1)   # 0 — белый, ±1 — насыщенный\nax.set_xticks(range(4), corr.columns)\nax.set_yticks(range(4), corr.columns)\nfor i in range(4):\n    for j in range(4):\n        ax.text(j, i, f\"{corr.iloc[i, j]:.2f}\", ha=\"center\", va=\"center\")\nfig.colorbar(im)\nfig.savefig(\"corr_heatmap.svg\", bbox_inches=\"tight\")\nprint(\"тепловая карта сохранена: corr_heatmap.svg\")", "out": "         age  income  orders  spend\nage     1.00    0.15    0.08   0.04\nincome  0.15    1.00    0.42   0.50\norders  0.08    0.42    1.00   0.84\nspend   0.04    0.50    0.84   1.00\n\nковариация = 139 563 886\nr вручную = 0.5003, pandas = 0.5003\nтепловая карта сохранена: corr_heatmap.svg", "note": "Карта под блоком нарисована SVG по этим же числам; файл corr_heatmap.svg, который сохраняет код, в страницу не вшит."}, "spearman": {"title": "Один выброс переворачивает знак Пирсона, а Спирмен почти не меняется", "badge": "проверено: Python 3.13, pandas 3.0.5", "lang": "python", "code": "import pandas as pd\n\ndf = pd.read_csv(\"data/clients/clients.csv\").head(40)[[\"income\", \"spend\"]]   # 40 учебных клиентов\n\ndef both(d):\n    p = d[\"income\"].corr(d[\"spend\"])                       # Пирсон по значениям\n    s = d[\"income\"].corr(d[\"spend\"], method=\"spearman\")    # Спирмен по рангам\n    return f\"Пирсон {p:+.3f}   Спирмен {s:+.3f}\"\n\nprint(\"40 клиентов:      \", both(df))\n\n# один оптовый покупатель: доход 30 000 ₽, траты за квартал 1,5 млн ₽\nwholesale = pd.DataFrame({\"income\": [30_000], \"spend\": [1_500_000]})\nout = pd.concat([df, wholesale], ignore_index=True)\nprint(\"плюс один выброс: \", both(out))\n\n# Спирмен — это Пирсон, посчитанный по рангам: у выброса ранг 41, а не 1,5 млн\nranks = out.rank()\nprint(ranks.tail(2))\nprint(f\"Пирсон по рангам: {ranks['income'].corr(ranks['spend']):+.3f}\")\n\n# монотонная, но не линейная связь: Спирмен видит её целиком\nx = pd.Series(range(1, 21))\ny = 2.0 ** x\nprint(f\"y = 2^x:          Пирсон {x.corr(y):+.3f}   Спирмен {x.corr(y, method='spearman'):+.3f}\")", "out": "40 клиентов:       Пирсон +0.627   Спирмен +0.661\nплюс один выброс:  Пирсон -0.152   Спирмен +0.573\n    income  spend\n39    25.5   22.0\n40     6.5   41.0\nПирсон по рангам: +0.573\ny = 2^x:          Пирсон +0.619   Спирмен +1.000"}, "simpson": {"title": "По всем заказам скидка «поднимает» чек, внутри каждой категории — снижает", "badge": "проверено: Python 3.13, pandas 3.0.5, NumPy 2.5.3", "lang": "python", "code": "import numpy as np\nimport pandas as pd\n\ndf = pd.read_csv(\"data/inference/discounts.csv\")   # 120 учебных заказов со скидкой\nprint(df.head(3), end=\"\\n\\n\")\n\ndef stats(g):\n    slope = np.polyfit(g[\"discount\"], g[\"check\"], 1)[0]   # ₽ чека на 1 п. п. скидки\n    return pd.Series({\"заказов\": len(g), \"скидка\": g[\"discount\"].mean(), \"чек\": g[\"check\"].mean(),\n                      \"r\": g[\"discount\"].corr(g[\"check\"]), \"наклон\": slope})\n\ntable = df.groupby(\"category\", sort=False).apply(stats, include_groups=False)\ntable.loc[\"все заказы\"] = stats(df)\ntable = table.round({\"скидка\": 1, \"чек\": 0, \"r\": 2, \"наклон\": 0}).astype({\"заказов\": int, \"чек\": int, \"наклон\": int})\nprint(table)", "out": "   order_id category  discount  check\n0         1   посуда         4   2470\n1         2   посуда         3   2550\n2         3   посуда         5   2280\n\n            заказов  скидка   чек     r  наклон\ncategory                                       \nпосуда           40     6.2  2204 -0.65     -48\nтекстиль         40    14.4  4660 -0.70    -108\nсвет             40    22.2  7006 -0.56    -131\nвсе заказы      120    14.3  4623  0.73     198"}, "nonlinear": {"title": "Связь сильная, а r = 0: дугу Пирсон не видит", "badge": "проверено: Python 3.13, pandas 3.0.5, NumPy 2.5.3", "lang": "python", "code": "import numpy as np\nimport pandas as pd\n\nrng = np.random.default_rng(6521)\npush = rng.integers(0, 7, 300)                     # пушей в неделю у 300 учебных пользователей\ndays = 20 - 1.5 * (push - 3) ** 2 + rng.normal(0, 2, 300)   # активных дней за месяц\ndf = pd.DataFrame({\"push\": push, \"days\": days.clip(0, 30).round()})\n\nprint(f\"Пирсон {df['push'].corr(df['days']):+.3f}   Спирмен {df['push'].corr(df['days'], method='spearman'):+.3f}\")\nprint(df.groupby(\"push\")[\"days\"].mean().round(1).to_string())\nprint(f\"Пирсон для (push − 3)² и дней: {((df['push'] - 3) ** 2).corr(df['days']):+.3f}\")", "out": "Пирсон +0.001   Спирмен -0.062\npush\n0     6.3\n1    13.9\n2    18.7\n3    19.7\n4    18.7\n5    13.9\n6     6.7\nПирсон для (push − 3)² и дней: -0.937"}, "aggregate": {"title": "Те же клиенты, усреднённые по возрасту, дают r в шесть раз больше", "badge": "проверено: Python 3.13, pandas 3.0.5", "lang": "python", "code": "import pandas as pd\n\ndf = pd.read_csv(\"data/clients/clients.csv\")   # 1 000 учебных клиентов\n\nby_age = df.groupby(\"age\", as_index=False)[\"income\"].mean()           # 53 точки: средний доход по возрасту\nby_dec = df.groupby(df[\"age\"] // 10 * 10)[[\"age\", \"income\"]].mean()   # 7 точек: по десятилетиям\n\nprint(f\"по клиентам:       r = {df['age'].corr(df['income']):.2f}  ({len(df)} точек)\")\nprint(f\"по годам возраста: r = {by_age['age'].corr(by_age['income']):.2f}  ({len(by_age)} точки)\")\nprint(f\"по десятилетиям:   r = {by_dec['age'].corr(by_dec['income']):.2f}  ({len(by_dec)} точек)\")", "out": "по клиентам:       r = 0.15  (1000 точек)\nпо годам возраста: r = 0.62  (53 точки)\nпо десятилетиям:   r = 0.94  (7 точек)"}, "trend": {"title": "Два независимых ряда с трендом дают r = 0,9, а их изменения — ноль", "badge": "проверено: Python 3.13, NumPy 2.5.3", "lang": "python", "code": "import numpy as np\n\nrng = np.random.default_rng(6522)\nt = np.arange(365)\norders = 200 + 0.3 * t + rng.normal(0, 12, 365)       # заказы учебного магазина в день\nsubs = 9_000 + 15 * t + rng.normal(0, 400, 365)       # подписчики чужого канала: никак не связаны\nprint(f\"уровни:    r = {np.corrcoef(orders, subs)[0, 1]:.2f}\")\nprint(f\"изменения: r = {np.corrcoef(np.diff(orders), np.diff(subs))[0, 1]:+.2f}\")\n\n# 1 000 пар независимых случайных блужданий по 365 дней\nwalks = rng.normal(size=(1000, 2, 365)).cumsum(axis=2)\nr = np.array([np.corrcoef(a, b)[0, 1] for a, b in walks])\nrd = np.array([np.corrcoef(np.diff(a), np.diff(b))[0, 1] for a, b in walks])\nprint(f\"блуждания: |r| > 0,5 у {np.mean(np.abs(r) > 0.5):.0%} пар, медиана |r| = {np.median(np.abs(r)):.2f}\")\nprint(f\"их изменения: |r| > 0,5 у {np.mean(np.abs(rd) > 0.5):.0%} пар, медиана |r| = {np.median(np.abs(rd)):.2f}\")", "out": "уровни:    r = 0.90\nизменения: r = -0.05\nблуждания: |r| > 0,5 у 41% пар, медиана |r| = 0.42\nих изменения: |r| > 0,5 у 0% пар, медиана |r| = 0.04"}};/*code:end*/
+  /*code:start*/const CODE = {"matrix": {"title": "Квартальные траты теснее всего связаны с числом заказов", "badge": "проверено: Python 3.13, pandas 3.0.5, matplotlib 3.10.0", "lang": "python", "code": "import matplotlib\nimport pandas as pd\n\nmatplotlib.use(\"Agg\")                       # рисуем в файл, без окна\nimport matplotlib.pyplot as plt\n\ndf = pd.read_csv(\"data/clients/clients.csv\").drop(columns=\"client_id\")\ncorr = df.corr()                            # коэффициенты Пирсона для всех пар столбцов\nprint(corr.round(2), end=\"\\n\\n\")\n\n# Для одной пары столбцов рассчитаем выборочную ковариацию и коэффициент Пирсона вручную.\nx, y = df[\"income\"], df[\"spend\"]\ncov = ((x - x.mean()) * (y - y.mean())).sum() / (len(df) - 1)\nprint(f\"ковариация = {cov:,.0f}\".replace(\",\", \" \"))\nprint(f\"r вручную = {cov / (x.std() * y.std()):.4f}, pandas = {x.corr(y):.4f}\")\n\nfig, ax = plt.subplots(figsize=(4.6, 4))\nim = ax.imshow(corr, cmap=\"RdBu_r\", vmin=-1, vmax=1)   # 0 — белый, ±1 — насыщенный\nax.set_xticks(range(4), corr.columns)\nax.set_yticks(range(4), corr.columns)\nfor i in range(4):\n    for j in range(4):\n        ax.text(j, i, f\"{corr.iloc[i, j]:.2f}\", ha=\"center\", va=\"center\")\nfig.colorbar(im)\nfig.savefig(\"corr_heatmap.svg\", bbox_inches=\"tight\")\nprint(\"тепловая карта сохранена: corr_heatmap.svg\")", "out": "         age  income  orders  spend\nage     1.00    0.15    0.08   0.04\nincome  0.15    1.00    0.42   0.50\norders  0.08    0.42    1.00   0.84\nspend   0.04    0.50    0.84   1.00\n\nковариация = 139 563 886\nr вручную = 0.5003, pandas = 0.5003\nтепловая карта сохранена: corr_heatmap.svg", "note": "Код сохраняет тепловую карту в файл corr_heatmap.svg. Под примером показана та же матрица корреляций."}, "spearman": {"title": "Как один покупатель меняет коэффициенты Пирсона и Спирмена", "badge": "проверено: Python 3.13, pandas 3.0.5", "lang": "python", "code": "import pandas as pd\n\ndf = pd.read_csv(\"data/clients/clients.csv\").head(40)[[\"income\", \"spend\"]]   # 40 учебных клиентов\n\ndef both(d):\n    p = d[\"income\"].corr(d[\"spend\"])                       # Пирсон по значениям\n    s = d[\"income\"].corr(d[\"spend\"], method=\"spearman\")    # Спирмен по рангам\n    return f\"Пирсон {p:+.3f}   Спирмен {s:+.3f}\"\n\nprint(\"40 клиентов:      \", both(df))\n\n# один оптовый покупатель: доход 30 000 ₽, траты за квартал 1,5 млн ₽\nwholesale = pd.DataFrame({\"income\": [30_000], \"spend\": [1_500_000]})\nout = pd.concat([df, wholesale], ignore_index=True)\nprint(\"плюс один выброс: \", both(out))\n\n# По тратам оптовый покупатель занимает 41-е место из 41.\nranks = out.rank()\nprint(ranks.tail(2))\nprint(f\"Пирсон по рангам: {ranks['income'].corr(ranks['spend']):+.3f}\")\n\n# При x от 1 до 20 значения 2**x строго возрастают. Ранги x и y совпадают.\nx = pd.Series(range(1, 21))\ny = 2.0 ** x\nprint(f\"y = 2^x:          Пирсон {x.corr(y):+.3f}   Спирмен {x.corr(y, method='spearman'):+.3f}\")", "out": "40 клиентов:       Пирсон +0.627   Спирмен +0.661\nплюс один выброс:  Пирсон -0.152   Спирмен +0.573\n    income  spend\n39    25.5   22.0\n40     6.5   41.0\nПирсон по рангам: +0.573\ny = 2^x:          Пирсон +0.619   Спирмен +1.000"}, "simpson": {"title": "Знак корреляции между скидкой и чеком зависит от группировки", "badge": "проверено: Python 3.13, pandas 3.0.5, NumPy 2.5.3", "lang": "python", "code": "import numpy as np\nimport pandas as pd\n\ndf = pd.read_csv(\"data/inference/discounts.csv\")   # 120 учебных заказов со скидкой\nprint(df.head(3), end=\"\\n\\n\")\n\ndef stats(g):\n    slope = np.polyfit(g[\"discount\"], g[\"check\"], 1)[0]   # ₽ чека на 1 п. п. скидки\n    return pd.Series({\"заказов\": len(g), \"скидка\": g[\"discount\"].mean(), \"чек\": g[\"check\"].mean(),\n                      \"r\": g[\"discount\"].corr(g[\"check\"]), \"наклон\": slope})\n\ntable = df.groupby(\"category\", sort=False).apply(stats, include_groups=False)\ntable.loc[\"все заказы\"] = stats(df)\ntable = table.round({\"скидка\": 1, \"чек\": 0, \"r\": 2, \"наклон\": 0}).astype({\"заказов\": int, \"чек\": int, \"наклон\": int})\nprint(table)", "out": "   order_id category  discount  check\n0         1   посуда         4   2470\n1         2   посуда         3   2550\n2         3   посуда         5   2280\n\n            заказов  скидка   чек     r  наклон\ncategory                                       \nпосуда           40     6.2  2204 -0.65     -48\nтекстиль         40    14.4  4660 -0.70    -108\nсвет             40    22.2  7006 -0.56    -131\nвсе заказы      120    14.3  4623  0.73     198"}, "nonlinear": {"title": "Больше всего активных дней у тех, кто получал по три уведомления в неделю", "badge": "проверено: Python 3.13, pandas 3.0.5, NumPy 2.5.3", "lang": "python", "code": "import numpy as np\nimport pandas as pd\n\nrng = np.random.default_rng(6521)\npush = rng.integers(0, 7, 300)                     # уведомлений в неделю у 300 пользователей\ndays = 20 - 1.5 * (push - 3) ** 2 + rng.normal(0, 2, 300)   # активных дней за месяц\ndf = pd.DataFrame({\"push\": push, \"days\": days.clip(0, 30).round()})\n\nprint(f\"Пирсон {df['push'].corr(df['days']):+.3f}   Спирмен {df['push'].corr(df['days'], method='spearman'):+.3f}\")\nprint(df.groupby(\"push\")[\"days\"].mean().round(1).to_string())\nprint(f\"Пирсон для (push − 3)² и дней: {((df['push'] - 3) ** 2).corr(df['days']):+.3f}\")", "out": "Пирсон +0.001   Спирмен -0.062\npush\n0     6.3\n1    13.9\n2    18.7\n3    19.7\n4    18.7\n5    13.9\n6     6.7\nПирсон для (push − 3)² и дней: -0.937"}, "aggregate": {"title": "После усреднения по возрастным группам r вырос с 0,15 до 0,94", "badge": "проверено: Python 3.13, pandas 3.0.5", "lang": "python", "code": "import pandas as pd\n\ndf = pd.read_csv(\"data/clients/clients.csv\")   # 1 000 учебных клиентов\n\nby_age = df.groupby(\"age\", as_index=False)[\"income\"].mean()           # 53 точки: средний доход по возрасту\nby_dec = df.groupby(df[\"age\"] // 10 * 10)[[\"age\", \"income\"]].mean()   # 7 точек: по десятилетиям\n\nprint(f\"по клиентам:       r = {df['age'].corr(df['income']):.2f}  ({len(df)} точек)\")\nprint(f\"по годам возраста: r = {by_age['age'].corr(by_age['income']):.2f}  ({len(by_age)} точки)\")\nprint(f\"по десятилетиям:   r = {by_dec['age'].corr(by_dec['income']):.2f}  ({len(by_dec)} точек)\")", "out": "по клиентам:       r = 0.15  (1000 точек)\nпо годам возраста: r = 0.62  (53 точки)\nпо десятилетиям:   r = 0.94  (7 точек)"}, "trend": {"title": "У двух растущих рядов r = 0,90, у их дневных изменений r = −0,05", "badge": "проверено: Python 3.13, NumPy 2.5.3", "lang": "python", "code": "import numpy as np\n\nrng = np.random.default_rng(6522)\nt = np.arange(365)\norders = 200 + 0.3 * t + rng.normal(0, 12, 365)       # заказы учебного магазина в день\nsubs = 9_000 + 15 * t + rng.normal(0, 400, 365)       # подписчики другого канала, отдельный тренд и независимый шум\nprint(f\"уровни:    r = {np.corrcoef(orders, subs)[0, 1]:.2f}\")\nprint(f\"изменения: r = {np.corrcoef(np.diff(orders), np.diff(subs))[0, 1]:+.2f}\")\n\n# 1 000 пар независимых случайных блужданий по 365 дней\nwalks = rng.normal(size=(1000, 2, 365)).cumsum(axis=2)\nr = np.array([np.corrcoef(a, b)[0, 1] for a, b in walks])\nrd = np.array([np.corrcoef(np.diff(a), np.diff(b))[0, 1] for a, b in walks])\nprint(f\"блуждания: |r| > 0,5 у {np.mean(np.abs(r) > 0.5):.0%} пар, медиана |r| = {np.median(np.abs(r)):.2f}\")\nprint(f\"их изменения: |r| > 0,5 у {np.mean(np.abs(rd) > 0.5):.0%} пар, медиана |r| = {np.median(np.abs(rd)):.2f}\")", "out": "уровни:    r = 0.90\nизменения: r = -0.05\nблуждания: |r| > 0,5 у 41% пар, медиана |r| = 0.42\nих изменения: |r| > 0,5 у 0% пар, медиана |r| = 0.04"}};/*code:end*/
 
   /* ===================== Данные страницы ===================== */
   window.PAGE = {
@@ -448,63 +449,63 @@
     short: 'DA-06',
     title: 'Корреляция и причинность',
     where: 'блок «Дата аналитика», тема 06 «Статистический вывод», страница 6.5',
-    aiData: '1 000 учебных клиентов (возраст, доход, заказы, траты), квартет Энскомба, 120 учебных заказов со скидкой по трём категориям (посуда, текстиль, свет) и 30 учебных клиентов, у которых стаж влияет и на заходы в приложение, и на траты',
+    aiData: '1 000 учебных клиентов (возраст, доход, заказы, траты), квартет Энскомба, 120 учебных заказов со скидкой по трём категориям (посуда, текстиль, свет) и 30 учебных клиентов, у которых стаж влияет и на число визитов в приложение, и на траты',
     scene,
     widgets: { guess: buildGuess },
     code: CODE,
     start() { const el = document.getElementById('cc-hm'); if (el) heatmap(el); },
     questions: {
-    q1: { sec: 'guess', title: 'Сначала предскажите', q: 'По всем 120 учебным заказам чем больше скидка, тем больше чек, r = +0,73. Может ли внутри каждой категории связь быть отрицательной?', opts: [['Нет: общее облако состоит из категорий, знак у них тот же'], ['Да, если категории сильно различаются и скидкой, и чеком', 1], ['Только если в категориях разное число заказов'], ['Только если в данных есть выбросы']],
-      why: 'Общая линия может соединять группы, а не описывать связь внутри них. Если в дорогих категориях и скидки глубже, и чек больше, облака категорий выстраиваются по возрастающей, хотя каждое наклонено вниз. Число заказов здесь равное, по 40, выбросов нет. Проверьте переключателем в интерактиве.' },
-    q2: { sec: 'idea', q: 'В анимации у четырёх наборов Энскомба r = 0,82. Что из этого следует?', opts: [['Во всех четырёх y растёт с x одинаково'], ['Одинакова только сила линейной связи, форма может быть любой', 1], ['Все четыре честно описывает линия y = 3 + 0,5x'], ['В одном наборе ошибка: при разной форме r не совпадёт']],
-      why: 'r сжимает облако в одно число и не видит формы: у Энскомба это прямая с шумом, дуга, прямая с выбросом и столбик с одной точкой. Линия y = 3 + 0,5x у всех одна, но дугу и столбик она описывает плохо. Совпадение не ошибка: Энскомб подобрал наборы нарочно.' },
-    q3: { sec: 'nuances', q: 'Активность пользователя растёт с числом пушей до трёх в неделю и падает после, а r = 0,00. Что верно?', opts: [['Пуши и активность не связаны'], ['Связь сильная, но не линейная, а r ловит только прямую', 1], ['При сильной связи r = 0 невозможно'], ['Спирмен покажет сильную связь']],
-      why: 'Пирсон измеряет, насколько точки ложатся на прямую. Дуга симметрична: слева от вершины вклады «плюс», справа «минус», и они гасят друг друга. Спирмен тоже около нуля, потому что связь не монотонная. Видна она на графике и в средних по числу пушей.' },
-    q4: { sec: 'idea', q: 'Клиенты с приложением тратят больше. Какая переменная может быть скрытой, то есть влиять и на установку приложения, и на траты?', opts: [['Число покупок, сделанных через приложение'], ['Доход: обеспеченные клиенты чаще ставят приложение и больше тратят', 1], ['Траты в первый месяц после установки'], ['Оценка приложения в магазине приложений']],
-      why: 'Скрытая переменная существует до установки и влияет на обе величины. Доход подходит. Покупки через приложение и траты после установки — часть результата, а оценку ставят уже после установки, она скорее следствие, чем причина.' },
-    q5: { sec: 'cause', q: 'Что добавляет рандомизация к контролю переменных?', opts: [['Делает r больше, а вывод увереннее'], ['Уравнивает группы и по переменным, которые не измерены и о которых не подумали', 1], ['Убирает случайный шум, и тест больше не нужен'], ['Ничего, если контролировать все известные переменные']],
-      why: 'Контроль работает только с тем, что измерено. Монетка ничего не знает о клиентах и поэтому в среднем делит поровну всё: стаж, доход и то, о чём никто не подумал. Шум остаётся, его оценивает тест из 6.3. «Все известные» переменные — не все.' },
-    q6: { sec: 'code', q: 'Что делает pandas в этой строке, прежде чем посчитать корреляцию?', code: 'df["income"].corr(df["spend"], method="spearman")', opts: [['Удаляет выбросы дальше трёх σ от среднего'], ['Заменяет значения рангами, местами в сортировке, и считает по ним Пирсона', 1], ['Логарифмирует оба столбца'], ['Вычитает среднее и делит на σ']],
-      why: 'Спирмен — это Пирсон по рангам: у самого маленького значения ранг 1, у одинаковых — средний ранг. Поэтому выброс с тратами 1,5 млн ₽ получает ранг 41 и почти не влияет на результат. Стандартизация r Пирсона не меняет, а выбросы pandas сам не удаляет.' },
-    q7: { sec: 'nuances', q: 'По 1 000 учебным клиентам связь возраста и дохода r = 0,15, а по средним доходам семи десятилетий возраста — 0,94. Как это понимать?', opts: [['Верна 0,94: средние точнее отдельных клиентов'], ['Усреднение убрало разброс внутри групп, о людях говорит 0,15', 1], ['Ошибка: группировка не меняет корреляцию'], ['У старших клиентов возраст влияет на доход сильнее']],
-      why: 'Внутри каждого десятилетия доходы сильно различаются, а средние лежат почти на прямой. Корреляция средних описывает группы, а не людей: по возрасту клиента его доход угадывается плохо. Это экологическая корреляция, о ней писал ещё Робинсон в 1950 году.' }
+    q1: { sec: 'guess', title: 'Сначала предскажите', q: 'По всем 120 заказам корреляция между скидкой и чеком положительна (r = 0,73). Может ли она быть отрицательной в каждой товарной категории?', opts: [['Нет, связь внутри каждой категории должна иметь тот же знак'], ['Да, если категории различаются и по средней скидке, и по среднему чеку', 1], ['Только если в категориях разное число заказов'], ['Только если есть выбросы']],
+      why: 'В каждой категории большим скидкам соответствуют меньшие чеки. При этом у более дорогих категорий выше и типичные скидки. В общей выборке преобладают различия между категориями. В этом примере в каждой категории по 40 заказов.' },
+    q2: { sec: 'idea', q: 'В каждом из четырёх наборов Энскомба коэффициент Пирсона после округления равен 0,82. Какой вывод из этого следует?', opts: [['Во всех четырёх наборах с ростом x значения y растут одинаково'], ['Во всех наборах сходная положительная линейная корреляция', 1], ['Для каждого набора прямая точно предсказывает y по x'], ['Точки на четырёх диаграммах должны располагаться одинаково']],
+      why: 'Коэффициенты близки, но в одном наборе точки образуют дугу, а в другом только одна точка отличается от остальных по x. В последнем случае именно она определяет наклон прямой. Поэтому одних коэффициентов для интерпретации недостаточно.' },
+    q3: { sec: 'nuances', q: 'Среднее число активных дней растёт по мере увеличения числа уведомлений с нуля до трёх в неделю, а затем снижается. При этом r после округления равен 0,00. Как это объяснить?', opts: [['Число уведомлений и активность независимы'], ['Коэффициент Пирсона близок к нулю, хотя на графике видна нелинейная зависимость', 1], ['При такой зависимости в данных обязательно есть ошибка'], ['Коэффициент Спирмена обязательно будет близок к единице']],
+      why: 'По одну сторону от трёх уведомлений среднее число активных дней растёт, по другую — убывает. Обе части вместе плохо описываются прямой. По той же причине коэффициент Спирмена, который измеряет монотонную связь, здесь тоже близок к нулю.' },
+    q4: { sec: 'idea', q: 'Клиенты с приложением тратят больше. Какой показатель может быть общей причиной установки приложения и более высоких трат?', opts: [['Число покупок клиента через приложение после установки'], ['Доход до установки, если он влияет и на вероятность установки, и на траты', 1], ['Сумма покупок клиента через месяц после установки'], ['Оценка, которую клиент поставил приложению после первой покупки']],
+      why: 'В этой гипотезе доход предшествует установке и может влиять и на решение установить приложение, и на покупки. Остальные показатели получены уже после установки. Чтобы проверить роль дохода, нужно выяснить, измеряли ли его до установки и как он связан с обоими показателями.' },
+    q5: { sec: 'cause', q: 'Какое преимущество даёт случайное назначение уведомлений при сравнении двух групп?', opts: [['Коэффициент корреляции между визитами и тратами обязательно вырастет'], ['В среднем группы сопоставимы даже по исходным признакам, которых аналитик не измерял', 1], ['В каждой отдельной выборке группы получаются совершенно одинаковыми'], ['После рассылки пропуски в данных больше не влияют на вывод']],
+      why: 'При случайном назначении исходные характеристики клиентов не определяют, кто попадёт в группу рассылки. По этой причине назначения не связаны систематически ни с измеренными, ни с неизмеренными исходными признаками. В конкретном эксперименте различия между группами всё же возможны.' },
+    q6: { sec: 'code', q: 'Как pandas рассчитывает коэффициент в этой строке?', code: 'df["income"].corr(df["spend"], method="spearman")', opts: [['Удаляет наблюдения дальше трёх стандартных отклонений от среднего'], ['Присваивает значениям каждого столбца ранги и вычисляет корреляцию Пирсона между рангами', 1], ['Логарифмирует доход и траты'], ['Стандартизует значения и считает корреляцию между исходными наблюдениями']],
+      why: 'Ранги присваиваются отдельно доходу и тратам. Одинаковые значения получают среднее занятых ими мест. Если самые большие траты станут ещё больше, их ранг сохранится. Само добавление нового наблюдения при этом может изменить коэффициент.' },
+    q7: { sec: 'nuances', q: 'У 1 000 клиентов корреляция возраста и дохода равна 0,15. По средним доходам семи возрастных групп она равна 0,94. Какой коэффициент описывает связь на уровне отдельных клиентов?', opts: [['0,94, поскольку средние по группам точнее'], ['0,15, поскольку в этом расчёте каждое наблюдение соответствует одному клиенту', 1], ['Оба, поскольку в расчёте использованы одни и те же исходные данные'], ['Ни один, поскольку после группировки корреляция должна сохраниться']],
+      why: 'При расчёте r = 0,94 каждая точка представляет возрастную группу. Усреднение скрывает различия в доходах людей внутри группы. Для вопроса о возрасте и доходе конкретных людей нужны исходные 1 000 наблюдений.' }
     },
     glossary: {
-      causal: { t: 'Причинная связь', en: 'causation', d: 'x вызывает y, если изменение x при прочих равных меняет y.' },
-      pearson: { t: 'Корреляция Пирсона', en: 'Pearson correlation coefficient, r', d: 'Ковариация, делённая на произведение стандартных отклонений: мера линейной связи от −1 до 1.' },
-      spearman: { t: 'Корреляция Спирмена', en: 'Spearman rank correlation', d: 'Корреляция Пирсона по рангам. Ловит монотонную связь и устойчива к выбросам.' },
-      confounder: { t: 'Скрытая переменная', en: 'confounder', d: 'Третья величина, которая влияет и на x, и на y и создаёт между ними связь. Её называют и конфаундером.' },
-      cov: { t: 'Ковариация', en: 'covariance', d: 'Среднее произведение отклонений двух величин от средних. Знак — направление связи, величина зависит от единиц.' },
-      rank: { t: 'Ранг', en: 'rank', d: 'Место значения в отсортированном столбце; одинаковые значения получают средний ранг.' },
-      mono: { t: 'Монотонная связь', en: 'monotonic relationship', d: 'y только растёт или только убывает с ростом x, не обязательно по прямой.' },
-      anscombe: { t: 'Квартет Энскомба', en: 'Anscombe’s quartet', d: 'Четыре набора по 11 точек с одинаковыми средними, дисперсиями, линией регрессии и r, но разной формы.' },
-      reverse: { t: 'Обратная причинность', en: 'reverse causality', d: 'Причинная стрелка идёт не от x к y, а от y к x.' },
-      selection: { t: 'Ошибка отбора', en: 'selection bias', d: 'В данные попали только прошедшие фильтр; фильтр, зависящий от обеих величин, создаёт ложную связь.' },
-      simpson: { t: 'Парадокс Симпсона', en: 'Simpson’s paradox', d: 'Связь в объединённых данных противоположна по знаку связи внутри каждой группы.' },
-      control: { t: 'Контроль переменных', en: 'controlling for variables', d: 'Сравнение при равных значениях третьей переменной: по группам, частной корреляцией или регрессией.' },
-      partial: { t: 'Частная корреляция', en: 'partial correlation', d: 'Корреляция остатков x и y после того, как из обеих вычли линейное влияние третьей величины.' },
-      natural: { t: 'Естественный эксперимент', en: 'natural experiment', d: 'Группы разделили внешние обстоятельства, а не выбор людей, почти как при случайном разделении.' },
-      random: { t: 'Рандомизация', en: 'randomization', d: 'Случайное распределение по группам: уравнивает их в среднем по всем переменным, измеренным и нет.' },
-      ecological: { t: 'Экологическая корреляция', en: 'ecological correlation', d: 'Корреляция по средним групп, а не по отдельным объектам; обычно сильнее индивидуальной.' },
-      spurious: { t: 'Ложная корреляция', en: 'spurious correlation', d: 'Заметная корреляция без причинной связи, например у двух рядов с общим трендом.' },
-      walk: { t: 'Случайное блуждание', en: 'random walk', d: 'Ряд, где каждое значение — предыдущее плюс случайный шаг. Тренда нет, но ряд уходит далеко.' },
-      causalinf: { t: 'Каузальный вывод', en: 'causal inference', d: 'Методы оценки причинного эффекта, в том числе по данным без эксперимента.' },
-      did: { t: 'Разность разностей', en: 'difference-in-differences', d: 'Эффект как разница изменений у затронутой и незатронутой групп за один период.' },
-      matching: { t: 'Матчинг', en: 'matching', d: 'Подбор каждому объекту с воздействием похожего без воздействия по измеренным признакам.' },
-      rdd: { t: 'Разрывный дизайн', en: 'regression discontinuity design', d: 'Сравнение объектов чуть выше и чуть ниже порога, по которому правило назначает воздействие.' },
-      iv: { t: 'Инструментальная переменная', en: 'instrumental variable', d: 'Величина, которая меняет воздействие, а на результат влияет только через него.' }
+      causal: { t: 'Причинная связь', en: 'causation', d: 'Если изменить воздействие, при прочих равных изменится результат или его распределение.' },
+      pearson: { t: 'Коэффициент корреляции Пирсона', en: 'Pearson correlation coefficient, r', d: 'Показатель направления и силы линейной связи. Равен ковариации, делённой на произведение стандартных отклонений. Определён, когда обе величины меняются, и принимает значения от −1 до 1.' },
+      spearman: { t: 'Коэффициент корреляции Спирмена', en: 'Spearman rank correlation', d: 'Корреляция Пирсона между рангами двух переменных. Показывает, насколько согласован их порядок. Пока ранги сохраняются, изменение величины выброса не меняет коэффициент.' },
+      confounder: { t: 'Смешивающая переменная', en: 'confounder', d: 'Общая причина воздействия и результата. Например, стаж клиента может влиять и на число визитов, и на траты. Смешивающая переменная может быть измерена. Другое название — конфаундер.' },
+      cov: { t: 'Ковариация', en: 'covariance', d: 'Мера совместного изменения двух величин. Для выборки сумму произведений отклонений от соответствующих средних делят на n − 1. Численное значение зависит от единиц измерения обеих переменных.' },
+      rank: { t: 'Ранг', en: 'rank', d: 'Место значения в упорядоченном ряду. При расчёте корреляции Спирмена совпадающим значениям присваивают среднее занятых ими мест.' },
+      mono: { t: 'Монотонная зависимость', en: 'monotonic relationship', d: 'При увеличении x величина y либо нигде не убывает, либо нигде не возрастает. На графике такая зависимость может быть кривой.' },
+      anscombe: { t: 'Квартет Энскомба', en: 'Anscombe’s quartet', d: 'Четыре набора по 11 точек с почти одинаковыми средними, дисперсиями, прямыми регрессии и коэффициентами Пирсона. Формы диаграмм существенно различаются.' },
+      reverse: { t: 'Обратная причинность', en: 'reverse causality', d: 'Направление влияния противоположно исходной гипотезе. Например, покупка может побудить открыть приложение, чтобы узнать статус заказа.' },
+      selection: { t: 'Смещение отбора', en: 'selection bias', d: 'Систематическое искажение вывода из-за того, какие наблюдения попали в выборку. Если отбор зависит от двух показателей, в отобранной группе между ними может появиться связь.' },
+      simpson: { t: 'Парадокс Симпсона', en: 'Simpson’s paradox', d: 'При объединении групп направление связи между показателями может измениться. Например, общая корреляция скидки и чека положительна, а внутри каждой категории отрицательна.' },
+      control: { t: 'Контроль переменных', en: 'controlling for variables', d: 'Учёт других переменных при сравнении групп или оценке связи. Например, клиентов сравнивают внутри возрастных групп или включают возраст в модель.' },
+      partial: { t: 'Частная корреляция', en: 'partial correlation', d: 'Корреляция остатков двух линейных регрессий. Каждую из двух переменных предсказывают по одному и тому же набору других признаков.' },
+      natural: { t: 'Естественный эксперимент', en: 'natural experiment', d: 'Исследование, в котором условия воздействия определяются внешним событием или правилом. Для причинного вывода нужно обосновать сопоставимость групп.' },
+      random: { t: 'Рандомизация', en: 'randomization', d: 'Случайное назначение участникам условий эксперимента. Исходные признаки групп в среднем сбалансированы, хотя в конкретной выборке возможны различия.' },
+      ecological: { t: 'Экологическая корреляция', en: 'ecological correlation', d: 'Корреляция между групповыми показателями, например между возрастом группы и средним доходом. Может отличаться и по величине, и по знаку от корреляции по отдельным людям.' },
+      spurious: { t: 'Ложная корреляция', en: 'spurious correlation', d: 'Наблюдаемая связь, которой ошибочно дают содержательное объяснение. Например, два показателя могут расти со временем по разным причинам.' },
+      walk: { t: 'Случайное блуждание', en: 'random walk', d: 'Последовательность, в которой очередное значение равно предыдущему плюс случайное приращение. Даже при нулевом среднем приращении уровни могут долго расти или снижаться.' },
+      causalinf: { t: 'Причинный вывод', en: 'causal inference', d: 'Методы, которые помогают оценить, как изменится результат при изменении воздействия. Используются данные экспериментов и наблюдений.' },
+      did: { t: 'Разность разностей', en: 'difference-in-differences', d: 'Сравнение изменений результата в группе воздействия и в группе сравнения за один период. Ключевое допущение состоит в том, что без воздействия средние результаты изменились бы параллельно.' },
+      matching: { t: 'Матчинг', en: 'matching', d: 'Подбор участников из разных групп, близких по измеренным характеристикам до воздействия.' },
+      rdd: { t: 'Разрывный дизайн', en: 'regression discontinuity design', d: 'Оценка локального эффекта воздействия по скачку результата у порога, по которому назначают воздействие.' },
+      iv: { t: 'Инструментальная переменная', en: 'instrumental variable', d: 'Переменная, которая влияет на назначение воздействия, связана с результатом только через него и не связана с общими причинами воздействия и результата.' }
     },
     materials: [
-      ['da-6-5-correlation-causation.md', 'Страница целиком в Markdown: текст, код, вопросы и глоссарий'],
-      ['data/clients/', 'Учебные клиенты темы 04 — общий набор: здесь нужен clients.csv'],
-      ['data/inference/', 'Учебные данные темы 06 — общий набор: здесь нужны discounts.csv (120 заказов со скидкой) и его генератор gen_discounts.py'],
-      ['correlation.ipynb', 'Код страницы: матрица корреляций, Пирсон и Спирмен, парадокс Симпсона, три нюанса'],
+      ['da-6-5-correlation-causation.md', 'Текст урока, примеры кода, вопросы и глоссарий в формате Markdown'],
+      ['data/clients/', 'Общий набор главы 4. Для урока понадобится файл clients.csv с данными 1 000 клиентов.'],
+      ['data/inference/', 'Общий набор главы 6. Файл discounts.csv содержит 120 заказов со скидкой. Скрипт gen_discounts.py воспроизводит эти данные.'],
+      ['correlation.ipynb', 'Шесть примеров на Python и данные квартета Энскомба для проверки расчётов'],
       ['anscombe.csv', 'Квартет Энскомба: четыре набора по 11 точек из статьи 1973 года']
     ],
     prompts: [
-      ['Проверка понимания', 'Задай мне пять вопросов по источнику о корреляции Пирсона и Спирмена, квартете Энскомба и парадоксе Симпсона, по одному. После ответа объясни ошибку со ссылкой на текст.'],
-      ['Разбор утверждения', 'Я вставлю фразу вида «X связан с Y, значит, X повышает Y». Предложи по источнику объяснения без прямой причины и скажи, какие данные или эксперимент исключат каждое.'],
-      ['План проверки', 'Помоги проверить гипотезу «пуш „заходите чаще“ повышает траты» по лестнице доказательств из источника: что сделать на текущих данных, где искать естественный эксперимент, как устроить A/B-тест.']
+      ['Проверка понимания', 'Задавай по одному вопросу о коэффициентах Пирсона и Спирмена, квартете Энскомба и парадоксе Симпсона. После каждого из моих пяти ответов разбери рассуждение и укажи, где в уроке это объясняется.'],
+      ['Разбор утверждения', 'Я вставлю фразу вида «X связан с Y, значит, X повышает Y». Предложи несколько объяснений такой связи и подскажи, какие данные помогли бы их различить.'],
+      ['План проверки', 'Помоги проверить, повышает ли уведомление траты клиентов. Что можно узнать из имеющихся данных? Как выбрать группы, период и показатель для A/B-теста?']
     ]
   };
 })();

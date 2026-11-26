@@ -3,7 +3,7 @@ import numpy as np
 rng = np.random.default_rng(6522)
 t = np.arange(365)
 orders = 200 + 0.3 * t + rng.normal(0, 12, 365)       # заказы учебного магазина в день
-subs = 9_000 + 15 * t + rng.normal(0, 400, 365)       # подписчики чужого канала: никак не связаны
+subs = 9_000 + 15 * t + rng.normal(0, 400, 365)       # подписчики другого канала, отдельный тренд и независимый шум
 print(f"уровни:    r = {np.corrcoef(orders, subs)[0, 1]:.2f}")
 print(f"изменения: r = {np.corrcoef(np.diff(orders), np.diff(subs))[0, 1]:+.2f}")
 

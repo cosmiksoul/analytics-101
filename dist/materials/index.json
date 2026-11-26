@@ -1206,30 +1206,30 @@
   "da-6-1": {
    "file": "da-6-1-sampling-bias",
    "zip": "materials/da-6-1-sampling-bias.zip",
-   "zipBytes": 20707,
+   "zipBytes": 21456,
    "files": [
     {
      "path": "materials/da-6-1-sampling-bias/README.md",
      "name": "README.md",
-     "bytes": 1210,
+     "bytes": 1396,
      "about": ""
     },
     {
      "path": "materials/da-6-1-sampling-bias/da-6-1-sampling-bias.md",
      "name": "da-6-1-sampling-bias.md",
-     "bytes": 42233,
+     "bytes": 48644,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-6-1-sampling-bias/gen_page.py",
      "name": "gen_page.py",
-     "bytes": 12020,
-     "about": "Выборки сцены и перебор двадцати зёрен"
+     "bytes": 12089,
+     "about": "Выборки для анимации при двадцати начальных значениях генератора"
     },
     {
      "path": "materials/da-6-1-sampling-bias/sampling.py",
      "name": "sampling.py",
-     "bytes": 6614,
+     "bytes": 6618,
      "about": "Четыре блока кода страницы одним скриптом"
     }
    ],
@@ -1240,30 +1240,30 @@
   "da-6-2": {
    "file": "da-6-2-intervals-bootstrap",
    "zip": "materials/da-6-2-intervals-bootstrap.zip",
-   "zipBytes": 21924,
+   "zipBytes": 22392,
    "files": [
     {
      "path": "materials/da-6-2-intervals-bootstrap/README.md",
      "name": "README.md",
-     "bytes": 1248,
+     "bytes": 1452,
      "about": ""
     },
     {
      "path": "materials/da-6-2-intervals-bootstrap/da-6-2-intervals-bootstrap.md",
      "name": "da-6-2-intervals-bootstrap.md",
-     "bytes": 43849,
+     "bytes": 48843,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-6-2-intervals-bootstrap/gen_scene.py",
      "name": "gen_scene.py",
-     "bytes": 9978,
-     "about": "Выборки, интервалы и перевыборки сцены, перебор зёрен"
+     "bytes": 10020,
+     "about": "Расчёт интервалов и перевыборок для анимации при разных начальных значениях генератора"
     },
     {
      "path": "materials/da-6-2-intervals-bootstrap/intervals_bootstrap.py",
      "name": "intervals_bootstrap.py",
-     "bytes": 8595,
+     "bytes": 8548,
      "about": "Шесть блоков кода страницы одним скриптом"
     }
    ],
@@ -1274,30 +1274,30 @@
   "da-6-3": {
    "file": "da-6-3-p-value",
    "zip": "materials/da-6-3-p-value.zip",
-   "zipBytes": 18331,
+   "zipBytes": 18880,
    "files": [
     {
      "path": "materials/da-6-3-p-value/README.md",
      "name": "README.md",
-     "bytes": 1228,
+     "bytes": 1433,
      "about": ""
     },
     {
      "path": "materials/da-6-3-p-value/da-6-3-p-value.md",
      "name": "da-6-3-p-value.md",
-     "bytes": 41616,
+     "bytes": 46495,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-6-3-p-value/gen_scene.py",
      "name": "gen_scene.py",
-     "bytes": 5814,
-     "about": "Два мира анимации: без разницы и с эффектом"
+     "bytes": 5885,
+     "about": "Две модели для анимации: одинаковые кнопки и прибавка к чеку 1 000 ₽"
     },
     {
      "path": "materials/da-6-3-p-value/hypothesis_tests.py",
      "name": "hypothesis_tests.py",
-     "bytes": 6074,
+     "bytes": 6083,
      "about": "Четыре блока кода страницы одним скриптом"
     }
    ],
@@ -1308,30 +1308,30 @@
   "da-6-4": {
    "file": "da-6-4-which-test",
    "zip": "materials/da-6-4-which-test.zip",
-   "zipBytes": 20190,
+   "zipBytes": 21928,
    "files": [
     {
      "path": "materials/da-6-4-which-test/README.md",
      "name": "README.md",
-     "bytes": 1558,
+     "bytes": 1802,
      "about": ""
     },
     {
      "path": "materials/da-6-4-which-test/da-6-4-which-test.md",
      "name": "da-6-4-which-test.md",
-     "bytes": 44505,
+     "bytes": 52781,
      "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
     },
     {
      "path": "materials/da-6-4-which-test/grid.py",
      "name": "grid.py",
-     "bytes": 6948,
-     "about": "Сетка интерактива: 125 клеток по 10 000 повторов, зерно 6040, около 10 минут"
+     "bytes": 7272,
+     "about": "Сетка интерактива: 125 клеток по 10 000 повторов, начальное значение генератора 6040, расчёт занимает около 10 минут"
     },
     {
      "path": "materials/da-6-4-which-test/which_test.py",
      "name": "which_test.py",
-     "bytes": 9382,
+     "bytes": 9674,
      "about": "Семь блоков кода страницы одним скриптом"
     }
    ],
@@ -1343,12 +1343,12 @@
   "da-6-5": {
    "file": "da-6-5-correlation-causation",
    "zip": "materials/da-6-5-correlation-causation.zip",
-   "zipBytes": 28120,
+   "zipBytes": 29777,
    "files": [
     {
      "path": "materials/da-6-5-correlation-causation/README.md",
      "name": "README.md",
-     "bytes": 1795,
+     "bytes": 1970,
      "about": ""
     },
     {
@@ -1360,14 +1360,14 @@
     {
      "path": "materials/da-6-5-correlation-causation/correlation.ipynb",
      "name": "correlation.ipynb",
-     "bytes": 58592,
-     "about": "Код страницы: матрица корреляций, Пирсон и Спирмен, парадокс Симпсона, три нюанса"
+     "bytes": 58857,
+     "about": "Шесть примеров на Python и данные квартета Энскомба для проверки расчётов"
     },
     {
      "path": "materials/da-6-5-correlation-causation/da-6-5-correlation-causation.md",
      "name": "da-6-5-correlation-causation.md",
-     "bytes": 42487,
-     "about": "Страница целиком в Markdown: текст, код, вопросы и глоссарий"
+     "bytes": 52868,
+     "about": "Текст урока, примеры кода, вопросы и глоссарий в формате Markdown"
     }
    ],
    "shared": [
