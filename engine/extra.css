@@ -47,6 +47,8 @@ pre, code, .mono, .ow-code, .nb-code, .out pre, pre.code { font-variant-ligature
 .scene.fs:not(.fs-on) { transition: top .4s cubic-bezier(.4, 0, .6, 1), left .4s cubic-bezier(.4, 0, .6, 1), width .4s cubic-bezier(.4, 0, .6, 1), height .4s cubic-bezier(.4, 0, .6, 1), border-radius .4s; }
 .scene.fs .sc-grid { flex: 1; min-height: 0; height: auto; overflow-y: auto; }
 .scene.fs .sc-bar { flex: none; }
+.scene:not(.fs) #sc-fs { border-color: color-mix(in srgb, var(--s-acc) 62%, var(--s-line)); }
+.scene:not(.fs) #sc-fs:is(:hover, :focus-visible) { border-color: var(--s-acc); }
 .sc-close { position: absolute; top: 14px; right: 16px; z-index: 3; display: none; align-items: center; gap: 8px; background: rgba(14, 19, 32, .92); border: 1px solid #2a3550; color: var(--s-ink); border-radius: 10px; padding: 8px 12px; font: 500 12.5px/1 var(--ui); cursor: pointer; }
 .sc-close small { font: 500 10.5px/1 var(--mono); color: var(--s-mut); border: 1px solid #2a3550; border-radius: 4px; padding: 2px 4px; }
 .sc-close:hover { border-color: var(--s-acc); color: var(--s-acc); }
