@@ -19,7 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from build import FONTS, esc  # noqa: E402
+from build import FONTS, SHARE_IMAGE, esc, share_meta  # noqa: E402
 
 SITE = ROOT / 'site'
 DIST = ROOT / 'dist'
@@ -99,7 +99,7 @@ def topic_pages(topic):
     return [p for p in topic['pages'] if p.get('file')]
 
 
-def page(title, desc, main, nav='', crumbs='', side=None, cls=''):
+def page(title, desc, main, nav='', crumbs='', side=None, cls='', *, share_path=None):
     """Обёртка страницы. С side — каркас страниц курса (боковина + колонка чтения), без — простая колонка .wrap."""
     css = (ROOT / 'engine' / 'base.css').read_text(encoding='utf-8') + '\n' + (ROOT / 'engine' / 'site.css').read_text(encoding='utf-8')
     js = (ROOT / 'engine' / 'site.js').read_text(encoding='utf-8')
@@ -114,9 +114,10 @@ def page(title, desc, main, nav='', crumbs='', side=None, cls=''):
                 '<div class="scrim" id="scrim" hidden></div>\n')
     else:
         body = top + f'<main class="wrap {cls}">\n{main}\n</main>\n'
-    return ('<!doctype html>\n<html lang="ru" data-theme="dark">\n<head>\n<meta charset="utf-8">\n'
+    social = share_meta(share_path, title, desc) if share_path is not None else ''
+    return ('<!doctype html>\n<html lang="ru" prefix="og: https://ogp.me/ns#" data-theme="dark">\n<head>\n<meta charset="utf-8">\n'
             '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
-            f'<title>{esc(title)}</title>\n<meta name="description" content="{esc(desc)}">\n{FONTS}\n<style>\n{css}</style>\n'
+            f'<title>{esc(title)}</title>\n<meta name="description" content="{esc(desc)}">\n{social}{FONTS}\n<style>\n{css}</style>\n'
             '</head>\n<body>\n' + body +
             f'<script>window.A101 = {a101};</script>\n<script>\n{js}</script>\n</body>\n</html>\n')
 
@@ -306,8 +307,9 @@ def index_html():
     foot = (f'<footer class="foot"><span>{esc(COURSE["title"])}</span><a href="course.html">Оглавление курса</a></footer>')
     main = '\n'.join([hero, why, features, how, sample, modules, topics, foot])
     nav = f'<a class="btn ghost small" href="course.html">Оглавление</a><a class="btn accent small" href="{first["file"]}.html">Начать</a>'
-    desc = COURSE['lead'].split('. ')[0] + '.'
-    return page(f'{COURSE["title"]} — бесплатный курс о работе с данными', desc, main, nav=nav, cls='home')
+    desc = ('Бесплатный интерактивный курс по анализу данных. От Python и SQL до статистики, продуктовых метрик '
+            'и A/B-тестов. Уроки с анимациями, кодом и вопросами с разбором.')
+    return page(f'{COURSE["title"]} — бесплатный курс о работе с данными', desc, main, nav=nav, cls='home', share_path='')
 
 
 # ---------- оглавление ----------
@@ -369,7 +371,7 @@ def course_html():
                 f'  <ol class="soon-list">\n{rows}\n  </ol>\n</section>')
     side = f'<h4>Блоки</h4>\n<div class="blocks">{chips}</div>\n' + '\n'.join(sides)
     return page(f'Оглавление · {COURSE["title"]}', f'Модули, темы и страницы курса «{COURSE["title"]}» с отметками о пройденном.',
-                '\n'.join(mods), crumbs='Оглавление', side=side, cls='course')
+                '\n'.join(mods), crumbs='Оглавление', side=side, cls='course', share_path='course.html')
 
 
 def lost_html():
@@ -394,6 +396,7 @@ def main():
         (SITE / name).write_text(text, encoding='utf-8')
         (DIST / 'standalone' / name).write_text(text, encoding='utf-8')
     (SITE / '.nojekyll').write_text('', encoding='utf-8')
+    shutil.copyfile(SHARE_IMAGE, SITE / SHARE_IMAGE.name)
     for f in files:
         shutil.copy2(DIST / 'standalone' / f'{f}.html', SITE / f'{f}.html')
     if with_materials:

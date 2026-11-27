@@ -19,6 +19,8 @@ ROOT = Path(__file__).parent
 COURSE = json.loads((ROOT / 'engine' / 'course.json').read_text(encoding='utf-8'))
 NOTEBOOKS = json.loads((ROOT / 'engine' / 'notebooks.json').read_text(encoding='utf-8'))
 MAT_INDEX = ROOT / 'dist' / 'materials' / 'index.json'
+SITE_URL = 'https://cosmiksoul.github.io/analytics-101/'
+SHARE_IMAGE = ROOT / 'engine' / 'share-preview.png'
 FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com">\n'
          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
          '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500'
@@ -27,6 +29,25 @@ FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com">\n'
 
 def esc(s):
     return html.escape(s, quote=True)
+
+
+def share_meta(path, title, description, *, kind='website'):
+    """Метаданные ссылки для соцсетей. Пустой путь означает главную."""
+    url = SITE_URL + path
+    image = SITE_URL + SHARE_IMAGE.name
+    alt = 'Бесплатный курс «Аналитика 101» и скриншот анимации об условной вероятности'
+    short_description = description
+    if len(description) > 200:
+        short_description = description[:199].rsplit(maxsplit=1)[0] + '…'
+    og = {'title': title, 'description': description, 'type': kind, 'url': url,
+          'site_name': COURSE['title'], 'locale': 'ru_RU', 'image': image,
+          'image:type': 'image/png', 'image:width': '1200', 'image:height': '630', 'image:alt': alt}
+    twitter = {'card': 'summary_large_image', 'title': title, 'description': short_description,
+               'image': image, 'image:alt': alt}
+    tags = [f'<link rel="canonical" href="{esc(url)}">']
+    tags.extend(f'<meta property="og:{key}" content="{esc(value)}">' for key, value in og.items())
+    tags.extend(f'<meta name="twitter:{key}" content="{esc(value)}">' for key, value in twitter.items())
+    return '\n'.join(tags) + '\n'
 
 
 def materials_map(pid):
@@ -122,15 +143,18 @@ def build(pid):
             'prev': brief(ready[pos - 1]) if pos > 0 else None, 'next': brief(ready[pos + 1]) if pos + 1 < len(ready) else None,
             # «Предложить исправление»: репозиторий для issue и версия сборки (хеш коммита в CI, local — у себя)
             'repo': COURSE.get('repo', ''), 'build': (os.environ.get('GITHUB_SHA') or '')[:7] or 'local'}
-    head = (f'<title>{esc(meta["title"])} · Аналитика 101</title>\n'
-            f'<meta name="description" content="{esc(meta["description"])}">\n{FONTS}\n<style>\n{css}</style>')
+    name = meta['file']
+    title = f'{meta["title"]} · {COURSE["title"]}'
+    desc = meta['description']
+    head = (f'<title>{esc(title)}</title>\n'
+            f'<meta name="description" content="{esc(desc)}">\n{FONTS}\n<style>\n{css}</style>')
     tail = (f'<script>window.A101 = {json.dumps(a101, ensure_ascii=False, separators=(",", ":"))};</script>\n'
             f'<script>\n{page_js}\n</script>\n<script>\n{engine}</script>')
     artifact = f'{head}\n{body}\n{tail}\n'
-    standalone = ('<!doctype html>\n<html lang="ru" data-theme="dark">\n<head>\n<meta charset="utf-8">\n'
+    standalone = ('<!doctype html>\n<html lang="ru" prefix="og: https://ogp.me/ns#" data-theme="dark">\n<head>\n<meta charset="utf-8">\n'
                   '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
-                  f'{head}\n</head>\n<body>\n{body}\n{tail}\n</body>\n</html>\n')
-    name = meta['file']
+                  f'{share_meta(name + ".html", title, desc, kind="article")}{head}\n'
+                  f'</head>\n<body>\n{body}\n{tail}\n</body>\n</html>\n')
     for sub in ('artifact', 'standalone'):
         (ROOT / 'dist' / sub).mkdir(parents=True, exist_ok=True)
     (ROOT / 'dist' / 'artifact' / f'{name}.html').write_text(artifact, encoding='utf-8')
