@@ -19,7 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from build import FONTS, SHARE_IMAGE, esc, share_meta  # noqa: E402
+from build import FAVICON, FAVICON_TAG, FONTS, SHARE_IMAGE, esc, share_meta  # noqa: E402
 
 SITE = ROOT / 'site'
 DIST = ROOT / 'dist'
@@ -117,6 +117,7 @@ def page(title, desc, main, nav='', crumbs='', side=None, cls='', *, share_path=
     social = share_meta(share_path, title, desc) if share_path is not None else ''
     return ('<!doctype html>\n<html lang="ru" prefix="og: https://ogp.me/ns#" data-theme="dark">\n<head>\n<meta charset="utf-8">\n'
             '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
+            f'{FAVICON_TAG}'
             f'<title>{esc(title)}</title>\n<meta name="description" content="{esc(desc)}">\n{social}{FONTS}\n<style>\n{css}</style>\n'
             '</head>\n<body>\n' + body +
             f'<script>window.A101 = {a101};</script>\n<script>\n{js}</script>\n</body>\n</html>\n')
@@ -396,7 +397,8 @@ def main():
         (SITE / name).write_text(text, encoding='utf-8')
         (DIST / 'standalone' / name).write_text(text, encoding='utf-8')
     (SITE / '.nojekyll').write_text('', encoding='utf-8')
-    shutil.copyfile(SHARE_IMAGE, SITE / SHARE_IMAGE.name)
+    for image in (FAVICON, SHARE_IMAGE):
+        shutil.copyfile(image, SITE / image.name)
     for f in files:
         shutil.copy2(DIST / 'standalone' / f'{f}.html', SITE / f'{f}.html')
     if with_materials:

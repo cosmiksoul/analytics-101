@@ -21,6 +21,8 @@ NOTEBOOKS = json.loads((ROOT / 'engine' / 'notebooks.json').read_text(encoding='
 MAT_INDEX = ROOT / 'dist' / 'materials' / 'index.json'
 SITE_URL = 'https://cosmiksoul.github.io/analytics-101/'
 SHARE_IMAGE = ROOT / 'engine' / 'share-preview.png'
+FAVICON = ROOT / 'engine' / 'favicon.ico'
+FAVICON_TAG = f'<link rel="icon" href="{SITE_URL}{FAVICON.name}" sizes="16x16 32x32 48x48">\n'
 FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com">\n'
          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
          '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500'
@@ -153,6 +155,7 @@ def build(pid):
     artifact = f'{head}\n{body}\n{tail}\n'
     standalone = ('<!doctype html>\n<html lang="ru" prefix="og: https://ogp.me/ns#" data-theme="dark">\n<head>\n<meta charset="utf-8">\n'
                   '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
+                  f'{FAVICON_TAG}'
                   f'{share_meta(name + ".html", title, desc, kind="article")}{head}\n'
                   f'</head>\n<body>\n{body}\n{tail}\n</body>\n</html>\n')
     for sub in ('artifact', 'standalone'):
